@@ -1,0 +1,7 @@
+const THROW_EXCEPTION = 'THROW_EXCEPTION';
+const USE_CODE = 'USE_CODE';
+
+export {
+  THROW_EXCEPTION,
+  USE_CODE
+};

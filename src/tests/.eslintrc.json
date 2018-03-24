@@ -1,0 +1,21 @@
+{
+    "globals": {
+        "after": true,
+        "afterAll": true,
+        "afterEach": true,
+        "before": true,
+        "beforeAll": true,
+        "beforeEach": true,
+        "describe": true,
+        "expect": true,
+        "fdescribe": true,
+        "fit": true,
+        "it": true,
+        "spyOn": true,
+        "xdescribe": true
+    },
+    "rules": {
+        "prefer-arrow-callback": 0,
+        "no-invalid-this": 0
+    }
+}

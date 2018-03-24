@@ -1,0 +1,35 @@
+{
+  "env": {
+    "development": {
+      "presets": [
+        "es2015",
+        "stage-0"
+      ]
+    },
+
+    "test": {
+      "presets": [
+        "es2015",
+        "stage-0"
+      ],
+
+      "sourceMaps": "inline"
+    },
+
+    "production": {
+      "presets": [
+        [
+          "es2015",
+          {
+            "modules": false
+          }
+        ],
+        "stage-0"
+      ],
+      "plugins": [
+        "external-helpers",
+        "remove-comments"
+      ]
+    }
+  }
+}
