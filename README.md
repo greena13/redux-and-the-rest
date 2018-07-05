@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://cdn.rawgit.com/greena13/redux-and-the-rest/443c735e/images/logo.png"><br/>
+  <img src="https://cdn.rawgit.com/greena13/redux-and-the-rest/f364d1e6/images/logo.png"><br/>
   <h2 align="center">Redux and the REST</h2>
 </p>
 
