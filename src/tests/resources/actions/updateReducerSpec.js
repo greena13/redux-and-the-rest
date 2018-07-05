@@ -1,8 +1,6 @@
 import fetchMock from 'fetch-mock';
-import { ERROR, SUCCESS, UPDATING } from '../../../constants/Statuses';
 import buildStore from '../../helpers/buildStore';
-import resources from '../../../index';
-import { RESOURCES } from '../../../constants/DataStructures';
+import { resources, ERROR, SUCCESS, UPDATING, RESOURCES } from '../../../index';
 
 describe('Update reducer:', function () {
   beforeAll(function() {

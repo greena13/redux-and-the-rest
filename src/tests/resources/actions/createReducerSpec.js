@@ -1,8 +1,6 @@
 import fetchMock from 'fetch-mock';
-import { CREATING, ERROR, NEW, SUCCESS } from '../../../constants/Statuses';
 import buildStore from '../../helpers/buildStore';
-import resources from '../../../index';
-import { RESOURCES } from '../../../constants/DataStructures';
+import { resources, RESOURCES, CREATING, ERROR, NEW, SUCCESS } from '../../../index';
 
 describe('Create reducer:', function () {
   beforeAll(function() {

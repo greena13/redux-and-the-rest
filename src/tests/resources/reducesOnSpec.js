@@ -1,9 +1,7 @@
 import fetchMock from 'fetch-mock';
 
-import { SUCCESS } from '../../constants/Statuses';
-import resources from '../../resources';
+import { resources, SUCCESS, RESOURCES } from '../../index';
 import buildStore from '../helpers/buildStore';
-import { RESOURCES } from '../../constants/DataStructures';
 
 describe('reducesOn:', function () {
   beforeAll(function () {

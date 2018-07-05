@@ -1,9 +1,7 @@
 import fetchMock from 'fetch-mock';
 
-import { RESOURCES } from '../../constants/DataStructures';
-import resources from '../../index';
+import { resources, RESOURCES, DESTROY_ERROR, ERROR, SUCCESS } from '../../index';
 import buildStore from '../helpers/buildStore';
-import { DESTROY_ERROR, ERROR, SUCCESS } from '../../constants/Statuses';
 
 describe('Specifying a response adaptor:', function () {
   describe('Specifying a response adaptor for all actions', function () {

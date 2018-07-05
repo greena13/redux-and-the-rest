@@ -1,6 +1,8 @@
-import { CREATING, DESTROY_ERROR, DESTROYING, EDITING, ERROR, NEW, SUCCESS, UPDATING } from '../../../constants/Statuses';
 import buildStore from '../../helpers/buildStore';
-import resources from '../../../index';
+import {
+  resources,
+  CREATING, DESTROY_ERROR, DESTROYING, EDITING, ERROR, NEW, SUCCESS, UPDATING
+} from '../../../index';
 
 describe('New reducer:', () => {
   beforeAll(function () {

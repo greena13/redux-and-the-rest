@@ -1,9 +1,7 @@
 import fetchMock from 'fetch-mock';
 
-import resources from '../../../resources';
-import { RESOURCES } from '../../../constants/DataStructures';
+import { resources, SUCCESS, RESOURCES } from '../../../index';
 import buildStore from '../../helpers/buildStore';
-import { SUCCESS } from '../../../constants/Statuses';
 
 describe('belongsTo:', function () {
   describe('when the \'foreignKey\' option is used', function () {

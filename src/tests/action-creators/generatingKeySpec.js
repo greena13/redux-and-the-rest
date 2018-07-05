@@ -1,10 +1,7 @@
 import fetchMock from 'fetch-mock';
 
-import { RESOURCES } from '../../constants/DataStructures';
-
-import resources from '../../index';
+import { resources, SUCCESS, RESOURCES } from '../../index';
 import buildStore from '../helpers/buildStore';
-import { SUCCESS } from '../../constants/Statuses';
 
 describe('Generating key:', function () {
   describe('when the urlOnlyParams option is not used', function () {

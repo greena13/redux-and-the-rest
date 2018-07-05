@@ -1,9 +1,6 @@
-export * from './action-creators/buildActionCreators';
-export * from './reducers/buildReducers';
-import _Actions from './actions/Actions';
+export { default as serializeKey } from './utils/serializeKey';
 
-import resources from './resources';
+export { RESOURCE, RESOURCES, COLLECTION, ITEM } from './constants/DataStructures';
+export { NEW, EDITING, FETCHING, CREATING, UPDATING, DESTROYING, DESTROY_ERROR, SUCCESS, PROGRESS, ERROR } from './constants/Statuses';
 
-export const Actions = _Actions;
-
-export default resources;
+export { default as resources } from './resources';

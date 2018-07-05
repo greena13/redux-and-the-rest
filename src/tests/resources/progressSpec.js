@@ -1,10 +1,8 @@
 import fetchMock from 'fetch-mock';
 import XHRMock from '../helpers/XHRMock';
 
-import resources from '../../resources';
+import { resources, RESOURCES, CREATING, FETCHING, SUCCESS, UPDATING } from '../../index';
 import buildStore from '../helpers/buildStore';
-import { CREATING, FETCHING, SUCCESS, UPDATING } from '../../constants/Statuses';
-import { RESOURCES } from '../../constants/DataStructures';
 
 describe('progress option', function () {
   describe('for the create action:', function () {

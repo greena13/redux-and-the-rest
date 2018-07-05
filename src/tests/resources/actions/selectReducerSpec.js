@@ -1,6 +1,5 @@
-import { SUCCESS } from '../../../constants/Statuses';
 import buildStore from '../../helpers/buildStore';
-import resources from '../../../index';
+import { resources, SUCCESS } from '../../../index';
 
 describe('Select reducer:', function () {
   beforeAll(function () {

@@ -1,8 +1,6 @@
 import fetchMock from 'fetch-mock';
-import resources from '../../../resources';
-import { RESOURCES } from '../../../constants/DataStructures';
+import { resources, RESOURCES, SUCCESS } from '../../../index';
 import buildStore from '../../helpers/buildStore';
-import { SUCCESS } from '../../../constants/Statuses';
 
 describe('hasAndBelongsToMany:', function () {
   beforeAll(function () {

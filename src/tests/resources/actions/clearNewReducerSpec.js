@@ -1,6 +1,5 @@
-import { EDITING, NEW } from '../../../constants/Statuses';
 import buildStore from '../../helpers/buildStore';
-import resources from '../../../index';
+import { resources, EDITING, NEW } from '../../../index';
 
 describe('Clear new reducer:', function () {
   beforeAll(function () {

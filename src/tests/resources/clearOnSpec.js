@@ -1,9 +1,7 @@
 import fetchMock from 'fetch-mock';
 
-import { NEW, SUCCESS } from '../../constants/Statuses';
-import resources from '../../resources';
+import { resources, NEW, SUCCESS, RESOURCES } from '../../index';
 import buildStore from '../helpers/buildStore';
-import { RESOURCES } from '../../constants/DataStructures';
 
 describe('clearOn:', function () {
   beforeAll(function () {

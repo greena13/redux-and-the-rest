@@ -1,8 +1,6 @@
 import fetchMock from 'fetch-mock';
-import { ERROR, FETCHING, SUCCESS } from '../../../constants/Statuses';
 import buildStore from '../../helpers/buildStore';
-import resources from '../../../index';
-import { RESOURCES } from '../../../constants/DataStructures';
+import { resources, ERROR, FETCHING, SUCCESS, RESOURCES } from '../../../index';
 
 describe('Show reducers:', function () {
   beforeAll(function() {

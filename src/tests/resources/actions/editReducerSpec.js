@@ -1,6 +1,5 @@
-import { EDITING, ERROR, NEW, SUCCESS } from '../../../constants/Statuses';
 import buildStore from '../../helpers/buildStore';
-import resources from '../../../index';
+import { resources, EDITING, ERROR, NEW, SUCCESS } from '../../../index';
 
 describe('Edit reducer:', function () {
   beforeAll(function () {
@@ -86,7 +85,7 @@ describe('Edit reducer:', function () {
         it('then changes the item\'s status to EDITING', function() {
           expect(this.users.items[1].status).toEqual({ type: EDITING });
         });
-      })
+      });
     });
   });
 });

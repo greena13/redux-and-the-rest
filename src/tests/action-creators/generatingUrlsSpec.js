@@ -1,9 +1,7 @@
 import fetchMock from 'fetch-mock';
 
 import buildStore from '../helpers/buildStore';
-import resources from '../../index';
-import { RESOURCES } from '../../constants/DataStructures';
-import { SUCCESS } from '../../constants/Statuses';
+import { resources, RESOURCES, SUCCESS } from '../../index';
 
 describe('Generating URLs:', function() {
   describe('Specifying URL for all resources actions', function () {
@@ -163,7 +161,6 @@ describe('Generating URLs:', function() {
         reducers,
         fetchUsers,
         fetchUser,
-
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',

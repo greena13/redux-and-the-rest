@@ -1,12 +1,16 @@
-const SHARED_ATTRIBUTES = {
-  status: { type: null },
-};
-
 const RESOURCES = {
   items: {},
   collections: {},
   selectionMap: {},
   newItemKey: null,
+};
+
+const RESOURCE = {
+  ...ITEM
+};
+
+const SHARED_ATTRIBUTES = {
+  status: { type: null },
 };
 
 const COLLECTION = {
@@ -17,10 +21,6 @@ const COLLECTION = {
 const ITEM = {
   values: {},
   ...SHARED_ATTRIBUTES,
-};
-
-const RESOURCE = {
-  ...ITEM
 };
 
 export {
