@@ -8,6 +8,7 @@ describe('New reducer:', () => {
   beforeAll(function () {
     const { reducers, newUser } = resources({
       name: 'users',
+      keyBy: 'id'
     }, {
       new: true
     });
@@ -25,39 +26,52 @@ describe('New reducer:', () => {
   });
 
   describe('when there is NOT already a new item', () => {
-    beforeAll(function () {
-      this.store = buildStore({
-          users: {
-            ...this.resourceBefore,
-            items: {},
-            newItemKey: null,
-          }
-        },
-        { users: this.reducers }
-      );
+    [
+      {
+        idArgsDescription: 'and only the item\'s id is passed to the action creator',
+        idArgs: 'temp'
+      },
+      {
+        idArgsDescription: 'and the item\'s id is passed as an object to the action creator',
+        idArgs: { id: 'temp' }
+      }
+    ].forEach(({ idArgsDescription, idArgs }) => {
+      describe(idArgsDescription, () => {
+        beforeAll(function () {
+          this.store = buildStore({
+              users: {
+                ...this.resourceBefore,
+                items: {},
+                newItemKey: null,
+              }
+            },
+            { users: this.reducers }
+          );
 
-      this.store.dispatch(this.newUser('temp', {
-        id: 2,
-        username: 'Jill',
-      }));
+          this.store.dispatch(this.newUser(idArgs, {
+            id: 2,
+            username: 'Jill',
+          }));
 
-      this.users = this.store.getState().users;
-    });
+          this.users = this.store.getState().users;
+        });
 
-    it('then adds the new item', function() {
-      expect(this.users.items.temp.values).toEqual({ id: 2, username: 'Jill' });
-    });
+        it('then adds the new item', function() {
+          expect(this.users.items.temp.values).toEqual({ id: 2, username: 'Jill' });
+        });
 
-    it('then sets the status type of the new item to NEW', function() {
-      expect(this.users.items.temp.status.type).toEqual(NEW);
-    });
+        it('then sets the status type of the new item to NEW', function() {
+          expect(this.users.items.temp.status.type).toEqual(NEW);
+        });
 
-    it('then sets the newItemKey', function() {
-      expect(this.users.newItemKey).toEqual('temp');
-    });
+        it('then sets the newItemKey', function() {
+          expect(this.users.newItemKey).toEqual('temp');
+        });
 
-    it('then does NOT add the key of the new item to the default collection', function() {
-      expect(this.users.collections).toEqual({});
+        it('then does NOT add the key of the new item to the default collection', function() {
+          expect(this.users.collections).toEqual({});
+        });
+      });
     });
   });
 
@@ -131,7 +145,7 @@ describe('New reducer:', () => {
         it('then does NOT add the key of the new item to the default collection', function() {
           expect(this.users.collections[''].positions).toEqual([ 'temp' ]);
         });
-      })
+      });
     });
 
     describe('with a different key', function () {
@@ -266,8 +280,8 @@ describe('New reducer:', () => {
         it('then sets the newItemKey to point to the new item', function() {
           expect(this.users.newItemKey).toEqual(1);
         });
-      })
-    })
+      });
+    });
   });
 
   describe('when the collectionKeys attribute is used', () => {
@@ -357,6 +371,5 @@ describe('New reducer:', () => {
         expect(this.users.collections['order=newest'].positions).toEqual([ 1 ]);
       });
     });
-
-  })
+  });
 });

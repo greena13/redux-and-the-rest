@@ -261,7 +261,6 @@ function clearNewItem(resources) {
 }
 
 function createNewItem(resources, { type, temporaryKey, key, collectionKeys = [], status, item, httpCode, error }) {
-
   const { items } = resources;
   const currentItem = items[temporaryKey] || ITEM;
 

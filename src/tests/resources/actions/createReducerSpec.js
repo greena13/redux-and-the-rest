@@ -38,143 +38,154 @@ describe('Create reducer:', function () {
     }
   ].forEach(({ description, initialState }) => {
     describe(description, function () {
+      [
+        {
+          idArgsDescription: 'and only the item\'s id is passed to the action creator',
+          idArgs: 'temp'
+        },
+        {
+          idArgsDescription: 'and the item\'s id is passed as an object to the action creator',
+          idArgs: { id: 'temp' }
+        }
+      ].forEach(({ idArgsDescription, idArgs }) => {
+        describe(idArgsDescription, function() {
+          describe('and the API request succeeds', function () {
+            beforeAll(function () {
+              this.store = buildStore(initialState, { users: this.reducers } );
 
-      describe('and the API request succeeds', function () {
-        beforeAll(function () {
-          this.store = buildStore(initialState, { users: this.reducers } );
+              fetchMock.post('http://test.com/users', {
+                body: { id: 1, username: 'Bob' },
+              }, new Promise((resolve) => {
+                this.resolveRequest = resolve;
+              }));
 
-          fetchMock.post('http://test.com/users', {
-            body: { id: 1, username: 'Bob' },
-          }, new Promise((resolve) => {
-            this.resolveRequest = resolve;
-          }));
+              this.store.dispatch(this.createUser(idArgs, {
+                username: 'Bob'
+              }));
 
-          this.store.dispatch(this.createUser('temp', {
-            username: 'Bob'
-          }));
+              this.users = this.store.getState().users;
+            });
 
-          this.users = this.store.getState().users;
-        });
+            afterAll(function() {
+              fetchMock.restore();
+            });
 
-        afterAll(function() {
-          fetchMock.restore();
-        });
+            describe('before the request has completed', function () {
+              it('then adds a new item with the correct values', function() {
+                expect(this.users.items.temp.values).toEqual({ username: 'Bob' });
+              });
 
-        describe('before the request has completed', function () {
-          it('then adds a new item with the correct values', function() {
-            expect(this.users.items.temp.values).toEqual({ username: 'Bob' });
+              it('then adds a new item with a status type of CREATING', function() {
+                expect(this.users.items.temp.status.type).toEqual(CREATING);
+              });
+
+              it('then does NOT add the temporary key to the default collection', function() {
+                expect(this.users.collections).toEqual({});
+              });
+
+              it('then sets the newItemKey to the temporary key', function() {
+                expect(this.users.newItemKey).toEqual('temp');
+              });
+            });
+
+            describe('when the request has completed', () => {
+              beforeAll(function () {
+                this.resolveRequest();
+
+                this.users = this.store.getState().users;
+              });
+
+              it('then moves the item to the new ID and merges in values from the server', function() {
+                expect(this.users.items[1].values).toEqual({
+                  id: 1,
+                  username: 'Bob',
+                });
+              });
+
+              it('then sets the items status type to SUCCESS', function() {
+                expect(this.users.items[1].status.type).toEqual(SUCCESS);
+              });
+
+              it('then updates the newItemKey ', function() {
+                expect(this.users.newItemKey).toEqual(1);
+              });
+
+            });
+
           });
 
-          it('then adds a new item with a status type of CREATING', function() {
-            expect(this.users.items.temp.status.type).toEqual(CREATING);
-          });
+          describe('and the API request errors', function () {
+            beforeAll(function () {
+              this.store = buildStore(initialState, { users: this.reducers } );
 
-          it('then does NOT add the temporary key to the default collection', function() {
-            expect(this.users.collections).toEqual({});
-          });
+              fetchMock.post('http://test.com/users', {
+                body: { error: 'Not Found' },
+                status: 404
+              }, new Promise((resolve) => {
+                this.resolveRequest = resolve;
+              }));
 
-          it('then sets the newItemKey to the temporary key', function() {
-            expect(this.users.newItemKey).toEqual('temp');
-          });
-        });
+              this.store.dispatch(this.createUser(idArgs, {
+                username: 'Bob'
+              }));
 
-        describe('when the request has completed', () => {
-          beforeAll(function () {
-            this.resolveRequest();
+              this.users = this.store.getState().users;
+            });
 
-            this.users = this.store.getState().users;
-          });
+            afterAll(function() {
+              fetchMock.restore();
+            });
 
-          it('then moves the item to the new ID and merges in values from the server', function() {
-            expect(this.users.items[1].values).toEqual({
-              id: 1,
-              username: 'Bob',
+            describe('before the request has completed', function () {
+              it('then adds a new item with the correct values', function() {
+                expect(this.users.items.temp.values).toEqual({ username: 'Bob' });
+              });
+
+              it('then adds a new item with a status type of CREATING', function() {
+                expect(this.users.items.temp.status.type).toEqual(CREATING);
+              });
+
+              it('then does NOT add the temporary key to the default collection', function() {
+                expect(this.users.collections).toEqual({});
+              });
+
+              it('then sets the newItemKey to the temporary key', function() {
+                expect(this.users.newItemKey).toEqual('temp');
+              });
+            });
+
+            describe('when the request has completed', () => {
+              beforeAll(function () {
+                this.resolveRequest();
+
+                this.users = this.store.getState().users;
+              });
+
+              it('then DOES NOT move the item from its temporary key', function() {
+                expect(this.users.items.temp.values).toEqual({
+                  username: 'Bob',
+                });
+              });
+
+              it('then sets the items status type to ERROR', function() {
+                expect(this.users.items.temp.status.type).toEqual(ERROR);
+              });
+
+              it('then sets the items status httpCode', function() {
+                expect(this.users.items.temp.status.httpCode).toEqual(404);
+              });
+
+              it('then merges in the server\'s response into the status', function() {
+                expect(this.users.items.temp.status.error).toEqual('Not Found');
+              });
+
+              it('then DOES NOT update the newItemKey', function() {
+                expect(this.users.newItemKey).toEqual('temp');
+              });
             });
           });
-
-          it('then sets the items status type to SUCCESS', function() {
-            expect(this.users.items[1].status.type).toEqual(SUCCESS);
-          });
-
-          it('then updates the newItemKey ', function() {
-            expect(this.users.newItemKey).toEqual(1);
-          });
-
-        });
-
-      });
-
-      describe('and the API request errors', function () {
-        beforeAll(function () {
-          this.store = buildStore(initialState, { users: this.reducers } );
-
-          fetchMock.post('http://test.com/users', {
-            body: { error: 'Not Found' },
-            status: 404
-          }, new Promise((resolve) => {
-            this.resolveRequest = resolve;
-          }));
-
-          this.store.dispatch(this.createUser('temp', {
-            username: 'Bob'
-          }));
-
-          this.users = this.store.getState().users;
-        });
-
-        afterAll(function() {
-          fetchMock.restore();
-        });
-
-        describe('before the request has completed', function () {
-          it('then adds a new item with the correct values', function() {
-            expect(this.users.items.temp.values).toEqual({ username: 'Bob' });
-          });
-
-          it('then adds a new item with a status type of CREATING', function() {
-            expect(this.users.items.temp.status.type).toEqual(CREATING);
-          });
-
-          it('then does NOT add the temporary key to the default collection', function() {
-            expect(this.users.collections).toEqual({});
-          });
-
-          it('then sets the newItemKey to the temporary key', function() {
-            expect(this.users.newItemKey).toEqual('temp');
-          });
-        });
-
-        describe('when the request has completed', () => {
-          beforeAll(function () {
-            this.resolveRequest();
-
-            this.users = this.store.getState().users;
-          });
-
-          it('then DOES NOT move the item from its temporary key', function() {
-            expect(this.users.items.temp.values).toEqual({
-              username: 'Bob',
-            });
-          });
-
-          it('then sets the items status type to ERROR', function() {
-            expect(this.users.items.temp.status.type).toEqual(ERROR);
-          });
-
-          it('then sets the items status httpCode', function() {
-            expect(this.users.items.temp.status.httpCode).toEqual(404);
-          });
-
-          it('then merges in the server\'s response into the status', function() {
-            expect(this.users.items.temp.status.error).toEqual('Not Found');
-          });
-
-          it('then DOES NOT update the newItemKey', function() {
-            expect(this.users.newItemKey).toEqual('temp');
-          });
         });
       });
-
     });
   });
 

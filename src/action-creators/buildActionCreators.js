@@ -29,15 +29,15 @@ import applyTransforms from '../reducers/helpers/applyTransforms';
 import without from '../utils/collection/without';
 import arrayFrom from '../utils/array/arrayFrom';
 import generateUrl from './helpers/generateUrl';
+import getItemKey from './helpers/getItemKey';
+import getCollectionKey from './helpers/getCollectionKey';
 
 function fetchCollection(options, params, ssrOptions = { }) {
   const {
     action, resourceType, url: urlTemplate, name, keyBy, urlOnlyParams, progress
   } = options;
 
-  const keyParams = without(params, urlOnlyParams);
-
-  const key = serializeKey(keyParams);
+  const key = getCollectionKey(params, { urlOnlyParams });
   const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, 'id'));
 
   return (dispatch) => {
@@ -47,7 +47,6 @@ function fetchCollection(options, params, ssrOptions = { }) {
     return makeRequest({
       ...options,
       keyBy,
-
       url, key,
       dispatch,
       credentials: true,
@@ -60,12 +59,10 @@ function fetchCollection(options, params, ssrOptions = { }) {
 
 function fetchResource(options, params, ssrOptions = { }) {
   const {
-    action, transforms, url: urlTemplate, name, resourceType, urlOnlyParams, progress
+    action, transforms, url: urlTemplate, name, resourceType, keyBy, progress
   } = options;
 
-  const keyParams = without(params, urlOnlyParams);
-
-  const key = serializeKey(keyParams);
+  const key = getItemKey(params, { keyBy });
   const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, 'id'));
 
   return (dispatch) => {
@@ -83,29 +80,24 @@ function fetchResource(options, params, ssrOptions = { }) {
   };
 }
 
-function selectResource({ action, urlOnlyParams }, params, context = true) {
-  const keyParams = without(params, urlOnlyParams);
-
-  const key = serializeKey(keyParams);
+function selectResource({ action, keyBy }, params, context = true) {
+  const key = getItemKey(params, { keyBy });
 
   return {
     type: action, key, context
   };
 }
 
-function selectAnotherResource({ action, urlOnlyParams }, params, context = true) {
-
-  const keyParams = without(params, urlOnlyParams);
-  const key = serializeKey(keyParams);
+function selectAnotherResource({ action, keyBy }, params, context = true) {
+  const key = getItemKey(params, { keyBy });
 
   return {
     type: action, key, context
   };
 }
 
-function deselectResource({ action, urlOnlyParams }, params) {
-  const keyParams = without(params, urlOnlyParams);
-  const key = serializeKey(keyParams);
+function deselectResource({ action, keyBy }, params) {
+  const key = getItemKey(params, { keyBy });
 
   return {
     type: action,
@@ -118,10 +110,9 @@ function clearSelectedCollection({ action }) {
 }
 
 function newResource(options, params, values = {}, collectionKeys = []) {
-  const { action, transforms, urlOnlyParams } = options;
+  const { action, transforms, keyBy } = options;
 
-  const keyParams = without(params, urlOnlyParams);
-  const temporaryKey = serializeKey(keyParams);
+  const temporaryKey = getItemKey(params, { keyBy });
 
   return {
     type: action,
@@ -141,14 +132,14 @@ function clearNewResource({ action, resourceType }) {
 }
 
 function editResource(options, params, values) {
-  const { action, transforms, urlOnlyParams } = options;
+  const { action, transforms, keyBy } = options;
 
-  const keyParams = without(params, urlOnlyParams);
+  const key = getItemKey(params, { keyBy });
 
   return {
     type: action,
     status: EDITING,
-    key: serializeKey(keyParams),
+    key,
     item: applyTransforms(transforms, options, {
       ...ITEM,
       values,
@@ -165,12 +156,10 @@ function createResource(options, params, values, collectionKeys = []) {
     url: urlTemplate,
     name,
     keyBy,
-    urlOnlyParams,
     progress
   } = options;
 
-  const keyParams = without(params, urlOnlyParams);
-  const key = serializeKey(keyParams);
+  const key = getItemKey(params, { keyBy });
 
   const _collectionKeys = arrayFrom(collectionKeys).map((id)=> serializeKey(id));
 
@@ -202,11 +191,10 @@ function createResource(options, params, values, collectionKeys = []) {
 
 function updateResource(options, params, values, previousValues) {
   const {
-    action, resourceType, transforms, url: urlTemplate, name, urlOnlyParams, progress
+    action, resourceType, transforms, url: urlTemplate, name, progress, keyBy
   } = options;
 
-  const keyParams = without(params, urlOnlyParams);
-  const key = serializeKey(keyParams);
+  const key = getItemKey(params, { keyBy });
 
   const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, 'id'));
 
@@ -236,13 +224,12 @@ function destroyResource(options, params, previousValues) {
     action,
     resourceType,
     name,
-    urlOnlyParams,
+    keyBy,
     url: urlTemplate,
     progress
   } = options;
 
-  const keyParams = without(params, urlOnlyParams);
-  const key = serializeKey(keyParams);
+  const key = getItemKey(params, { keyBy });
   const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, 'id'));
 
   return (dispatch) => {
@@ -302,9 +289,16 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
       memo[actionCreatorName] = actionCreator;
 
     } else if (standardActionCreator) {
-      const _options = resolveOptions(resourceOptions, actionOptions, [
-        'url', 'keyBy', 'resourceType', 'urlOnlyParams', 'responseAdaptor', 'progress', 'requestErrorHandler'
-      ]);
+      const _options = resolveOptions(
+        {
+          keyBy: 'id'
+        },
+        resourceOptions,
+        actionOptions,
+        [
+          'url', 'keyBy', 'resourceType', 'urlOnlyParams', 'responseAdaptor', 'progress', 'requestErrorHandler'
+        ]
+      );
 
       const actionCreatorOptions = {
         action: actions.get(key),

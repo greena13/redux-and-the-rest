@@ -109,4 +109,27 @@ describe('Select reducer:', function () {
       });
     });
   });
+
+  describe('when the item\'s id is passed as an object to the action creator', function () {
+    beforeAll(function () {
+      this.nextSelected = 1;
+
+      this.store = buildStore({
+        users: {
+          ...this.resourceBefore,
+          selectionMap: {},
+        }
+      }, { users: this.reducers } );
+
+      spyOn(console, 'warn');
+
+      this.store.dispatch(this.selectUser({ id: this.nextSelected }));
+
+      this.users = this.store.getState().users;
+    });
+
+    it('then add the item to the selectionMap', function() {
+      expect(this.users.selectionMap).toEqual({ 1: true });
+    });
+  });
 });

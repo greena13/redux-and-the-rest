@@ -27,24 +27,23 @@ class Actions {
          const standardAction = STANDARD_ACTIONS[action];
 
          if (standardAction) {
-           if (standardAction.indexOf('ITEMS') !== -1) {
-             return standardAction.replace('ITEMS', constantize(toPlural(name)));
-           } else {
+           if (standardAction.indexOf('ITEMS') === -1) {
              return standardAction.replace('ITEM', constantize(toSingular(name)));
+           } else {
+             return standardAction.replace('ITEMS', constantize(toPlural(name)));
            }
          } else {
            return `${constantize(action)}_${constantize(name)}`;
          }
        }();
     });
-
   }
 
   get(actionKey) {
     const action = this.actionsMap[actionKey];
 
     if (!action) {
-      warn(`Action ${actionKey} does not exist.`)
+      warn(`Action ${actionKey} does not exist.`);
     }
 
     return action;
