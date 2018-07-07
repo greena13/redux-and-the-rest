@@ -38,7 +38,7 @@ function fetchCollection(options, params, ssrOptions = { }) {
   } = options;
 
   const key = getCollectionKey(params, { urlOnlyParams });
-  const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, 'id'));
+  const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, keyBy));
 
   return (dispatch) => {
 
@@ -63,7 +63,7 @@ function fetchResource(options, params, ssrOptions = { }) {
   } = options;
 
   const key = getItemKey(params, { keyBy });
-  const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, 'id'));
+  const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, keyBy));
 
   return (dispatch) => {
     dispatch(requestResource({ action, resourceType, transforms }, key));
@@ -163,7 +163,7 @@ function createResource(options, params, values, collectionKeys = []) {
 
   const _collectionKeys = arrayFrom(collectionKeys).map((id)=> serializeKey(id));
 
-  const url = generateUrl({ url: urlTemplate, name }, without(wrapInObject(params, 'id'), 'id'));
+  const url = generateUrl({ url: urlTemplate, name }, without(wrapInObject(params, keyBy), keyBy));
 
   return (dispatch) => {
     dispatch(
@@ -196,7 +196,7 @@ function updateResource(options, params, values, previousValues) {
 
   const key = getItemKey(params, { keyBy });
 
-  const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, 'id'));
+  const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, keyBy));
 
   return (dispatch) => {
     dispatch(submitUpdateResource({ transforms, action, resourceType }, key, values, previousValues));
@@ -230,7 +230,7 @@ function destroyResource(options, params, previousValues) {
   } = options;
 
   const key = getItemKey(params, { keyBy });
-  const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, 'id'));
+  const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, keyBy));
 
   return (dispatch) => {
 
