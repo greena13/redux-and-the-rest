@@ -245,19 +245,26 @@ function addNewItem(resources, { type, temporaryKey, item, collectionKeys = [] }
 function clearNewItem(resources) {
   const { newItemKey, items, collections, selectionMap } = resources;
 
-  return {
-    ...resources,
-    items: without(items, newItemKey),
-    collections: Object.keys(collections).reduce((memo, key) => {
-      const collection = collections[key];
+  if (items[newItemKey] && items[newItemKey].status.type === NEW) {
+    return {
+      ...resources,
+      items: without(items, newItemKey),
+      collections: Object.keys(collections).reduce((memo, key) => {
+        const collection = collections[key];
 
-      memo[key] = { ...collection, positions: without(collection.positions, newItemKey) };
+        memo[key] = { ...collection, positions: without(collection.positions, newItemKey) };
 
-      return memo;
-    }, {} ),
-    selectionMap: without(selectionMap, newItemKey),
-    newItemKey: null,
-  };
+        return memo;
+      }, {} ),
+      selectionMap: without(selectionMap, newItemKey),
+      newItemKey: null,
+    };
+  } else {
+    return {
+      ...resources,
+      newItemKey: null,
+    };
+  }
 }
 
 function createNewItem(resources, { type, temporaryKey, key, collectionKeys = [], status, item, httpCode, error }) {

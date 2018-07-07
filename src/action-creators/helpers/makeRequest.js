@@ -91,7 +91,6 @@ function makeRequest(options, requestOptionsOverride = {}) {
   };
 
   if (progress) {
-
     return new Promise((resolve, reject)=>{
       const xhRequest = new XMLHttpRequest();
 
