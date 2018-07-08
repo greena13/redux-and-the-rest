@@ -1,6 +1,6 @@
 {
   "name": "redux-and-the-rest",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Declarative, flexible Redux integration with your RESTful API",
   "main": "index.js",
   "scripts": {
@@ -37,9 +37,9 @@
   },
   "homepage": "https://github.com/greena13/redux-and-the-rest#readme",
   "peerDependencies": {
+    "isomorphic-fetch": "^2.2.1",
     "redux": ">= 1.0.0",
-    "redux-thunk": ">= 1.0.0",
-    "isomorphic-fetch": "^2.2.1"
+    "redux-thunk": ">= 1.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
