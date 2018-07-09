@@ -271,104 +271,121 @@ describe('Create reducer:', function () {
     });
   });
 
-  describe('when the collectionKeys attribute is used', () => {
-    beforeAll(function () {
-      fetchMock.post('http://test.com/users', {
-        body: { id: 2, username: 'Bob' },
-      });
-
-    });
-
-    afterAll(function() {
-      fetchMock.restore();
-    });
-
-    describe('and there are NO collections', function () {
+  [
+    {
+      operator: 'push',
+      expectedIsolatedState: [1],
+      expectedCumulativeState: [2, 1]
+    },
+    {
+      operator: 'unshift',
+      expectedIsolatedState: [1],
+      expectedCumulativeState: [1, 2]
+    },
+    {
+      operator: 'invalidate',
+      expectedIsolatedState: [],
+      expectedCumulativeState: []
+    },
+  ].forEach(({ operator, expectedIsolatedState, expectedCumulativeState }) => {
+    describe(`when the ${operator} collections operator is used`, () => {
       beforeAll(function () {
-        this.store = buildStore({
-          users: {
-            items: {},
-            collections: {},
-            newItemKey: null
-          }
-        }, { users: this.reducers } );
+        fetchMock.post('http://test.com/users', {
+          body: { id: 2, username: 'Bob' },
+        });
 
-        this.store.dispatch(this.createUser(1, {
-          username: 'Bob'
-        }, { order: 'newest' }));
-
-        this.users = this.store.getState().users;
       });
 
-      it('then creates a new collection with the specified key and places the item in it', function() {
-        expect(this.users.collections).toEqual({
-          'order=newest': {
-            positions: [ 1 ],
-            status: { type: null }
-          }
+      afterAll(function() {
+        fetchMock.restore();
+      });
+
+      describe('and there are NO collections', function () {
+        beforeAll(function () {
+          this.store = buildStore({
+            users: {
+              items: {},
+              collections: {},
+              newItemKey: null
+            }
+          }, { users: this.reducers } );
+
+          this.store.dispatch(this.createUser(1, {
+            username: 'Bob'
+          }, { [operator]: { order: 'newest' } }));
+
+          this.users = this.store.getState().users;
+        });
+
+        it('then creates a new collection with the specified key and places the item in it', function() {
+          expect(this.users.collections).toEqual({
+            'order=newest': {
+              positions: expectedIsolatedState,
+              status: { type: null }
+            }
+          });
+        });
+      });
+
+      describe('and there are NO matching collections', function () {
+        beforeAll(function () {
+          this.store = buildStore({
+            users: {
+              items: {},
+              collections: {
+                'active=true': {
+                  positions: [ ],
+                  status: { type: SUCCESS }
+                }
+              },
+              newItemKey: null
+            }
+          }, { users: this.reducers } );
+
+          this.store.dispatch(this.createUser(1, {
+            username: 'Bob'
+          }, { [operator]: { order: 'newest' } }));
+
+          this.users = this.store.getState().users;
+        });
+
+        it('then creates a new collection with the specified key and places the item in it', function() {
+          expect(this.users.collections['order=newest'].positions).toEqual(expectedIsolatedState);
+          expect(this.users.collections['active=true'].positions).toEqual([]);
+        });
+      });
+
+      describe('and there are collections with keys that exactly match', function () {
+        beforeAll(function () {
+          this.store = buildStore({
+            users: {
+              items: {},
+              collections: {
+                'active=true': {
+                  positions: [ ],
+                  status: { type: null }
+                },
+                'order=newest': {
+                  positions: [ 2 ],
+                  status: { type: null }
+                },
+              },
+              newItemKey: null
+            }
+          }, { users: this.reducers } );
+
+          this.store.dispatch(this.createUser(1, {
+            username: 'Bob'
+          }, { [operator]: { order: 'newest' } }));
+
+          this.users = this.store.getState().users;
+        });
+
+        it('then adds the new item to the matching collections', function() {
+          expect(this.users.collections['active=true'].positions).toEqual([]);
+          expect(this.users.collections['order=newest'].positions).toEqual(expectedCumulativeState);
         });
       });
     });
-
-    describe('and there are NO matching collections', function () {
-      beforeAll(function () {
-        this.store = buildStore({
-          users: {
-            items: {},
-            collections: {
-              'active=true': {
-                positions: [ ],
-                status: { type: SUCCESS }
-              }
-            },
-            newItemKey: null
-          }
-        }, { users: this.reducers } );
-
-        this.store.dispatch(this.createUser(1, {
-          username: 'Bob'
-        }, { order: 'newest' }));
-
-        this.users = this.store.getState().users;
-      });
-
-      it('then creates a new collection with the specified key and places the item in it', function() {
-        expect(this.users.collections['order=newest'].positions).toEqual([ 1 ]);
-        expect(this.users.collections['active=true'].positions).toEqual([]);
-      });
-    });
-
-    describe('and there are collections with keys that exactly match', function () {
-      beforeAll(function () {
-        this.store = buildStore({
-          users: {
-            items: {},
-            collections: {
-              'active=true': {
-                positions: [ ],
-                status: { type: null }
-              },
-              'order=newest': {
-                positions: [ ],
-                status: { type: null }
-              },
-            },
-            newItemKey: null
-          }
-        }, { users: this.reducers } );
-
-        this.store.dispatch(this.createUser(1, {
-          username: 'Bob'
-        }, { order: 'newest' }));
-
-        this.users = this.store.getState().users;
-      });
-
-      it('then adds the new item to the matching collections', function() {
-        expect(this.users.collections['active=true'].positions).toEqual([]);
-        expect(this.users.collections['order=newest'].positions).toEqual([ 1 ]);
-      });
-    });
-
   });
 });

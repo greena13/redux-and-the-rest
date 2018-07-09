@@ -1,5 +1,3 @@
-import serializeKey from '../utils/serializeKey';
-
 import makeRequest from './helpers/makeRequest';
 
 import warn from '../utils/dev/warn';
@@ -109,8 +107,22 @@ function clearSelectedCollection({ action }) {
   return { type: action };
 }
 
-function newResource(options, params, values = {}, collectionKeys = []) {
-  const { action, transforms, keyBy } = options;
+function getCollectionKeys(collectionKeys, urlOnlyParams) {
+  return arrayFrom(collectionKeys).map((collectionKey) => getCollectionKey(collectionKey, urlOnlyParams));
+}
+
+function extractCollectionOperations(actionCreatorOptions, urlOnlyParams) {
+  const { push, unshift, invalidate } = actionCreatorOptions;
+
+  return {
+    push: getCollectionKeys(push, urlOnlyParams),
+    unshift: getCollectionKeys(unshift, urlOnlyParams),
+    invalidate: getCollectionKeys(invalidate, urlOnlyParams),
+  };
+}
+
+function newResource(options, params, values = {}, actionCreatorOptions = {}) {
+  const { action, transforms, keyBy, urlOnlyParams } = options;
 
   const temporaryKey = getItemKey(params, { keyBy });
 
@@ -118,7 +130,7 @@ function newResource(options, params, values = {}, collectionKeys = []) {
     type: action,
     status: NEW,
     temporaryKey,
-    collectionKeys: arrayFrom(collectionKeys).map((id) => serializeKey(id)),
+    collectionOperations: extractCollectionOperations(actionCreatorOptions, urlOnlyParams),
     item: applyTransforms(transforms, options, {
       ...ITEM,
       values,
@@ -148,12 +160,13 @@ function editResource(options, params, values) {
   };
 }
 
-function createResource(options, params, values, collectionKeys = []) {
+function createResource(options, params, values, actionCreatorOptions = {}) {
   const {
     action,
     resourceType,
     transforms,
     url: urlTemplate,
+    urlOnlyParams,
     name,
     keyBy,
     progress
@@ -161,18 +174,18 @@ function createResource(options, params, values, collectionKeys = []) {
 
   const key = getItemKey(params, { keyBy });
 
-  const _collectionKeys = arrayFrom(collectionKeys).map((id)=> serializeKey(id));
 
   const url = generateUrl({ url: urlTemplate, name }, without(wrapInObject(params, keyBy), keyBy));
 
   return (dispatch) => {
+    const collectionOperations = extractCollectionOperations(actionCreatorOptions, urlOnlyParams);
+
     dispatch(
-      submitCreateResource({ action, resourceType, transforms }, key, values, _collectionKeys)
+      submitCreateResource({ action, resourceType, transforms }, key, values, collectionOperations)
     );
 
     return makeRequest({
       ...options,
-      collectionKeys: _collectionKeys,
       keyBy,
 
       url, key,

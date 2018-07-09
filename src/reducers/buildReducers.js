@@ -193,10 +193,46 @@ function clearSelectedItems(resources) {
     ...resources,
     selectionMap: {}
   };
-
 }
 
-function addNewItem(resources, { type, temporaryKey, item, collectionKeys = [] }) {
+function applyCollectionOperators(collections, collectionOperations = {}, temporaryKey) {
+  const updatedCollections = {};
+
+  collectionOperations.push.forEach((collectionKey) => {
+    const existingCollection = collections[collectionKey] || COLLECTION;
+
+    updatedCollections[collectionKey] = {
+      ...existingCollection,
+      positions: [
+        ...existingCollection.positions,
+        temporaryKey
+      ]
+    };
+  });
+
+  collectionOperations.unshift.forEach((collectionKey) => {
+    const existingCollection = collections[collectionKey] || COLLECTION;
+
+    updatedCollections[collectionKey] = {
+      ...existingCollection,
+      positions: [
+        temporaryKey,
+        ...existingCollection.positions
+      ]
+    };
+  });
+
+  collectionOperations.invalidate.forEach((collectionKey) => {
+    updatedCollections[collectionKey] = COLLECTION;
+  });
+
+  return {
+    ...collections,
+    ...updatedCollections
+  };
+}
+
+function addNewItem(resources, { type, temporaryKey, item, collectionOperations }) {
 
   assertInDevMode(() => {
     const existingItem = resources.items[temporaryKey];
@@ -210,23 +246,6 @@ function addNewItem(resources, { type, temporaryKey, item, collectionKeys = [] }
     }
   });
 
-  const newCollections = {
-    ...resources.collections,
-    ...collectionKeys.reduce((memo, key) => {
-      const collection = resources.collections[key] || COLLECTION;
-
-      memo[key] = {
-        ...collection,
-        positions: [
-          temporaryKey,
-          ...collection.positions
-        ],
-      };
-
-      return memo;
-    }, {})
-  };
-
   const newItems = {
     ...resources.items,
     [temporaryKey]: {
@@ -237,8 +256,8 @@ function addNewItem(resources, { type, temporaryKey, item, collectionKeys = [] }
   return {
     ...resources,
     items: newItems,
-    collections: newCollections,
-    newItemKey: temporaryKey,
+    collections: applyCollectionOperators(resources.collections, collectionOperations, temporaryKey),
+    newItemKey: temporaryKey
   };
 }
 
@@ -267,7 +286,7 @@ function clearNewItem(resources) {
   }
 }
 
-function createNewItem(resources, { type, temporaryKey, key, collectionKeys = [], status, item, httpCode, error }) {
+function createNewItem(resources, { type, temporaryKey, key, collectionOperations = {}, status, item, httpCode, error }) {
   const { items } = resources;
   const currentItem = items[temporaryKey] || ITEM;
 
@@ -277,31 +296,6 @@ function createNewItem(resources, { type, temporaryKey, key, collectionKeys = []
         warn(`${type} has the same key '${temporaryKey}' as an existing item. Use update*() to update an existing item, or ensure the new item has a unique temporary key. (The create request was still sent to the server.)`);
       }
     });
-
-    const newLists = {
-      ...resources.collections,
-      ...collectionKeys.reduce((memo, id) => {
-        const collection = resources.collections[id] || COLLECTION;
-
-        memo[id] = function () {
-          const { positions } = collection;
-
-          if (positions && positions.indexOf(temporaryKey) === -1) {
-            return {
-              ...collection,
-              positions: [
-                temporaryKey,
-                ...positions
-              ]
-            };
-          } else {
-            return collection;
-          }
-        }();
-
-        return memo;
-      }, {})
-    };
 
     const newItems = {
       ...items,
@@ -314,12 +308,11 @@ function createNewItem(resources, { type, temporaryKey, key, collectionKeys = []
     return {
       ...resources,
       items: newItems,
-      collections: newLists,
+      collections: applyCollectionOperators(resources.collections, collectionOperations, temporaryKey),
       newItemKey: temporaryKey
     };
 
   } else if (status === SUCCESS) {
-
     const newItems = {
       ...without(items, temporaryKey),
       [key]: {
@@ -331,39 +324,35 @@ function createNewItem(resources, { type, temporaryKey, key, collectionKeys = []
       }
     };
 
-    const newLists = {
-      ...resources.collections,
-      ...collectionKeys.reduce((memo, id) => {
-        const collection = resources.collections[id] || COLLECTION;
-        const { positions } = collection;
-
-        memo[id] = function () {
-          const newStoreAttributeIndexPosition = positions.indexOf(temporaryKey);
-
-          if (newStoreAttributeIndexPosition === -1) {
-            return collection;
-          } else {
-            return {
-              ...collection,
-              positions: replace(positions, temporaryKey, key)
-            };
-          }
-        }();
-
-        return memo;
-      }, {})
-    };
-
     return {
       ...resources,
       items: newItems,
-      collections: newLists,
+      collections: {
+        ...resources.collections,
+        ...([].concat(...Object.values(collectionOperations))).reduce((memo, id) => {
+          const collection = resources.collections[id] || COLLECTION;
+          const { positions } = collection;
+
+          memo[id] = function () {
+            const newStoreAttributeIndexPosition = positions.indexOf(temporaryKey);
+
+            if (newStoreAttributeIndexPosition === -1) {
+              return collection;
+            } else {
+              return {
+                ...collection,
+                positions: replace(positions, temporaryKey, key)
+              };
+            }
+          }();
+
+          return memo;
+        }, {})
+      },
 
       newItemKey: key,
     };
-
   } else if (status === ERROR) {
-
     return {
       ...resources,
       items: {
