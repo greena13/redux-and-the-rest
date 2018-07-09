@@ -32,7 +32,7 @@ import generateUrl from './helpers/generateUrl';
 import getItemKey from './helpers/getItemKey';
 import getCollectionKey from './helpers/getCollectionKey';
 
-function fetchCollection(options, params, ssrOptions = { }) {
+function fetchCollection(options, params, actionCreatorOptions = { }) {
   const {
     action, resourceType, url: urlTemplate, name, keyBy, urlOnlyParams, progress
   } = options;
@@ -53,11 +53,11 @@ function fetchCollection(options, params, ssrOptions = { }) {
       onSuccess: receiveCollection,
       onError: handleCollectionError,
       progress
-    }, ssrOptions);
+    }, actionCreatorOptions);
   };
 }
 
-function fetchResource(options, params, ssrOptions = { }) {
+function fetchResource(options, params, actionCreatorOptions = { }) {
   const {
     action, transforms, url: urlTemplate, name, resourceType, keyBy, progress
   } = options;
@@ -76,7 +76,7 @@ function fetchResource(options, params, ssrOptions = { }) {
       onSuccess: receiveResource,
       onError: handleResourceError,
       progress
-    }, ssrOptions);
+    }, actionCreatorOptions);
   };
 }
 

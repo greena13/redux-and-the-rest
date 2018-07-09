@@ -3,7 +3,7 @@ import requestProgress from '../requestProgress';
 import { DOWN, UP } from '../../constants/ProgressDirections';
 import without from '../../utils/collection/without';
 
-function makeRequest(options, requestOptionsOverride = {}) {
+function makeRequest(options, actionCreatorOptions = {}) {
   const {
     url,
     key,
@@ -20,10 +20,12 @@ function makeRequest(options, requestOptionsOverride = {}) {
     ..._options
   } = options;
 
+  const actionCreatorRequestOptions = actionCreatorOptions.request || {};
+
   const _request = {
     credentials,
     ...request || {},
-    ...requestOptionsOverride
+    ...actionCreatorRequestOptions
   };
 
   const requestOptions = function(){
@@ -33,7 +35,7 @@ function makeRequest(options, requestOptionsOverride = {}) {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         ..._request.headers,
-        ...(requestOptionsOverride.headers || {})
+        ...(actionCreatorRequestOptions.headers || {})
       }
     };
 
