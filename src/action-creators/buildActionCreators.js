@@ -29,6 +29,7 @@ import arrayFrom from '../utils/array/arrayFrom';
 import generateUrl from './helpers/generateUrl';
 import getItemKey from './helpers/getItemKey';
 import getCollectionKey from './helpers/getCollectionKey';
+import { getConfiguration } from '../configuration';
 
 function fetchCollection(options, params, actionCreatorOptions = { }) {
   const {
@@ -284,6 +285,8 @@ const STANDARD_ACTION_CREATORS = {
 function buildActionCreators(resourceOptions, actions, actionsOptions) {
   const { name } = resourceOptions;
 
+  const configuration = getConfiguration();
+
   return Object.keys(actionsOptions).reduce((memo, key) => {
     const actionName = actions.get(key);
 
@@ -306,10 +309,11 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
         {
           keyBy: 'id'
         },
+        configuration,
         resourceOptions,
         actionOptions,
         [
-          'url', 'keyBy', 'resourceType', 'urlOnlyParams', 'responseAdaptor', 'progress', 'requestErrorHandler'
+          'url', 'keyBy', 'resourceType', 'urlOnlyParams', 'responseAdaptor', 'progress', 'requestErrorHandler', 'request'
         ]
       );
 

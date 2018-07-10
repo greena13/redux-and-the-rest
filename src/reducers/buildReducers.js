@@ -17,6 +17,7 @@ import addAssociationReducer from './helpers/addAsssociationReducer';
 import removeItemsFromResources from './helpers/removeItemsFromResources';
 import resolveOptions from '../action-creators/helpers/resolveOptions';
 import progressReducer from './helpers/progressReducer';
+import { getConfiguration } from '../configuration';
 
 function setCollection(resources, { status, items, key, httpCode, collection, error }) {
   const currentList = resources.collections[key] || COLLECTION;
@@ -566,19 +567,27 @@ function buildReducers(resourceOptions, actionsOptions, options) {
    * Build the map of actions that should effect the current resource
    */
 
+  const configuration = getConfiguration();
+
   const reducersDict = Object.keys(options).reduce((memo, key) => {
     const actionOptions = options[key];
     const reducer = (isObject(actionOptions) && actionOptions.reducer) || STANDARD_REDUCERS[key];
 
     if (reducer) {
-      const reducerOptions = resolveOptions({
-        beforeReducers: [],
-        afterReducers: [],
-      }, resourceOptions, actionOptions, [
-        'progress',
-        'beforeReducers',
-        'afterReducers',
-      ]);
+      const reducerOptions = resolveOptions(
+        {
+          beforeReducers: [],
+          afterReducers: [],
+        },
+        configuration,
+        resourceOptions,
+        actionOptions,
+        [
+          'progress',
+          'beforeReducers',
+          'afterReducers',
+        ]
+      );
 
       if (reducerOptions.progress && (!STANDARD_REDUCERS[key] || PROGRESS_COMPATIBLE_ACTIONS[key])) {
         reducerOptions.beforeReducers = [

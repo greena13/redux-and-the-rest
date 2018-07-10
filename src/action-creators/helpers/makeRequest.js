@@ -52,7 +52,6 @@ function makeRequest(options, actionCreatorOptions = {}) {
     const { status } = response;
 
     if (status < 400) {
-
       return response.json().then((json) => {
         const _json = function () {
           if (responseAdaptor) {
