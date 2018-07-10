@@ -187,7 +187,7 @@ function createResource(options, params, values, actionCreatorOptions = {}) {
     return makeRequest({
       ...options,
       keyBy,
-
+      collectionOperations,
       url, key,
       dispatch,
       credentials: true,

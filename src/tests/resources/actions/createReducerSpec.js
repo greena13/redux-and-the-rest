@@ -274,26 +274,33 @@ describe('Create reducer:', function () {
   [
     {
       operator: 'push',
-      expectedIsolatedState: [1],
-      expectedCumulativeState: [2, 1]
+      expectedIsolatedStateBefore: ['temp'],
+      expectedIsolatedStateAfter: [2],
+      expectedCumulativeStateBefore: [1, 'temp'],
+      expectedCumulativeStateAfter: [1, 2]
     },
     {
       operator: 'unshift',
-      expectedIsolatedState: [1],
-      expectedCumulativeState: [1, 2]
+      expectedIsolatedStateBefore: ['temp'],
+      expectedIsolatedStateAfter: [2],
+      expectedCumulativeStateBefore: ['temp', 1],
+      expectedCumulativeStateAfter: [2, 1]
     },
     {
       operator: 'invalidate',
-      expectedIsolatedState: [],
-      expectedCumulativeState: []
+      expectedIsolatedStateBefore: [],
+      expectedIsolatedStateAfter: [],
+      expectedCumulativeStateBefore: [],
+      expectedCumulativeStateAfter: []
     },
-  ].forEach(({ operator, expectedIsolatedState, expectedCumulativeState }) => {
+  ].forEach(({ operator, expectedIsolatedStateBefore, expectedIsolatedStateAfter, expectedCumulativeStateBefore, expectedCumulativeStateAfter }) => {
     describe(`when the ${operator} collections operator is used`, () => {
       beforeAll(function () {
         fetchMock.post('http://test.com/users', {
           body: { id: 2, username: 'Bob' },
-        });
-
+        }, new Promise((resolve) => {
+          this.resolveRequest = resolve;
+        }));
       });
 
       afterAll(function() {
@@ -310,19 +317,38 @@ describe('Create reducer:', function () {
             }
           }, { users: this.reducers } );
 
-          this.store.dispatch(this.createUser(1, {
+          this.store.dispatch(this.createUser('temp', {
             username: 'Bob'
           }, { [operator]: { order: 'newest' } }));
 
           this.users = this.store.getState().users;
         });
 
-        it('then creates a new collection with the specified key and places the item in it', function() {
-          expect(this.users.collections).toEqual({
-            'order=newest': {
-              positions: expectedIsolatedState,
-              status: { type: null }
-            }
+        describe('before the request has completed', function () {
+          it('then creates a new collection with the specified temp key and places the item in it', function() {
+            expect(this.users.collections).toEqual({
+              'order=newest': {
+                positions: expectedIsolatedStateBefore,
+                status: { type: null }
+              }
+            });
+          });
+        });
+
+        describe('when the request has completed', () => {
+          beforeAll(function () {
+            this.resolveRequest();
+
+            this.users = this.store.getState().users;
+          });
+
+          it('then replaces all references to the temporary key with the new item key', function() {
+            expect(this.users.collections).toEqual({
+              'order=newest': {
+                positions: expectedIsolatedStateAfter,
+                status: { type: null }
+              }
+            });
           });
         });
       });
@@ -342,16 +368,30 @@ describe('Create reducer:', function () {
             }
           }, { users: this.reducers } );
 
-          this.store.dispatch(this.createUser(1, {
+          this.store.dispatch(this.createUser('temp', {
             username: 'Bob'
           }, { [operator]: { order: 'newest' } }));
 
           this.users = this.store.getState().users;
         });
 
-        it('then creates a new collection with the specified key and places the item in it', function() {
-          expect(this.users.collections['order=newest'].positions).toEqual(expectedIsolatedState);
-          expect(this.users.collections['active=true'].positions).toEqual([]);
+        describe('before the request has completed', function () {
+          it('then creates a new collection with the specified temp key and places the item in it', function() {
+            expect(this.users.collections['order=newest'].positions).toEqual(expectedIsolatedStateBefore);
+            expect(this.users.collections['active=true'].positions).toEqual([]);
+          });
+        });
+
+        describe('when the request has completed', () => {
+          beforeAll(function () {
+            this.resolveRequest();
+
+            this.users = this.store.getState().users;
+          });
+
+          it('then replaces all references to the temporary key with the new item key', function() {
+            expect(this.users.collections['order=newest'].positions).toEqual(expectedIsolatedStateAfter);
+          });
         });
       });
 
@@ -359,14 +399,16 @@ describe('Create reducer:', function () {
         beforeAll(function () {
           this.store = buildStore({
             users: {
-              items: {},
+              items: {
+                1: { id: 1, username: 'Jane' }
+              },
               collections: {
                 'active=true': {
                   positions: [ ],
                   status: { type: null }
                 },
                 'order=newest': {
-                  positions: [ 2 ],
+                  positions: [ 1 ],
                   status: { type: null }
                 },
               },
@@ -374,16 +416,30 @@ describe('Create reducer:', function () {
             }
           }, { users: this.reducers } );
 
-          this.store.dispatch(this.createUser(1, {
+          this.store.dispatch(this.createUser('temp', {
             username: 'Bob'
           }, { [operator]: { order: 'newest' } }));
 
           this.users = this.store.getState().users;
         });
 
-        it('then adds the new item to the matching collections', function() {
-          expect(this.users.collections['active=true'].positions).toEqual([]);
-          expect(this.users.collections['order=newest'].positions).toEqual(expectedCumulativeState);
+        describe('before the request has completed', function () {
+          it('then adds the new item\'s temp key to the matching collections', function() {
+            expect(this.users.collections['active=true'].positions).toEqual([]);
+            expect(this.users.collections['order=newest'].positions).toEqual(expectedCumulativeStateBefore);
+          });
+        });
+
+        describe('when the request has completed', () => {
+          beforeAll(function () {
+            this.resolveRequest();
+
+            this.users = this.store.getState().users;
+          });
+
+          it('then replaces all references to the temporary key with the new item key', function() {
+            expect(this.users.collections['order=newest'].positions).toEqual(expectedCumulativeStateAfter);
+          });
         });
       });
     });

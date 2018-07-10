@@ -339,18 +339,10 @@ function createNewItem(resources, { type, temporaryKey, key, collectionOperation
           const collection = resources.collections[id] || COLLECTION;
           const { positions } = collection;
 
-          memo[id] = function () {
-            const newStoreAttributeIndexPosition = positions.indexOf(temporaryKey);
-
-            if (newStoreAttributeIndexPosition === -1) {
-              return collection;
-            } else {
-              return {
-                ...collection,
-                positions: replace(positions, temporaryKey, key)
-              };
-            }
-          }();
+          memo[id] = {
+            ...collection,
+            positions: replace(positions, temporaryKey, key)
+          };
 
           return memo;
         }, {})
