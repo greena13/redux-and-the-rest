@@ -232,8 +232,8 @@ describe('Index reducers:', function () {
           expect(this.users.collections[''].status.type).toEqual(SUCCESS);
         });
 
-        it('then adds the returned items keys to the end of positions', function() {
-          expect(this.users.collections[''].positions).toEqual([ 1, 2 ]);
+        it('then replaces the item keys in the collection\'s positions with the new ones', function() {
+          expect(this.users.collections[''].positions).toEqual([ 2 ]);
         });
 
         it('then adds items returned in the response not already in the store', function() {

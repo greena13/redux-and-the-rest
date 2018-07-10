@@ -21,7 +21,18 @@ import progressReducer from './helpers/progressReducer';
 function setCollection(resources, { status, items, key, httpCode, collection, error }) {
   const currentList = resources.collections[key] || COLLECTION;
 
-  if (status === FETCHING || status === SUCCESS) {
+  if (status === FETCHING) {
+    return {
+      ...resources,
+      collections: {
+        ...resources.collections,
+        [key]: {
+          ...currentList,
+          status: collection.status
+        }
+      }
+    };
+  } else if( status === SUCCESS) {
     const newItems = {
       ...resources.items,
       ...items,
@@ -35,12 +46,7 @@ function setCollection(resources, { status, items, key, httpCode, collection, er
     const newLists = {
       ...resources.collections,
       [key]: {
-        ...currentList,
         ...collection,
-        positions: [
-          ...(currentList.positions || []),
-          ...(collection.positions || [])
-        ],
         status: newStatus
       }
     };

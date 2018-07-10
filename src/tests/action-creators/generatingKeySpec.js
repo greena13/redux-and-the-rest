@@ -180,7 +180,7 @@ describe('Generating key:', function () {
         fetchMock.restore();
       });
 
-      it('then merges the results for the index action', function() {
+      it('then overrides the results for the index action', function() {
         return this.store.dispatch(this.fetchUsers({ order: 'newest', page: 1 })).then(() => {
           return this.store.dispatch(this.fetchUsers({ order: 'newest', page: 2 })).then(() => {
             this.users = this.store.getState().users;
@@ -196,7 +196,7 @@ describe('Generating key:', function () {
               }
             });
 
-            expect(this.users.collections['order=newest'].positions).toEqual([ 1, 2 ]);
+            expect(this.users.collections['order=newest'].positions).toEqual([ 2 ]);
           });
         });
       });
