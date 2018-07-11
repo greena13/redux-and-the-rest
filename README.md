@@ -13,14 +13,14 @@ This Readme is still being actively written.
 
 ## Feature overview
 
-* **DRY:** All of the boilerplate code usually required to interface with Redux is abstracted away into a succinct DSL inspired by the Ruby on Rails framework.
-* **Convention over configuration:** Sensible defaults are used, that can be overridden with custom behaviour.
-* **Flexible:** All conventions can be overridden and extended beyond the set of RESTful actions.
-* **Minimal:** You can choose which features to enable when you want to use them so there is little to no overhead or bloat beyond what you chose to use.
-* **Fast:** It's quick to get up-and-running and easy to define new resources and actions in a couple of lines.
+* **DRY:** All of the boilerplate code usually required to use Redux is abstracted away into a succinct DSL inspired by the Ruby on Rails framework.
+* **Convention over configuration:** A sensible set of configurations are used by default, but you can be override them with custom behaviour whenever you need.
+* **Flexible:** All RESTful conventions can be overridden and extended when you need to deviate or add to the standard CRUD functionality.
+* **Minimal:** You can choose which features to enable, when you want to use them, so there is no unnecessary overhead or bloat.
+* **Quick to get started:** It's quick to get up-and-running and easy to define new resources and actions in a couple of lines.
 * **Plays well with others:** `redux-and-the-rest` does not care what version of Redux you use or how you have architected your app, and it allows you to gradually introduce it to your project alongside other Redux solutions.
 * **Documented:** The API is minimal and expressive, and all options and common use cases are documented in full.
-* **Tested:** `redux-and-the-rest` comes with a ever-growing test suite of over 650 tests.
+* **Tested:** `redux-and-the-rest` comes with an extensive test suite.
 
 ## Basic usage
 
@@ -74,7 +74,7 @@ yarn add redux-and-the-rest
 
 ### Peer Dependencies
 
-If you have already correctly installed `redux`, `redux-thunk`, some form of fetch polyfill (suggested: `isomorphic-fetch`), and (optionally) `react-redux`, then you can skip to the next section and dive right in.
+If you have already installed `redux`; `redux-thunk`; some form of fetch polyfill (suggested: `isomorphic-fetch`); and (optionally) `react-redux`, then you can skip to the next section and dive right in.
 
 If you have not already done so, you must also install `redux` ([full installation](https://github.com/reduxjs/redux)):
 
@@ -93,6 +93,19 @@ npm install redux-thunk --save
 yarn add redux-thunk
 ```
 
+You must then pass the middleware in as a parameter when you create your Redux store ([full instructions](https://github.com/reduxjs/redux-thunk#installation)):
+
+```javascript
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import Thunk from 'redux-thunk';
+
+function buildStore(initialState, reducers) {
+  return createStore(combineReducers(reducers), initialState, applyMiddleware(Thunk));
+}
+
+export default buildStore;
+```
+
 If you are using React, then you will also need the `react-redux` bindings ([full instructions](https://github.com/reduxjs/react-redux)):
 
 ```
@@ -109,18 +122,58 @@ npm install --save isomorphic-fetch es6-promise
 yarn add isomorphic-fetch es6-promise
 ```
 
-You must then pass the middleware in as a parameter when you create your Redux store ([full instructions](https://github.com/reduxjs/redux-thunk#installation)):
+# Understanding configuration
 
-```javascript
-import { createStore, applyMiddleware, combineReducers } from 'redux';
-import Thunk from 'redux-thunk';
+It's important to have a basic understanding of `redux-and-the-rest` achieves its flexibility using its four levels of configuration; each have different scopes and are specified at different times.
 
-function buildStore(initialState, reducers) {
-  return createStore(combineReducers(reducers), initialState, applyMiddleware(Thunk));
-}
+Here is an example of them used all in once place:
 
-export default buildStore;
 ```
+import { configure, resources } from 'redux-and-the-rest';
+
+configure({
+    // globalOptions
+    // ...
+});
+
+const { fetchUsers } = resources(
+    {
+        // resourceOptions
+        name: 'users',
+        url: 'http://www.example.com/users/:id',
+        keyBy: 'id'
+    },
+    {
+        index: {
+            // actionOptions
+            // ...
+        },
+        show: {
+            // actionOptions
+            // ...
+        }
+    }
+);
+
+fetchUsers({order: 'newest}, {
+  // actionCreatorOptions
+  // ...
+})
+```
+
+You need to select where you place your configuration depending on how wide you want particular options to apply.
+
+The options are set out in a hierarchy, so as their scope becomes increasingly specific, their priority increases and they override any corresponding action that may have been provided to a lower priority set of options.
+
+For example, `actionCreatorOptions` take precedence over `actionOptions` (which take precedence over `resourceOptions`).
+
+
+| Options | Priority | Defined | Scope | Required |
+| ---- | :---- | :---- | :-- | :--: |
+| `globalOptions` | Lowest | Before defining any resources, using `configure()` | All resources and their actions | No |
+| `resourceOptions` |  | When defining resources, using `resources()` | All of a single resource's actions | Yes |
+| `actionOptions` |  | When defining resources, using `resources()` | A single resource action | No |
+| `actionCreatorOptions` | Highest | When calling an action creator, as the last argument | A single store operation | No |
 
 # Defining resources
 
@@ -150,7 +203,7 @@ const { reducers, fetchUsers } = resources(
 );
 ```
 
-### Defining resources
+### Configuring resources
 
 Values passed to `resourceOptions` are used to configure the resource and apply to all actions, unless overridden by more specific configuration in `actionOptions`:
 
@@ -159,7 +212,7 @@ Values passed to `resourceOptions` are used to configure the resource and apply 
 | `name` | String | Required | The pluralized name of the resource you are defining.
 | `url` | String |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
 | `keyBy` | String |  'id' | The resource attribute used to key/index all items of the current resource type. This will be the value you pass to each action creator to identify the target of each action. |
-| `urlOnlyParams` | [ ] | String[] |The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response.
+| `urlOnlyParams` | String[] | [ ] |The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response.
 
 ### Configuring individual actions
 
@@ -241,9 +294,9 @@ const { reducers, fetchUsers } = resources(
 
 | Action creator | RESTful action | HTTP Request |
 | ---- | :--- | :--- |
-| `fetchUsers` | #index | `GET http://test.com/users` |
+| `fetchUsers()` | #index | `GET http://test.com/users` |
 | `fetchUser(1)` | #show | `GET http://test.com/users/1` |
-| `createUser({name: 'foo'})` | #create | `POST http://test.com/users` |
+| `createUser('tempId', {name: 'foo'})` | #create | `POST http://test.com/users` |
 | `updateUser(1, {name: 'foo'})` | #update | `PUT http://test.com/users/1` |
 | `destroyUser(1)` | #destroy | `DELETE http://test.com/users/1` |
 
@@ -251,17 +304,20 @@ const { reducers, fetchUsers } = resources(
 
 The index action fetches a list or collection of resources from a particular URL. It does not require a primary identifier and instead accepts parameters that may scope, filter or order the collection.
 
-| Property | Description |
+By default, it expects the server to return a response body containing an array of values.
+
+| Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `index` |
 | Action creator returned by `resources` | `fetch<PluralizedResourceName>()` |
-| (Optional) First action creator argument | An object whose attributes are used to construct the URL from the url template and store the resulting collection under `collections`. |
-| (Optional) Second action creator argument | An object of server-side rendering options. These are used when a page's data must be completely fetched in order to render the initinal HTML for the first page load and rehydrate the app on the client. |
 | HTTP Request | `GET <urlTemplateWithSubstitutedValues>` |
-| `status.type` lifecycle |  `FETCHING` -> `SUCCESS` or `ERROR` |
+| `status.type` lifecycle |  `FETCHING` -> (`SUCCESS` \| `ERROR`) |
 
-* Expects the server to respond with an array of resources
-* Places the results in `collections` with a key serialized from the the filter parameters
+| Action creator argument | Type | Default value or required | Description |
+| :--- | :---: | :---: | :--- |
+| `keys` | String or Object | { } | A string or object that defines the values for the url template parameters. If a string is used, it will be assumed to be the value of the url template parameter specified by the `keyBy` option. When using an object, the keys will be matched to the url template parameter names and the values will be substituted for those parameters in the template. |
+| `options` | Object | { } | A configuration object that refines how the action creator should behave for a particular call. (One-time configuration). |
+| `options.request` | Object | { } | An object that configures the HTTP request made to fetch the collection. Most of the options are passed directly to `fetch()` when creating a new Request object, with a few exceptions below. See [the Request API](https://developer.mozilla.org/en-US/docs/Web/API/Request) for a full list of available options. |
 
 ### Show
 
@@ -394,6 +450,8 @@ store.getState().users.collections['id=newest.page=1'];
 * If object used that doesn't specify matching param name, all values are used as query parameters
 * Can use the `urlOnlyParams` to specify attributes in the object that should only be used in the url - useful for page numbers - subsequent calls to later pages will be placed in the same collection
 
+## Configuring requests
+
 ### Overriding default URLs
 
 * Can provide a `url` option when you are defining an action ad that will be used instead
@@ -414,32 +472,3 @@ const { fetchUser } = resources(
 // Makes request to http://test.com/guests/1
 fetchUser(1);
 ```
-
-# Server Side Rendering
-
-## What is Server Side Rendering?
-
-Many modern single-page apps respond to the first page request from a browser by:
-
-* Fetching all of the data necessary to render that page, from various different sources
-* (Waiting for all of that data to arrive)
-* Using that data to generate the HTML to satisfy that initial request
-* Saving the retrieved data in a serialised format and attaching it to that HTML (e.g., in a <script /> tag)
-* And sending the response containing the correct HTML, the serialised data, and instructions on how to "rehydrate" the application once it arrives on the client (by parsing the data and using it to initialise the SPA to the same state that matches the HTML in the response).
-
-This is known as server-side rendering. If this doesn't sound familiar, than this article probably does not apply to your situation.
-
-## redux-and-the-rest's support for SSR
-
-`redux-and-the-rest` relies on a peer dependency of `isomorphic-fetch` to make its requests, so it will work both in the browser and in node.js environments.
-
-All action creators that perform asynchronous GET requests accept a hash of options as their last argument that help with making the requests to generate the correct HTML on the server.
-
-The RESTful action creators are:
-
-* fetch<PluralizedResourceName>()
-* fetch<SingularResourceName>()
-
-These are the recognised options:
-
-*
