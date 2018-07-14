@@ -143,9 +143,10 @@ describe('hasAndBelongsToMany:', function () {
           this.store.dispatch(this.posts.updatePost(1, {
             title: 'Post 1',
             userId: 2
-          }, {
-            title: 'Post 1',
-            userId: 1
+          }, { previous: {
+              title: 'Post 1',
+              userId: 1
+            }
           }));
 
           this.users = this.store.getState().users;
@@ -256,9 +257,10 @@ describe('hasAndBelongsToMany:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.posts.destroyPost(1, {
-            title: 'Post 1',
-            userId: 1
+          this.store.dispatch(this.posts.destroyPost(1, { previous: {
+              title: 'Post 1',
+              userId: 1
+            }
           }));
 
           this.users = this.store.getState().users;
@@ -489,9 +491,10 @@ describe('hasAndBelongsToMany:', function () {
           this.store.dispatch(this.posts.updatePost(1, {
             title: 'Post 1',
             userIds: [ 2 ]
-          }, {
-            title: 'Post 1',
-            userIds: [ 1 ]
+          }, { previous: {
+              title: 'Post 1',
+              userIds: [ 1 ]
+            }
           }));
 
           this.users = this.store.getState().users;
@@ -602,9 +605,10 @@ describe('hasAndBelongsToMany:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.posts.destroyPost(1, {
-            title: 'Post 1',
-            userIds: [ 1 ]
+          this.store.dispatch(this.posts.destroyPost(1, { previous: {
+              title: 'Post 1',
+              userIds: [ 1 ]
+            }
           }));
 
           this.users = this.store.getState().users;

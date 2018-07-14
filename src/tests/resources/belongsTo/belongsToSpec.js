@@ -147,9 +147,10 @@ describe('belongsTo:', function () {
           this.store.dispatch(this.addresses.updateAddress(1, {
             city: 'City 1',
             userId: 2
-          }, {
-            city: 'City 1',
-            userId: 1
+          }, { previous: {
+              city: 'City 1',
+              userId: 1
+            }
           }));
 
           this.users = this.store.getState().users;
@@ -260,9 +261,10 @@ describe('belongsTo:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.addresses.destroyAddress(1, {
-            city: 'City 1',
-            userId: 1
+          this.store.dispatch(this.addresses.destroyAddress(1, { previous: {
+              city: 'City 1',
+              userId: 1
+            }
           }));
 
           this.users = this.store.getState().users;
@@ -488,9 +490,10 @@ describe('belongsTo:', function () {
           this.store.dispatch(this.addresses.updateAddress(1, {
             city: 'City 1',
             userIds: [ 2 ]
-          }, {
-            city: 'City 1',
-            userIds: [ 1 ]
+          }, { previous: {
+              city: 'City 1',
+              userIds: [ 1 ]
+            }
           }));
 
           this.users = this.store.getState().users;
@@ -601,9 +604,10 @@ describe('belongsTo:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.addresses.destroyAddress(1, {
-            city: 'City 1',
-            userIds: [ 1 ]
+          this.store.dispatch(this.addresses.destroyAddress(1, { previous: {
+              city: 'City 1',
+              userIds: [ 1 ]
+            }
           }));
 
           this.users = this.store.getState().users;

@@ -203,7 +203,7 @@ function createResource(options, params, values, actionCreatorOptions = {}) {
   };
 }
 
-function updateResource(options, params, values, previousValues) {
+function updateResource(options, params, values, actionCreatorOptions = {}) {
   const {
     action, resourceType, transforms, url: urlTemplate, name, progress, keyBy
   } = options;
@@ -213,12 +213,12 @@ function updateResource(options, params, values, previousValues) {
   const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, keyBy));
 
   return (dispatch) => {
-    dispatch(submitUpdateResource({ transforms, action, resourceType }, key, values, previousValues));
+    dispatch(submitUpdateResource({ transforms, action, resourceType }, key, values, actionCreatorOptions.previous));
 
     return makeRequest({
       ...options,
 
-      previousValues,
+      previousValues: actionCreatorOptions.previous,
       url, key,
       dispatch,
       credentials: true,
@@ -229,11 +229,11 @@ function updateResource(options, params, values, previousValues) {
       onSuccess: receiveUpdatedResource,
       onError: handleUpdateResourceError,
       progress
-    });
+    }, actionCreatorOptions);
   };
 }
 
-function destroyResource(options, params, previousValues) {
+function destroyResource(options, params, actionCreatorOptions = {}) {
   const {
     action,
     resourceType,
@@ -248,12 +248,12 @@ function destroyResource(options, params, previousValues) {
 
   return (dispatch) => {
 
-    dispatch(deleteResourceUpdate({ action, resourceType }, key, previousValues));
+    dispatch(deleteResourceUpdate({ action, resourceType }, key, actionCreatorOptions.previous));
 
     return makeRequest({
       ...options,
 
-      url, key, previousValues,
+      url, key, previousValues: actionCreatorOptions.previous,
       dispatch,
       credentials: true,
       request: {
