@@ -39,7 +39,7 @@ function generateUrl({ url }, params = {}) {
   if (isEmpty(queryParams)) {
     return urlBase;
   } else {
-    return `${urlBase}?${queryString.stringify(queryParams)}`
+    return `${urlBase}?${queryString.stringify(queryParams)}`;
   }
 }
 

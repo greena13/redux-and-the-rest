@@ -75,18 +75,16 @@ function makeRequest(options, actionCreatorOptions = {}) {
       });
 
     } else {
-      const addErrorToStore = () => {
+      if (_request.errorHandler) {
+        _request.errorHandler(response, (error) => {
+          dispatch(onError(_options, key, status, error));
+        });
+      } else {
         if (response.headers.get('Content-Type').startsWith('application/json')) {
           return response.json().then((json) => dispatch(onError(_options, key, status, json.error)));
         } else {
           return response.text().then((message) => dispatch(onError(_options, key, status, message)));
         }
-      };
-
-      if (_request.errorHandler) {
-        _request.errorHandler(response, addErrorToStore);
-      } else {
-        addErrorToStore();
       }
     }
   };
