@@ -1,8 +1,15 @@
-import { ITEM } from '..';
+import { COLLECTION } from '..';
 import serializeKey from './serializeKey';
 
-function getItem(resource, parameters) {
-  return resource.items[serializeKey(parameters)] || ITEM;
+function getCollection({ name }, resource, parameters = {}) {
+  const collection = resource.collections[serializeKey(parameters)] || COLLECTION;
+
+  const items = collection.positions.map((key) => resource.items[key]);
+
+  return {
+    [name]: items,
+    ...collection
+  };
 }
 
-export default getItem;
+export default getCollection;

@@ -3,6 +3,9 @@ import ActionsFactory from './actions/Actions';
 import buildReducers from './reducers/buildReducers';
 import buildActionCreators from './action-creators/buildActionCreators';
 import objectFrom from './utils/object/objectFrom';
+import getItem from './utils/getItem';
+import getNewItem from './utils/getNewItem';
+import getCollection from './utils/getCollection';
 
 function resources(resourceOptions, actionOptions = {}) {
   const { name } = resourceOptions;
@@ -14,7 +17,13 @@ function resources(resourceOptions, actionOptions = {}) {
   const reducers = buildReducers(resourceOptions, actions, _actionOptions);
   const actionCreators = buildActionCreators(resourceOptions, actions, _actionOptions);
 
-  return { actions: actions.toHash(), reducers, ...actionCreators };
+  return {
+    actions: actions.toHash(),
+    reducers,
+    getItem, getNewItem,
+    getCollection: (resource, params) => getCollection(resourceOptions, resource, params),
+    ...actionCreators
+  };
 }
 
 

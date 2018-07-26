@@ -32,7 +32,7 @@ import Thunk from 'redux-thunk';
 /**
  * Define a users resource
  */
-const { reducers: usersReducers, fetchUsers } = resources(
+const { reducers: usersReducers, fetchUsers, getCollection } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -58,7 +58,7 @@ fetchUsers();
 /**
  * Retrieve the users from the store
  */
-users = store.getState().users.collections[''];
+users = getCollection(store.getState().users);
 ```
 
 ## Install & Setup
@@ -133,6 +133,9 @@ It returns an object containing Redux components necessary to use the resource y
 
 * `reducers` - an object of reducers that you can pass to Redux's `combineReducers` function.
 * `actions` - an object of action constants where the keys are the generic action names and the values are the specific action constants (e.g. `{ index: 'FETCH_USERS' }`)
+* `getCollection` - a helper function for retrieving a collection based on its key parameters
+* `getItem` - a helper function for retrieving an item based on its key parameters
+* `getNewItem` - a helper function for retrieving the item currently being created
 * Action creators - these are the functions you call to trigger your store's actions and are defined if you enabled them in `actionOptions` (e.g. `fetchUsers`).
 
 ```javascript
@@ -204,64 +207,6 @@ Please see [Action Options API](#action-options-api) for a full list of supporte
 
 ## Store data
 
-### Nomenclature
-
-It is helpful to first clarify some of the terms used in the next few sections:
-
-* **Resource:** A *type of thing* that is available in your application and you can view or perform actions on. Examples of resources are "users", "posts" or "comments".
-* **Collection:** An ordered list of items of a particular resource. This is generally what is returned from an RESTful index server endpoint. They can be ordered, scoped or filtered. Examples include "the newest users", "the most popular posts", or simply "comments" (collections don't have to have an explicit order - but one will be implied by how they are listed in a server's response).
-* **Item:** Individual resource objects, that can belong to collections or can exist as individual entities. They always have a unique primary id, or key that identifies them. For example "user with ID 123" or "post with ID 7".
-
-### Resource schema
-
-All resources defined with the `resources()` function, return a `reducers` object that initialises and maintains the same data schema. This means you can easily reason about each of your resources and there is very little overhead to defining a new resource.
-
-#### Top level schema
-
-The top-level schema looks like the following, before it any data is added to your store:
-
-```javascript
-{
-    items: {},
-    collections: {},
-    selectionMap: {},
-    newItemKey: null
-}
-```
-
-We will now explore each one:
-* `items` - A map of item keys to item objects, from all of the collections currently in the store. This means that collections with a large amount of overlap (i.e. they share many of the same items) only store one copy of each item.
-* `collections` - A map of collections, keyed by their parameters. This allows you to have many collections of the same resource all in the one place (e.g. "newest", "most popular"), without having to re-fetch them if the user moves back and forth between them.
-* `selectionMap` - A dictionary of item keys, representing which of the resources are currently selected in your application (if any). Because it is a map, it is easy to query if any one particular item is currently selected or not, in constant time.
-* `newItemKey` - A value that keeps track of the key assigned to the latest item that was created of this particular resource. This is useful when you are creating a new item with a temporary id (say the current time) and you need to know the new ID the server has assigned it once it has been successfully created there, so you can move from the temporary id to the new server-assigned Id.
-
-#### Item schema
-
-A blank item has the following schema:
-
-```javascript
-{
-  values: {},
-  status: { type: null },
-};
-```
-
-* `values`: This is where all of the item's attributes are stored.
-* `status`: This is where status information is stored, separate from the item's attributes. This allows the `values` to remain pure - so if you are editing an item, all you need to do is send the new `values` back to the server, without having to worry about any irrelevant attributes being mixed in.
-
-#### Collection schema
-
-A blank collection has the following schema:
-
-```javascript
-{
-  positions: [],
-  status: { type: null },
-};
-```
-
-* `positions`: This is an array of keys of the items that exist in the collection. It stores the order of the items separate from the items themselves, so the items may be efficiently stored (without any duplicates) when we have multiple collections that may share them. It also means that we may update individual item's values, without having to alter all of the collections they are a part of.
-* `status`: This is where status information is stored for the entire collection.
 
 ### Getting resources from the store
 
@@ -329,52 +274,55 @@ store.getState().guests;
 
 #### Getting items from the store
 
-Items are keyed by serialised, alphabetised objects of their `keyBy` parameters. This means it doesn't matter in what order you specify a particular items's `keyBy` values, you will always get the collection you are looking for.
+To get an item from a resource, you use the `getItem()` function returned by `resources()`.
 
-To make calculating a item's key from its `keyBy` values, `redux-and-the-rest` exports a helper function `serializeKey()`:
+It will return an [empty item](#item-schema) (instead of `undefined`) if one with the corresponding key does not exist in the store.
 
 ```javascript
 import { serializeKey, ITEM } from `redux-and-the-rest`;
 import { connect } from 'react-redux';
 
-function mapStateToProps({ users }, { params: { id } }) {
-  const userKey = serializeKey({ id });
-  const user = users.items[userKey] || ITEM;
+const { reducers: usersReducers, fetchUsers, getItem } = resources(
+    {
+        name: 'users',
+        url: 'http://test.com/users/:id?'.
+        keyBy: 'id'
+    },
+    {
+        show: true
+    }
+);
 
-  return { ...user };
+function mapStateToProps({ users }, { params: { id } }) {
+  return getItem(users, { id });
 }
 ```
 
-You should always fall back to the `ITEM` constant if an item with particular key does not yet exist in the store (this can happen before it has been fetched). This will ensure your subsequent code does not have to deal with `undefined` values.
-
-> You should *never* mutate the `ITEM` constant as it is used as the fallback for all resources. Changing it will add or change the default values for all of your resources and will likely cause the action creators and reducers to behave in unpredictable ways.
-
 #### Getting collections from the store
 
-Collections are keyed by serialised, alphabetised objects of their filter parameters.
+To get a collection from a resource, you use the `getCollection()` function returned by `resources()`.
 
-The `serializeKey()` function is also used to calculate a collection's keys.
-
-To fully "reconstruct" a collection, you combine it with the corresponding items it contains:
-
+It will return an [empty collection](#collection-schema) (instead of `undefined`) if one with the corresponding key does not exist in the store.
 
 ```javascript
 import { serializeKey, COLLECTION } from `redux-and-the-rest`;
 import { connect } from 'react-redux';
 
+const { reducers: usersReducers, fetchUsers, getCollection } = resources(
+    {
+        name: 'users',
+        url: 'http://test.com/users/:id?'.
+        keyBy: 'id'
+    },
+    {
+        index: true
+    }
+);
+
 function mapStateToProps({ users: usersResource }, { params: { order } }) {
-  const collectionKey = serializeKey({ order });
-
-  const usersCollection = usersResource.collections[collectionKey] || COLLECTION;
-  const users = usersCollection.positions.map((userKey) => usersResource.items[userKey]);
-
-  return { ...usersCollection, users };
+  return getCollection(usersResource, { order });
 }
 ```
-
-Similar to using `ITEM` for missing items, you should always fall back to the `COLLECTION` constant if a collection with particular key does not yet exist in the store.
-
-> You should *never* mutate the `COLLECTION` constant as it is used as the fallback for all resources. Changing it will add or change the default values for all of your resources and will likely cause the action creators and reducers to behave in unpredictable ways.
 
 ### Data lifecycle
 
@@ -964,3 +912,64 @@ const { fetchUsers } = resources(
 | `reducesOn` | {action: Action, reducer: function} | [ ] | A single or list of objects with an `action` and a `reducer`, used to specify custom reducers in response to actions external to the current resource. |
 | `hasAndBelongsToMany` | {\[associationName\]: Resource } | { } | An object of associated resources, with a many-to-many relationship with the current one. |
 | `belongsTo` | {\[associationName\]: Resource } | { } | An object of associated resources, with a one-to-many relationship with the current one. |
+
+## Store data schemas
+
+### Nomenclature
+
+It is helpful to first clarify some of the terms used in the next few sections:
+
+* **Resource:** A *type of thing* that is available in your application and you can view or perform actions on. Examples of resources are "users", "posts" or "comments".
+* **Collection:** An ordered list of items of a particular resource. This is generally what is returned from an RESTful index server endpoint. They can be ordered, scoped or filtered. Examples include "the newest users", "the most popular posts", or simply "comments" (collections don't have to have an explicit order - but one will be implied by how they are listed in a server's response).
+* **Item:** Individual resource objects, that can belong to collections or can exist as individual entities. They always have a unique primary id, or key that identifies them. For example "user with ID 123" or "post with ID 7".
+
+### Resource schema
+
+All resources defined with the `resources()` function, return a `reducers` object that initialises and maintains the same data schema. This means you can easily reason about each of your resources and there is very little overhead to defining a new resource.
+
+#### Top level schema
+
+The top-level schema looks like the following, before it any data is added to your store:
+
+```javascript
+{
+    items: {},
+    collections: {},
+    selectionMap: {},
+    newItemKey: null
+}
+```
+
+We will now explore each one:
+* `items` - A map of item keys to item objects, from all of the collections currently in the store. This means that collections with a large amount of overlap (i.e. they share many of the same items) only store one copy of each item.
+* `collections` - A map of collections, keyed by their parameters. This allows you to have many collections of the same resource all in the one place (e.g. "newest", "most popular"), without having to re-fetch them if the user moves back and forth between them.
+* `selectionMap` - A dictionary of item keys, representing which of the resources are currently selected in your application (if any). Because it is a map, it is easy to query if any one particular item is currently selected or not, in constant time.
+* `newItemKey` - A value that keeps track of the key assigned to the latest item that was created of this particular resource. This is useful when you are creating a new item with a temporary id (say the current time) and you need to know the new ID the server has assigned it once it has been successfully created there, so you can move from the temporary id to the new server-assigned Id.
+
+#### Item schema
+
+A blank item has the following schema:
+
+```javascript
+{
+  values: {},
+  status: { type: null },
+};
+```
+
+* `values`: This is where all of the item's attributes are stored.
+* `status`: This is where status information is stored, separate from the item's attributes. This allows the `values` to remain pure - so if you are editing an item, all you need to do is send the new `values` back to the server, without having to worry about any irrelevant attributes being mixed in.
+
+#### Collection schema
+
+A blank collection has the following schema:
+
+```javascript
+{
+  positions: [],
+  status: { type: null },
+};
+```
+
+* `positions`: This is an array of keys of the items that exist in the collection. It stores the order of the items separate from the items themselves, so the items may be efficiently stored (without any duplicates) when we have multiple collections that may share them. It also means that we may update individual item's values, without having to alter all of the collections they are a part of.
+* `status`: This is where status information is stored for the entire collection.

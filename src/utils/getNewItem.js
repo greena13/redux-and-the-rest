@@ -1,8 +1,7 @@
 import { ITEM } from '..';
-import serializeKey from './serializeKey';
 
-function getItem(resource, parameters) {
-  return resource.items[serializeKey(parameters)] || ITEM;
+function getNewItem(resource) {
+  return resource.items[resource.newItemKey] || ITEM;
 }
 
-export default getItem;
+export default getNewItem;
