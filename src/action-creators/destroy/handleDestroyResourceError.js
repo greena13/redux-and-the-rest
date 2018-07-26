@@ -1,8 +1,8 @@
 import { DESTROY_ERROR } from '../../constants/Statuses';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 
-function handleDestroyResourceError(options, key, httpCode, error) {
-  const { transforms, action } = options;
+function handleDestroyResourceError(options, httpCode, error) {
+  const { transforms, action, key } = options;
 
   return {
     type: action,

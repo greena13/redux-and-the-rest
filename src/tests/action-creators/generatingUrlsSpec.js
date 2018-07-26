@@ -59,7 +59,7 @@ describe('Generating URLs:', function() {
         status: 200
       });
 
-      this.store.dispatch(this.fetchUser(1));
+      this.store.dispatch(this.fetchUser({ id: 1 }));
 
       fetchMock.restore();
     });
@@ -168,7 +168,7 @@ describe('Generating URLs:', function() {
       }, {
         index: true,
         show: {
-          url: 'http://test.com/guests/:id?'
+          url: 'http://test.com/guests/:order?'
         },
       });
 
@@ -192,12 +192,12 @@ describe('Generating URLs:', function() {
     });
 
     it('then uses the default url for other actions', function() {
-      fetchMock.get('http://test.com/guests/1', {
+      fetchMock.get('http://test.com/guests/newest', {
         body: { id: 1, username: 'Bob' },
         status: 200
       });
 
-      this.store.dispatch(this.fetchUser(1));
+      this.store.dispatch(this.fetchUser({ order: 'newest' }));
 
       fetchMock.restore();
     });

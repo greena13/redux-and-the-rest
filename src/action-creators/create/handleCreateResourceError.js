@@ -1,12 +1,12 @@
 import { ERROR } from '../../constants/Statuses';
 
-function handleCreateResourceError(options, temporaryKey, httpCode, error) {
-  const { action } = options;
+function handleCreateResourceError(options, httpCode, error) {
+  const { action, key } = options;
 
   return {
     type: action,
     status: ERROR,
-    temporaryKey,
+    temporaryKey: key,
     httpCode,
     error
   };

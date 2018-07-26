@@ -1,14 +1,15 @@
 import { SUCCESS } from '../../constants/Statuses';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
+import getItemKey from '../helpers/getItemKey';
 
-function receiveCreatedResource(options, temporaryKey, values) {
-  const { action, keyBy, transforms, collectionOperations } = options;
+function receiveCreatedResource(options, values) {
+  const { action, keyBy, transforms, key, params, collectionOperations } = options;
 
   return {
     type: action,
     status: SUCCESS,
-    key: values[keyBy],
-    temporaryKey,
+    key: getItemKey([params, values], { keyBy }),
+    temporaryKey: key,
     collectionOperations,
     item: applyTransforms(transforms, options, {
       values,

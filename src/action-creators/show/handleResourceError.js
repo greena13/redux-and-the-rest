@@ -1,13 +1,14 @@
 import { ERROR } from '../../constants/Statuses';
 
-function handleResourceError(options, key, httpCode, error) {
-  const { action } = options;
+function handleResourceError(options, httpCode, error) {
+  const { action, key } = options;
 
   return {
     type: action,
     status: ERROR,
     httpCode,
-    key, error
+    key,
+    error
   };
 }
 

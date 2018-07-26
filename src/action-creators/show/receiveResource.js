@@ -1,9 +1,11 @@
 import { SUCCESS } from '../../constants/Statuses';
 import { ITEM } from '../../constants/DataStructures';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
+import getItemKey from '../helpers/getItemKey';
 
-function receiveResource(options, key, values) {
-  const { transforms, action } = options;
+function receiveResource(options, values) {
+  const { transforms, action, params, keyBy } = options;
+
   const item = applyTransforms(transforms, options, {
     ...ITEM,
     values,
@@ -13,7 +15,7 @@ function receiveResource(options, key, values) {
   return {
     type: action,
     status: SUCCESS,
-    key,
+    key: getItemKey([params, item.values], { keyBy }),
     item
   };
 }

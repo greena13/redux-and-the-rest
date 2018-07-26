@@ -37,16 +37,15 @@ function fetchCollection(options, params, actionCreatorOptions = { }) {
   } = options;
 
   const key = getCollectionKey(params, { urlOnlyParams });
-  const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, keyBy));
+  const url = generateUrl({ url: urlTemplate, name }, params);
 
   return (dispatch) => {
-
     dispatch(requestCollection({ action, resourceType }, key));
 
     return makeRequest({
       ...options,
-      keyBy,
-      url, key,
+      key, keyBy, params,
+      url,
       dispatch,
       credentials: true,
       onSuccess: receiveCollection,
@@ -62,14 +61,15 @@ function fetchResource(options, params, actionCreatorOptions = { }) {
   } = options;
 
   const key = getItemKey(params, { keyBy });
-  const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, keyBy));
+  const url = generateUrl({ url: urlTemplate, name }, params);
 
   return (dispatch) => {
-    dispatch(requestResource({ action, resourceType, transforms }, key));
+    dispatch(requestResource({ action, resourceType, transforms, key }));
 
     return makeRequest({
       ...options,
-      url, key,
+      key, keyBy, params,
+      url,
       dispatch,
       credentials: true,
       onSuccess: receiveResource,
@@ -109,7 +109,7 @@ function clearSelectedCollection({ action }) {
 }
 
 function getCollectionKeys(collectionKeys, urlOnlyParams) {
-  return arrayFrom(collectionKeys).map((collectionKey) => getCollectionKey(collectionKey, urlOnlyParams));
+  return arrayFrom(collectionKeys).map((collectionKey) => getCollectionKey(collectionKey, { urlOnlyParams }));
 }
 
 function extractCollectionOperations(actionCreatorOptions, urlOnlyParams) {
@@ -174,22 +174,20 @@ function createResource(options, params, values, actionCreatorOptions = {}) {
   } = options;
 
   const key = getItemKey(params, { keyBy });
-
-
   const url = generateUrl({ url: urlTemplate, name }, without(wrapInObject(params, keyBy), keyBy));
 
   return (dispatch) => {
     const collectionOperations = extractCollectionOperations(actionCreatorOptions, urlOnlyParams);
 
     dispatch(
-      submitCreateResource({ action, resourceType, transforms }, key, values, collectionOperations)
+      submitCreateResource({ action, resourceType, transforms, key }, values, collectionOperations)
     );
 
     return makeRequest({
       ...options,
-      keyBy,
+      key, keyBy, params,
       collectionOperations,
-      url, key,
+      url,
       dispatch,
       credentials: true,
       request: {
@@ -209,17 +207,17 @@ function updateResource(options, params, values, actionCreatorOptions = {}) {
   } = options;
 
   const key = getItemKey(params, { keyBy });
-
   const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, keyBy));
 
   return (dispatch) => {
-    dispatch(submitUpdateResource({ transforms, action, resourceType }, key, values, actionCreatorOptions.previous));
+    dispatch(submitUpdateResource({ transforms, action, resourceType, key }, values, actionCreatorOptions.previous));
 
     return makeRequest({
       ...options,
 
       previousValues: actionCreatorOptions.previous,
-      url, key,
+      url,
+      key, keyBy, params,
       dispatch,
       credentials: true,
       request: {
@@ -248,12 +246,13 @@ function destroyResource(options, params, actionCreatorOptions = {}) {
 
   return (dispatch) => {
 
-    dispatch(deleteResourceUpdate({ action, resourceType }, key, actionCreatorOptions.previous));
+    dispatch(deleteResourceUpdate({ action, resourceType, key }, actionCreatorOptions.previous));
 
     return makeRequest({
       ...options,
 
-      url, key, previousValues: actionCreatorOptions.previous,
+      url, key,
+      previousValues: actionCreatorOptions.previous,
       dispatch,
       credentials: true,
       request: {
@@ -265,7 +264,6 @@ function destroyResource(options, params, actionCreatorOptions = {}) {
     });
   };
 }
-
 
 const STANDARD_ACTION_CREATORS = {
   index: fetchCollection,

@@ -2,13 +2,13 @@ import { CREATING } from '../../constants/Statuses';
 import { ITEM } from '../../constants/DataStructures';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 
-function submitCreateResource(options, temporaryKey, values, collectionOperations) {
-  const { transforms, action } = options;
+function submitCreateResource(options, values, collectionOperations) {
+  const { transforms, action, key } = options;
 
   return {
     type: action,
     status: CREATING,
-    temporaryKey, collectionOperations,
+    temporaryKey: key, collectionOperations,
     item: applyTransforms(transforms, options, {
       ...ITEM,
       values,

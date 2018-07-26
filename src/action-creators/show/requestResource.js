@@ -2,8 +2,8 @@ import { ITEM } from '../../constants/DataStructures';
 import { FETCHING } from '../../constants/Statuses';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 
-function requestResource(options, key) {
-  const { transforms, action } = options;
+function requestResource(options) {
+  const { transforms, action, key } = options;
 
   return {
     type: action,

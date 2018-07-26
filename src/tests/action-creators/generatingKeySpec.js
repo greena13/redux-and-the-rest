@@ -47,28 +47,6 @@ describe('Generating key:', function () {
       });
     });
 
-    describe('when a string is provided', function () {
-      beforeAll(function () {
-        fetchMock.get('http://test.com/users/newest', {
-          body: [ { id: 1, username: 'Bob' } ],
-          status: 200
-        });
-      });
-
-      afterAll(function () {
-        fetchMock.restore();
-      });
-
-      it('then uses that string as a key', function() {
-        return this.store.dispatch(this.fetchUsers('newest')).then(() => {
-          expect(this.store.getState().users.collections.newest).toEqual({
-            positions: [ 1 ],
-            status: { type: SUCCESS }
-          });
-        });
-      });
-    });
-
     describe('when an object is provided with only the id', function () {
       beforeAll(function () {
         fetchMock.get('http://test.com/users/newest', {
@@ -83,7 +61,7 @@ describe('Generating key:', function () {
 
       it('then uses the id as a key', function() {
         return this.store.dispatch(this.fetchUsers({ id: 'newest' })).then(() => {
-          expect(this.store.getState().users.collections.newest).toEqual({
+          expect(this.store.getState().users.collections['id=newest']).toEqual({
             positions: [ 1 ],
             status: { type: SUCCESS }
           });

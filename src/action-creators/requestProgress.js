@@ -1,7 +1,7 @@
 import { PROGRESS } from '../constants/Statuses';
 
-function requestProgress(options, key, { direction, loaded, total, lengthComputable }) {
-  const { action } = options;
+function requestProgress(options, { direction, loaded, total, lengthComputable }) {
+  const { action, key } = options;
 
   const percent = function(){
     if (lengthComputable) {

@@ -1,7 +1,7 @@
 import { DESTROYING } from '../../constants/Statuses';
 
-function deleteResourceUpdate(options, key, previousValues) {
-  const { action } = options;
+function deleteResourceUpdate(options, previousValues) {
+  const { action, key } = options;
 
   return {
     type: action,

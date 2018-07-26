@@ -53,12 +53,12 @@ const store = createStore(combineReducers({ users: usersReducers }), {}, applyMi
  * Action to fetch the users from http://test.com/users/newest and make them
  * available in your store
  */
-fetchUsers('newest');
+fetchUsers();
 
 /**
  * Retrieve the users from the store
  */
-users = store.getState().users.collections.newest;
+users = store.getState().users.collections[''];
 ```
 
 ## Install & Setup
@@ -873,7 +873,7 @@ const { fetchUsers } = resources(
     }
 );
 
-fetchUsers({order: 'newest}, {
+fetchUsers({order: 'newest'}, {
   // actionCreatorOptions
   // ...
 })

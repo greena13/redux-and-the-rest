@@ -999,7 +999,6 @@ describe('progress option', function () {
             });
 
             it('then the collection\'s progressUp is updated with the current values', function() {
-
               expect(this.userCollectionStatus.progressUp).toEqual({
                 percent: 100,
                 loaded: 0,
@@ -1019,6 +1018,7 @@ describe('progress option', function () {
               beforeAll(function () {
                 return this.xhrMock.completeDownload().then(() => {
                   this.userCollectionStatus = this.store.getState().users.collections[''].status;
+
                   this.userStatus = this.store.getState().users.items[1].status;
                 });
               });

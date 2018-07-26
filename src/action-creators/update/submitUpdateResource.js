@@ -1,8 +1,8 @@
 import { UPDATING } from '../../constants/Statuses';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 
-function submitUpdateResource(options, key, values, previousValues) {
-  const { transforms, action } = options;
+function submitUpdateResource(options, values, previousValues) {
+  const { transforms, action, key } = options;
 
   return {
     type: action,

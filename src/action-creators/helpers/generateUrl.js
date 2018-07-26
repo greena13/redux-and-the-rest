@@ -1,13 +1,15 @@
 import isEmpty from '../../utils/collection/isEmpty';
 import * as queryString from 'query-string';
 import without from '../../utils/collection/without';
+import isObject from '../../utils/object/isObject';
 
-function generateUrl({ url }, params = {}) {
+function generateUrl({ url }, paramValues = {}) {
 
   const paramsUsedInUrl = [];
+  let isFirstParam = true;
 
-  let urlBase = url.replace(/:([A-z?]+)/g, (param) => {
-    let paramKey = param.substring(1);
+  let urlBase = url.replace(/:([A-z?]+)/g, (urlParameter) => {
+    let paramKey = urlParameter.substring(1);
     let paramIsRequired = true;
 
     if (paramKey.endsWith('?')) {
@@ -15,7 +17,8 @@ function generateUrl({ url }, params = {}) {
       paramIsRequired = false;
     }
 
-    const paramValue = params[paramKey];
+    const paramValue = isFirstParam && !isObject(paramValues) ? paramValues : paramValues[paramKey];
+    isFirstParam = false;
 
     if (paramValue) {
       paramsUsedInUrl.push(paramKey);
@@ -23,7 +26,7 @@ function generateUrl({ url }, params = {}) {
       return paramValue;
     } else {
       if (paramIsRequired) {
-        throw Error(`Required url parameter '${paramKey}' is missing from ${JSON.stringify(params)}.`);
+        throw Error(`Required url parameter '${paramKey}' is missing from ${JSON.stringify(paramValues)}.`);
       } else {
         return '';
       }
@@ -34,12 +37,16 @@ function generateUrl({ url }, params = {}) {
     urlBase = urlBase.substring(0, urlBase.length - 1);
   }
 
-  const queryParams = without(params, paramsUsedInUrl);
+  if (isObject(paramValues)) {
+    const queryParams = without(paramValues, paramsUsedInUrl);
 
-  if (isEmpty(queryParams)) {
-    return urlBase;
+    if (isEmpty(queryParams)) {
+      return urlBase;
+    } else {
+      return `${urlBase}?${queryString.stringify(queryParams)}`;
+    }
   } else {
-    return `${urlBase}?${queryString.stringify(queryParams)}`;
+    return urlBase;
   }
 }
 

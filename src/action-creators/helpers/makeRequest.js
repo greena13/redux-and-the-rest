@@ -6,7 +6,6 @@ import without from '../../utils/collection/without';
 function makeRequest(options, actionCreatorOptions = {}) {
   const {
     url,
-    key,
     previousValues,
     collectionKeys,
     credentials,
@@ -68,22 +67,22 @@ function makeRequest(options, actionCreatorOptions = {}) {
         }();
 
         if (_json.error) {
-          return dispatch(onError(_options, key, status, _json.error));
+          return dispatch(onError(_options, status, _json.error));
         } else {
-          return dispatch(onSuccess(_options, key, _json.values, collectionKeys || previousValues));
+          return dispatch(onSuccess(_options, _json.values, collectionKeys || previousValues));
         }
       });
 
     } else {
       if (_request.errorHandler) {
         _request.errorHandler(response, (error) => {
-          dispatch(onError(_options, key, status, error));
+          dispatch(onError(_options, status, error));
         });
       } else {
         if (response.headers.get('Content-Type').startsWith('application/json')) {
-          return response.json().then((json) => dispatch(onError(_options, key, status, json.error)));
+          return response.json().then((json) => dispatch(onError(_options, status, json.error)));
         } else {
-          return response.text().then((message) => dispatch(onError(_options, key, status, message)));
+          return response.text().then((message) => dispatch(onError(_options, status, message)));
         }
       }
     }
@@ -104,15 +103,15 @@ function makeRequest(options, actionCreatorOptions = {}) {
       });
 
       xhRequest.upload.onprogress = (event) => {
-        dispatch(requestProgress(_options, key, { ...event, direction: UP }));
+        dispatch(requestProgress(_options, { ...event, direction: UP }));
       };
 
       xhRequest.upload.onloadend = (event) => {
-        dispatch(requestProgress(_options, key, { ...event, direction: UP }));
+        dispatch(requestProgress(_options, { ...event, direction: UP }));
       };
 
       xhRequest.onprogress = (event) => {
-        dispatch(requestProgress(_options, key, { ...event, direction: DOWN }));
+        dispatch(requestProgress(_options, { ...event, direction: DOWN }));
       };
 
       xhRequest.onload = ({ target })=> {
@@ -133,7 +132,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
       };
 
       xhRequest.onerror = (error) => {
-        dispatch(onError(_options, key, 0, { type: 'NETWORK_ERROR', ...(error || {}) })).then(reject);
+        dispatch(onError(_options, 0, { type: 'NETWORK_ERROR', ...(error || {}) })).then(reject);
       };
 
       xhRequest.send(requestOptions.body);
@@ -143,7 +142,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
 
   } else {
     return fetch(url, requestOptions).then(processResponse).
-              catch((error) => dispatch(onError(_options, key, 0, { type: 'NETWORK_ERROR', ...(error || {}) })));
+              catch((error) => dispatch(onError(_options, 0, { type: 'NETWORK_ERROR', ...(error || {}) })));
   }
 }
 

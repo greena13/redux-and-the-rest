@@ -1,7 +1,7 @@
 import { ERROR } from '../../constants/Statuses';
 
-function handleCollectionError(options, key, httpCode, error) {
-  const { action } = options;
+function handleCollectionError(options, httpCode, error) {
+  const { action, key } = options;
 
   return {
     type: action,
