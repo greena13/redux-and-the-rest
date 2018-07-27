@@ -20,7 +20,8 @@ function resources(resourceOptions, actionOptions = {}) {
   return {
     actions: actions.toHash(),
     reducers,
-    getItem, getNewItem,
+    getItem: (resource, params) => getItem(resourceOptions, resource, params),
+    getNewItem,
     getCollection: (resource, params) => getCollection(resourceOptions, resource, params),
     ...actionCreators
   };

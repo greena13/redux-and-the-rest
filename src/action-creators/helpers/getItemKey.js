@@ -7,7 +7,7 @@ import isUndefined from '../../utils/isUndefined';
 function getItemKey(params, { keyBy }) {
   const _params = arrayFrom(params).reverse();
 
-  if (Array.isArray(keyBy)) {
+  if (Array.isArray(keyBy) && keyBy.length > 1) {
     const keys = keyBy.reduce((memo, key) => {
       memo[key] = highestPriorityValue(_params, key);
 
