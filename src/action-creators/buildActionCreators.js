@@ -24,7 +24,6 @@ import { EDITING, NEW } from '../constants/Statuses';
 import { ITEM } from '../constants/DataStructures';
 import resourceTypeTransform from './helpers/transforms/resourceTypeTransform';
 import applyTransforms from '../reducers/helpers/applyTransforms';
-import without from '../utils/collection/without';
 import arrayFrom from '../utils/array/arrayFrom';
 import generateUrl from './helpers/generateUrl';
 import getItemKey from './helpers/getItemKey';
@@ -168,13 +167,12 @@ function createResource(options, params, values, actionCreatorOptions = {}) {
     transforms,
     url: urlTemplate,
     urlOnlyParams,
-    name,
     keyBy,
     progress
   } = options;
 
   const key = getItemKey(params, { keyBy });
-  const url = generateUrl({ url: urlTemplate, name }, without(wrapInObject(params, keyBy), keyBy));
+  const url = generateUrl({ url: urlTemplate, keyBy, ignoreOptionalParams: true }, wrapInObject(params, keyBy));
 
   return (dispatch) => {
     const collectionOperations = extractCollectionOperations(actionCreatorOptions, urlOnlyParams);

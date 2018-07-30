@@ -2,8 +2,9 @@ import isEmpty from '../../utils/collection/isEmpty';
 import * as queryString from 'query-string';
 import without from '../../utils/collection/without';
 import isObject from '../../utils/object/isObject';
+import arrayFrom from '../../utils/array/arrayFrom';
 
-function generateUrl({ url }, paramValues = {}) {
+function generateUrl({ url, keyBy, ignoreOptionalParams = false }, paramValues = {}) {
 
   const paramsUsedInUrl = [];
   let isFirstParam = true;
@@ -14,7 +15,14 @@ function generateUrl({ url }, paramValues = {}) {
 
     if (paramKey.endsWith('?')) {
       paramKey = paramKey.substring(0, paramKey.length - 1);
-      paramIsRequired = false;
+
+      if (ignoreOptionalParams) {
+        paramsUsedInUrl.push(paramKey);
+
+        return '';
+      } else {
+        paramIsRequired = false;
+      }
     }
 
     const paramValue = isFirstParam && !isObject(paramValues) ? paramValues : paramValues[paramKey];
@@ -38,7 +46,7 @@ function generateUrl({ url }, paramValues = {}) {
   }
 
   if (isObject(paramValues)) {
-    const queryParams = without(paramValues, paramsUsedInUrl);
+    const queryParams = without(paramValues, arrayFrom(keyBy).concat(paramsUsedInUrl));
 
     if (isEmpty(queryParams)) {
       return urlBase;
