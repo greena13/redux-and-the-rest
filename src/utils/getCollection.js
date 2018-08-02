@@ -1,4 +1,4 @@
-import { COLLECTION } from '..';
+import { COLLECTION } from '../constants/DataStructures';
 import serializeKey from './serializeKey';
 
 function getCollection({ name }, resource, parameters = {}) {

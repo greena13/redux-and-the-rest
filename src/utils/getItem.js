@@ -1,4 +1,4 @@
-import { ITEM } from '..';
+import { ITEM } from '../constants/DataStructures';
 import serializeKey from './serializeKey';
 import isObject from './object/isObject';
 import arrayFrom from './array/arrayFrom';
