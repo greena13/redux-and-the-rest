@@ -12,7 +12,7 @@ function resources(resourceOptions, actionOptions = {}) {
 
   const _actionOptions = objectFrom(actionOptions, {});
 
-  const actions = new ActionsFactory(name, Object.keys(_actionOptions));
+  const actions = new ActionsFactory(name, resourceOptions, Object.keys(_actionOptions));
 
   const reducers = buildReducers(resourceOptions, actions, _actionOptions);
   const actionCreators = buildActionCreators(resourceOptions, actions, _actionOptions);

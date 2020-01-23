@@ -538,6 +538,9 @@ function clearResources() {
   return RESOURCES;
 }
 
+/**
+ * Dictionary of standard reducer functions for keeping the local store synchronised with a remote RESTful API.
+ */
 const STANDARD_REDUCERS = {
   index: setCollection,
   show: setItem,
@@ -552,6 +555,16 @@ const STANDARD_REDUCERS = {
   update: updateItem,
   destroy: removeItem,
   clear: clearResources,
+};
+
+/**
+ * Dictionary or reducer functions to use when the localOnly option is set, causing changes to be performed
+ * synchronously, without any requests being made to an external API.
+ */
+const LOCAL_ONLY_REDUCERS = {
+  ...STANDARD_REDUCERS,
+  create: setItem,
+  update: setItem
 };
 
 const PROGRESS_COMPATIBLE_ACTIONS = {
@@ -569,9 +582,15 @@ function buildReducers(resourceOptions, actionsOptions, options) {
 
   const configuration = getConfiguration();
 
+  /**
+   * We use a different set of reducers when the localOnly option is used (to perform updates synchronously
+   * without making any requests to a remote API).
+   */
+  const effectiveReducers = resourceOptions.localOnly ? LOCAL_ONLY_REDUCERS : STANDARD_REDUCERS;
+
   const reducersDict = Object.keys(options).reduce((memo, key) => {
     const actionOptions = options[key];
-    const reducer = (isObject(actionOptions) && actionOptions.reducer) || STANDARD_REDUCERS[key];
+    const reducer = (isObject(actionOptions) && actionOptions.reducer) || effectiveReducers[key];
 
     if (reducer) {
       const reducerOptions = resolveOptions(

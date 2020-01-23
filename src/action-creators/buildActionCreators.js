@@ -29,6 +29,7 @@ import generateUrl from './helpers/generateUrl';
 import getItemKey from './helpers/getItemKey';
 import getCollectionKey from './helpers/getCollectionKey';
 import { getConfiguration } from '../configuration';
+import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 
 function fetchCollection(options, params, actionCreatorOptions = { }) {
   const {
@@ -263,6 +264,10 @@ function destroyResource(options, params, actionCreatorOptions = {}) {
   };
 }
 
+/**
+ * Dictionary of standard action creators that perform a mix of synchronous and asynchronous changes where
+ * updates need to be sent to a remote API to synchronise the local data state with the remote one.
+ */
 const STANDARD_ACTION_CREATORS = {
   index: fetchCollection,
   show: fetchResource,
@@ -278,12 +283,36 @@ const STANDARD_ACTION_CREATORS = {
   clearSelected: clearSelectedCollection
 };
 
+/**
+ * Dictionary of action creators to use when then the localOnly option is set. These effectively cut out
+ * requests to a remote RESTful API and instead perform the changes locally and synchronously.
+ */
+const LOCAL_ONLY_ACTION_CREATORS = {
+  ...STANDARD_ACTION_CREATORS,
+  create: (options, params, values) => receiveCreatedResource({ ...options, params }, values),
+  update: (options, params, values) => receiveUpdatedResource({ ...options, params }, values),
+  destroy: (options, key, values) => removeResource({ ...options, key }, values),
+};
+
 function buildActionCreators(resourceOptions, actions, actionsOptions) {
   const { name } = resourceOptions;
 
   const configuration = getConfiguration();
+  const effectiveActionCreators = resourceOptions.localOnly ? LOCAL_ONLY_ACTION_CREATORS : STANDARD_ACTION_CREATORS;
 
   return Object.keys(actionsOptions).reduce((memo, key) => {
+
+    /**
+     * We don't export certain action creators when the localOnly option is used (as they don't make sense in
+     * a local context).
+     *
+     * See RemoteOnlyActionsDictionary for a full list of actions that are excluded when the localOnly option is
+     * used.
+     */
+    if (resourceOptions.localOnly && RemoteOnlyActionsDictionary[key]) {
+      return memo;
+    }
+
     const actionName = actions.get(key);
 
     /**
@@ -294,7 +323,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
     const actionCreatorName = camelCase(actionName);
     const actionCreator = isObject(actionOptions) && actionOptions.actionCreator;
 
-    const standardActionCreator = STANDARD_ACTION_CREATORS[key];
+    const standardActionCreator = effectiveActionCreators[key];
 
     if (actionCreator) {
 
@@ -309,7 +338,14 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
         resourceOptions,
         actionOptions,
         [
-          'url', 'keyBy', 'resourceType', 'urlOnlyParams', 'responseAdaptor', 'progress', 'requestErrorHandler', 'request'
+          'url',
+          'keyBy',
+          'resourceType',
+          'urlOnlyParams',
+          'responseAdaptor',
+          'progress',
+          'requestErrorHandler',
+          'request'
         ]
       );
 

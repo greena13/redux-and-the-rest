@@ -870,7 +870,8 @@ const { fetchUsers } = resources(
 | `name` | String | Required | The pluralized name of the resource you are defining.
 | `url` | String |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
 | `keyBy` | String |  'id' | The resource attribute used to key/index all items of the current resource type. This will be the value you pass to each action creator to identify the target of each action. |
-| `urlOnlyParams` | String[] | [ ] |The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response.
+| `urlOnlyParams` | String[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
+| `localOnly` | Boolean | false | Set to true for resources that should be edited locally, only. The `show` and `index` actions are disabled (the `fetch*` action creators are not exported) and the `create`, `update` and `destroy` only update the store locally, without making any HTTP requests. |
 
 ### Action Options API
 
