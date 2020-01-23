@@ -8,6 +8,8 @@ function receiveCollection(options, collection) {
 
   const positions = [];
 
+  const syncedAt = Date.now();
+
   const items = collection.reduce((memo, values) => {
     const itemKey = getItemKey([ params, values ], { keyBy });
     positions.push(itemKey);
@@ -15,7 +17,7 @@ function receiveCollection(options, collection) {
     memo[itemKey] = applyTransforms(transforms, options, {
       ...ITEM,
       values,
-      status: { type: SUCCESS },
+      status: { type: SUCCESS, syncedAt },
     });
 
     return memo;
@@ -28,7 +30,7 @@ function receiveCollection(options, collection) {
     key,
     collection: {
       positions,
-      status: { type: SUCCESS },
+      status: { type: SUCCESS, syncedAt },
     }
   };
 

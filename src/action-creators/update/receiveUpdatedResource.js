@@ -11,7 +11,7 @@ function receiveUpdatedResource(options, values, previousValues) {
     key: getItemKey([params, values], { keyBy }),
     item: applyTransforms(transforms, options, {
       values,
-      status: { type: SUCCESS }
+      status: { type: SUCCESS, syncedAt: Date.now() }
     }),
     previousValues
   };

@@ -204,7 +204,7 @@ describe('Update reducer:', function () {
             });
 
             it('then does sets the status error from the response', function() {
-              expect(this.users.items[1].status.error).toEqual('Not Found');
+              expect(this.users.items[1].status.error.message).toEqual('Not Found');
             });
           });
         });

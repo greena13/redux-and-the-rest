@@ -84,7 +84,7 @@ describe('Specifying a response adaptor:', function () {
               const collection = this.store.getState().users.collections[''];
 
               expect(collection.status.type).toEqual(ERROR);
-              expect(collection.status.error).toEqual('NOT_FOUND');
+              expect(collection.status.error.message).toEqual('NOT_FOUND');
               expect(collection.status.httpCode).toEqual(404);
             });
           });
@@ -113,7 +113,7 @@ describe('Specifying a response adaptor:', function () {
               const collection = this.store.getState().users.collections[''];
 
               expect(collection.status.type).toEqual(ERROR);
-              expect(collection.status.error).toEqual('Long error stack trace');
+              expect(collection.status.error.message).toEqual('Long error stack trace');
               expect(collection.status.httpCode).toEqual(500);
             });
           });
@@ -173,7 +173,7 @@ describe('Specifying a response adaptor:', function () {
               const item = this.store.getState().users.items[1];
 
               expect(item.status.type).toEqual(ERROR);
-              expect(item.status.error).toEqual('NOT_FOUND');
+              expect(item.status.error.message).toEqual('NOT_FOUND');
 
               expect(item.values).toEqual({ });
             });
@@ -202,7 +202,7 @@ describe('Specifying a response adaptor:', function () {
               const collection = this.store.getState().users.items[1];
 
               expect(collection.status.type).toEqual(ERROR);
-              expect(collection.status.error).toEqual('Long error stack trace');
+              expect(collection.status.error.message).toEqual('Long error stack trace');
               expect(collection.status.httpCode).toEqual(500);
             });
           });
@@ -263,7 +263,7 @@ describe('Specifying a response adaptor:', function () {
               const item = this.store.getState().users.items.temp;
 
               expect(item.status.type).toEqual(ERROR);
-              expect(item.status.error).toEqual('NOT_FOUND');
+              expect(item.status.error.message).toEqual('NOT_FOUND');
               expect(item.values).toEqual({ username: 'Bob' });
             });
           });
@@ -291,7 +291,7 @@ describe('Specifying a response adaptor:', function () {
               const item = this.store.getState().users.items.temp;
 
               expect(item.status.type).toEqual(ERROR);
-              expect(item.status.error).toEqual('Long error stack trace');
+              expect(item.status.error.message).toEqual('Long error stack trace');
               expect(item.status.httpCode).toEqual(500);
             });
           });
@@ -377,7 +377,7 @@ describe('Specifying a response adaptor:', function () {
               const item = this.store.getState().users.items[1];
 
               expect(item.status.type).toEqual(ERROR);
-              expect(item.status.error).toEqual('NOT_FOUND');
+              expect(item.status.error.message).toEqual('NOT_FOUND');
               expect(item.values).toEqual({ id: 1, username: 'Robert' });
             });
           });
@@ -418,7 +418,7 @@ describe('Specifying a response adaptor:', function () {
               const item = this.store.getState().users.items[1];
 
               expect(item.status.type).toEqual(ERROR);
-              expect(item.status.error).toEqual('Long error stack trace');
+              expect(item.status.error.message).toEqual('Long error stack trace');
               expect(item.status.httpCode).toEqual(500);
             });
           });
@@ -503,7 +503,7 @@ describe('Specifying a response adaptor:', function () {
               const item = this.store.getState().users.items[1];
 
               expect(item.status.type).toEqual(DESTROY_ERROR);
-              expect(item.status.error).toEqual('NOT_FOUND');
+              expect(item.status.error.message).toEqual('NOT_FOUND');
               expect(item.values).toEqual({ id: 1, username: 'Bob' });
             });
           });
@@ -544,7 +544,7 @@ describe('Specifying a response adaptor:', function () {
               const item = this.store.getState().users.items[1];
 
               expect(item.status.type).toEqual(DESTROY_ERROR);
-              expect(item.status.error).toEqual('Long error stack trace');
+              expect(item.status.error.message).toEqual('Long error stack trace');
               expect(item.status.httpCode).toEqual(500);
             });
           });

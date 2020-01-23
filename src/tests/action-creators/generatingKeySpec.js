@@ -39,10 +39,10 @@ describe('Generating key:', function () {
 
       it('then uses an empty string as the key', function() {
         return this.store.dispatch(this.fetchUsers()).then(() => {
-          expect(this.store.getState().users.collections['']).toEqual({
-            positions: [ 1 ],
-            status: { type: SUCCESS }
-          });
+          const collection = this.store.getState().users.collections[''];
+
+          expect(collection.positions).toEqual([ 1 ]);
+          expect(collection.status.type).toEqual(SUCCESS);
         });
       });
     });
@@ -61,10 +61,10 @@ describe('Generating key:', function () {
 
       it('then uses the id as a key', function() {
         return this.store.dispatch(this.fetchUsers({ id: 'newest' })).then(() => {
-          expect(this.store.getState().users.collections['id=newest']).toEqual({
-            positions: [ 1 ],
-            status: { type: SUCCESS }
-          });
+          const collection = this.store.getState().users.collections['id=newest'];
+
+          expect(collection.positions).toEqual([ 1 ]);
+          expect(collection.status.type).toEqual(SUCCESS);
         });
       });
     });
@@ -83,10 +83,10 @@ describe('Generating key:', function () {
 
       it('then uses a serialised version of the object as a key', function() {
         return this.store.dispatch(this.fetchUsers({ order: 'newest', page: 1 })).then(() => {
-          expect(this.store.getState().users.collections['order=newest.page=1']).toEqual({
-            positions: [ 1 ],
-            status: { type: SUCCESS }
-          });
+          const collection = this.store.getState().users.collections['order=newest.page=1'];
+
+          expect(collection.positions).toEqual([ 1 ]);
+          expect(collection.status.type).toEqual(SUCCESS);
         });
       });
     });
@@ -129,10 +129,10 @@ describe('Generating key:', function () {
 
       it('then does not use that attribute in the serialised object used for the key', function() {
         return this.store.dispatch(this.fetchUsers({ order: 'newest', page: 1 })).then(() => {
-          expect(this.store.getState().users.collections['order=newest']).toEqual({
-            positions: [ 1 ],
-            status: { type: SUCCESS }
-          });
+          const collection = this.store.getState().users.collections['order=newest'];
+
+          expect(collection.positions).toEqual([ 1 ]);
+          expect(collection.status.type).toEqual(SUCCESS);
         });
       });
     });
@@ -163,16 +163,10 @@ describe('Generating key:', function () {
           return this.store.dispatch(this.fetchUsers({ order: 'newest', page: 2 })).then(() => {
             this.users = this.store.getState().users;
 
-            expect(this.users.items).toEqual({
-              1: {
-                values: { id: 1, username: 'Bob' },
-                status: { type: SUCCESS }
-              },
-              2: {
-                values: { id: 2, username: 'Jane' },
-                status: { type: SUCCESS }
-              }
-            });
+            expect(this.users.items[1].values).toEqual({ id: 1, username: 'Bob' });
+            expect(this.users.items[1].status.type).toEqual(SUCCESS);
+            expect(this.users.items[2].values).toEqual({ id: 2, username: 'Jane' });
+            expect(this.users.items[2].status.type).toEqual(SUCCESS);
 
             expect(this.users.collections['order=newest'].positions).toEqual([ 2 ]);
           });

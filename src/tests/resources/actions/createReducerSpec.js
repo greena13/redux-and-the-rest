@@ -176,7 +176,7 @@ describe('Create reducer:', function () {
               });
 
               it('then merges in the server\'s response into the status', function() {
-                expect(this.users.items.temp.status.error).toEqual('Not Found');
+                expect(this.users.items.temp.status.error.message).toEqual('Not Found');
               });
 
               it('then DOES NOT update the newItemKey', function() {

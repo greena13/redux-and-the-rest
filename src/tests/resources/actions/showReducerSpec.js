@@ -127,7 +127,7 @@ describe('Show reducers:', function () {
               });
 
               it('then sets the item\'s status error from the response', function() {
-                expect(this.users.items[1].status.error).toEqual('Not Found');
+                expect(this.users.items[1].status.error.message).toEqual('Not Found');
               });
 
               it('then does NOT set the item\'s values from the response', function() {
@@ -259,7 +259,7 @@ describe('Show reducers:', function () {
           });
 
           it('then sets the item\'s status error from the response', function() {
-            expect(this.users.items[1].status.error).toEqual('Not Found');
+            expect(this.users.items[1].status.error.message).toEqual('Not Found');
           });
 
           it('then does NOT set the item\'s values from the response', function() {
@@ -382,7 +382,7 @@ describe('Show reducers:', function () {
         });
 
         it('then sets the item\'s status error from the response', function() {
-          expect(this.users.items['groupId=1.id=1'].status.error).toEqual('Not Found');
+          expect(this.users.items['groupId=1.id=1'].status.error.message).toEqual('Not Found');
         });
 
         it('then does NOT set the item\'s values from the response', function() {

@@ -13,7 +13,7 @@ function receiveCreatedResource(options, values) {
     collectionOperations,
     item: applyTransforms(transforms, options, {
       values,
-      status: { type: SUCCESS }
+      status: { type: SUCCESS, syncedAt: Date.now() }
     })
   };
 }

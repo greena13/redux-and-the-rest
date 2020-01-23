@@ -9,7 +9,7 @@ function receiveResource(options, values) {
   const item = applyTransforms(transforms, options, {
     ...ITEM,
     values,
-    status: { type: SUCCESS }
+    status: { type: SUCCESS, syncedAt: Date.now() }
   });
 
   return {

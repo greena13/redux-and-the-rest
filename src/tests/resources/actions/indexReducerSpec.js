@@ -136,11 +136,9 @@ describe('Index reducers:', function () {
             });
 
             it('then changes the collection\'s status', function() {
-              expect(this.users.collections[collectionId].status).toEqual({
-                type: ERROR,
-                httpCode: 404,
-                error: 'Not Found'
-              });
+              expect(this.users.collections[collectionId].status.type).toEqual(ERROR);
+              expect(this.users.collections[collectionId].status.httpCode).toEqual(404);
+              expect(this.users.collections[collectionId].status.error.message).toEqual('Not Found');
             });
 
             it('then does not change the positions', function() {
@@ -296,11 +294,9 @@ describe('Index reducers:', function () {
         });
 
         it('then changes the collection\'s status to ERROR', function() {
-          expect(this.users.collections[''].status).toEqual({
-            type: ERROR,
-            httpCode: 404,
-            error: 'Not Found'
-          });
+          expect(this.users.collections[''].status.type).toEqual(ERROR);
+          expect(this.users.collections[''].status.httpCode).toEqual(404);
+          expect(this.users.collections[''].status.error.message).toEqual('Not Found');
         });
 
         it('then does NOT change the collection\'s positions', function() {
@@ -383,17 +379,13 @@ describe('Index reducers:', function () {
         });
 
         it('then updates any items fetched using SHOW that are in the response', function() {
-          expect(this.users.items[1]).toEqual({
-            values: { id: 1, username: 'Robert' },
-            status: { type: SUCCESS }
-          });
+          expect(this.users.items[1].values).toEqual({ id: 1, username: 'Robert' });
+          expect(this.users.items[1].status.type).toEqual(SUCCESS);
         });
 
         it('then adds any new items in the response that were not already in the store', function() {
-          expect(this.users.items[2]).toEqual({
-            values: { id: 2, username: 'Jane' },
-            status: { type: SUCCESS }
-          });
+          expect(this.users.items[2].values).toEqual({ id: 2, username: 'Jane' });
+          expect(this.users.items[2].status.type).toEqual(SUCCESS);
         });
       });
     });
