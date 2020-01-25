@@ -1,6 +1,6 @@
 import babel from 'rollup-plugin-babel';
-import replace from 'rollup-plugin-replace';
-import uglify from 'rollup-plugin-uglify';
+import replace from '@rollup/plugin-replace';
+import { terser } from "rollup-plugin-terser";
 import license from 'rollup-plugin-license';
 import path from 'path';
 
@@ -13,7 +13,8 @@ export default {
     exports: 'named'
   },
   external: [
-    'query-string'
+    'query-string',
+    'pluralize'
   ],
   plugins: [
     babel({
@@ -25,11 +26,13 @@ export default {
       ENV: JSON.stringify(process.env.NODE_ENV || 'development')
     }),
 
-    (process.env.NODE_ENV === 'production' && uglify()),
+    (process.env.NODE_ENV === 'production' && terser()),
 
     license({
       banner: {
-        file: path.join(__dirname, 'LICENSE')
+        content: {
+          file: path.join(__dirname, 'LICENSE')
+        }
       }
     })
   ]

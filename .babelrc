@@ -1,16 +1,15 @@
 {
+  "comments": false,
   "env": {
     "development": {
       "presets": [
-        "es2015",
-        "stage-0"
+        "@babel/preset-env"
       ]
     },
 
     "test": {
       "presets": [
-        "es2015",
-        "stage-0"
+        "@babel/preset-env"
       ],
 
       "sourceMaps": "inline"
@@ -19,16 +18,11 @@
     "production": {
       "presets": [
         [
-          "es2015",
+          "@babel/preset-env",
           {
             "modules": false
           }
-        ],
-        "stage-0"
-      ],
-      "plugins": [
-        "external-helpers",
-        "remove-comments"
+        ]
       ]
     }
   }
