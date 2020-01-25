@@ -59,7 +59,7 @@
     "rollup-plugin-terser": "^5.2.0"
   },
   "dependencies": {
-    "pluralize": "^7.0.0",
-    "query-string": "^5.1.0"
+    "pluralize": "^8.0.0",
+    "query-string": "^6.10.1"
   }
 }
