@@ -61,10 +61,80 @@ fetchUsers();
 users = getCollection(store.getState().users);
 ```
 
+## Contents
+
+* [Install &amp; Setup](#install--setup)
+ * [Peer Dependencies](#peer-dependencies)
+* [Defining resources](#defining-resources)
+ * [Configuring individual actions](#configuring-individual-actions)
+    * [Using the default RESTful action configuration](#using-the-default-restful-action-configuration)
+    * [Providing custom action configuration](#providing-custom-action-configuration)
+* [API Reference](#api-reference)
+ * [Levels of configuration](#levels-of-configuration)
+ * [Global Options API](#global-options-api)
+    * [Usage](#usage)
+    * [Options](#options)
+ * [Resource Options API](#resource-options-api)
+    * [Usage](#usage-1)
+    * [Options](#options-1)
+       * [Naming and indexing](#naming-and-indexing)
+       * [Synchronising with a remote API](#synchronising-with-a-remote-api)
+       * [Reducers](#reducers)
+ * [Action Options API](#action-options-api)
+    * [Usage](#usage-2)
+    * [Options](#options-2)
+       * [Naming and indexing](#naming-and-indexing-1)
+       * [Synchronising with a remote API](#synchronising-with-a-remote-api-1)
+       * [Reducers](#reducers-1)
+* [Store data](#store-data)
+ * [Getting resources from the store](#getting-resources-from-the-store)
+    * [Getting items from the store](#getting-items-from-the-store)
+    * [Getting collections from the store](#getting-collections-from-the-store)
+ * [Store data schemas](#store-data-schemas)
+    * [Nomenclature](#nomenclature)
+    * [Resource schema](#resource-schema)
+       * [Top level schema](#top-level-schema)
+       * [Item schema](#item-schema)
+       * [Collection schema](#collection-schema)
+ * [Data lifecycle](#data-lifecycle)
+    * [Client statuses](#client-statuses)
+    * [Pending statuses](#pending-statuses)
+    * [Response statuses](#response-statuses)
+    * [Knowing when to call your action creators](#knowing-when-to-call-your-action-creators)
+* [RESTful (asynchronous) actions](#restful-asynchronous-actions)
+ * [RESTful behaviour overview](#restful-behaviour-overview)
+ * [Fetch a resource collection from the server](#fetch-a-resource-collection-from-the-server)
+    * [Index action creator options](#index-action-creator-options)
+ * [Fetch an individual resource item from the server](#fetch-an-individual-resource-item-from-the-server)
+    * [Show action creator options](#show-action-creator-options)
+ * [Create a new resource item on the server](#create-a-new-resource-item-on-the-server)
+    * [Create action creator options](#create-action-creator-options)
+ * [Update a resource item on the server](#update-a-resource-item-on-the-server)
+    * [Update action creator options](#update-action-creator-options)
+ * [Destroy a resource item on the server](#destroy-a-resource-item-on-the-server)
+    * [Destroy action creator options](#destroy-action-creator-options)
+* [Local (synchronous) actions](#local-synchronous-actions)
+ * [Add a new resource item to the store](#add-a-new-resource-item-to-the-store)
+    * [New action creator options](#new-action-creator-options)
+ * [Clear the new resource item from the store](#clear-the-new-resource-item-from-the-store)
+ * [Edit a resource item in the store](#edit-a-resource-item-in-the-store)
+ * [Select a resource item in the store](#select-a-resource-item-in-the-store)
+ * [Select another resource item in the store](#select-another-resource-item-in-the-store)
+ * [Deselect a resource item in the store](#deselect-a-resource-item-in-the-store)
+ * [Clear all the selected resource items in the store](#clear-all-the-selected-resource-items-in-the-store)
+* [Configuring requests](#configuring-requests)
+ * [Configuring the URLs used for a request](#configuring-the-urls-used-for-a-request)
+    * [URL Parameters](#url-parameters)
+       * [Using string values](#using-string-values)
+       * [Using object values](#using-object-values)
+       * [Specifying query parameters](#specifying-query-parameters)
+    * [Pagination](#pagination)
+ * [Configuring other request properties](#configuring-other-request-properties)
+
+
 ## Install & Setup
 
 `redux-and-the-rest` can be installed as a CommonJS module:
-
 
 ```
 npm install redux-and-the-rest --save
@@ -205,6 +275,176 @@ const { fetchUsers } = resources(
 
 Please see [Action Options API](#action-options-api) for a full list of supported options.
 
+## API Reference
+
+### Levels of configuration
+
+It's important to have a basic understanding of `redux-and-the-rest` achieves its flexibility using its four levels of configuration; each have different scopes and are specified at different times.
+
+You need to select where you place your configuration depending on how wide you want particular options to apply.
+
+The options are set out in a hierarchy, so as their scope becomes increasingly specific, their priority increases and they override any corresponding action that may have been provided to a lower priority set of options.
+
+For example, `actionCreatorOptions` take precedence over `actionOptions` (which take precedence over `resourceOptions`).
+
+
+| Options | Priority | Defined | Scope | Required |
+| ---- | :---- | :---- | :-- | :--: |
+| `globalOptions` | Lowest | Before defining any resources, using `configure()` | All resources and their actions | No |
+| `resourceOptions` |  | When defining resources, using `resources()` | All of a single resource's actions | Yes |
+| `actionOptions` |  | When defining resources, using `resources()` | A single resource action | No |
+| `actionCreatorOptions` | Highest | When calling an action creator, as the last argument | A single store operation | No |
+
+Here is an example of them used all in once place:
+
+```javascript
+import { configure, resources } from 'redux-and-the-rest';
+
+configure({
+    // globalOptions
+    // ...
+});
+
+const { fetchUsers } = resources(
+    {
+        // resourceOptions
+        name: 'users',
+        url: 'http://www.example.com/users/:id',
+        keyBy: 'id'
+    },
+    {
+        index: {
+            // actionOptions
+            // ...
+        },
+        show: {
+            // actionOptions
+            // ...
+        }
+    }
+);
+
+fetchUsers({order: 'newest'}, {
+  // actionCreatorOptions
+  // ...
+})
+```
+
+### Global Options API
+
+#### Usage
+
+```javascript
+import { configure } from 'redux-and-the-rest';
+
+configure({
+    // globalOptions
+});
+```
+
+#### Options
+
+| key |  Type |Required or Default Value | Description |
+| --------------------------------------- | :----: | :----: | :-- |
+
+### Resource Options API
+
+Values passed to `resourceOptions` are used to configure the resource and apply to all actions, unless overridden by more specific configuration in `actionOptions`.
+
+#### Usage
+
+```javascript
+import { resources } from 'redux-and-the-rest';
+
+const { fetchUsers } = resources(
+    {
+        // resourceOptions
+    },
+    {
+        // ...
+    }
+);
+```
+
+#### Options
+
+##### Naming and indexing
+
+| key |  Type |Required or Default Value | Description |
+| --------------------------------------- | :----: | :----: | :-- |
+| `name` | String | Required | The pluralized name of the resource you are defining.
+| `keyBy` | String |  'id' | The resource attribute used to key/index all items of the current resource type. This will be the value you pass to each action creator to identify the target of each action. |
+
+##### Synchronising with a remote API
+
+| key |  Type |Required or Default Value | Description |
+| --------------------------------------- | :----: | :----: | :-- |
+| `localOnly` | Boolean | false | Set to true for resources that should be edited locally, only. The `show` and `index` actions are disabled (the `fetch*` action creators are not exported) and the `create`, `update` and `destroy` only update the store locally, without making any HTTP requests. |
+| `url` | String |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
+| `urlOnlyParams` | String[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
+| `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers ||
+
+##### Reducers
+
+| key |  Type |Required or Default Value | Description |
+| --------------------------------------- | :----: | :----: | :-- |
+| `beforeReducers` | Function[] | [ ] | A list of functions to call before passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
+| `afterReducers` | Function[] | [ ] |A list of functions to call after passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
+| `reducesOn` | {action: Action, reducer: function} | [ ] | A single or list of objects with an `action` and a `reducer`, used to specify custom reducers in response to actions external to the current resource. |
+| `clearOn` | Action or Action[] | [ ] | A single or list of actions for which the current resource should be cleared. |
+| `hasAndBelongsToMany` | {\[associationName\]: Resource } | { } | An object of associated resources, with a many-to-many relationship with the current one. |
+| `belongsTo` | {\[associationName\]: Resource } | { } | An object of associated resources, with a one-to-many relationship with the current one. |
+
+### Action Options API
+
+`actionOptions` are used to configure individual resource actions and override any options specified in `globalOptions` or `resourceOptions`. They are the most specific level of options available at the time that resources are defined and can only be superseded by options provided to action creators when they are called.
+
+#### Usage
+
+```javascript
+import { resources } from 'redux-and-the-rest';
+
+const { fetchUsers } = resources(
+    {
+        // ...
+    },
+    {
+        index: {
+            // actionOptions
+        },
+        show: {
+            // actionOptions
+        }
+    }
+);
+```
+
+#### Options
+
+##### Naming and indexing
+
+| key | Type | Required or Default Value | Description |
+| --------------------------------------- | :----: | :----: | :-- |
+| `keyBy` | String | `resourceOptions.keyBy` | The key to index all items on for this particular action. |
+
+##### Synchronising with a remote API
+
+| key | Type | Required or Default Value | Description |
+| --------------------------------------- | :----: | :----: | :-- |
+| `url` |  String |`resourceOptions.url` | The URL template to use for this particular action. |
+| `urlOnlyParams` | String[] | `resourceOptions.urlOnlyParams` | The attributes passed to the action creator that should be used to create the request URL, and ignored when storing the result in the store. |
+| `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers ||
+| `progress` | Boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `index`, `show`, `create`, `update` and any custom actions. |
+
+##### Reducers
+
+| key | Type | Required or Default Value | Description |
+| --------------------------------------- | :----: | :----: | :-- |
+| `reducer` | Function | RESTFUL actions: a sensible default; non-RESTFUL: Required | A custom reducer function to adapt the resource as it exists in the Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful actions. |
+| `beforeReducers` | Function[] | [ ] | A list of functions to call before passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
+| `afterReducers` | Function[] | [ ] |A list of functions to call after passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
+
+
 ## Store data
 
 
@@ -323,6 +563,67 @@ function mapStateToProps({ users: usersResource }, { params: { order } }) {
   return getCollection(usersResource, { order });
 }
 ```
+
+### Store data schemas
+
+#### Nomenclature
+
+It is helpful to first clarify some of the terms used in the next few sections:
+
+* **Resource:** A *type of thing* that is available in your application and you can view or perform actions on. Examples of resources are "users", "posts" or "comments".
+* **Collection:** An ordered list of items of a particular resource. This is generally what is returned from an RESTful index server endpoint. They can be ordered, scoped or filtered. Examples include "the newest users", "the most popular posts", or simply "comments" (collections don't have to have an explicit order - but one will be implied by how they are listed in a server's response).
+* **Item:** Individual resource objects, that can belong to collections or can exist as individual entities. They always have a unique primary id, or key that identifies them. For example "user with ID 123" or "post with ID 7".
+
+#### Resource schema
+
+All resources defined with the `resources()` function, return a `reducers` object that initialises and maintains the same data schema. This means you can easily reason about each of your resources and there is very little overhead to defining a new resource.
+
+##### Top level schema
+
+The top-level schema looks like the following, before it any data is added to your store:
+
+```javascript
+{
+    items: {},
+    collections: {},
+    selectionMap: {},
+    newItemKey: null
+}
+```
+
+We will now explore each one:
+* `items` - A map of item keys to item objects, from all of the collections currently in the store. This means that collections with a large amount of overlap (i.e. they share many of the same items) only store one copy of each item.
+* `collections` - A map of collections, keyed by their parameters. This allows you to have many collections of the same resource all in the one place (e.g. "newest", "most popular"), without having to re-fetch them if the user moves back and forth between them.
+* `selectionMap` - A dictionary of item keys, representing which of the resources are currently selected in your application (if any). Because it is a map, it is easy to query if any one particular item is currently selected or not, in constant time.
+* `newItemKey` - A value that keeps track of the key assigned to the latest item that was created of this particular resource. This is useful when you are creating a new item with a temporary id (say the current time) and you need to know the new ID the server has assigned it once it has been successfully created there, so you can move from the temporary id to the new server-assigned Id.
+
+##### Item schema
+
+A blank item has the following schema:
+
+```javascript
+{
+  values: {},
+  status: { type: null },
+};
+```
+
+* `values`: This is where all of the item's attributes are stored.
+* `status`: This is where status information is stored, separate from the item's attributes. This allows the `values` to remain pure - so if you are editing an item, all you need to do is send the new `values` back to the server, without having to worry about any irrelevant attributes being mixed in.
+
+##### Collection schema
+
+A blank collection has the following schema:
+
+```javascript
+{
+  positions: [],
+  status: { type: null },
+};
+```
+
+* `positions`: This is an array of keys of the items that exist in the collection. It stores the order of the items separate from the items themselves, so the items may be efficiently stored (without any duplicates) when we have multiple collections that may share them. It also means that we may update individual item's values, without having to alter all of the collections they are a part of.
+* `status`: This is where status information is stored for the entire collection.
 
 ### Data lifecycle
 
@@ -771,234 +1072,3 @@ There are also a few additional options used directly by `redux-and-the-rest` it
 | `cookie` | String | '' | The value to set as the request's `Cookie` header. This is useful for performing requests to authenticated endpoints as part of initial render for server-side rendering. |
 | `credentials` | Boolean | `false` | Similar to the `cookie` option, when set to `true`,  `credentials` sends the cookies set in the browser in the request's `Cookie` header(s). This option should won't work for SSR (as there is no browser cookie jar to pull the cookies from) - you will need to use `cookie` instead. |
 | `errorHandler` | Function | `undefined` | A function to call if the request returns an error response (HTTP status > 400). This function must accept two arguments: the `Response` object and a callback that the `errorHandler` will call once it has finished executing, with a value representing the error that will be placed in the store. This option is useful to "unwrap" error objects from error responses, or to standardise how errors are represented in Redux that come from different endpoints or servers. |
-
-## API Reference
-
-### Levels of configuration
-
-It's important to have a basic understanding of `redux-and-the-rest` achieves its flexibility using its four levels of configuration; each have different scopes and are specified at different times.
-
-You need to select where you place your configuration depending on how wide you want particular options to apply.
-
-The options are set out in a hierarchy, so as their scope becomes increasingly specific, their priority increases and they override any corresponding action that may have been provided to a lower priority set of options.
-
-For example, `actionCreatorOptions` take precedence over `actionOptions` (which take precedence over `resourceOptions`).
-
-
-| Options | Priority | Defined | Scope | Required |
-| ---- | :---- | :---- | :-- | :--: |
-| `globalOptions` | Lowest | Before defining any resources, using `configure()` | All resources and their actions | No |
-| `resourceOptions` |  | When defining resources, using `resources()` | All of a single resource's actions | Yes |
-| `actionOptions` |  | When defining resources, using `resources()` | A single resource action | No |
-| `actionCreatorOptions` | Highest | When calling an action creator, as the last argument | A single store operation | No |
-
-Here is an example of them used all in once place:
-
-```javascript
-import { configure, resources } from 'redux-and-the-rest';
-
-configure({
-    // globalOptions
-    // ...
-});
-
-const { fetchUsers } = resources(
-    {
-        // resourceOptions
-        name: 'users',
-        url: 'http://www.example.com/users/:id',
-        keyBy: 'id'
-    },
-    {
-        index: {
-            // actionOptions
-            // ...
-        },
-        show: {
-            // actionOptions
-            // ...
-        }
-    }
-);
-
-fetchUsers({order: 'newest'}, {
-  // actionCreatorOptions
-  // ...
-})
-```
-
-### Global Options API
-
-#### Usage
-
-```javascript
-import { configure } from 'redux-and-the-rest';
-
-configure({
-    // globalOptions
-});
-```
-
-#### Options
-
-| key |  Type |Required or Default Value | Description |
-| --------------------------------------- | :----: | :----: | :-- |
-
-### Resource Options API
-
-Values passed to `resourceOptions` are used to configure the resource and apply to all actions, unless overridden by more specific configuration in `actionOptions`.
-
-#### Usage
-
-```javascript
-import { resources } from 'redux-and-the-rest';
-
-const { fetchUsers } = resources(
-    {
-        // resourceOptions
-    },
-    {
-        // ...
-    }
-);
-```
-
-#### Options
-
-##### Naming and indexing
-
-| key |  Type |Required or Default Value | Description |
-| --------------------------------------- | :----: | :----: | :-- |
-| `name` | String | Required | The pluralized name of the resource you are defining.
-| `keyBy` | String |  'id' | The resource attribute used to key/index all items of the current resource type. This will be the value you pass to each action creator to identify the target of each action. |
-
-##### Synchronising with a remote API
-
-| key |  Type |Required or Default Value | Description |
-| --------------------------------------- | :----: | :----: | :-- |
-| `localOnly` | Boolean | false | Set to true for resources that should be edited locally, only. The `show` and `index` actions are disabled (the `fetch*` action creators are not exported) and the `create`, `update` and `destroy` only update the store locally, without making any HTTP requests. |
-| `url` | String |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
-| `urlOnlyParams` | String[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
-| `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers ||
-
-##### Reducers
-
-| key |  Type |Required or Default Value | Description |
-| --------------------------------------- | :----: | :----: | :-- |
-| `beforeReducers` | Function[] | [ ] | A list of functions to call before passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
-| `afterReducers` | Function[] | [ ] |A list of functions to call after passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
-| `reducesOn` | {action: Action, reducer: function} | [ ] | A single or list of objects with an `action` and a `reducer`, used to specify custom reducers in response to actions external to the current resource. |
-| `clearOn` | Action or Action[] | [ ] | A single or list of actions for which the current resource should be cleared. |
-| `hasAndBelongsToMany` | {\[associationName\]: Resource } | { } | An object of associated resources, with a many-to-many relationship with the current one. |
-| `belongsTo` | {\[associationName\]: Resource } | { } | An object of associated resources, with a one-to-many relationship with the current one. |
-
-### Action Options API
-
-`actionOptions` are used to configure individual resource actions and override any options specified in `globalOptions` or `resourceOptions`. They are the most specific level of options available at the time that resources are defined and can only be superseded by options provided to action creators when they are called.
-
-#### Usage
-
-```javascript
-import { resources } from 'redux-and-the-rest';
-
-const { fetchUsers } = resources(
-    {
-        // ...
-    },
-    {
-        index: {
-            // actionOptions
-        },
-        show: {
-            // actionOptions
-        }
-    }
-);
-```
-
-#### Options
-
-##### Naming and indexing
-
-| key | Type | Required or Default Value | Description |
-| --------------------------------------- | :----: | :----: | :-- |
-| `keyBy` | String | `resourceOptions.keyBy` | The key to index all items on for this particular action. |
-
-##### Synchronising with a remote API
-
-| key | Type | Required or Default Value | Description |
-| --------------------------------------- | :----: | :----: | :-- |
-| `url` |  String |`resourceOptions.url` | The URL template to use for this particular action. |
-| `urlOnlyParams` | String[] | `resourceOptions.urlOnlyParams` | The attributes passed to the action creator that should be used to create the request URL, and ignored when storing the result in the store. |
-| `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers ||
-| `progress` | Boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `index`, `show`, `create`, `update` and any custom actions. |
-
-##### Reducers
-
-| key | Type | Required or Default Value | Description |
-| --------------------------------------- | :----: | :----: | :-- |
-| `reducer` | Function | RESTFUL actions: a sensible default; non-RESTFUL: Required | A custom reducer function to adapt the resource as it exists in the Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful actions. |
-| `beforeReducers` | Function[] | [ ] | A list of functions to call before passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
-| `afterReducers` | Function[] | [ ] |A list of functions to call after passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
-
-
-## Store data schemas
-
-### Nomenclature
-
-It is helpful to first clarify some of the terms used in the next few sections:
-
-* **Resource:** A *type of thing* that is available in your application and you can view or perform actions on. Examples of resources are "users", "posts" or "comments".
-* **Collection:** An ordered list of items of a particular resource. This is generally what is returned from an RESTful index server endpoint. They can be ordered, scoped or filtered. Examples include "the newest users", "the most popular posts", or simply "comments" (collections don't have to have an explicit order - but one will be implied by how they are listed in a server's response).
-* **Item:** Individual resource objects, that can belong to collections or can exist as individual entities. They always have a unique primary id, or key that identifies them. For example "user with ID 123" or "post with ID 7".
-
-### Resource schema
-
-All resources defined with the `resources()` function, return a `reducers` object that initialises and maintains the same data schema. This means you can easily reason about each of your resources and there is very little overhead to defining a new resource.
-
-#### Top level schema
-
-The top-level schema looks like the following, before it any data is added to your store:
-
-```javascript
-{
-    items: {},
-    collections: {},
-    selectionMap: {},
-    newItemKey: null
-}
-```
-
-We will now explore each one:
-* `items` - A map of item keys to item objects, from all of the collections currently in the store. This means that collections with a large amount of overlap (i.e. they share many of the same items) only store one copy of each item.
-* `collections` - A map of collections, keyed by their parameters. This allows you to have many collections of the same resource all in the one place (e.g. "newest", "most popular"), without having to re-fetch them if the user moves back and forth between them.
-* `selectionMap` - A dictionary of item keys, representing which of the resources are currently selected in your application (if any). Because it is a map, it is easy to query if any one particular item is currently selected or not, in constant time.
-* `newItemKey` - A value that keeps track of the key assigned to the latest item that was created of this particular resource. This is useful when you are creating a new item with a temporary id (say the current time) and you need to know the new ID the server has assigned it once it has been successfully created there, so you can move from the temporary id to the new server-assigned Id.
-
-#### Item schema
-
-A blank item has the following schema:
-
-```javascript
-{
-  values: {},
-  status: { type: null },
-};
-```
-
-* `values`: This is where all of the item's attributes are stored.
-* `status`: This is where status information is stored, separate from the item's attributes. This allows the `values` to remain pure - so if you are editing an item, all you need to do is send the new `values` back to the server, without having to worry about any irrelevant attributes being mixed in.
-
-#### Collection schema
-
-A blank collection has the following schema:
-
-```javascript
-{
-  positions: [],
-  status: { type: null },
-};
-```
-
-* `positions`: This is an array of keys of the items that exist in the collection. It stores the order of the items separate from the items themselves, so the items may be efficiently stored (without any duplicates) when we have multiple collections that may share them. It also means that we may update individual item's values, without having to alter all of the collections they are a part of.
-* `status`: This is where status information is stored for the entire collection.
