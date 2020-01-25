@@ -3,7 +3,7 @@ import { resources, EDITING, NEW } from '../../../index';
 
 describe('Clear new reducer:', function () {
   beforeAll(function () {
-    const { reducers, clearNewUser } = resources({
+    const { reducers, actionCreators: { clearNewUser } } = resources({
       name: 'users',
     }, {
       clearNew: true

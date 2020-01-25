@@ -3,7 +3,7 @@ import { resources, SUCCESS } from '../../../index';
 
 describe('Select reducer:', function () {
   beforeAll(function () {
-    const { reducers, selectUser } = resources({
+    const { reducers, actionCreators: { selectUser } } = resources({
       name: 'users',
     }, {
       select: true

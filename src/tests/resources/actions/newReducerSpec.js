@@ -6,7 +6,7 @@ import {
 
 describe('New reducer:', () => {
   beforeAll(function () {
-    const { reducers, newUser } = resources({
+    const { reducers, actionCreators: { newUser } } = resources({
       name: 'users',
       keyBy: 'id'
     }, {

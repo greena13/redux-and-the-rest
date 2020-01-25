@@ -38,7 +38,7 @@ describe('localOnly:', function () {
       }
     };
 
-    const { reducers: sessionReducers, destroySession, actions } = resources({
+    const { reducers: sessionReducers, actionCreators: { destroySession }, actions } = resources({
       name: 'session',
       url: 'http://test.com/session/:id',
     }, {
@@ -66,7 +66,7 @@ describe('localOnly:', function () {
     beforeAll(function () {
       const {
         reducers: usersReducers,
-        fetchUser, fetchUsers
+        actionCreators: { fetchUser, fetchUsers }
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',
@@ -89,7 +89,7 @@ describe('localOnly:', function () {
     beforeAll(function () {
       const {
         reducers: usersReducers,
-        fetchUser, fetchUsers, newUser, createUser, editUser, updateUser, destroyUser
+        actionCreators: { fetchUser, fetchUsers, newUser, createUser, editUser, updateUser, destroyUser }
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',

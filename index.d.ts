@@ -186,7 +186,7 @@ export interface ResourcesDefinition {
     /**
      * Dictionary of ActionCreatorFunctions indexed by their ActionCreatorName
      */
-    // actionCreators: ActionCreatorDictionary,
+    actionCreators: ActionCreatorDictionary,
 
     /**
      *  Reducer function that will accept the resource's current state and an action and return the new

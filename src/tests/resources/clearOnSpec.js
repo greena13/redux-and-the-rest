@@ -45,7 +45,7 @@ describe('clearOn:', function () {
       }
     };
 
-    const { reducers: sessionReducers, destroySession, actions } = resources({
+    const { reducers: sessionReducers, actionCreators: { destroySession }, actions } = resources({
       name: 'session',
       url: 'http://test.com/session/:id',
     }, {

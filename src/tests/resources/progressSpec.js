@@ -8,7 +8,7 @@ describe('progress option', function () {
   describe('for the create action:', function () {
     describe('when it is NOT set to a truthy value', function () {
       beforeAll(function () {
-        const { reducers, createUser } = resources({
+        const { reducers, actionCreators: { createUser } } = resources({
           name: 'users',
           url: 'http://test.com/users',
           keyBy: 'id'
@@ -76,7 +76,7 @@ describe('progress option', function () {
 
     describe('when it is set to a truthy value', function () {
       beforeAll(function () {
-        const { reducers, createUser } = resources({
+        const { reducers, actionCreators: { createUser } } = resources({
           name: 'users',
           url: 'http://test.com/users',
           keyBy: 'id'
@@ -257,7 +257,7 @@ describe('progress option', function () {
   describe('for the update action:', function () {
     describe('when it is NOT set to a truthy value', function () {
       beforeAll(function () {
-        const { reducers, updateUser } = resources({
+        const { reducers, actionCreators: { updateUser } } = resources({
           name: 'users',
           url: 'http://test.com/users/:id',
           keyBy: 'id'
@@ -341,7 +341,7 @@ describe('progress option', function () {
 
     describe('when it is set to a truthy value', function () {
       beforeAll(function () {
-        const { reducers, updateUser } = resources({
+        const { reducers, actionCreators: { updateUser } } = resources({
           name: 'users',
           url: 'http://test.com/users/:id',
           keyBy: 'id'
@@ -538,7 +538,7 @@ describe('progress option', function () {
   describe('for the show action:', function () {
     describe('when it is NOT set to a truthy value', function () {
       beforeAll(function () {
-        const { reducers, fetchUser } = resources({
+        const { reducers, actionCreators: { fetchUser } } = resources({
           name: 'users',
           url: 'http://test.com/users/:id',
           keyBy: 'id'
@@ -608,7 +608,7 @@ describe('progress option', function () {
 
     describe('when it is set to a truthy value', function () {
       beforeAll(function () {
-        const { reducers, fetchUser } = resources({
+        const { reducers, actionCreators: { fetchUser } } = resources({
           name: 'users',
           url: 'http://test.com/users/:id',
           keyBy: 'id'
@@ -791,7 +791,7 @@ describe('progress option', function () {
   describe('for the index action:', function () {
     describe('when it is NOT set to a truthy value', function () {
       beforeAll(function () {
-        const { reducers, fetchUsers } = resources({
+        const { reducers, actionCreators: { fetchUsers } } = resources({
           name: 'users',
           url: 'http://test.com/users/:id?',
           keyBy: 'id'
@@ -871,7 +871,7 @@ describe('progress option', function () {
 
     describe('when it is set to a truthy value', function () {
       beforeAll(function () {
-        const { reducers, fetchUsers } = resources({
+        const { reducers, actionCreators: { fetchUsers } } = resources({
           name: 'users',
           url: 'http://test.com/users/:id?',
           keyBy: 'id'

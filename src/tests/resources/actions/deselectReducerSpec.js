@@ -3,7 +3,7 @@ import { resources, SUCCESS } from '../../../index';
 
 describe('Deselect reducer:', function () {
   beforeAll(function () {
-    const { reducers, deselectUser } = resources({
+    const { reducers, actionCreators: { deselectUser } } = resources({
       name: 'users',
       keyBy: 'id'
     }, {

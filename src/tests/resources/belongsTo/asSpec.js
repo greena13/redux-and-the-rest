@@ -73,7 +73,7 @@ describe('belongsTo:', function () {
         this.resolveRequest = resolve;
       }));
 
-      this.store.dispatch(this.addresses.createAddress('temp', { residentId: 1, city: 'City 3' }));
+      this.store.dispatch(this.addresses.actionCreators.createAddress('temp', { residentId: 1, city: 'City 3' }));
 
       this.users = this.store.getState().users;
     });

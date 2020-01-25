@@ -74,7 +74,7 @@ describe('hasAndBelongsToMany:', function () {
         this.resolveRequest = resolve;
       }));
 
-      this.store.dispatch(this.posts.createPost('temp', { authorId: 1, title: 'New Post 3' }));
+      this.store.dispatch(this.posts.actionCreators.createPost('temp', { authorId: 1, title: 'New Post 3' }));
 
       this.users = this.store.getState().users;
     });

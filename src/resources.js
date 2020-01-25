@@ -115,6 +115,7 @@ import getCollection from './utils/getCollection';
  *          action and return the new resource state
  * @property {GetItemFunction} getItem Function that returns a particular item of a resource type
  * @property {GetCollectionFunction} getCollection Function that returns a particular collection of resources
+ * @property {ActionCreatorDictionary} actionCreators Dictionary of available action creators
  */
 
 /**
@@ -141,7 +142,7 @@ function resources(resourceOptions, actionOptions = {}) {
     getNewItem,
     getCollection: (resource, params) => getCollection(resourceOptions, resource, params),
     __isResource: true,
-    ...actionCreators
+    actionCreators
   };
 }
 

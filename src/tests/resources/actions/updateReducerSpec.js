@@ -4,7 +4,7 @@ import { resources, ERROR, SUCCESS, UPDATING, RESOURCES } from '../../../index';
 
 describe('Update reducer:', function () {
   beforeAll(function() {
-    const { reducers, updateUser } = resources({
+    const { reducers, actionCreators: { updateUser } } = resources({
       name: 'users',
       url: 'http://test.com/users/:id?',
     }, {

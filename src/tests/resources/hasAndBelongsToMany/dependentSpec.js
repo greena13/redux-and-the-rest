@@ -84,7 +84,7 @@ describe('hasAndBelongsToMany:', function () {
           addresses: this.addresses.reducers
         });
 
-        this.store.dispatch(this.addresses.destroyAddress(1, { userIds: [ 1 ], city: 'City 3' }));
+        this.store.dispatch(this.addresses.actionCreators.destroyAddress(1, { userIds: [ 1 ], city: 'City 3' }));
 
         this.users = this.store.getState().users;
       });
@@ -127,7 +127,7 @@ describe('hasAndBelongsToMany:', function () {
 
         spyOn(console, 'warn');
 
-        this.store.dispatch(this.addresses.destroyAddress(1));
+        this.store.dispatch(this.addresses.actionCreators.destroyAddress(1));
 
         this.users = this.store.getState().users;
       });

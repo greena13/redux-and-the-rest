@@ -4,10 +4,10 @@ import { resources, RESOURCES, CREATING, ERROR, NEW, SUCCESS } from '../../../in
 
 describe('Create reducer:', function () {
   beforeAll(function() {
-    const { reducers, createUser } = resources({
+    const { reducers, actionCreators: { createUser } } = resources({
       name: 'users',
       url: 'http://test.com/users/:id?',
-      keyBy: 'id',
+      keyBy: 'id'
     }, {
       create: true
     });
@@ -109,9 +109,7 @@ describe('Create reducer:', function () {
               it('then updates the newItemKey ', function() {
                 expect(this.users.newItemKey).toEqual(1);
               });
-
             });
-
           });
 
           describe('and the API request errors', function () {

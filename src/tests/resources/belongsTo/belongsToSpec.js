@@ -99,7 +99,7 @@ describe('belongsTo:', function () {
           this.resolveRequest = resolve;
         }));
 
-        this.store.dispatch(this.addresses.createAddress('temp', { userId: 1, city: 'New City 3' }));
+        this.store.dispatch(this.addresses.actionCreators.createAddress('temp', { userId: 1, city: 'New City 3' }));
 
         this.users = this.store.getState().users;
       });
@@ -144,7 +144,7 @@ describe('belongsTo:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.addresses.updateAddress(1, {
+          this.store.dispatch(this.addresses.actionCreators.updateAddress(1, {
             city: 'City 1',
             userId: 2
           }, { previous: {
@@ -204,7 +204,7 @@ describe('belongsTo:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.addresses.updateAddress(1, {
+          this.store.dispatch(this.addresses.actionCreators.updateAddress(1, {
             city: 'City 1',
             userId: 2
           }));
@@ -261,7 +261,7 @@ describe('belongsTo:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.addresses.destroyAddress(1, { previous: {
+          this.store.dispatch(this.addresses.actionCreators.destroyAddress(1, { previous: {
               city: 'City 1',
               userId: 1
             }
@@ -310,7 +310,7 @@ describe('belongsTo:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.addresses.destroyAddress(1));
+          this.store.dispatch(this.addresses.actionCreators.destroyAddress(1));
 
           this.users = this.store.getState().users;
         });
@@ -442,7 +442,7 @@ describe('belongsTo:', function () {
           this.resolveRequest = resolve;
         }));
 
-        this.store.dispatch(this.addresses.createAddress('temp', { userIds: [ 1 ], city: 'New City 3' }));
+        this.store.dispatch(this.addresses.actionCreators.createAddress('temp', { userIds: [ 1 ], city: 'New City 3' }));
 
         this.users = this.store.getState().users;
       });
@@ -487,7 +487,7 @@ describe('belongsTo:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.addresses.updateAddress(1, {
+          this.store.dispatch(this.addresses.actionCreators.updateAddress(1, {
             city: 'City 1',
             userIds: [ 2 ]
           }, { previous: {
@@ -547,7 +547,7 @@ describe('belongsTo:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.addresses.updateAddress(1, {
+          this.store.dispatch(this.addresses.actionCreators.updateAddress(1, {
             city: 'City 1',
             userIds: [ 2 ]
           }));
@@ -604,7 +604,7 @@ describe('belongsTo:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.addresses.destroyAddress(1, { previous: {
+          this.store.dispatch(this.addresses.actionCreators.destroyAddress(1, { previous: {
               city: 'City 1',
               userIds: [ 1 ]
             }
@@ -653,7 +653,7 @@ describe('belongsTo:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.addresses.destroyAddress(1));
+          this.store.dispatch(this.addresses.actionCreators.destroyAddress(1));
 
           this.users = this.store.getState().users;
         });

@@ -32,7 +32,7 @@ import Thunk from 'redux-thunk';
 /**
  * Define a users resource
  */
-const { reducers: usersReducers, fetchUsers, getCollection } = resources(
+const { reducers: usersReducers, actionCreators: { fetchUsers }, getCollection } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -211,7 +211,7 @@ It returns an object containing Redux components necessary to use the resource y
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { reducers, fetchUsers } = resources(
+const { reducers, actionCreators: { fetchUsers } } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -237,7 +237,7 @@ const { reducers, fetchUsers } = resources(
 If you want to use the default configuration for a particular action, you just need to pass a value of `true`, for example:
 
 ```javascript
-const { fetchUsers } = resources(
+const { actionCreators: { fetchUsers } } = resources(
     {
         // ...
     },
@@ -248,7 +248,7 @@ const { fetchUsers } = resources(
 You can also pass an array of RESTful actions for which you want to use the default configuration:
 
 ```javascript
-const { fetchUsers } = resources(
+const { actionCreators: { fetchUsers } } = resources(
     {
         // ...
     },
@@ -261,7 +261,7 @@ const { fetchUsers } = resources(
 You can override or extend the default configuration for an action using an options hash instead of `true` when defining your actions:
 
 ```javascript
-const { fetchUsers } = resources(
+const { actionCreators: { fetchUsers } } = resources(
     {
         // ...
     },
@@ -305,7 +305,7 @@ configure({
     // ...
 });
 
-const { fetchUsers } = resources(
+const { actionCreators: { fetchUsers } } = resources(
     {
         // resourceOptions
         name: 'users',
@@ -356,7 +356,7 @@ Values passed to `resourceOptions` are used to configure the resource and apply 
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { fetchUsers } = resources(
+const { actionCreators: { fetchUsers } } = resources(
     {
         // resourceOptions
     },
@@ -404,7 +404,7 @@ const { fetchUsers } = resources(
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { fetchUsers } = resources(
+const { actionCreators: { fetchUsers } } = resources(
     {
         // ...
     },
@@ -455,7 +455,7 @@ Where resources are located in your Redux store depend on how you pass the `redu
 For example, assuming you have defined a users resource like this:
 
 ```javascript
-const { reducers: usersReducers, fetchUsers } = resources(
+const { reducers: usersReducers, actionCreators: { fetchUsers } } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -522,7 +522,7 @@ It will return an [empty item](#item-schema) (instead of `undefined`) if one wit
 import { serializeKey, ITEM } from `redux-and-the-rest`;
 import { connect } from 'react-redux';
 
-const { reducers: usersReducers, fetchUsers, getItem } = resources(
+const { reducers: usersReducers, actionCreators: { fetchUsers }, getItem } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -548,7 +548,7 @@ It will return an [empty collection](#collection-schema) (instead of `undefined`
 import { serializeKey, COLLECTION } from `redux-and-the-rest`;
 import { connect } from 'react-redux';
 
-const { reducers: usersReducers, fetchUsers, getCollection } = resources(
+const { reducers: usersReducers, actionCreators: { fetchUsers }, getCollection } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -729,7 +729,7 @@ Given the following resource definition:
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { reducers, fetchUsers } = resources(
+const { reducers, actionCreators: { fetchUsers } } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -968,7 +968,7 @@ The default template URL for a resource is set in [resourceOptions](#resource-op
 However, you can override this default for individual actions using the `url` option for [actionOptions](#action-options-api):
 
 ```javascript
-const { fetchUser } = resources(
+const { actionCreators: { fetchUser } } = resources(
 {
     name: 'users',
     url: 'http://test.com/users/:id?',
@@ -1000,7 +1000,7 @@ For example, given the following resource definition:
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { reducers, fetchUsers } = resources(
+const { reducers, actionCreators: { fetchUsers } } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -1047,7 +1047,7 @@ For example, if you define a resource using the following actions:
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { reducers, fetchUsers } = resources(
+const { reducers, actionCreators: { fetchUsers } } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.

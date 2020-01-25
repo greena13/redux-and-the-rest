@@ -8,8 +8,7 @@ describe('Generating key:', function () {
     beforeAll(function () {
       const {
         reducers,
-        fetchUsers,
-
+        actionCreators: { fetchUsers }
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',
@@ -96,8 +95,7 @@ describe('Generating key:', function () {
     beforeAll(function () {
       const {
         reducers,
-        fetchUsers,
-
+        actionCreators: { fetchUsers },
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',

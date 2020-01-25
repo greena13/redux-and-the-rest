@@ -5,7 +5,7 @@ import { resources, ERROR, FETCHING, SUCCESS, RESOURCES } from '../../../index';
 describe('Show reducers:', function () {
   describe('when the keyBy option is a string', function () {
     beforeAll(function() {
-      const { reducers, fetchUser } = resources({
+      const { reducers, actionCreators: { fetchUser } } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
@@ -272,7 +272,7 @@ describe('Show reducers:', function () {
 
   describe('when the keyBy option is an array', () => {
     beforeAll(function() {
-      const { reducers, fetchUser } = resources({
+      const { reducers, actionCreators: { fetchUser } } = resources({
         name: 'users',
         url: 'http://test.com/groups/:groupId/users/:id?',
         keyBy: ['id', 'groupId'],

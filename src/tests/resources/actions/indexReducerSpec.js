@@ -4,7 +4,7 @@ import { resources, ERROR, FETCHING, SUCCESS } from '../../../index';
 
 describe('Index reducers:', function () {
   beforeAll(function() {
-    const { reducers, fetchUsers } = resources({
+    const { reducers, actionCreators: { fetchUsers } } = resources({
       name: 'users',
       url: 'http://test.com/users/:id?',
       keyBy: 'id',

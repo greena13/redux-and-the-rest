@@ -8,7 +8,7 @@ import {
 
 describe('Destroy reducer:', function () {
   beforeAll(function() {
-    const { reducers, destroyUser } = resources({
+    const { reducers, actionCreators: { destroyUser } } = resources({
       name: 'users',
       url: 'http://test.com/users/:id?',
       keyBy: 'id'

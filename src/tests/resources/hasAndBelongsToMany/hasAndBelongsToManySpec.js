@@ -95,7 +95,7 @@ describe('hasAndBelongsToMany:', function () {
           this.resolveRequest = resolve;
         }));
 
-        this.store.dispatch(this.posts.createPost('temp', { userId: 1, title: 'New Post 3' }));
+        this.store.dispatch(this.posts.actionCreators.createPost('temp', { userId: 1, title: 'New Post 3' }));
 
         this.users = this.store.getState().users;
       });
@@ -140,7 +140,7 @@ describe('hasAndBelongsToMany:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.posts.updatePost(1, {
+          this.store.dispatch(this.posts.actionCreators.updatePost(1, {
             title: 'Post 1',
             userId: 2
           }, { previous: {
@@ -200,7 +200,7 @@ describe('hasAndBelongsToMany:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.posts.updatePost(1, {
+          this.store.dispatch(this.posts.actionCreators.updatePost(1, {
             title: 'Post 1',
             userId: 2
           }));
@@ -257,7 +257,7 @@ describe('hasAndBelongsToMany:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.posts.destroyPost(1, { previous: {
+          this.store.dispatch(this.posts.actionCreators.destroyPost(1, { previous: {
               title: 'Post 1',
               userId: 1
             }
@@ -306,7 +306,7 @@ describe('hasAndBelongsToMany:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.posts.destroyPost(1));
+          this.store.dispatch(this.posts.actionCreators.destroyPost(1));
 
           this.users = this.store.getState().users;
         });
@@ -443,7 +443,7 @@ describe('hasAndBelongsToMany:', function () {
           this.resolveRequest = resolve;
         }));
 
-        this.store.dispatch(this.posts.createPost('temp', { userIds: [ 1 ], title: 'New Post 3' }));
+        this.store.dispatch(this.posts.actionCreators.createPost('temp', { userIds: [ 1 ], title: 'New Post 3' }));
 
         this.users = this.store.getState().users;
       });
@@ -488,7 +488,7 @@ describe('hasAndBelongsToMany:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.posts.updatePost(1, {
+          this.store.dispatch(this.posts.actionCreators.updatePost(1, {
             title: 'Post 1',
             userIds: [ 2 ]
           }, { previous: {
@@ -548,7 +548,7 @@ describe('hasAndBelongsToMany:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.posts.updatePost(1, {
+          this.store.dispatch(this.posts.actionCreators.updatePost(1, {
             title: 'Post 1',
             userIds: [ 2 ]
           }));
@@ -605,7 +605,7 @@ describe('hasAndBelongsToMany:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.posts.destroyPost(1, { previous: {
+          this.store.dispatch(this.posts.actionCreators.destroyPost(1, { previous: {
               title: 'Post 1',
               userIds: [ 1 ]
             }
@@ -654,7 +654,7 @@ describe('hasAndBelongsToMany:', function () {
 
           spyOn(console, 'warn');
 
-          this.store.dispatch(this.posts.destroyPost(1));
+          this.store.dispatch(this.posts.actionCreators.destroyPost(1));
 
           this.users = this.store.getState().users;
         });

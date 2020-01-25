@@ -3,7 +3,7 @@ import { resources, SUCCESS } from '../../../index';
 
 describe('Clear selected reducer:', function () {
   beforeAll(function () {
-    const { reducers, clearSelectedUsers } = resources({
+    const { reducers, actionCreators: { clearSelectedUsers } } = resources({
       name: 'users',
     }, {
       clearSelected: true

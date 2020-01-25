@@ -8,12 +8,13 @@ describe('Specifying a response adaptor:', function () {
     beforeAll(function() {
       const {
         reducers,
-        createUser,
-        fetchUsers,
-        fetchUser,
-        updateUser,
-        destroyUser
-
+        actionCreators: {
+          createUser,
+          fetchUsers,
+          fetchUser,
+          updateUser,
+          destroyUser
+        }
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',
@@ -559,9 +560,7 @@ describe('Specifying a response adaptor:', function () {
     beforeAll(function() {
       const {
         reducers,
-        fetchUsers,
-        fetchUser,
-
+        actionCreators: { fetchUsers, fetchUser }
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',

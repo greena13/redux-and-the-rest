@@ -3,7 +3,7 @@ import { resources, EDITING, ERROR, NEW, SUCCESS } from '../../../index';
 
 describe('Edit reducer:', function () {
   beforeAll(function () {
-    const { reducers, editUser } = resources({
+    const { reducers, actionCreators: { editUser } } = resources({
       name: 'users',
       keyBy: 'id'
     }, {
