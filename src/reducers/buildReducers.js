@@ -578,8 +578,8 @@ const PROGRESS_COMPATIBLE_ACTIONS = {
 /**
  * @callback ReducerFunction Function that accepts the current state and Redux action and returns the
  *          correct new state.
- * @param {ResourcesReduxState} current_state The current state of there resource
- * @param {ReduxAction} action The action containing the data to update the resource state
+ * @param {ResourcesReduxState} currentState The current state of there resource
+ * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
 

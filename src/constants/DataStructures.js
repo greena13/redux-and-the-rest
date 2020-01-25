@@ -14,7 +14,7 @@ const SHARED_ATTRIBUTES = {
  */
 
 /**
- * @typedef {String} ResourceId The unique identifier of the resource
+ * @typedef {String} ResourceItemId The unique identifier of the resource
  */
 
 /**
@@ -42,7 +42,7 @@ const RESOURCE = {
 
 /**
  * @typedef {Object} ResourceCollection A collection of a particular resource
- * @property {Array<ResourceId>} positions A list of ids of resources in the order they appear in that
+ * @property {Array<ResourceItemId>} positions A list of ids of resources in the order they appear in that
  *          collection.
  * @property {ResourceStatus} status The status information of the resource collection
  */
@@ -58,18 +58,19 @@ const COLLECTION = {
 /**
  * @typedef {Object} ResourcesReduxState The state of the structure in the Redux store that keeps track of all
  *          instances of the same resource type.
- * @property {Object<ResourceId, ResourceItem>} items The set of items of a particular resource type
+ * @property {Object<ResourceItemId, ResourceItem>} items The set of items of a particular resource type
  * @property {Object<CollectionKey, ResourceCollection>} collections The set of collections of a particular
  *           resource type
- * @property {Object<ResourceId,Boolean>} selectionMap A dictionary of the resources that are currently
+ * @property {Object<ResourceItemId,Boolean>} selectionMap A dictionary of the resources that are currently
  *           selected.
  * @property {String} newItemKey The temporary key that is being used for a new resource item until it's been
  *           saved to a remote API and given a permanent unique identifier.
  */
 
 /**
- * @type {ResourcesReduxState} An empty resource redux state
+ * @typedef {ResourcesReduxState} An empty resource redux state
  */
+
 const RESOURCES = {
   items: {},
   collections: {},

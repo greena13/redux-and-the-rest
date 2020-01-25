@@ -14,7 +14,7 @@ import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionar
  */
 
 /**
- * @typedef {RestfulActionName|CustomActionName} ActionName The name of an action to be performed on a resource
+ * @typedef {RestfulActionName|CustomActionName} ActionType The name of an action to be performed on a resource
  */
 
 /**
@@ -22,7 +22,7 @@ import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionar
  */
 
 /**
- * @typedef {Object<ActionName, ActionType>} ActionDictionary Mapping between action names and their types
+ * @typedef {Object<ActionType, ActionType>} ActionDictionary Mapping between action names and their types
  */
 
 /**

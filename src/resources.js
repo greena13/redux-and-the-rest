@@ -8,11 +8,6 @@ import getNewItem from './utils/getNewItem';
 import getCollection from './utils/getCollection';
 
 /**
- * @typedef {Object} ReduxAction
- * @property {ActionType} type
- */
-
-/**
  * @callback GetItemFunction Returns an item of a particular resource from a Redux store, removing any
  *          structure used implicitly.
  * @param {ResourcesReduxState} resource The current resource Redux store state
@@ -26,7 +21,7 @@ import getCollection from './utils/getCollection';
  *           it with the correct items, in the right order.
  * @param {ResourcesReduxState} resource The current resource Redux store state
  * @param {Object|String} params The parameters used to calculate the index of the collection to return
- * @return {CollectionWithItems} The resource collection
+ * @return {ResourceCollectionWithItems} The resource collection
  *
  */
 
@@ -35,12 +30,13 @@ import getCollection from './utils/getCollection';
  */
 
 /**
- * @typedef {Object<ResourceName, ResourcesDefinition>} AssociationOptions
+ * @typedef {Object<ResourceName, ResourcesDefinition>} AssociationOptions A Mapping between the name of an
+ *          associated resource, and its definition.
  */
 
 /**
- * @typedef {{action: ActionName, reducer: ReducerFunction}} ActionReducerFunctionPair A mapping between an
- *         ActionName and the ReducerFunction that should be called when an action of that type is dispatched
+ * @typedef {{action: ActionType, reducer: ReducerFunction}} ActionReducerFunctionPair A mapping between an
+ *         ActionType and the ReducerFunction that should be called when an action of that type is dispatched
  */
 
 /**
@@ -72,7 +68,7 @@ import getCollection from './utils/getCollection';
  * @property {ActionReducerFunctionPair|Array<ActionReducerFunctionPair>} reducesOn A single or list of objects
  *           with an action and a reducer, used to specify custom reducers in response to actions external to
  *           the current resource.
- * @property {ActionName|Array<ActionName>} clearOn A single or list of actions for which the current resource
+ * @property {ActionType|Array<ActionType>} clearOn A single or list of actions for which the current resource
  *           should be cleared.
  * @property {AssociationOptions} hasAndBelongsToMany An object of associated resources, with a many-to-many
  *           relationship with the current one.
@@ -105,23 +101,20 @@ import getCollection from './utils/getCollection';
  * @property {Array<ReducerFunction>} afterReducers A list of functions to call after passing the resource to
  *           the reducer. This is useful if you want to use the default reducer, but provide some additional
  *           post-processing to standardise the resource before it is added to the store.
- * @property {ActionName|Array<ActionName>} clearOn A single or list of actions for which the current resource
- *           should be cleared.
  */
 
 /**
- * @typedef {Object<ActionName, ActionOptions>} ActionOptionsMap
+ * @typedef {Object<ActionType, ActionOptions>} ActionOptionsMap
  */
 
 
 /**
  * @typedef {Object<ActionCreatorName, ActionCreatorFunction>} ResourcesDefinition
- * @extends ActionCreatorDictionary
  * @property {ActionDictionary} actions Mapping between RESTful action names and constant Redux Action names
  * @property {ReducerFunction} reducers Reducer function that will accept the resource's current state and an
  *          action and return the new resource state
  * @property {GetItemFunction} getItem Function that returns a particular item of a resource type
- * @property {GetCollectionFunction} getItem Function that returns a particular collection of resources
+ * @property {GetCollectionFunction} getCollection Function that returns a particular collection of resources
  */
 
 /**
