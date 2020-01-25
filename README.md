@@ -865,13 +865,32 @@ const { fetchUsers } = resources(
 
 #### Options
 
+##### Naming and indexing
+
 | key |  Type |Required or Default Value | Description |
 | --------------------------------------- | :----: | :----: | :-- |
 | `name` | String | Required | The pluralized name of the resource you are defining.
-| `url` | String |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
 | `keyBy` | String |  'id' | The resource attribute used to key/index all items of the current resource type. This will be the value you pass to each action creator to identify the target of each action. |
-| `urlOnlyParams` | String[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
+
+##### Synchronising with a remote API
+
+| key |  Type |Required or Default Value | Description |
+| --------------------------------------- | :----: | :----: | :-- |
 | `localOnly` | Boolean | false | Set to true for resources that should be edited locally, only. The `show` and `index` actions are disabled (the `fetch*` action creators are not exported) and the `create`, `update` and `destroy` only update the store locally, without making any HTTP requests. |
+| `url` | String |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
+| `urlOnlyParams` | String[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
+| `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers ||
+
+##### Reducers
+
+| key |  Type |Required or Default Value | Description |
+| --------------------------------------- | :----: | :----: | :-- |
+| `beforeReducers` | Function[] | [ ] | A list of functions to call before passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
+| `afterReducers` | Function[] | [ ] |A list of functions to call after passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
+| `reducesOn` | {action: Action, reducer: function} | [ ] | A single or list of objects with an `action` and a `reducer`, used to specify custom reducers in response to actions external to the current resource. |
+| `clearOn` | Action or Action[] | [ ] | A single or list of actions for which the current resource should be cleared. |
+| `hasAndBelongsToMany` | {\[associationName\]: Resource } | { } | An object of associated resources, with a many-to-many relationship with the current one. |
+| `belongsTo` | {\[associationName\]: Resource } | { } | An object of associated resources, with a one-to-many relationship with the current one. |
 
 ### Action Options API
 
@@ -899,20 +918,29 @@ const { fetchUsers } = resources(
 
 #### Options
 
+##### Naming and indexing
+
+| key | Type | Required or Default Value | Description |
+| --------------------------------------- | :----: | :----: | :-- |
+| `keyBy` | String | `resourceOptions.keyBy` | The key to index all items on for this particular action. |
+
+##### Synchronising with a remote API
+
 | key | Type | Required or Default Value | Description |
 | --------------------------------------- | :----: | :----: | :-- |
 | `url` |  String |`resourceOptions.url` | The URL template to use for this particular action. |
-| `keyBy` | String | `resourceOptions.keyBy` | The key to index all items on for this particular action. |
 | `urlOnlyParams` | String[] | `resourceOptions.urlOnlyParams` | The attributes passed to the action creator that should be used to create the request URL, and ignored when storing the result in the store. |
-| `reducer` | Function | RESTFUL actions: a sensible default; non-RESTFUL: Required | A custom reducer function to adapt the resource as it exists in the Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful actions. |
-| `progress` | Boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `index`, `show`, `create`, `update` and any custom actions. |
 | `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers ||
+| `progress` | Boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `index`, `show`, `create`, `update` and any custom actions. |
+
+##### Reducers
+
+| key | Type | Required or Default Value | Description |
+| --------------------------------------- | :----: | :----: | :-- |
+| `reducer` | Function | RESTFUL actions: a sensible default; non-RESTFUL: Required | A custom reducer function to adapt the resource as it exists in the Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful actions. |
 | `beforeReducers` | Function[] | [ ] | A list of functions to call before passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
 | `afterReducers` | Function[] | [ ] |A list of functions to call after passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
-| `clearOn` | Action or Action[] | [ ] | A single or list of actions for which the current resource should be cleared. |
-| `reducesOn` | {action: Action, reducer: function} | [ ] | A single or list of objects with an `action` and a `reducer`, used to specify custom reducers in response to actions external to the current resource. |
-| `hasAndBelongsToMany` | {\[associationName\]: Resource } | { } | An object of associated resources, with a many-to-many relationship with the current one. |
-| `belongsTo` | {\[associationName\]: Resource } | { } | An object of associated resources, with a one-to-many relationship with the current one. |
+
 
 ## Store data schemas
 
