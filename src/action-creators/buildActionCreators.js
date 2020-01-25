@@ -294,6 +294,38 @@ const LOCAL_ONLY_ACTION_CREATORS = {
   destroy: (options, key, values) => removeResource({ ...options, key }, values),
 };
 
+/**
+ * @typedef {String} ActionCreatorName The name of a function that dispatches an action
+ */
+
+/**
+ * @typedef {Object} ActionObject An object representing an action being dispatched in the Redux store
+ * @property {String} type
+ */
+
+/**
+ * @callback ActionThunk Performs an asynchronous action and calls dispatch when it is done with a new
+ *           ActionObject
+ * @param {Function} dispatch The Redux store's dispatch function
+ */
+
+/**
+ * @callback ActionCreatorFunction Function that dispatches an ActionObject or an ActionThunk
+ * @return {ActionObject|ActionThunk}
+ */
+
+/**
+ * @typedef {Object<ActionCreatorName, ActionCreatorFunction>} ActionCreatorDictionary A dictionary of
+ *          ActionCreatorFunctions indexed by their ActionCreatorName
+ */
+
+/**
+ * Builds a dictionary of ActionCreatorFunctions based in on resource and action options
+ * @param {ResourceOptions} resourceOptions Resource options
+ * @param {ActionsDictionary} actions Dictionary of actions
+ * @param {ActionOptionsMap} actionsOptions Options for the action creators
+ * @returns {ActionCreatorDictionary} The dictionary of all available ActionCreatorFunctions
+ */
 function buildActionCreators(resourceOptions, actions, actionsOptions) {
   const { name } = resourceOptions;
 

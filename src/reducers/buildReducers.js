@@ -18,6 +18,7 @@ import removeItemsFromResources from './helpers/removeItemsFromResources';
 import resolveOptions from '../action-creators/helpers/resolveOptions';
 import progressReducer from './helpers/progressReducer';
 import { getConfiguration } from '../configuration';
+import standardiseAssociationOptions from '../utils/standardiseAssociationOptions';
 
 function setCollection(resources, { status, items, key, httpCode, collection, error }) {
   const currentList = resources.collections[key] || COLLECTION;
@@ -574,7 +575,25 @@ const PROGRESS_COMPATIBLE_ACTIONS = {
   create: true
 };
 
-function buildReducers(resourceOptions, actionsOptions, options) {
+/**
+ * @callback ReducerFunction Function that accepts the current state and Redux action and returns the
+ *          correct new state.
+ * @param {ResourcesReduxState} current_state The current state of there resource
+ * @param {ReduxAction} action The action containing the data to update the resource state
+ * @returns {ResourcesReduxState} The new resource state
+ */
+
+/**
+ * Creates the reducer function can be used to correctly update a resource's state after every Redux action that
+ * is dispatched.
+ * @param {ResourceOptions} resourceOptions Hash of actionsOptions for configuring the resource
+ * @param {ActionsDictionary} actionsDictionary Dictionary of actions available for the resource
+ * @param {ActionOptions} actionsOptions Hash of actionsOptions for configuring the actions that be dispatched to
+ *        modify the resource
+ * @returns {ReducerFunction} Reducer function that will accept the resource's current state and an action
+ *          and return the new resource state
+ */
+function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
 
   /**
    * Build the map of actions that should effect the current resource
@@ -588,8 +607,8 @@ function buildReducers(resourceOptions, actionsOptions, options) {
    */
   const effectiveReducers = resourceOptions.localOnly ? LOCAL_ONLY_REDUCERS : STANDARD_REDUCERS;
 
-  const reducersDict = Object.keys(options).reduce((memo, key) => {
-    const actionOptions = options[key];
+  const reducersDict = Object.keys(actionsOptions).reduce((memo, key) => {
+    const actionOptions = actionsOptions[key];
     const reducer = (isObject(actionOptions) && actionOptions.reducer) || effectiveReducers[key];
 
     if (reducer) {
@@ -637,7 +656,7 @@ function buildReducers(resourceOptions, actionsOptions, options) {
         }
       }();
 
-      memo[actionsOptions.get(key)] = { options: reducerOptions, reducer: _reducer };
+      memo[actionsDictionary.get(key)] = { options: reducerOptions, reducer: _reducer };
     } else {
       warn(`Action '${key}' must match the collection of standard reducers (${Object.keys(STANDARD_REDUCERS).join(', ')}) or define a 'reducer' option.`);
     }
@@ -663,7 +682,9 @@ function buildReducers(resourceOptions, actionsOptions, options) {
 
   if (resourceOptions.hasAndBelongsToMany) {
     Object.keys(resourceOptions.hasAndBelongsToMany).forEach((associationName) => {
-      const associationOptions = resourceOptions.hasAndBelongsToMany[associationName];
+      const associationOptions = standardiseAssociationOptions(
+        resourceOptions.hasAndBelongsToMany[associationName]
+      );
 
       addAssociationReducer(reducersDict, resourceOptions.name, 'hasAndBelongsToMany', associationName, associationOptions);
     });
@@ -671,7 +692,9 @@ function buildReducers(resourceOptions, actionsOptions, options) {
 
   if (resourceOptions.belongsTo) {
     Object.keys(resourceOptions.belongsTo).forEach((associationName) => {
-      const associationOptions = resourceOptions.belongsTo[associationName];
+      const associationOptions = standardiseAssociationOptions(
+        resourceOptions.belongsTo[associationName]
+      );
 
       addAssociationReducer(reducersDict, resourceOptions.name, 'belongsTo', associationName, associationOptions);
     });

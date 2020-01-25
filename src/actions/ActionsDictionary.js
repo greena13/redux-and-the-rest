@@ -4,6 +4,31 @@ import toPlural from '../utils/string/toPlural';
 import toSingular from '../utils/string/toSingular';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 
+/**
+ * @typedef {String} RestfulActionName One of the RESTful action names (index, show, new, create, edit, update,
+ *          destroy)
+ */
+
+/**
+ * @typedef {String} CustomActionName The name of a custom action
+ */
+
+/**
+ * @typedef {RestfulActionName|CustomActionName} ActionName The name of an action to be performed on a resource
+ */
+
+/**
+ * @typedef {String} ActionType The type of Redux action that is emitted when that action occurs
+ */
+
+/**
+ * @typedef {Object<ActionName, ActionType>} ActionDictionary Mapping between action names and their types
+ */
+
+/**
+ * Dictionary of standard actions
+ * @type {ActionDictionary}
+ */
 const STANDARD_ACTIONS = {
   index: 'FETCH_ITEMS',
   show: 'FETCH_ITEM',
@@ -19,7 +44,10 @@ const STANDARD_ACTIONS = {
   destroy: 'DESTROY_ITEM'
 };
 
-class Actions {
+/**
+ * Factory for creating the ActionDictionary for a resource's actions
+ */
+class ActionsDictionary {
   constructor (name, resourceOptions, actionList = []) {
     this.actionsMap = {};
 
@@ -62,9 +90,13 @@ class Actions {
     return action;
   }
 
+  /**
+   * Generates the resource's ActionDictionary
+   * @returns {ActionDictionary} A dictionary of the resource's available actions
+   */
   toHash() {
     return this.actionsMap;
   }
 }
 
-export default Actions;
+export default ActionsDictionary;

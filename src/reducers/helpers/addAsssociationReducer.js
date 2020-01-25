@@ -12,7 +12,13 @@ import removeItemsFromResources from './removeItemsFromResources';
 import contains from '../../utils/collection/contains';
 import serializeKey from '../../utils/serializeKey';
 
-function addAssociationReducer(reducersDict, name, relationType, associationName, { actions = {}, foreignKey, as, dependent, key, collectionParameter }) {
+function addAssociationReducer(
+  reducersDict,
+  name,
+  relationType,
+  associationName,
+  { resource: { actions = {}, foreignKey, as, dependent, key, collectionParameter } }) {
+
   const foreignKeyName = getForeignKeyName({
     foreignKey, as, name
   });
