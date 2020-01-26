@@ -59,16 +59,16 @@ import getCollection from './utils/getCollection';
  * @property {Function} responseAdaptor Function used to adapt the responses for requests before it is handed
  *           over to the reducers.
  *
- * @property {Array<ReducerFunction>} beforeReducers A list of functions to call before passing the resource to
+ * @property {Array.<ReducerFunction>} beforeReducers A list of functions to call before passing the resource to
  *           the reducer. This is useful if you want to use the default reducer, but provide some additional
  *           pre-processing to standardise the resource before it is added to the store.
- * @property {Array<ReducerFunction>} afterReducers A list of functions to call after passing the resource to
+ * @property {Array.<ReducerFunction>} afterReducers A list of functions to call after passing the resource to
  *           the reducer. This is useful if you want to use the default reducer, but provide some additional
  *           post-processing to standardise the resource before it is added to the store.
- * @property {ActionReducerFunctionPair|Array<ActionReducerFunctionPair>} reducesOn A single or list of objects
+ * @property {ActionReducerFunctionPair|Array.<ActionReducerFunctionPair>} reducesOn A single or list of objects
  *           with an action and a reducer, used to specify custom reducers in response to actions external to
  *           the current resource.
- * @property {ActionType|Array<ActionType>} clearOn A single or list of actions for which the current resource
+ * @property {ActionType|Array.<ActionType>} clearOn A single or list of actions for which the current resource
  *           should be cleared.
  * @property {AssociationOptions} hasAndBelongsToMany An object of associated resources, with a many-to-many
  *           relationship with the current one.
@@ -95,10 +95,10 @@ import getCollection from './utils/getCollection';
  *           custom actions.
  * @property {Function} responseAdaptor Function used to adapt the response for a particular request before
  *           it is handed over to the reducers.
- * @property {Array<ReducerFunction>} beforeReducers A list of functions to call before passing the resource to
+ * @property {Array.<ReducerFunction>} beforeReducers A list of functions to call before passing the resource to
  *           the reducer. This is useful if you want to use the default reducer, but provide some additional
  *           pre-processing to standardise the resource before it is added to the store.
- * @property {Array<ReducerFunction>} afterReducers A list of functions to call after passing the resource to
+ * @property {Array.<ReducerFunction>} afterReducers A list of functions to call after passing the resource to
  *           the reducer. This is useful if you want to use the default reducer, but provide some additional
  *           post-processing to standardise the resource before it is added to the store.
  */

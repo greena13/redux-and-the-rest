@@ -14,10 +14,10 @@ let configuration = {};
  * @property {Function} responseAdaptor Function used to adapt the responses for requests before it is handed
  *           over to the reducers.
  *
- * @property {Array<ReducerFunction>} beforeReducers A list of functions to call before passing the resource to
+ * @property {Array.<ReducerFunction>} beforeReducers A list of functions to call before passing the resource to
  *           the reducer. This is useful if you want to use the default reducer, but provide some additional
  *           pre-processing to standardise the resource before it is added to the store.
- * @property {Array<ReducerFunction>} afterReducers A list of functions to call after passing the resource to
+ * @property {Array.<ReducerFunction>} afterReducers A list of functions to call after passing the resource to
  *           the reducer. This is useful if you want to use the default reducer, but provide some additional
  *           post-processing to standardise the resource before it is added to the store.
  */

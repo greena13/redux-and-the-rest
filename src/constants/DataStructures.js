@@ -42,7 +42,7 @@ const RESOURCE = {
 
 /**
  * @typedef {Object} ResourceCollection A collection of a particular resource
- * @property {Array<ResourceItemId>} positions A list of ids of resources in the order they appear in that
+ * @property {Array.<ResourceItemId>} positions A list of ids of resources in the order they appear in that
  *          collection.
  * @property {ResourceStatus} status The status information of the resource collection
  */
