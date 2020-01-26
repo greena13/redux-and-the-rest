@@ -14,7 +14,7 @@ const SHARED_ATTRIBUTES = {
  */
 
 /**
- * @typedef {String} ResourceItemId The unique identifier of the resource
+ * @typedef {string} ResourceItemId The unique identifier of the resource
  */
 
 /**
@@ -36,7 +36,7 @@ const RESOURCE = {
 };
 
 /**
- * @typedef {String} CollectionKey The unique key for a particular collection containing resources of a
+ * @typedef {string} CollectionKey The unique key for a particular collection containing resources of a
  *          particular type.
  */
 
@@ -61,9 +61,9 @@ const COLLECTION = {
  * @property {Object<ResourceItemId, ResourceItem>} items The set of items of a particular resource type
  * @property {Object<CollectionKey, ResourceCollection>} collections The set of collections of a particular
  *           resource type
- * @property {Object<ResourceItemId,Boolean>} selectionMap A dictionary of the resources that are currently
+ * @property {Object<ResourceItemId,boolean>} selectionMap A dictionary of the resources that are currently
  *           selected.
- * @property {String} newItemKey The temporary key that is being used for a new resource item until it's been
+ * @property {string} newItemKey The temporary key that is being used for a new resource item until it's been
  *           saved to a remote API and given a permanent unique identifier.
  */
 

@@ -5,12 +5,12 @@ import toSingular from '../utils/string/toSingular';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 
 /**
- * @typedef {String} RestfulActionName One of the RESTful action names (index, show, new, create, edit, update,
+ * @typedef {string} RestfulActionName One of the RESTful action names (index, show, new, create, edit, update,
  *          destroy)
  */
 
 /**
- * @typedef {String} CustomActionName The name of a custom action
+ * @typedef {string} CustomActionName The name of a custom action
  */
 
 /**
@@ -18,7 +18,7 @@ import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionar
  */
 
 /**
- * @typedef {String} ActionType The type of Redux action that is emitted when that action occurs
+ * @typedef {string} ActionType The type of Redux action that is emitted when that action occurs
  */
 
 /**

@@ -1,5 +1,5 @@
 /**
- * @typedef {String} StatusType One of the statuses a resource item or resource collection can be in
+ * @typedef {string} StatusType One of the statuses a resource item or resource collection can be in
  */
 
 /**

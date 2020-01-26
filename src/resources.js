@@ -11,7 +11,7 @@ import getCollection from './utils/getCollection';
  * @callback GetItemFunction Returns an item of a particular resource from a Redux store, removing any
  *          structure used implicitly.
  * @param {ResourcesReduxState} resource The current resource Redux store state
- * @param {Object|String} params The parameters used to calculate the index of the resource to return
+ * @param {Object|string} params The parameters used to calculate the index of the resource to return
  * @return {ResourceItem} The resource item
  *
  */
@@ -20,13 +20,13 @@ import getCollection from './utils/getCollection';
  * @callback GetCollectionFunction Returns a collection of a particular resource from a Redux store, populating
  *           it with the correct items, in the right order.
  * @param {ResourcesReduxState} resource The current resource Redux store state
- * @param {Object|String} params The parameters used to calculate the index of the collection to return
+ * @param {Object|string} params The parameters used to calculate the index of the collection to return
  * @return {ResourceCollectionWithItems} The resource collection
  *
  */
 
 /**
- * @typedef {String} ResourceName The name a resource has when it's stored in the Redux store
+ * @typedef {string} ResourceName The name a resource has when it's stored in the Redux store
  */
 
 /**
@@ -43,18 +43,18 @@ import getCollection from './utils/getCollection';
  * @typedef {Object} ResourceOptions Options used to configure the resource and apply to all actions, unless
  *          overridden by more specific configuration in ActionOptions.
  * @property {ResourceName} name The pluralized name of the resource you are defining.
- * @property {String} keyBy The resource attribute used to key/index all items of the current resource type.
+ * @property {string} keyBy The resource attribute used to key/index all items of the current resource type.
  *           This will be the value you pass to each action creator to identify the target of each action. By
  *           default, 'id' is used.
  *
- * @property {Boolean} localOnly Set to true for resources that should be edited locally, only. The show and
+ * @property {boolean} localOnly Set to true for resources that should be edited locally, only. The show and
  *           index actions are disabled (the fetch* action creators are not exported) and the create, update
  *           and destroy only update the store locally, without making any HTTP requests.
- * @property {String} url  A url template that is used for all of the resource's actions. The template string
+ * @property {string} url  A url template that is used for all of the resource's actions. The template string
  *           can include required url parameters by prefixing them with a colon (e.g. :id) and optional
  *           parameters are denoted by adding a question mark at the end (e.g. :id?). This will be used as the
  *           default url template, but individual actions may override it with their own.
- * @property {String[]} urlOnlyParams The attributes passed to action creators that should be used to create the request URL,
+ * @property {string[]} urlOnlyParams The attributes passed to action creators that should be used to create the request URL,
  *           but ignored when storing the request's response.
  * @property {Function} responseAdaptor Function used to adapt the responses for requests before it is handed
  *           over to the reducers.
@@ -79,18 +79,18 @@ import getCollection from './utils/getCollection';
 /**
  * @typedef {Object} ActionOptions Options used to configure individual resource actions and override any
  *          options specified in GlobalOptions or ResourceOptions.
- * @property {String} url  A url template that is used for the action. The template string can include required
+ * @property {string} url  A url template that is used for the action. The template string can include required
  *           url parameters by prefixing them with a colon (e.g. :id) and optional parameters are denoted by
  *           adding a question mark at the end (e.g. :id?).
- * @property {String} keyBy The resource attribute used to key/index all items of the current resource type.
+ * @property {string} keyBy The resource attribute used to key/index all items of the current resource type.
  *           This will be the value you pass to each action creator to identify the target of each action. By
  *           default, 'id' is used.
- * @property {String[]} urlOnlyParams The attributes passed to the action's creator used to create the request
+ * @property {string[]} urlOnlyParams The attributes passed to the action's creator used to create the request
  *           URL, but ignored when storing the request's response.
  * @property [ReducerFunction] reducer A custom reducer function to adapt the resource as it exists in the
  *           Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this
  *           attribute is required for Non-RESTful actions.
- * @property {Boolean} progress Whether the store should emit progress events as the resource is uploaded or
+ * @property {boolean} progress Whether the store should emit progress events as the resource is uploaded or
  *           downloaded. This is applicable to the RESTful actions index, show, create, update and any
  *           custom actions.
  * @property {Function} responseAdaptor Function used to adapt the response for a particular request before
@@ -109,13 +109,15 @@ import getCollection from './utils/getCollection';
 
 
 /**
- * @typedef {Object<ActionCreatorName, ActionCreatorFunction>} ResourcesDefinition
+ * @typedef {Object} ResourcesDefinition
  * @property {ActionDictionary} actions Mapping between RESTful action names and constant Redux Action names
+ * @property {ActionCreatorDictionary} actionCreators Dictionary of available action creators
  * @property {ReducerFunction} reducers Reducer function that will accept the resource's current state and an
  *          action and return the new resource state
  * @property {GetItemFunction} getItem Function that returns a particular item of a resource type
+ * @property {function(ResourcesReduxState): ResourceItem} getNewItem Function that returns the new item in the
+ *           collection
  * @property {GetCollectionFunction} getCollection Function that returns a particular collection of resources
- * @property {ActionCreatorDictionary} actionCreators Dictionary of available action creators
  */
 
 /**
@@ -137,12 +139,16 @@ function resources(resourceOptions, actionOptions = {}) {
 
   return {
     actions: actions.toHash(),
+    actionCreators,
     reducers,
+
     getItem: (resource, params) => getItem(resourceOptions, resource, params),
+
     getNewItem,
+
     getCollection: (resource, params) => getCollection(resourceOptions, resource, params),
-    __isResource: true,
-    actionCreators
+
+    __isResource: true
   };
 }
 

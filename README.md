@@ -372,16 +372,16 @@ const { actionCreators: { fetchUsers } } = resources(
 
 | key |  Type |Required or Default Value | Description |
 | --------------------------------------- | :----: | :----: | :-- |
-| `name` | String | Required | The pluralized name of the resource you are defining.
-| `keyBy` | String |  'id' | The resource attribute used to key/index all items of the current resource type. This will be the value you pass to each action creator to identify the target of each action. |
+| `name` | string | Required | The pluralized name of the resource you are defining.
+| `keyBy` | string |  'id' | The resource attribute used to key/index all items of the current resource type. This will be the value you pass to each action creator to identify the target of each action. |
 
 ##### Synchronising with a remote API
 
 | key |  Type |Required or Default Value | Description |
 | --------------------------------------- | :----: | :----: | :-- |
-| `localOnly` | Boolean | false | Set to true for resources that should be edited locally, only. The `show` and `index` actions are disabled (the `fetch*` action creators are not exported) and the `create`, `update` and `destroy` only update the store locally, without making any HTTP requests. |
-| `url` | String |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
-| `urlOnlyParams` | String[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
+| `localOnly` | boolean | false | Set to true for resources that should be edited locally, only. The `show` and `index` actions are disabled (the `fetch*` action creators are not exported) and the `create`, `update` and `destroy` only update the store locally, without making any HTTP requests. |
+| `url` | string |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
+| `urlOnlyParams` | string[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
 | `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers ||
 
 ##### Reducers
@@ -425,16 +425,16 @@ const { actionCreators: { fetchUsers } } = resources(
 
 | key | Type | Required or Default Value | Description |
 | --------------------------------------- | :----: | :----: | :-- |
-| `keyBy` | String | `resourceOptions.keyBy` | The key to index all items on for this particular action. |
+| `keyBy` | string | `resourceOptions.keyBy` | The key to index all items on for this particular action. |
 
 ##### Synchronising with a remote API
 
 | key | Type | Required or Default Value | Description |
 | --------------------------------------- | :----: | :----: | :-- |
-| `url` |  String |`resourceOptions.url` | The URL template to use for this particular action. |
-| `urlOnlyParams` | String[] | `resourceOptions.urlOnlyParams` | The attributes passed to the action creator that should be used to create the request URL, and ignored when storing the result in the store. |
+| `url` |  string |`resourceOptions.url` | The URL template to use for this particular action. |
+| `urlOnlyParams` | string[] | `resourceOptions.urlOnlyParams` | The attributes passed to the action creator that should be used to create the request URL, and ignored when storing the result in the store. |
 | `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers ||
-| `progress` | Boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `index`, `show`, `create`, `update` and any custom actions. |
+| `progress` | boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `index`, `show`, `create`, `update` and any custom actions. |
 
 ##### Reducers
 
@@ -1069,6 +1069,6 @@ There are also a few additional options used directly by `redux-and-the-rest` it
 
 | Option | Type | Default | Description |
 | :--- | :---: | :---: | :---- |
-| `cookie` | String | '' | The value to set as the request's `Cookie` header. This is useful for performing requests to authenticated endpoints as part of initial render for server-side rendering. |
-| `credentials` | Boolean | `false` | Similar to the `cookie` option, when set to `true`,  `credentials` sends the cookies set in the browser in the request's `Cookie` header(s). This option should won't work for SSR (as there is no browser cookie jar to pull the cookies from) - you will need to use `cookie` instead. |
+| `cookie` | string | '' | The value to set as the request's `Cookie` header. This is useful for performing requests to authenticated endpoints as part of initial render for server-side rendering. |
+| `credentials` | boolean | `false` | Similar to the `cookie` option, when set to `true`,  `credentials` sends the cookies set in the browser in the request's `Cookie` header(s). This option should won't work for SSR (as there is no browser cookie jar to pull the cookies from) - you will need to use `cookie` instead. |
 | `errorHandler` | Function | `undefined` | A function to call if the request returns an error response (HTTP status > 400). This function must accept two arguments: the `Response` object and a callback that the `errorHandler` will call once it has finished executing, with a value representing the error that will be placed in the store. This option is useful to "unwrap" error objects from error responses, or to standardise how errors are represented in Redux that come from different endpoints or servers. |

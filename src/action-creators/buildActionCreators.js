@@ -295,12 +295,12 @@ const LOCAL_ONLY_ACTION_CREATORS = {
 };
 
 /**
- * @typedef {String} ActionCreatorName The name of a function that dispatches an action
+ * @typedef {string} ActionCreatorName The name of a function that dispatches an action
  */
 
 /**
  * @typedef {Object} ActionObject An object representing an action being dispatched in the Redux store
- * @property {String} type
+ * @property {string} type
  */
 
 /**
