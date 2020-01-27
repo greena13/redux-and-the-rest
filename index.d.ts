@@ -131,11 +131,6 @@ export interface ResourceCollectionWithItems<T> extends ResourceCollection {
 export interface GetCollectionFunction<T> { (currentState: ResourceReduxState<T>, params: object | string): ResourceCollectionWithItems<T> }
 
 /**
- * The name a resource has when it's stored in the Redux store
- */
-export type ResourceName = string;
-
-/**
  * The type of Redux action that is emitted when that action occurs
  */
 export type ActionType = string;
@@ -260,7 +255,7 @@ export interface ResourceOptions<T> extends GlobalConfigurationOptions<T> {
     /**
      * The pluralized name of the resource you are defining.
      */
-    name: ResourceName,
+    name: string,
 
     /**
      * A url template that is used for all of the resource's actions. The template string can include required
@@ -359,7 +354,7 @@ export interface ActionOptions<T> {
     afterReducers?: Array<ReducerFunction<T>>,
 }
 
-export type ActionOptionsMap<T> = { [key: string]: ActionOptions<T> };
+export type ActionOptionsMap<T> = { [key: string]: ActionOptions<T> | Boolean };
 
 /**
  * Defines a new resource, returning the actions, action creators, reducers and helpers to manage it
