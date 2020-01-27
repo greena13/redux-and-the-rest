@@ -53,8 +53,6 @@ export const ERROR: string;
  */
 export type StatusType = string;
 
-export type ResourceValues = object;
-
 /**
  * An object containing the status information of a particular resource item or resource collection.
  */
@@ -65,8 +63,8 @@ export interface ResourceStatus {
 /**
  * The state and values of a single item of a particular resource
  */
-export interface ResourceItem {
-    values: ResourceValues,
+export interface ResourceItem<T> {
+    values: T,
     status: ResourceStatus
 }
 
@@ -90,11 +88,11 @@ export interface ResourceCollection {
     status: ResourceStatus,
 }
 
-export interface ResourceReduxState {
+export interface ResourceReduxState<T> {
     /**
      * The set of items of a particular resource type
      */
-    items: { [key: string]: ResourceItem; },
+    items: { [key: string]: ResourceItem<T>; },
 
     /**
      * The set of collections of a particular resource type
@@ -116,21 +114,21 @@ export interface ResourceReduxState {
 /**
  * Returns an item of a particular resource from a Redux store, removing any structure used implicitly.
  */
-export interface GetItemFunction { (currentState: ResourceReduxState, params: object | string): ResourceItem }
+export interface GetItemFunction<T> { (currentState: ResourceReduxState<T>, params: object | string): ResourceItem<T> }
 
 
 /**
  * Collection of resources, with its items in an array
  */
-export interface ResourceCollectionWithItems extends ResourceCollection {
-    items: Array<ResourceItem>
+export interface ResourceCollectionWithItems<T> extends ResourceCollection {
+    items: Array<ResourceItem<T>>
 }
 
 /**
  * Returns a collection of a particular resource from a Redux store, populating it with the correct items, in
  * the right order.
  */
-export interface GetCollectionFunction { (currentState: ResourceReduxState, params: object | string): ResourceCollectionWithItems }
+export interface GetCollectionFunction<T> { (currentState: ResourceReduxState<T>, params: object | string): ResourceCollectionWithItems<T> }
 
 /**
  * The name a resource has when it's stored in the Redux store
@@ -157,7 +155,7 @@ export interface ActionObject {
 /**
  * Function that accepts the current state and Redux action and returns the correct new state.
  */
-export interface ReducerFunction { (currentState: ResourceReduxState, action: ActionObject): ResourceReduxState }
+export interface ReducerFunction<T> { (currentState: ResourceReduxState<T>, action: ActionObject): ResourceReduxState<T> }
 
 /**
  * Performs an asynchronous action and calls dispatch when it is done with a new ActionObject
@@ -174,7 +172,7 @@ export interface ActionCreatorFunction { (...args: any[]): ActionObject | Action
  */
 export interface ActionCreatorDictionary { [key: string]: ActionCreatorFunction }
 
-export interface ResourcesDefinition {
+export interface ResourcesDefinition<T> {
     /**
      * Mapping between RESTful action names and constant Redux Action names
      */
@@ -189,32 +187,32 @@ export interface ResourcesDefinition {
      *  Reducer function that will accept the resource's current state and an action and return the new
      *  resource state
      */
-    reducers: ReducerFunction,
+    reducers: ReducerFunction<T>,
 
     /**
      * Function that returns a particular item of a resource type
      */
-    getItem: GetItemFunction,
+    getItem: GetItemFunction<T>,
 
     /**
      * Function that returns a particular collection of resources
      */
-    getCollection: GetCollectionFunction
+    getCollection: GetCollectionFunction<T>
 }
 
 /**
  * A Mapping between the name of an associated resource, and its definition.
  */
-export type AssociationOptions = { [key: string]: ResourcesDefinition; }
+export type AssociationOptions<T> = { [key: string]: ResourcesDefinition<T>; }
 
 /**
  * A mapping between an ActionType and the ReducerFunction that should be called when an action of that
  * type is dispatched.
  */
-export type ActionReducerFunctionPair = { [key: string]: ReducerFunction }
+export type ActionReducerFunctionPair<T> = { [key: string]: ReducerFunction<T> }
 
 
-export interface GlobalConfigurationOptions {
+export interface GlobalConfigurationOptions<T> {
     /**
      * The resource attribute used to key/index all items of the current resource type. This will be the value
      * you pass to each action creator to identify the target of each action. By default, 'id' is used.
@@ -244,21 +242,21 @@ export interface GlobalConfigurationOptions {
      * use the default reducer, but provide some additional pre-processing to standardise the resource before
      * it is added to the store.
      */
-    beforeReducers?: Array<ReducerFunction>,
+    beforeReducers?: Array<ReducerFunction<T>>,
 
     /**
      * A list of functions to call after passing the resource to the reducer. This is useful if you want to use
      * the default reducer, but provide some additional post-processing to standardise the resource before it
      * is added to the store.
      */
-    afterReducers?: Array<ReducerFunction>,
+    afterReducers?: Array<ReducerFunction<T>>,
 }
 
 /**
  * Options used to configure the resource and apply to all actions, unless overridden by more specific
  * configuration in ActionOptions.
  */
-export interface ResourceOptions extends GlobalConfigurationOptions {
+export interface ResourceOptions<T> extends GlobalConfigurationOptions<T> {
     /**
      * The pluralized name of the resource you are defining.
      */
@@ -276,7 +274,7 @@ export interface ResourceOptions extends GlobalConfigurationOptions {
      * A single or list of objects with an action and a reducer, used to specify custom reducers in response to
      * actions external to the current resource.
      */
-    reducesOn?: ActionReducerFunctionPair | Array<ActionReducerFunctionPair>,
+    reducesOn?: ActionReducerFunctionPair<T> | Array<ActionReducerFunctionPair<T>>,
 
     /**
      * A single or list of actions for which the current resource should be cleared.
@@ -286,12 +284,12 @@ export interface ResourceOptions extends GlobalConfigurationOptions {
     /**
      * An object of associated resources, with a many-to-many relationship with the current one.
      */
-    hasAndBelongsToMany?: AssociationOptions,
+    hasAndBelongsToMany?: AssociationOptions<T>,
 
     /**
      * An object of associated resources, with a one-to-many relationship with the current one.
      */
-    belongsTo?: AssociationOptions,
+    belongsTo?: AssociationOptions<T>,
 }
 
 
@@ -299,7 +297,7 @@ export interface ResourceOptions extends GlobalConfigurationOptions {
  * Options used to configure individual resource actions and override any options specified in GlobalOptions
  * or ResourceOptions.
  */
-export interface ActionOptions {
+export interface ActionOptions<T> {
     /**
      * The resource attribute used to key/index all items of the current resource type. This will be the value
      * you pass to each action creator to identify the target of each action. By default, 'id' is used.
@@ -342,7 +340,7 @@ export interface ActionOptions {
      * standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful
      * actions.
      */
-    reducer?: ReducerFunction,
+    reducer?: ReducerFunction<T>,
 
     /**
      * A list of functions to call before passing the resource to the reducer. This is useful if you want to
@@ -351,22 +349,22 @@ export interface ActionOptions {
      * is useful if you want to use the default reducer, but provide some additional pre-processing to
      * standardise the resource before it is added to the store.
      */
-    beforeReducers?: Array<ReducerFunction>,
+    beforeReducers?: Array<ReducerFunction<T>>,
 
     /**
      * A list of functions to call after passing the resource to the reducer. This is useful if you want to
      * use the default reducer, but provide some additional post-processing to standardise the resource
      * before it is added to the store.
      */
-    afterReducers?: Array<ReducerFunction>,
+    afterReducers?: Array<ReducerFunction<T>>,
 }
 
-export type ActionOptionsMap = { [key: string]: ActionOptions };
+export type ActionOptionsMap<T> = { [key: string]: ActionOptions<T> };
 
 /**
  * Defines a new resource, returning the actions, action creators, reducers and helpers to manage it
  */
-export function resources(resourceOptions: ResourceOptions, actionOptions: ActionOptionsMap): ResourcesDefinition;
+export function resources<T>(resourceOptions: ResourceOptions<T>, actionOptions: ActionOptionsMap<T>): ResourcesDefinition<T>;
 
 
 /**
@@ -378,9 +376,9 @@ export function serializeKey(target: any): string | ResourceCollectionId;
 /**
  * Updates or sets the global configuration options
  */
-export function configure(config: GlobalConfigurationOptions): void;
+export function configure(config: GlobalConfigurationOptions<object>): void;
 
 /**
  * Returns the current global configuration options
  */
-export function getConfiguration(): GlobalConfigurationOptions;
+export function getConfiguration(): GlobalConfigurationOptions<object>;
