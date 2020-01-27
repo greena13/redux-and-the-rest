@@ -311,7 +311,7 @@ const LOCAL_ONLY_ACTION_CREATORS = {
 
 /**
  * @callback ActionCreatorFunction Function that dispatches an ActionObject or an ActionThunk
- * @return {ActionObject|ActionThunk}
+ * @returns {ActionObject|ActionThunk}
  */
 
 /**

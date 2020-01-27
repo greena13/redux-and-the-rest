@@ -14,7 +14,7 @@
  *    }
  *  }
  *
- *  @return AssociationOptions
+ * @returns AssociationOptions
  */
 function standardiseAssociationOptions(options) {
   if (options.__isResource) {

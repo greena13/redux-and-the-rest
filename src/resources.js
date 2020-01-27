@@ -87,7 +87,7 @@ import getCollection from './utils/getCollection';
  *           default, 'id' is used.
  * @property {string[]} urlOnlyParams The attributes passed to the action's creator used to create the request
  *           URL, but ignored when storing the request's response.
- * @property [ReducerFunction] reducer A custom reducer function to adapt the resource as it exists in the
+ * @property {ReducerFunction} reducer A custom reducer function to adapt the resource as it exists in the
  *           Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this
  *           attribute is required for Non-RESTful actions.
  * @property {boolean} progress Whether the store should emit progress events as the resource is uploaded or
@@ -114,9 +114,9 @@ import getCollection from './utils/getCollection';
  * @property {ActionCreatorDictionary} actionCreators Dictionary of available action creators
  * @property {ReducerFunction} reducers Reducer function that will accept the resource's current state and an
  *          action and return the new resource state
- * @property {GetItemFunction} getItem Function that returns a particular item of a resource type
  * @property {function(ResourcesReduxState): ResourceItem} getNewItem Function that returns the new item in the
  *           collection
+ * @property {GetItemFunction} getItem Function that returns a particular item of a resource type
  * @property {GetCollectionFunction} getCollection Function that returns a particular collection of resources
  */
 

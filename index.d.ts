@@ -71,11 +71,6 @@ export interface ResourceItem {
 }
 
 /**
- * The unique identifier of a resource item
- */
-export type ResourceItemId = string;
-
-/**
  * The unique identifier of a resource collection
  */
 export type ResourceCollectionId = string;
@@ -87,7 +82,7 @@ export interface ResourceCollection {
     /**
      * A list of ids of resources in the order they appear in that collection.
      */
-    positions: ResourceItemId[],
+    positions: string[],
 
     /**
      * The status information of the resource collection
@@ -115,7 +110,7 @@ export interface ResourceReduxState {
      * The temporary key that is being used for a new resource item until it's been saved to a remote API and
      * given a permanent unique identifier.
      */
-    newItemKey: ResourceItemId | null,
+    newItemKey: string | null,
 }
 
 /**
@@ -155,7 +150,9 @@ export type ActionDictionary = {[key: string]: ActionType };
 /**
  * An object representing an action being dispatched in the Redux store
  */
-export type ActionObject = object;
+export interface ActionObject {
+    type: string;
+}
 
 /**
  * Function that accepts the current state and Redux action and returns the correct new state.
@@ -376,7 +373,7 @@ export function resources(resourceOptions: ResourceOptions, actionOptions: Actio
  * Serializes an object to create a consistent key, no matter the ordering of the attributes, suitable to use
  * as a key for resource items and collections.
  */
-export function serializeKey(target: any): ResourceItemId | ResourceCollectionId;
+export function serializeKey(target: any): string | ResourceCollectionId;
 
 /**
  * Updates or sets the global configuration options

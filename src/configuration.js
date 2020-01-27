@@ -38,5 +38,5 @@ export function setConfiguration(customConfiguration) {
  * @returns {GlobalConfigurationOptions}
  */
 export function getConfiguration() {
-  return { ...configuration };
+  return configuration;
 }

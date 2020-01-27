@@ -61,7 +61,7 @@ const COLLECTION = {
  * @property {Object<ResourceItemId, ResourceItem>} items The set of items of a particular resource type
  * @property {Object<CollectionKey, ResourceCollection>} collections The set of collections of a particular
  *           resource type
- * @property {Object<ResourceItemId,boolean>} selectionMap A dictionary of the resources that are currently
+ * @property {Object<ResourceItemId, boolean>} selectionMap A dictionary of the resources that are currently
  *           selected.
  * @property {string} newItemKey The temporary key that is being used for a new resource item until it's been
  *           saved to a remote API and given a permanent unique identifier.
