@@ -1,6 +1,6 @@
 import { ERROR } from '../../constants/Statuses';
 
-function handleCollectionError(options, httpCode, error) {
+function handleCollectionError(options, actionCreatorOptions, httpCode, error) {
   const { action, key, projection } = options;
 
   return {

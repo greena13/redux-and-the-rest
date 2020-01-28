@@ -67,26 +67,26 @@ function makeRequest(options, actionCreatorOptions = {}) {
         }();
 
         if (_json.error) {
-          return dispatch(onError(_options, status, _json.error));
+          return dispatch(onError(_options, actionCreatorOptions, status, _json.error));
         } else {
-          return dispatch(onSuccess(_options, _json.values, collectionKeys || previousValues));
+          return dispatch(onSuccess(_options, actionCreatorOptions, _json.values, collectionKeys || previousValues));
         }
       });
 
     } else {
       if (_request.errorHandler) {
         _request.errorHandler(response, (error) => {
-          dispatch(onError(_options, status, error));
+          dispatch(onError(_options, actionCreatorOptions, status, error));
         });
       } else {
         if (response.headers.get('Content-Type').startsWith('application/json')) {
           return response.json().then((json) => {
             const errorNormalized = isObject(json.error) ? json.error : { message: json.error };
 
-            return dispatch(onError(_options, status, { ...errorNormalized, occurredAt: Date.now() }));
+            return dispatch(onError(_options, actionCreatorOptions, status, { ...errorNormalized, occurredAt: Date.now() }));
           });
         } else {
-          return response.text().then((message) => dispatch(onError(_options, status, { message, occurredAt: Date.now() })));
+          return response.text().then((message) => dispatch(onError(_options, actionCreatorOptions, status, { message, occurredAt: Date.now() })));
         }
       }
     }
@@ -136,7 +136,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
       };
 
       xhRequest.onerror = (error) => {
-        dispatch(onError(_options, 0, { type: 'NETWORK_ERROR', occurredAt: Date.now(), ...(error || {}) })).then(reject);
+        dispatch(onError(_options, actionCreatorOptions, 0, { type: 'NETWORK_ERROR', occurredAt: Date.now(), ...(error || {}) })).then(reject);
       };
 
       xhRequest.send(requestOptions.body);
@@ -146,7 +146,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
 
   } else {
     return fetch(url, requestOptions).then(processResponse).
-              catch((error) => dispatch(onError(_options, 0, { type: 'NETWORK_ERROR', occurredAt: Date.now(), ...(error || {}) })));
+              catch((error) => dispatch(onError(_options, actionCreatorOptions, 0, { type: 'NETWORK_ERROR', occurredAt: Date.now(), ...(error || {}) })));
   }
 }
 

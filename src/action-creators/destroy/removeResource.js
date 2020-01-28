@@ -1,6 +1,6 @@
 import { SUCCESS } from '../../constants/Statuses';
 
-function removeResource(options, values, previousValues) {
+function removeResource(options, actionCreatorOptions, values, previousValues) {
   const { action, key } = options;
 
   return {

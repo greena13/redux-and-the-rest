@@ -68,7 +68,7 @@ function fetchResource(options, params, actionCreatorOptions = { }) {
   const projection = actionCreatorOptions.projection || options.projection;
 
   return (dispatch) => {
-    dispatch(requestResource({ action, resourceType, transforms, key, projection  }));
+    dispatch(requestResource({ action, resourceType, transforms, key, projection  }, actionCreatorOptions));
 
     return makeRequest({
       ...options,
@@ -137,7 +137,7 @@ function newResource(options, params, values = {}, actionCreatorOptions = {}) {
     status: NEW,
     temporaryKey,
     collectionOperations: extractCollectionOperations(actionCreatorOptions, urlOnlyParams),
-    item: applyTransforms(transforms, options, {
+    item: applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
       values,
       status: { type: NEW },
@@ -149,7 +149,7 @@ function clearNewResource({ action, resourceType }) {
   return { type: action, resourceType };
 }
 
-function editResource(options, params, values) {
+function editResource(options, params, values, actionCreatorOptions = {}) {
   const { action, transforms, keyBy } = options;
 
   const key = getItemKey(params, { keyBy });
@@ -158,7 +158,7 @@ function editResource(options, params, values) {
     type: action,
     status: EDITING,
     key,
-    item: applyTransforms(transforms, options, {
+    item: applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
       values,
       status: { type: EDITING }
@@ -184,7 +184,7 @@ function createResource(options, params, values, actionCreatorOptions = {}) {
     const collectionOperations = extractCollectionOperations(actionCreatorOptions, urlOnlyParams);
 
     dispatch(
-      submitCreateResource({ action, resourceType, transforms, key }, values, collectionOperations)
+      submitCreateResource({ action, resourceType, transforms, key }, actionCreatorOptions, values, collectionOperations)
     );
 
     return makeRequest({
@@ -201,7 +201,7 @@ function createResource(options, params, values, actionCreatorOptions = {}) {
       onSuccess: receiveCreatedResource,
       onError: handleCreateResourceFailure,
       progress
-    });
+    }, actionCreatorOptions);
   };
 }
 
@@ -214,7 +214,14 @@ function updateResource(options, params, values, actionCreatorOptions = {}) {
   const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, keyBy));
 
   return (dispatch) => {
-    dispatch(submitUpdateResource({ transforms, action, resourceType, key }, values, actionCreatorOptions.previous));
+    dispatch(
+      submitUpdateResource(
+        { transforms, action, resourceType, key },
+        actionCreatorOptions,
+        values,
+        actionCreatorOptions
+      )
+    );
 
     return makeRequest({
       ...options,
@@ -265,7 +272,7 @@ function destroyResource(options, params, actionCreatorOptions = {}) {
       onSuccess: removeResource,
       onError: handleDestroyResourceError,
       progress
-    });
+    }, actionCreatorOptions);
   };
 }
 
@@ -294,9 +301,9 @@ const STANDARD_ACTION_CREATORS = {
  */
 const LOCAL_ONLY_ACTION_CREATORS = {
   ...STANDARD_ACTION_CREATORS,
-  create: (options, params, values) => receiveCreatedResource({ ...options, params }, values),
-  update: (options, params, values) => receiveUpdatedResource({ ...options, params }, values),
-  destroy: (options, key, values) => removeResource({ ...options, key }, values),
+  create: (options, params, values, actionCreatorOptions) => receiveCreatedResource({ ...options, params }, actionCreatorOptions, values),
+  update: (options, params, values, actionCreatorOptions) => receiveUpdatedResource({ ...options, params }, actionCreatorOptions, values),
+  destroy: (options, key, values, actionCreatorOptions) => removeResource({ ...options, key }, actionCreatorOptions, values),
 };
 
 /**
@@ -388,7 +395,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
         ]
       );
 
-      const actionCreatorOptions = {
+      const actionCreatorConfig = {
         action: actions.get(key),
         transforms: [],
         name,
@@ -397,10 +404,10 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
       };
 
       if (_options.resourceType) {
-        actionCreatorOptions.transforms.push(resourceTypeTransform);
+        actionCreatorConfig.transforms.push(resourceTypeTransform);
       }
 
-      memo[actionCreatorName] = (arg1, arg2, arg3) => standardActionCreator(actionCreatorOptions, arg1, arg2, arg3);
+      memo[actionCreatorName] = (arg1, arg2, arg3) => standardActionCreator(actionCreatorConfig, arg1, arg2, arg3);
 
     } else {
       warn(`'${key}' must match the collection of standard action creators (${Object.keys(STANDARD_ACTION_CREATORS).join(', ')}) or define an 'actionCreator' option. Check the options for ${name}`);

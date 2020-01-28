@@ -3,7 +3,7 @@ import { ITEM } from '../../constants/DataStructures';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import getItemKey from '../helpers/getItemKey';
 
-function receiveCollection(options, collection) {
+function receiveCollection(options, actionCreatorOptions, collection) {
   const { transforms, key, keyBy, action, params, projection } = options;
 
   const positions = [];
@@ -14,7 +14,7 @@ function receiveCollection(options, collection) {
     const itemKey = getItemKey([ params, values ], { keyBy });
     positions.push(itemKey);
 
-    memo[itemKey] = applyTransforms(transforms, options, {
+    memo[itemKey] = applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
       values,
       status: { type: SUCCESS, syncedAt },

@@ -689,7 +689,13 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
         resourceOptions.hasAndBelongsToMany[associationName]
       );
 
-      addAssociationReducer(reducersDict, resourceOptions.name, 'hasAndBelongsToMany', associationName, associationOptions);
+      addAssociationReducer(
+        reducersDict,
+        resourceOptions.name,
+        'hasAndBelongsToMany',
+        associationName,
+        associationOptions
+      );
     });
   }
 
@@ -699,7 +705,13 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
         resourceOptions.belongsTo[associationName]
       );
 
-      addAssociationReducer(reducersDict, resourceOptions.name, 'belongsTo', associationName, associationOptions);
+      addAssociationReducer(
+        reducersDict,
+        resourceOptions.name,
+        'belongsTo',
+        associationName,
+        associationOptions
+      );
     });
   }
 

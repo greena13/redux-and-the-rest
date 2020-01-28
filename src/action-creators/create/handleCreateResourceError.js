@@ -1,6 +1,6 @@
 import { ERROR } from '../../constants/Statuses';
 
-function handleCreateResourceError(options, httpCode, error) {
+function handleCreateResourceError(options, actionCreatorOptions, httpCode, error) {
   const { action, key } = options;
 
   return {
