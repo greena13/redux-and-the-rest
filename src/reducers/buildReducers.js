@@ -157,13 +157,13 @@ function setItem(resources, { status, projection, key, error, httpCode, item }) 
   }
 }
 
-function selectItem(resources, { type, key, context }) {
+function selectItem(resources, { type, key, value }) {
 
   if (resources.items[key]) {
     return {
       ...resources,
       selectionMap: {
-        [key]: context
+        [key]: value
       }
     };
   } else {
@@ -173,14 +173,14 @@ function selectItem(resources, { type, key, context }) {
   }
 }
 
-function selectAnotherItem(resources, { type, key, context }) {
+function selectAnotherItem(resources, { type, key, value }) {
 
   if (resources.items[key]) {
     return {
       ...resources,
       selectionMap: {
         ...resources.selectionMap,
-        [key]: context
+        [key]: value
       }
     };
   } else {

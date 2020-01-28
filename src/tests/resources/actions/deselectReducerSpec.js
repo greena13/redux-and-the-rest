@@ -44,12 +44,12 @@ describe('Deselect reducer:', function () {
         expectedValue: { }
       },
       {
-        description: 'and there are resources selected using the default context value of true',
+        description: 'and there are resources selected using the default value value of true',
         valueBefore: { 1: true, 2: true },
         expectedValue: { 2: true }
       },
       {
-        description: 'and there are resources selected using custom context values',
+        description: 'and there are resources selected using custom value values',
         valueBefore: { 1: { role: 'admin' }, 2: { role: 'admin' } },
         expectedValue: { 2: { role: 'admin' } }
       },
@@ -72,7 +72,7 @@ describe('Deselect reducer:', function () {
   describe('and the item\'s id is passed as an object to the action creator', function () {
     [
       {
-        description: 'and there are resources selected using custom context values',
+        description: 'and there are resources selected using custom value values',
         valueBefore: { 1: { role: 'admin' }, 2: { role: 'admin' } },
         expectedValue: { 2: { role: 'admin' } }
       },

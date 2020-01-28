@@ -84,19 +84,19 @@ function fetchResource(options, params, actionCreatorOptions = { }) {
   };
 }
 
-function selectResource({ action, keyBy }, params, context = true) {
+function selectResource({ action, keyBy }, params, actionCreatorOptions = {}) {
   const key = getItemKey(params, { keyBy });
 
   return {
-    type: action, key, context
+    type: action, key, value: actionCreatorOptions.value || true
   };
 }
 
-function selectAnotherResource({ action, keyBy }, params, context = true) {
+function selectAnotherResource({ action, keyBy }, params, actionCreatorOptions = {}) {
   const key = getItemKey(params, { keyBy });
 
   return {
-    type: action, key, context
+    type: action, key, value: actionCreatorOptions.value || true
   };
 }
 
