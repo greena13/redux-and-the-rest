@@ -1,6 +1,4 @@
-import fetchMock from 'fetch-mock';
-
-import { resources, NEW, SUCCESS, RESOURCES } from '../../index';
+import { resources, SUCCESS, RESOURCES } from '../../index';
 import buildStore from '../helpers/buildStore';
 
 describe('localOnly:', function () {
@@ -37,29 +35,6 @@ describe('localOnly:', function () {
         }
       }
     };
-
-    const { reducers: sessionReducers, actionCreators: { destroySession }, actions } = resources({
-      name: 'session',
-      url: 'http://test.com/session/:id',
-    }, {
-      destroy: true
-    });
-
-    this.sessionReducers = sessionReducers;
-    this.destroySession = destroySession;
-    this.sessionActions = actions;
-
-    fetchMock.delete('http://test.com/session/1', {
-      body: {
-        status: 200,
-        response: { }
-      },
-      status: 200
-    });
-  });
-
-  afterAll(function () {
-    fetchMock.restore();
   });
 
   describe('when it is not used', function () {
@@ -94,7 +69,6 @@ describe('localOnly:', function () {
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
-        clearOn: this.sessionActions.destroy,
         localOnly: true,
       }, ['index', 'show', 'new', 'create', 'edit', 'update', 'destroy']);
 

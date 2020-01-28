@@ -1,6 +1,7 @@
 import fetchMock from 'fetch-mock';
 import buildStore from '../../helpers/buildStore';
 import { resources, RESOURCES, CREATING, ERROR, NEW, SUCCESS } from '../../../index';
+import { COMPLETE } from '../../../constants/ProjectionTypes';
 
 describe('Create reducer:', function () {
   beforeAll(function() {
@@ -327,7 +328,8 @@ describe('Create reducer:', function () {
             expect(this.users.collections).toEqual({
               'order=newest': {
                 positions: expectedIsolatedStateBefore,
-                status: { type: null }
+                status: { type: null },
+                projection: { type: null }
               }
             });
           });
@@ -344,7 +346,8 @@ describe('Create reducer:', function () {
             expect(this.users.collections).toEqual({
               'order=newest': {
                 positions: expectedIsolatedStateAfter,
-                status: { type: null }
+                status: { type: null },
+                projection: { type: null }
               }
             });
           });

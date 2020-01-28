@@ -20,7 +20,7 @@ import progressReducer from './helpers/progressReducer';
 import { getConfiguration } from '../configuration';
 import standardiseAssociationOptions from '../utils/standardiseAssociationOptions';
 
-function setCollection(resources, { status, items, key, httpCode, collection, error }) {
+function setCollection(resources, { status, projection, items, key, httpCode, collection, error }) {
   const currentList = resources.collections[key] || COLLECTION;
 
   if (status === FETCHING) {
@@ -30,7 +30,8 @@ function setCollection(resources, { status, items, key, httpCode, collection, er
         ...resources.collections,
         [key]: {
           ...currentList,
-          status: collection.status
+          status: collection.status,
+          projection: collection.projection
         }
       }
     };
@@ -69,7 +70,8 @@ function setCollection(resources, { status, items, key, httpCode, collection, er
           type: status,
           httpCode,
           error,
-        }
+        },
+        projection
       }
     };
 
@@ -84,7 +86,7 @@ function setCollection(resources, { status, items, key, httpCode, collection, er
 
 }
 
-function setItem(resources, { status, key, error, httpCode, item }) {
+function setItem(resources, { status, projection, key, error, httpCode, item }) {
 
   const currentItem = resources.items[key] || ITEM;
 
@@ -144,7 +146,8 @@ function setItem(resources, { status, key, error, httpCode, item }) {
             type: status,
             httpCode,
             error
-          }
+          },
+          projection
         }
       }
     };

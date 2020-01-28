@@ -599,9 +599,7 @@ describe('progress option', function () {
             expect(this.userStatus.progressUp).toEqual(undefined);
             expect(this.userStatus.progressDown).toEqual(undefined);
           });
-
         });
-
       });
 
     });

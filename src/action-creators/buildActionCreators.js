@@ -30,6 +30,7 @@ import getItemKey from './helpers/getItemKey';
 import getCollectionKey from './helpers/getCollectionKey';
 import { getConfiguration } from '../configuration';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
+import { COMPLETE } from '..';
 
 function fetchCollection(options, params, actionCreatorOptions = { }) {
   const {
@@ -39,8 +40,10 @@ function fetchCollection(options, params, actionCreatorOptions = { }) {
   const key = getCollectionKey(params, { urlOnlyParams });
   const url = generateUrl({ url: urlTemplate, name }, params);
 
+  const projection = actionCreatorOptions.projection || options.projection;
+
   return (dispatch) => {
-    dispatch(requestCollection({ action, resourceType }, key));
+    dispatch(requestCollection({ action, resourceType, projection }, key));
 
     return makeRequest({
       ...options,
@@ -50,7 +53,7 @@ function fetchCollection(options, params, actionCreatorOptions = { }) {
       credentials: true,
       onSuccess: receiveCollection,
       onError: handleCollectionError,
-      progress
+      projection, progress
     }, actionCreatorOptions);
   };
 }
@@ -62,9 +65,10 @@ function fetchResource(options, params, actionCreatorOptions = { }) {
 
   const key = getItemKey(params, { keyBy });
   const url = generateUrl({ url: urlTemplate, name }, params);
+  const projection = actionCreatorOptions.projection || options.projection;
 
   return (dispatch) => {
-    dispatch(requestResource({ action, resourceType, transforms, key }));
+    dispatch(requestResource({ action, resourceType, transforms, key, projection  }));
 
     return makeRequest({
       ...options,
@@ -74,6 +78,7 @@ function fetchResource(options, params, actionCreatorOptions = { }) {
       credentials: true,
       onSuccess: receiveResource,
       onError: handleResourceError,
+      projection,
       progress
     }, actionCreatorOptions);
   };
@@ -364,7 +369,8 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
     } else if (standardActionCreator) {
       const _options = resolveOptions(
         {
-          keyBy: 'id'
+          keyBy: 'id',
+          projection: { type: COMPLETE }
         },
         configuration,
         resourceOptions,
@@ -377,7 +383,8 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
           'responseAdaptor',
           'progress',
           'requestErrorHandler',
-          'request'
+          'request',
+          'projection'
         ]
       );
 

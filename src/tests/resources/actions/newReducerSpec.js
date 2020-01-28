@@ -3,6 +3,7 @@ import {
   resources,
   CREATING, DESTROY_ERROR, DESTROYING, EDITING, ERROR, NEW, SUCCESS, UPDATING
 } from '../../../index';
+import { COMPLETE } from '../../../constants/ProjectionTypes';
 
 describe('New reducer:', () => {
   beforeAll(function () {
@@ -323,7 +324,8 @@ describe('New reducer:', () => {
           expect(this.users.collections).toEqual({
             'order=newest': {
               positions: expectedIsolatedState,
-              status: { type: null }
+              status: { type: null },
+              projection: { type: null }
             }
           });
         });
@@ -337,7 +339,8 @@ describe('New reducer:', () => {
               collections: {
                 'active=true': {
                   positions: [ ],
-                  status: { type: SUCCESS }
+                  status: { type: SUCCESS },
+                  projection: { type: null }
                 }
               },
               newItemKey: null

@@ -1,9 +1,10 @@
 import { ITEM } from '../../constants/DataStructures';
 import { FETCHING } from '../../constants/Statuses';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
+import { COMPLETE } from '../../constants/ProjectionTypes';
 
 function requestResource(options) {
-  const { transforms, action, key } = options;
+  const { transforms, action, key, projection = { type: COMPLETE } } = options;
 
   return {
     type: action,
@@ -13,6 +14,7 @@ function requestResource(options) {
       ...ITEM,
       values: { },
       status: { type: FETCHING },
+      projection
     })
   };
 }

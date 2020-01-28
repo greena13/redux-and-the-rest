@@ -4,7 +4,7 @@ import applyTransforms from '../../reducers/helpers/applyTransforms';
 import getItemKey from '../helpers/getItemKey';
 
 function receiveCollection(options, collection) {
-  const { transforms, key, keyBy, action, params } = options;
+  const { transforms, key, keyBy, action, params, projection } = options;
 
   const positions = [];
 
@@ -18,6 +18,7 @@ function receiveCollection(options, collection) {
       ...ITEM,
       values,
       status: { type: SUCCESS, syncedAt },
+      projection
     });
 
     return memo;
@@ -31,6 +32,7 @@ function receiveCollection(options, collection) {
     collection: {
       positions,
       status: { type: SUCCESS, syncedAt },
+      projection
     }
   };
 

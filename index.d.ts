@@ -49,6 +49,16 @@ export const PROGRESS: string;
 export const ERROR: string;
 
 /**
+ * The projection type used when all of the attributes of of a resource are included
+ */
+export const COMPLETE: string;
+
+/**
+ * The projection type used when only the attributes necessary for a preview are included
+ */
+export const PREVIEW: string;
+
+/**
  * One of the statuses a resource item or resource collection can be in
  */
 export type StatusType = string;
@@ -359,7 +369,7 @@ export type ActionOptionsMap<T> = { [key: string]: ActionOptions<T> | Boolean };
 /**
  * Defines a new resource, returning the actions, action creators, reducers and helpers to manage it
  */
-export function resources<T>(resourceOptions: ResourceOptions<T>, actionOptions: ActionOptionsMap<T>): ResourcesDefinition<T>;
+export function resources<T>(resourceOptions: ResourceOptions<T>, actionOptions: ActionOptionsMap<T> | string[]): ResourcesDefinition<T>;
 
 
 /**

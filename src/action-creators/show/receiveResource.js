@@ -4,12 +4,13 @@ import applyTransforms from '../../reducers/helpers/applyTransforms';
 import getItemKey from '../helpers/getItemKey';
 
 function receiveResource(options, values) {
-  const { transforms, action, params, keyBy } = options;
+  const { transforms, action, params, keyBy, projection } = options;
 
   const item = applyTransforms(transforms, options, {
     ...ITEM,
     values,
-    status: { type: SUCCESS, syncedAt: Date.now() }
+    status: { type: SUCCESS, syncedAt: Date.now() },
+    projection
   });
 
   return {

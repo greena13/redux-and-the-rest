@@ -100,7 +100,7 @@ import getCollection from './utils/getCollection';
  */
 
 /**
- * @typedef {Object<ActionType, ActionOptions | boolean>} ActionOptionsMap
+ * @typedef {Object<ActionType, ActionOptions|boolean>} ActionOptionsMap
  */
 
 
@@ -120,7 +120,7 @@ import getCollection from './utils/getCollection';
  * Defines a new resource, returning the actions, action creators, reducers and helpers to manage it
  * @param {ResourceOptions} resourceOptions Hash of options that configure how the resource is defined and
  *        behaves.
- * @param {ActionOptionsMap} actionOptions Hash of actions
+ * @param {ActionOptionsMap|string[]} actionOptions Hash of actions
  * @returns {ResourcesDefinition} The resources definition
  */
 function resources(resourceOptions, actionOptions = {}) {
