@@ -22,7 +22,7 @@ import wrapInObject from '../utils/object/wrapInObject';
 import resolveOptions from './helpers/resolveOptions';
 import { EDITING, NEW } from '../constants/Statuses';
 import { ITEM } from '../constants/DataStructures';
-import resourceTypeTransform from './helpers/transforms/resourceTypeTransform';
+import projectionTransform from './helpers/transforms/projectionTransform';
 import applyTransforms from '../reducers/helpers/applyTransforms';
 import arrayFrom from '../utils/array/arrayFrom';
 import generateUrl from './helpers/generateUrl';
@@ -30,20 +30,17 @@ import getItemKey from './helpers/getItemKey';
 import getCollectionKey from './helpers/getCollectionKey';
 import { getConfiguration } from '../configuration';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
-import { COMPLETE } from '..';
 
 function fetchCollection(options, params, actionCreatorOptions = { }) {
   const {
-    action, resourceType, url: urlTemplate, name, keyBy, urlOnlyParams, progress
+    action, url: urlTemplate, name, keyBy, urlOnlyParams, progress, projection
   } = options;
 
   const key = getCollectionKey(params, { urlOnlyParams });
   const url = generateUrl({ url: urlTemplate, name }, params);
 
-  const projection = actionCreatorOptions.projection || options.projection;
-
   return (dispatch) => {
-    dispatch(requestCollection({ action, resourceType, projection }, key));
+    dispatch(requestCollection({ action, projection }, key));
 
     return makeRequest({
       ...options,
@@ -53,22 +50,21 @@ function fetchCollection(options, params, actionCreatorOptions = { }) {
       credentials: true,
       onSuccess: receiveCollection,
       onError: handleCollectionError,
-      projection, progress
+      progress
     }, actionCreatorOptions);
   };
 }
 
 function fetchResource(options, params, actionCreatorOptions = { }) {
   const {
-    action, transforms, url: urlTemplate, name, resourceType, keyBy, progress
+    action, transforms, url: urlTemplate, name, keyBy, progress, projection
   } = options;
 
   const key = getItemKey(params, { keyBy });
   const url = generateUrl({ url: urlTemplate, name }, params);
-  const projection = actionCreatorOptions.projection || options.projection;
 
   return (dispatch) => {
-    dispatch(requestResource({ action, resourceType, transforms, key, projection  }, actionCreatorOptions));
+    dispatch(requestResource({ action, transforms, key, projection  }, actionCreatorOptions));
 
     return makeRequest({
       ...options,
@@ -78,7 +74,6 @@ function fetchResource(options, params, actionCreatorOptions = { }) {
       credentials: true,
       onSuccess: receiveResource,
       onError: handleResourceError,
-      projection,
       progress
     }, actionCreatorOptions);
   };
@@ -145,8 +140,8 @@ function newResource(options, params, values = {}, actionCreatorOptions = {}) {
   };
 }
 
-function clearNewResource({ action, resourceType }) {
-  return { type: action, resourceType };
+function clearNewResource({ action }) {
+  return { type: action };
 }
 
 function editResource(options, params, values, actionCreatorOptions = {}) {
@@ -169,12 +164,12 @@ function editResource(options, params, values, actionCreatorOptions = {}) {
 function createResource(options, params, values, actionCreatorOptions = {}) {
   const {
     action,
-    resourceType,
     transforms,
     url: urlTemplate,
     urlOnlyParams,
     keyBy,
-    progress
+    progress,
+    projection
   } = options;
 
   const key = getItemKey(params, { keyBy });
@@ -184,7 +179,7 @@ function createResource(options, params, values, actionCreatorOptions = {}) {
     const collectionOperations = extractCollectionOperations(actionCreatorOptions, urlOnlyParams);
 
     dispatch(
-      submitCreateResource({ action, resourceType, transforms, key }, actionCreatorOptions, values, collectionOperations)
+      submitCreateResource({ action, transforms, key, projection }, actionCreatorOptions, values, collectionOperations)
     );
 
     return makeRequest({
@@ -207,7 +202,7 @@ function createResource(options, params, values, actionCreatorOptions = {}) {
 
 function updateResource(options, params, values, actionCreatorOptions = {}) {
   const {
-    action, resourceType, transforms, url: urlTemplate, name, progress, keyBy
+    action, transforms, url: urlTemplate, name, progress, keyBy, projection
   } = options;
 
   const key = getItemKey(params, { keyBy });
@@ -216,7 +211,7 @@ function updateResource(options, params, values, actionCreatorOptions = {}) {
   return (dispatch) => {
     dispatch(
       submitUpdateResource(
-        { transforms, action, resourceType, key },
+        { transforms, action, key, projection },
         actionCreatorOptions,
         values,
         actionCreatorOptions
@@ -245,7 +240,6 @@ function updateResource(options, params, values, actionCreatorOptions = {}) {
 function destroyResource(options, params, actionCreatorOptions = {}) {
   const {
     action,
-    resourceType,
     name,
     keyBy,
     url: urlTemplate,
@@ -257,7 +251,7 @@ function destroyResource(options, params, actionCreatorOptions = {}) {
 
   return (dispatch) => {
 
-    dispatch(deleteResourceUpdate({ action, resourceType, key }, actionCreatorOptions.previous));
+    dispatch(deleteResourceUpdate({ action, key }, actionCreatorOptions.previous));
 
     return makeRequest({
       ...options,
@@ -301,9 +295,9 @@ const STANDARD_ACTION_CREATORS = {
  */
 const LOCAL_ONLY_ACTION_CREATORS = {
   ...STANDARD_ACTION_CREATORS,
-  create: (options, params, values, actionCreatorOptions) => receiveCreatedResource({ ...options, params }, actionCreatorOptions, values),
-  update: (options, params, values, actionCreatorOptions) => receiveUpdatedResource({ ...options, params }, actionCreatorOptions, values),
-  destroy: (options, key, values, actionCreatorOptions) => removeResource({ ...options, key }, actionCreatorOptions, values),
+  create: (options, params, values, actionCreatorOptions = {}) => receiveCreatedResource({ ...options, params }, actionCreatorOptions, values),
+  update: (options, params, values, actionCreatorOptions = {}) => receiveUpdatedResource({ ...options, params }, actionCreatorOptions, values),
+  destroy: (options, key, values, actionCreatorOptions = {}) => removeResource({ ...options, key }, actionCreatorOptions, values),
 };
 
 /**
@@ -376,8 +370,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
     } else if (standardActionCreator) {
       const _options = resolveOptions(
         {
-          keyBy: 'id',
-          projection: { type: COMPLETE }
+          keyBy: 'id'
         },
         configuration,
         resourceOptions,
@@ -385,7 +378,6 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
         [
           'url',
           'keyBy',
-          'resourceType',
           'urlOnlyParams',
           'responseAdaptor',
           'progress',
@@ -403,9 +395,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
         ..._options
       };
 
-      if (_options.resourceType) {
-        actionCreatorConfig.transforms.push(resourceTypeTransform);
-      }
+      actionCreatorConfig.transforms.push(projectionTransform);
 
       memo[actionCreatorName] = (arg1, arg2, arg3) => standardActionCreator(actionCreatorConfig, arg1, arg2, arg3);
 

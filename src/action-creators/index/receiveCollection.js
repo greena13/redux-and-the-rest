@@ -2,9 +2,10 @@ import { SUCCESS } from '../../constants/Statuses';
 import { ITEM } from '../../constants/DataStructures';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import getItemKey from '../helpers/getItemKey';
+import projectionTransform from '../helpers/transforms/projectionTransform';
 
 function receiveCollection(options, actionCreatorOptions, collection) {
-  const { transforms, key, keyBy, action, params, projection } = options;
+  const { transforms, key, keyBy, action, params } = options;
 
   const positions = [];
 
@@ -18,7 +19,6 @@ function receiveCollection(options, actionCreatorOptions, collection) {
       ...ITEM,
       values,
       status: { type: SUCCESS, syncedAt },
-      projection
     });
 
     return memo;
@@ -29,11 +29,10 @@ function receiveCollection(options, actionCreatorOptions, collection) {
     status: SUCCESS,
     items,
     key,
-    collection: {
+    collection: projectionTransform(options, actionCreatorOptions, {
       positions,
-      status: { type: SUCCESS, syncedAt },
-      projection
-    }
+      status: { type: SUCCESS, syncedAt }
+    })
   };
 
 }
