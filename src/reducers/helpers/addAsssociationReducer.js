@@ -11,6 +11,7 @@ import warn from '../../utils/dev/warn';
 import removeItemsFromResources from './removeItemsFromResources';
 import contains from '../../utils/collection/contains';
 import serializeKey from '../../utils/serializeKey';
+import isEmpty from '../../utils/collection/isEmpty';
 
 function addAssociationReducer(
   reducersDict,
@@ -192,7 +193,7 @@ function updateHasManyAssociation(resources, { key, type, status, item: associat
 
     } else {
       assertInDevMode(() => {
-        warn(`${type} did no specify any previous values. This makes updating '${name}.${keyName}' much less efficient. Provide the values of the item you are destroying as the third argument to update*().`);
+        warn(`${type} did not specify any previous values. This makes updating '${name}.${keyName}' much less efficient. Provide the values of the item you are destroying as the third argument to update*().`);
       });
 
       return {
@@ -247,48 +248,9 @@ function updateHasManyAssociation(resources, { key, type, status, item: associat
 function removeDestroyedHasManyAssociation(resources, { key, type, status, previousValues }, { dependent, relationType, foreignKeyName, name, keyName, collectionParameter }) {
   if (status === SUCCESS) {
     const _resources = function(){
-      if (previousValues) {
-        const foreignKeys = arrayFrom(previousValues[foreignKeyName] || previousValues[toPlural(foreignKeyName)]);
-
-        if (dependent === 'destroy') {
-          return removeItemsFromResources(resources, foreignKeys);
-        } else {
-
-          return {
-            ...resources,
-            items: {
-              ...resources.items,
-
-              ...(foreignKeys.reduce((memo, addedKey) => {
-                const item = resources.items[addedKey];
-
-                if (item) {
-                  const newValues = function () {
-                    if (relationType === 'hasAndBelongsToMany') {
-                      return {
-                        ...item.values,
-                        [keyName]: without(item.values[keyName] || [], key)
-                      };
-                    } else {
-                      return without(item.values, keyName);
-                    }
-                  }();
-
-                  memo[addedKey] = {
-                    ...item,
-                    values: newValues
-                  };
-                }
-
-                return memo;
-              }, {}))
-            }
-          };
-        }
-
-      } else {
+      if (isEmpty(previousValues)) {
         assertInDevMode(() => {
-          warn(`${type} did no specify any previous values. This makes updating '${name}.${keyName}' much less efficient. Provide the values of the item you are destroying as the second argument to destroy*().`);
+          warn(`${type} did not specify any previous values. This makes updating '${name}.${keyName}' much less efficient. Provide the values of the item you are destroying as the second argument to destroy*().`);
         });
 
         if (dependent === 'destroy') {
@@ -324,6 +286,45 @@ function removeDestroyedHasManyAssociation(resources, { key, type, status, previ
 
               return memo;
             }, {})
+          };
+        }
+
+      } else {
+        const foreignKeys = arrayFrom(previousValues[foreignKeyName] || previousValues[toPlural(foreignKeyName)]);
+
+        if (dependent === 'destroy') {
+          return removeItemsFromResources(resources, foreignKeys);
+        } else {
+
+          return {
+            ...resources,
+            items: {
+              ...resources.items,
+
+              ...(foreignKeys.reduce((memo, addedKey) => {
+                const item = resources.items[addedKey];
+
+                if (item) {
+                  const newValues = function () {
+                    if (relationType === 'hasAndBelongsToMany') {
+                      return {
+                        ...item.values,
+                        [keyName]: without(item.values[keyName] || [], key)
+                      };
+                    } else {
+                      return without(item.values, keyName);
+                    }
+                  }();
+
+                  memo[addedKey] = {
+                    ...item,
+                    values: newValues
+                  };
+                }
+
+                return memo;
+              }, {}))
+            }
           };
         }
 

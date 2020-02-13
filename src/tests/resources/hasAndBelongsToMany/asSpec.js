@@ -65,39 +65,45 @@ describe('hasAndBelongsToMany:', function () {
       });
 
       this.reducers = reducers;
-
-      this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
-
-      fetchMock.post('http://test.com/posts', {
-        body: { id: 3, authorId: 1, title: 'New Post 3' },
-      }, new Promise((resolve) => {
-        this.resolveRequest = resolve;
-      }));
-
-      this.store.dispatch(this.posts.actionCreators.createPost('temp', { authorId: 1, title: 'New Post 3' }));
-
-      this.users = this.store.getState().users;
-    });
-
-    afterAll(function() {
-      fetchMock.restore();
     });
 
     describe('before the request has completed', function () {
+      beforeAll(function () {
+        fetchMock.post('http://test.com/posts', new Promise(resolve => {}));
+
+        this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
+
+        this.store.dispatch(this.posts.actionCreators.createPost('temp', { authorId: 1, title: 'New Post 3' }));
+      });
+
+      afterAll(function() {
+        fetchMock.restore();
+        this.store = null;
+      });
+
       it('then uses the value of the \'as\' option to find the foreign key on the associated resource', function() {
-        expect(this.users.items[1].values.postIds).toEqual([ 1, 'temp' ]);
+        expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1, 'temp' ]);
       });
     });
 
     describe('and the request has completed', () => {
       beforeAll(function () {
-        this.resolveRequest();
+        fetchMock.post('http://test.com/posts', {
+              body: { id: 3, authorId: 1, title: 'New Post 3' },
+        });
 
-        this.users = this.store.getState().users;
+        this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
+
+        this.store.dispatch(this.posts.actionCreators.createPost('temp', { authorId: 1, title: 'New Post 3' }));
+      });
+
+      afterAll(function() {
+        fetchMock.restore();
+        this.store = null;
       });
 
       it('then uses the value of the \'as\' option to find the foreign key on the associated resource', function() {
-        expect(this.users.items[1].values.postIds).toEqual([ 1, 3 ]);
+        expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1, 3 ]);
       });
     });
 

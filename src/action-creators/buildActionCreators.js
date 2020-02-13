@@ -40,7 +40,7 @@ function fetchCollection(options, params, actionCreatorOptions = { }) {
   const url = generateUrl({ url: urlTemplate, name }, params);
 
   return (dispatch) => {
-    dispatch(requestCollection({ action, projection }, key));
+    dispatch(requestCollection({ action, projection: actionCreatorOptions.projection || projection }, key));
 
     return makeRequest({
       ...options,
@@ -250,8 +250,7 @@ function destroyResource(options, params, actionCreatorOptions = {}) {
   const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, keyBy));
 
   return (dispatch) => {
-
-    dispatch(deleteResourceUpdate({ action, key }, actionCreatorOptions.previous));
+    dispatch(deleteResourceUpdate({ action, key }, actionCreatorOptions));
 
     return makeRequest({
       ...options,

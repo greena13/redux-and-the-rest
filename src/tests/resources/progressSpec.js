@@ -21,57 +21,64 @@ describe('progress option', function () {
       });
 
       describe('and the API request succeeds', function () {
-        beforeAll(function () {
-          this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
-
-          fetchMock.post('http://test.com/users', {
-            body: { id: 1, username: 'Bob' },
-          }, new Promise((resolve) => {
-            this.resolveRequest = resolve;
-          }));
-
-          this.store.dispatch(this.createUser('temp', {
-            username: 'Bob'
-          }));
-
-          this.userStatus = this.store.getState().users.items.temp.status;
-        });
-
-        afterAll(function() {
-          fetchMock.restore();
-        });
-
         describe('before the request has completed', function () {
+          beforeAll(function() {
+            fetchMock.post('http://test.com/users', new Promise(resolve => {}));
+
+            this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
+
+            this.store.dispatch(this.createUser('temp', {
+              username: 'Bob'
+            }));
+          });
+
+          afterAll(function () {
+            fetchMock.restore();
+            this.store = null;
+          });
+
           it('then the item\'s status is CREATING', function() {
-            expect(this.userStatus.type).toEqual(CREATING);
+            expect(this.store.getState().users.items.temp.status.type).toEqual(CREATING);
           });
 
           it('then there are no progress attributes on the item\'s status object', function() {
-            expect(this.userStatus.progressUp).toEqual(undefined);
-            expect(this.userStatus.progressDown).toEqual(undefined);
+            const userStatus = this.store.getState().users.items.temp.status;
+
+            expect(userStatus.progressUp).toEqual(undefined);
+            expect(userStatus.progressDown).toEqual(undefined);
           });
         });
 
         describe('when the request completes', () => {
-          beforeAll(function () {
-            this.resolveRequest();
+          beforeAll(function() {
+            fetchMock.post('http://test.com/users', {
+              body: { id: 1, username: 'Bob' },
+            });
 
-            this.userStatus = this.store.getState().users.items[1].status;
+            this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
+
+            this.store.dispatch(this.createUser('temp', {
+              username: 'Bob'
+            }));
+          });
+
+          afterAll(function () {
+            fetchMock.restore();
+            this.store = null;
           });
 
           it('then the item\'s status is SUCCESS', function() {
-            expect(this.userStatus.type).toEqual(SUCCESS);
+            expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
           });
 
           it('then does not set the item\'s progress status attributes', function() {
-            expect(this.userStatus.progressUp).toEqual(undefined);
-            expect(this.userStatus.progressDown).toEqual(undefined);
+            const userStatus = this.store.getState().users.items[1].status;
+
+            expect(userStatus.progressUp).toEqual(undefined);
+            expect(userStatus.progressDown).toEqual(undefined);
           });
-
         });
-
       });
-
     });
 
     describe('when it is set to a truthy value', function () {
@@ -98,11 +105,11 @@ describe('progress option', function () {
 
       describe('and the API request succeeds', function () {
         beforeAll(function () {
-          this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
-
           this.xhrMock = XHRMock.post('http://test.com/users', {
             body: { id: 1, username: 'Bob' },
           });
+
+          this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
 
           this.store.dispatch(this.createUser('temp', {
             username: 'Bob'
@@ -113,6 +120,8 @@ describe('progress option', function () {
 
         afterAll(function() {
           XHRMock.reset();
+
+          this.store = null;
         });
 
         describe('before the request has completed', function () {
@@ -170,7 +179,6 @@ describe('progress option', function () {
           });
 
           it('then the item\'s progressUp is updated with the current values', function() {
-
             expect(this.userStatus.progressUp).toEqual({
               percent: 100,
               loaded: 24,
@@ -202,7 +210,6 @@ describe('progress option', function () {
             });
 
             it('then the item\'s progressUp is updated with the current values', function() {
-
               expect(this.userStatus.progressUp).toEqual({
                 percent: 100,
                 loaded: 24,
@@ -246,11 +253,8 @@ describe('progress option', function () {
               });
             });
           });
-
         });
-
       });
-
     });
   });
 
@@ -270,73 +274,96 @@ describe('progress option', function () {
       });
 
       describe('and the API request succeeds', function () {
-        beforeAll(function () {
-          this.store = buildStore({
-            users: {
-              ...RESOURCES,
-              items: {
-                1: {
-                  values: {
-                    id: 1,
-                    username: 'Bob'
-                  },
-                  status: {
-                    type: SUCCESS,
-                  }
-                },
-              }
-            }
-          }, { users: this.reducers } );
-
-          fetchMock.put('http://test.com/users/1', {
-            body: { id: 1, username: 'Robert' },
-          }, new Promise((resolve) => {
-            this.resolveRequest = resolve;
-          }));
-
-          this.store.dispatch(this.updateUser(1, {
-            id: 1,
-            username: 'Bob'
-          }));
-
-          this.userStatus = this.store.getState().users.items[1].status;
-        });
-
-        afterAll(function() {
-          fetchMock.restore();
-        });
-
         describe('before the request has completed', function () {
+          beforeAll(function() {
+            fetchMock.put('http://test.com/users/1', new Promise(resolve => {}));
+
+            this.store = buildStore({
+              users: {
+                ...RESOURCES,
+                items: {
+                  1: {
+                    values: {
+                      id: 1,
+                      username: 'Bob'
+                    },
+                    status: {
+                      type: SUCCESS,
+                    }
+                  },
+                }
+              }
+            }, { users: this.reducers } );
+
+            this.store.dispatch(this.updateUser(1, {
+              id: 1,
+              username: 'Bob'
+            }));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
+          });
+
           it('then the item\'s status is UPDATING', function() {
-            expect(this.userStatus.type).toEqual(UPDATING);
+            expect(this.store.getState().users.items[1].status.type).toEqual(UPDATING);
           });
 
           it('then there are no progress attributes on the item\'s status object', function() {
-            expect(this.userStatus.progressUp).toEqual(undefined);
-            expect(this.userStatus.progressDown).toEqual(undefined);
+            const userStatus = this.store.getState().users.items[1].status;
+
+            expect(userStatus.progressUp).toEqual(undefined);
+            expect(userStatus.progressDown).toEqual(undefined);
           });
         });
 
         describe('when the request completes', () => {
-          beforeAll(function () {
-            this.resolveRequest();
+          beforeAll(function() {
+            fetchMock.put('http://test.com/users/1', {
+              body: { id: 1, username: 'Robert' }
+            });
 
-            this.userStatus = this.store.getState().users.items[1].status;
+            this.store = buildStore({
+              users: {
+                ...RESOURCES,
+                items: {
+                  1: {
+                    values: {
+                      id: 1,
+                      username: 'Bob'
+                    },
+                    status: {
+                      type: SUCCESS,
+                    }
+                  },
+                }
+              }
+            }, { users: this.reducers } );
+
+            this.store.dispatch(this.updateUser(1, {
+              id: 1,
+              username: 'Bob'
+            }));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
           });
 
           it('then the item\'s status is SUCCESS', function() {
-            expect(this.userStatus.type).toEqual(SUCCESS);
+            expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
           });
 
           it('then does not set the item\'s progress status attributes', function() {
-            expect(this.userStatus.progressUp).toEqual(undefined);
-            expect(this.userStatus.progressDown).toEqual(undefined);
+            const userStatus = this.store.getState().users.items[1].status;
+
+            expect(userStatus.progressUp).toEqual(undefined);
+            expect(userStatus.progressDown).toEqual(undefined);
           });
-
         });
-
       });
-
     });
 
     describe('when it is set to a truthy value', function () {
@@ -363,6 +390,10 @@ describe('progress option', function () {
 
       describe('and the API request succeeds', function () {
         beforeAll(function () {
+          this.xhrMock = XHRMock.put('http://test.com/users/1', {
+            body: { id: 1, username: 'Bob' },
+          });
+
           this.store = buildStore({
             users: {
               ...RESOURCES,
@@ -380,10 +411,6 @@ describe('progress option', function () {
             }
           }, { users: this.reducers } );
 
-          this.xhrMock = XHRMock.put('http://test.com/users/1', {
-            body: { id: 1, username: 'Bob' },
-          });
-
           this.store.dispatch(this.updateUser(1, {
             id: 1,
             username: 'Robert',
@@ -394,6 +421,7 @@ describe('progress option', function () {
 
         afterAll(function() {
           XHRMock.reset();
+          this.store = null;
         });
 
         describe('before the request has completed', function () {
@@ -437,7 +465,6 @@ describe('progress option', function () {
               lengthComputable: undefined,
             });
           });
-
         });
 
         describe('and the upload has finished', () => {
@@ -527,11 +554,8 @@ describe('progress option', function () {
               });
             });
           });
-
         });
-
       });
-
     });
   });
 
@@ -551,57 +575,68 @@ describe('progress option', function () {
       });
 
       describe('and the API request succeeds', function () {
-        beforeAll(function () {
-          this.store = buildStore({
-            users: {
-              ...RESOURCES
-            }
-          }, { users: this.reducers } );
-
-          fetchMock.get('http://test.com/users/1', {
-            body: { id: 1, username: 'Robert' },
-          }, new Promise((resolve) => {
-            this.resolveRequest = resolve;
-          }));
-
-          this.store.dispatch(this.fetchUser(1));
-
-          this.userStatus = this.store.getState().users.items[1].status;
-        });
-
-        afterAll(function() {
-          fetchMock.restore();
-        });
-
         describe('before the request has completed', function () {
+          beforeAll(function() {
+            fetchMock.get('http://test.com/users/1', new Promise(resolve => {}));
+
+            this.store = buildStore({
+              users: {
+                ...RESOURCES
+              }
+            }, { users: this.reducers });
+
+            this.store.dispatch(this.fetchUser(1));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
+          });
+
           it('then the item\'s status is FETCHING', function() {
-            expect(this.userStatus.type).toEqual(FETCHING);
+            expect(this.store.getState().users.items[1].status.type).toEqual(FETCHING);
           });
 
           it('then there are no progress attributes on the item\'s status object', function() {
-            expect(this.userStatus.progressUp).toEqual(undefined);
-            expect(this.userStatus.progressDown).toEqual(undefined);
+            const userStatus = this.store.getState().users.items[1].status;
+
+            expect(userStatus.progressUp).toEqual(undefined);
+            expect(userStatus.progressDown).toEqual(undefined);
           });
         });
 
         describe('when the request completes', () => {
-          beforeAll(function () {
-            this.resolveRequest();
+          beforeAll(function() {
+            fetchMock.get('http://test.com/users/1', {
+              body: { id: 1, username: 'Robert' }
+            });
 
-            this.userStatus = this.store.getState().users.items[1].status;
+            this.store = buildStore({
+              users: {
+                ...RESOURCES
+              }
+            }, { users: this.reducers });
+
+            this.store.dispatch(this.fetchUser(1));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
           });
 
           it('then the item\'s status is SUCCESS', function() {
-            expect(this.userStatus.type).toEqual(SUCCESS);
+            expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
           });
 
           it('then does not set the item\'s progress status attributes', function() {
-            expect(this.userStatus.progressUp).toEqual(undefined);
-            expect(this.userStatus.progressDown).toEqual(undefined);
+            const userStatus = this.store.getState().users.items[1].status;
+
+            expect(userStatus.progressUp).toEqual(undefined);
+            expect(userStatus.progressDown).toEqual(undefined);
           });
         });
       });
-
     });
 
     describe('when it is set to a truthy value', function () {
@@ -628,15 +663,15 @@ describe('progress option', function () {
 
       describe('and the API request succeeds', function () {
         beforeAll(function () {
+          this.xhrMock = XHRMock.get('http://test.com/users/1', {
+            body: { id: 1, username: 'Bob' },
+          });
+
           this.store = buildStore({
             users: {
               ...RESOURCES,
             }
           }, { users: this.reducers } );
-
-          this.xhrMock = XHRMock.get('http://test.com/users/1', {
-            body: { id: 1, username: 'Bob' },
-          });
 
           this.store.dispatch(this.fetchUser(1));
 
@@ -734,7 +769,6 @@ describe('progress option', function () {
             });
 
             it('then the item\'s progressUp is updated with the current values', function() {
-
               expect(this.userStatus.progressUp).toEqual({
                 percent: 100,
                 loaded: 0,
@@ -778,11 +812,8 @@ describe('progress option', function () {
               });
             });
           });
-
         });
-
       });
-
     });
   });
 
@@ -802,69 +833,79 @@ describe('progress option', function () {
       });
 
       describe('and the API request succeeds', function () {
-        beforeAll(function () {
-          this.store = buildStore({
-            users: {
-              ...RESOURCES
-            }
-          }, { users: this.reducers } );
-
-          fetchMock.get('http://test.com/users', {
-            body: [ { id: 1, username: 'Robert' } ],
-          }, new Promise((resolve) => {
-            this.resolveRequest = resolve;
-          }));
-
-          this.store.dispatch(this.fetchUsers());
-
-          this.userCollectionStatus = this.store.getState().users.collections[''].status;
-        });
-
-        afterAll(function() {
-          fetchMock.restore();
-        });
-
         describe('before the request has completed', function () {
+          beforeAll(function() {
+            fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+
+            this.store = buildStore({
+              users: {
+                ...RESOURCES
+              }
+            }, { users: this.reducers } );
+
+            this.store.dispatch(this.fetchUsers());
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
+          });
+
           it('then the collection\'s status is FETCHING', function() {
-            expect(this.userCollectionStatus.type).toEqual(FETCHING);
+            expect(this.store.getState().users.collections[''].status.type).toEqual(FETCHING);
           });
 
           it('then there are no progress attributes on the collection\'s status object', function() {
-            expect(this.userCollectionStatus.progressUp).toEqual(undefined);
-            expect(this.userCollectionStatus.progressDown).toEqual(undefined);
+            const userStatus = this.store.getState().users.collections[''].status;
+
+            expect(userStatus.progressUp).toEqual(undefined);
+            expect(userStatus.progressDown).toEqual(undefined);
           });
         });
 
         describe('when the request completes', () => {
-          beforeAll(function () {
-            this.resolveRequest();
+          beforeAll(function() {
+            fetchMock.get('http://test.com/users', {
+              body: [{ id: 1, username: 'Robert' }],
+            });
 
-            this.userCollectionStatus = this.store.getState().users.collections[''].status;
-            this.userStatus = this.store.getState().users.items[1].status;
+            this.store = buildStore({
+              users: {
+                ...RESOURCES
+              }
+            }, { users: this.reducers } );
+
+            this.store.dispatch(this.fetchUsers());
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
           });
 
           it('then the collection\'s status is SUCCESS', function() {
-            expect(this.userCollectionStatus.type).toEqual(SUCCESS);
+            expect(this.store.getState().users.collections[''].status.type).toEqual(SUCCESS);
           });
 
           it('then the collection\'s items\' status is SUCCESS', function() {
-            expect(this.userStatus.type).toEqual(SUCCESS);
+            expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
           });
 
           it('then does not set the collection\'s progress status attributes', function() {
-            expect(this.userCollectionStatus.progressUp).toEqual(undefined);
-            expect(this.userCollectionStatus.progressDown).toEqual(undefined);
+            const collectionStatus = this.store.getState().users.collections[''].status;
+
+            expect(collectionStatus.progressUp).toEqual(undefined);
+            expect(collectionStatus.progressDown).toEqual(undefined);
           });
 
           it('then does not set then the collection\'s items\' progress status attributes', function() {
-            expect(this.userStatus.progressUp).toEqual(undefined);
-            expect(this.userStatus.progressDown).toEqual(undefined);
+            const userStatus = this.store.getState().users.items[1].status;
+
+            expect(userStatus.progressUp).toEqual(undefined);
+            expect(userStatus.progressDown).toEqual(undefined);
           });
-
         });
-
       });
-
     });
 
     describe('when it is set to a truthy value', function () {
@@ -1051,11 +1092,8 @@ describe('progress option', function () {
               });
             });
           });
-
         });
-
       });
-
     });
   });
 });

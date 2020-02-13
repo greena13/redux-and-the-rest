@@ -18,10 +18,7 @@ describe('Generating key:', function () {
       });
 
       this.fetchUsers = fetchUsers;
-
-      this.store = buildStore({
-        users: RESOURCES
-      }, { users: reducers } );
+      this.reducers = reducers;
     });
 
     describe('when no value is provided', function () {
@@ -30,10 +27,15 @@ describe('Generating key:', function () {
           body: [ { id: 1, username: 'Bob' } ],
           status: 200
         });
+
+        this.store = buildStore({
+          users: RESOURCES
+        }, { users: this.reducers } );
       });
 
       afterAll(function () {
         fetchMock.restore();
+        this.store = null;
       });
 
       it('then uses an empty string as the key', function() {
@@ -52,10 +54,15 @@ describe('Generating key:', function () {
           body: [ { id: 1, username: 'Bob' } ],
           status: 200
         });
+
+        this.store = buildStore({
+          users: RESOURCES
+        }, { users: this.reducers } );
       });
 
       afterAll(function () {
         fetchMock.restore();
+        this.store = null;
       });
 
       it('then uses the id as a key', function() {
@@ -74,10 +81,15 @@ describe('Generating key:', function () {
           body: [ { id: 1, username: 'Bob' } ],
           status: 200
         });
+
+        this.store = buildStore({
+          users: RESOURCES
+        }, { users: this.reducers } );
       });
 
       afterAll(function () {
         fetchMock.restore();
+        this.store = null;
       });
 
       it('then uses a serialised version of the object as a key', function() {
@@ -123,9 +135,10 @@ describe('Generating key:', function () {
 
       afterAll(function () {
         fetchMock.restore();
+        this.store = null;
       });
 
-      it('then does not use that attribute in the serialised object used for the key', function() {
+      it('then does NOT use that attribute in the serialised object used for the key', function() {
         return this.store.dispatch(this.fetchUsers({ order: 'newest', page: 1 })).then(() => {
           const collection = this.store.getState().users.collections['order=newest'];
 
@@ -154,6 +167,7 @@ describe('Generating key:', function () {
 
       afterAll(function () {
         fetchMock.restore();
+        this.store = null;
       });
 
       it('then overrides the results for the index action', function() {
@@ -172,5 +186,4 @@ describe('Generating key:', function () {
       });
     });
   });
-
 });

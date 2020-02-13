@@ -22,17 +22,6 @@ describe('localOnly:', function () {
         },
         selectionMap: { 1: true },
         newItemKey: 'temp'
-      },
-      session: {
-        ...RESOURCES,
-        items: {
-          1: {
-            values: {
-              active: true
-            },
-            status: { type: SUCCESS }
-          }
-        }
       }
     };
   });
@@ -48,7 +37,7 @@ describe('localOnly:', function () {
         keyBy: 'id',
       }, ['index', 'show', 'create', 'update', 'destroy' ]);
 
-      this.store = buildStore({ ...this.initialState }, { users: usersReducers, session: this.sessionReducers });
+      this.store = buildStore({ ...this.initialState }, { users: usersReducers });
 
       this.fetchUser = fetchUser;
       this.fetchUsers = fetchUsers;
@@ -72,7 +61,7 @@ describe('localOnly:', function () {
         localOnly: true,
       }, ['index', 'show', 'new', 'create', 'edit', 'update', 'destroy']);
 
-      this.store = buildStore({ ...this.initialState }, { users: usersReducers, session: this.sessionReducers });
+      this.store = buildStore({ ...this.initialState }, { users: usersReducers });
 
       this.fetchUser = fetchUser;
       this.fetchUsers = fetchUsers;

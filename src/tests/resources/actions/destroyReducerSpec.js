@@ -33,26 +33,23 @@ describe('Destroy reducer:', function () {
     });
 
     describe('and the API request succeeds', function () {
-      beforeAll(function () {
-        fetchMock.delete('http://test.com/users/1', {
-          body: { },
-        }, new Promise((resolve) => {
-          this.resolveRequest = resolve;
-        }));
-
-        spyOn(console, 'warn');
-
-        this.store = buildStore(this.initialState, { users: this.reducers } );
-        this.store.dispatch(this.destroyUser(1));
-
-        this.users = this.store.getState().users;
-      });
-
-      afterAll(function() {
-        fetchMock.restore();
-      });
-
       describe('before the request has completed', function () {
+        beforeAll(function () {
+          fetchMock.delete('http://test.com/users/1', new Promise(resolve => {}));
+
+          spyOn(console, 'warn');
+
+          this.store = buildStore(this.initialState, { users: this.reducers } );
+          this.store.dispatch(this.destroyUser(1));
+
+          this.users = this.store.getState().users;
+        });
+
+        afterAll(function() {
+          fetchMock.restore();
+          this.store = null;
+        });
+
         it('then warns about the missing resource', function() {
           // eslint-disable-next-line no-console
           expect(console.warn).toHaveBeenCalledWith(
@@ -67,39 +64,45 @@ describe('Destroy reducer:', function () {
 
       describe('when the request has completed', function() {
         beforeAll(function () {
-          this.resolveRequest();
+          fetchMock.delete('http://test.com/users/1', {
+            body: {},
+          });
 
-          this.users = this.store.getState().users;
+          spyOn(console, 'warn');
+
+          this.store = buildStore(this.initialState, { users: this.reducers } );
+          this.store.dispatch(this.destroyUser(1));
+        });
+
+        afterAll(function() {
+          fetchMock.restore();
+          this.store = null;
         });
 
         it('then removes the item', function() {
-          expect(this.users.items).toEqual({});
+          expect(this.store.getState().users.items).toEqual({});
         });
       });
     });
 
     describe('and the API request errors', function () {
-      beforeAll(function () {
-        fetchMock.delete('http://test.com/users/1', {
-          body: { error: 'Not Found' },
-          status: 404
-        }, new Promise((resolve) => {
-          this.resolveRequest = resolve;
-        }));
-
-        spyOn(console, 'warn');
-
-        this.store = buildStore(this.initialState, { users: this.reducers } );
-        this.store.dispatch(this.destroyUser(1));
-
-        this.users = this.store.getState().users;
-      });
-
-      afterAll(function() {
-        fetchMock.restore();
-      });
-
       describe('before the request has completed', function () {
+        beforeAll(function () {
+          fetchMock.delete('http://test.com/users/1', new Promise(resolve => {}));
+
+          spyOn(console, 'warn');
+
+          this.store = buildStore(this.initialState, { users: this.reducers } );
+          this.store.dispatch(this.destroyUser(1));
+
+          this.users = this.store.getState().users;
+        });
+
+        afterAll(function() {
+          fetchMock.restore();
+          this.store = null;
+        });
+
         it('then warns about the missing resource', function() {
           // eslint-disable-next-line no-console
           expect(console.warn).toHaveBeenCalledWith(
@@ -114,17 +117,28 @@ describe('Destroy reducer:', function () {
 
       describe('when the request has completed', function() {
         beforeAll(function () {
-          this.resolveRequest();
+          fetchMock.delete('http://test.com/users/1', {
+            body: { error: 'Not Found' },
+            status: 404
+          });
 
-          this.users = this.store.getState().users;
+          spyOn(console, 'warn');
+
+          this.store = buildStore(this.initialState, { users: this.reducers } );
+          this.store.dispatch(this.destroyUser(1));
+        });
+
+        afterAll(function() {
+          fetchMock.restore();
+          this.store = null;
         });
 
         it('then updates the items\'s status to DESTROY_ERROR', function() {
-          expect(this.users.items[1].status.type).toEqual(DESTROY_ERROR);
+          expect(this.store.getState().users.items[1].status.type).toEqual(DESTROY_ERROR);
         });
 
         it('then updates the item\'s status httpCode', function() {
-          expect(this.users.items[1].status.httpCode).toEqual(404);
+          expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
         });
       });
     });
@@ -170,27 +184,24 @@ describe('Destroy reducer:', function () {
                 };
               });
 
-              beforeAll(function () {
-                fetchMock.delete('http://test.com/users/1', {
-                  body: { },
-                }, new Promise((resolve) => {
-                  this.resolveRequest = resolve;
-                }));
-
-                spyOn(console, 'warn');
-
-                this.store = buildStore(this.initialState, { users: this.reducers } );
-
-                this.store.dispatch(this.destroyUser(idArgs));
-
-                this.users = this.store.getState().users;
-              });
-
-              afterAll(function() {
-                fetchMock.restore();
-              });
-
               describe('before the request has completed', function () {
+                beforeAll(function () {
+                  fetchMock.delete('http://test.com/users/1', new Promise(resolve => {}));
+
+                  spyOn(console, 'warn');
+
+                  this.store = buildStore(this.initialState, { users: this.reducers } );
+
+                  this.store.dispatch(this.destroyUser(idArgs));
+
+                  this.users = this.store.getState().users;
+                });
+
+                afterAll(function() {
+                  fetchMock.restore();
+                  this.store = null;
+                });
+
                 it('then warns about the conflict', function() {
                   // eslint-disable-next-line no-console
                   expect(console.warn).toHaveBeenCalledWith(warning);
@@ -203,40 +214,47 @@ describe('Destroy reducer:', function () {
 
               describe('when the request has completed', function() {
                 beforeAll(function () {
-                  this.resolveRequest();
+                  fetchMock.delete('http://test.com/users/1', {
+                    body: {},
+                  });
 
-                  this.users = this.store.getState().users;
+                  spyOn(console, 'warn');
+
+                  this.store = buildStore(this.initialState, { users: this.reducers } );
+
+                  this.store.dispatch(this.destroyUser(idArgs));
+                });
+
+                afterAll(function() {
+                  fetchMock.restore();
+                  this.store = null;
                 });
 
                 it('then removes the item', function() {
-                  expect(this.users.items).toEqual({});
+                  expect(this.store.getState().users.items).toEqual({});
                 });
               });
             });
 
             describe('and the API request errors', function () {
-              beforeAll(function () {
-                fetchMock.delete('http://test.com/users/1', {
-                  body: { error: 'Not Found' },
-                  status: 404
-                }, new Promise((resolve) => {
-                  this.resolveRequest = resolve;
-                }));
-
-                spyOn(console, 'warn');
-
-                this.store = buildStore(this.initialState, { users: this.reducers } );
-
-                this.store.dispatch(this.destroyUser(idArgs));
-
-                this.users = this.store.getState().users;
-              });
-
-              afterAll(function() {
-                fetchMock.restore();
-              });
-
               describe('before the request has completed', function () {
+                beforeAll(function () {
+                  fetchMock.delete('http://test.com/users/1', new Promise(resolve => {}));
+
+                  spyOn(console, 'warn');
+
+                  this.store = buildStore(this.initialState, { users: this.reducers } );
+
+                  this.store.dispatch(this.destroyUser(idArgs));
+
+                  this.users = this.store.getState().users;
+                });
+
+                afterAll(function() {
+                  fetchMock.restore();
+                  this.store = null;
+                });
+
                 it('then warns about the missing resource', function() {
                   // eslint-disable-next-line no-console
                   expect(console.warn).toHaveBeenCalledWith(
@@ -251,22 +269,32 @@ describe('Destroy reducer:', function () {
 
               describe('when the request has completed', function() {
                 beforeAll(function () {
-                  this.resolveRequest();
+                  fetchMock.delete('http://test.com/users/1', {
+                    body: { error: 'Not Found' },
+                    status: 404
+                  });
 
-                  this.users = this.store.getState().users;
+                  spyOn(console, 'warn');
+
+                  this.store = buildStore(this.initialState, { users: this.reducers } );
+
+                  this.store.dispatch(this.destroyUser(idArgs));
+                });
+
+                afterAll(function() {
+                  fetchMock.restore();
+                  this.store = null;
                 });
 
                 it('then updates the items\'s status to DESTROY_ERROR', function() {
-                  expect(this.users.items[1].status.type).toEqual(DESTROY_ERROR);
+                  expect(this.store.getState().users.items[1].status.type).toEqual(DESTROY_ERROR);
                 });
 
                 it('then updates the item\'s status httpCode', function() {
-                  expect(this.users.items[1].status.httpCode).toEqual(404);
+                  expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
                 });
-
               });
             });
-
           });
         });
 
@@ -309,25 +337,22 @@ describe('Destroy reducer:', function () {
             });
 
             describe('and the API request succeeds', function () {
-              beforeAll(function () {
-                fetchMock.delete('http://test.com/users/1', {
-                  body: { },
-                }, new Promise((resolve) => {
-                  this.resolveRequest = resolve;
-                }));
-
-                this.store = buildStore(this.initialState, { users: this.reducers } );
-
-                this.store.dispatch(this.destroyUser(idArgs));
-
-                this.users = this.store.getState().users;
-              });
-
-              afterAll(function() {
-                fetchMock.restore();
-              });
-
               describe('before the request has completed', function () {
+                beforeAll(function () {
+                  fetchMock.delete('http://test.com/users/1', new Promise(resolve => {}));
+
+                  this.store = buildStore(this.initialState, { users: this.reducers } );
+
+                  this.store.dispatch(this.destroyUser(idArgs));
+
+                  this.users = this.store.getState().users;
+                });
+
+                afterAll(function() {
+                  fetchMock.restore();
+                  this.store = null;
+                });
+
                 it('then sets the item\'s status to DESTROYING', function() {
                   expect(this.users.items[1].status.type).toEqual(DESTROYING);
                 });
@@ -343,46 +368,51 @@ describe('Destroy reducer:', function () {
 
               describe('when the request has completed', function() {
                 beforeAll(function () {
-                  this.resolveRequest();
+                  fetchMock.delete('http://test.com/users/1', {
+                    body: {},
+                  });
 
-                  this.users = this.store.getState().users;
+                  this.store = buildStore(this.initialState, { users: this.reducers } );
+
+                  this.store.dispatch(this.destroyUser(idArgs));
+                });
+
+                afterAll(function() {
+                  fetchMock.restore();
+                  this.store = null;
                 });
 
                 it('then removes the item', function() {
-                  expect(this.users.items).toEqual({});
+                  expect(this.store.getState().users.items).toEqual({});
                 });
 
                 it('then removes the deleted item from the selectionMap', function() {
-                  expect(this.users.selectionMap).toEqual({});
+                  expect(this.store.getState().users.selectionMap).toEqual({});
                 });
 
                 it('then removes the deleted item from the newItemKey', function() {
-                  expect(this.users.newItemKey).toEqual(null);
+                  expect(this.store.getState().users.newItemKey).toEqual(null);
                 });
               });
             });
 
             describe('and the API request errors', function () {
-              beforeAll(function () {
-                fetchMock.delete('http://test.com/users/1', {
-                  body: { error: 'Not Found' },
-                  status: 404
-                }, new Promise((resolve) => {
-                  this.resolveRequest = resolve;
-                }));
-
-                this.store = buildStore(this.initialState, { users: this.reducers } );
-
-                this.store.dispatch(this.destroyUser(idArgs));
-
-                this.users = this.store.getState().users;
-              });
-
-              afterAll(function() {
-                fetchMock.restore();
-              });
-
               describe('before the request has completed', function () {
+                beforeAll(function () {
+                  fetchMock.delete('http://test.com/users/1', new Promise(resolve => {}));
+
+                  this.store = buildStore(this.initialState, { users: this.reducers } );
+
+                  this.store.dispatch(this.destroyUser(idArgs));
+
+                  this.users = this.store.getState().users;
+                });
+
+                afterAll(function() {
+                  fetchMock.restore();
+                  this.store = null;
+                });
+
                 it('then sets the item\'s status to DESTROYING', function() {
                   expect(this.users.items[1].status.type).toEqual(DESTROYING);
                 });
@@ -398,27 +428,36 @@ describe('Destroy reducer:', function () {
 
               describe('when the request has completed', function() {
                 beforeAll(function () {
-                  this.resolveRequest();
+                  fetchMock.delete('http://test.com/users/1', {
+                    body: { error: 'Not Found' },
+                    status: 404
+                  });
 
-                  this.users = this.store.getState().users;
+                  this.store = buildStore(this.initialState, { users: this.reducers } );
+
+                  this.store.dispatch(this.destroyUser(idArgs));
+                });
+
+                afterAll(function() {
+                  fetchMock.restore();
+                  this.store = null;
                 });
 
                 it('then updates the items\'s status to DESTROY_ERROR', function() {
-                  expect(this.users.items[1].status.type).toEqual(DESTROY_ERROR);
+                  expect(this.store.getState().users.items[1].status.type).toEqual(DESTROY_ERROR);
                 });
 
                 it('then does NOT remove the item from the selectionMap', function() {
-                  expect(this.users.selectionMap).toEqual({ 1: true });
+                  expect(this.store.getState().users.selectionMap).toEqual({ 1: true });
                 });
 
                 it('then does NOT clear the item from thew newItemKey', function() {
-                  expect(this.users.newItemKey).toEqual(1);
+                  expect(this.store.getState().users.newItemKey).toEqual(1);
                 });
 
                 it('then updates the item\'s status httpCode', function() {
-                  expect(this.users.items[1].status.httpCode).toEqual(404);
+                  expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
                 });
-
               });
             });
           });

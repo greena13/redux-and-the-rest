@@ -86,88 +86,104 @@ describe('hasAndBelongsToMany:', function () {
     });
 
     describe('and the association\'s CREATE action occurs', function () {
-      beforeAll(function () {
-        this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
-
-        fetchMock.post('http://test.com/posts', {
-          body: { id: 3, userId: 1, title: 'New Post 3' },
-        }, new Promise((resolve) => {
-          this.resolveRequest = resolve;
-        }));
-
-        this.store.dispatch(this.posts.actionCreators.createPost('temp', { userId: 1, title: 'New Post 3' }));
-
-        this.users = this.store.getState().users;
-      });
-
-      afterAll(function() {
-        fetchMock.restore();
-      });
-
       describe('before the request has completed', function () {
+        beforeAll(function () {
+          this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
+
+          fetchMock.post('http://test.com/posts', new Promise(resolve => {}));
+
+          this.store.dispatch(this.posts.actionCreators.createPost('temp', { userId: 1, title: 'New Post 3' }));
+        });
+
+        afterAll(function() {
+          fetchMock.restore();
+          this.store = null;
+        });
+
         it('then adds the new association to the default attribute', function() {
-          expect(this.users.items[1].values.postIds).toEqual([ 1, 'temp' ]);
+          expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1, 'temp' ]);
         });
       });
 
       describe('and the request has completed', () => {
         beforeAll(function () {
-          this.resolveRequest();
+          this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-          this.users = this.store.getState().users;
+          fetchMock.post('http://test.com/posts', {
+            body: { id: 3, userId: 1, title: 'New Post 3' },
+          });
+
+          this.store.dispatch(this.posts.actionCreators.createPost('temp', { userId: 1, title: 'New Post 3' }));
+        });
+
+        afterAll(function() {
+          fetchMock.restore();
+          this.store = null;
         });
 
         it('then updates the key of the association', function() {
-          expect(this.users.items[1].values.postIds).toEqual([ 1, 3 ]);
+          expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1, 3 ]);
         });
       });
-
     });
 
     describe('and the association\'s UPDATE action occurs', function () {
       describe('and the previous values have been specified', () => {
-        beforeAll(function () {
-          this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
+        describe('before the request has completed', function () {
+          beforeAll(function () {
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-          fetchMock.put('http://test.com/posts/1', {
-            body: {
+            fetchMock.put('http://test.com/posts/1', new Promise(resolve => {}));
+
+            spyOn(console, 'warn');
+
+            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
               title: 'Post 1',
               userId: 2
-            },
-          }, new Promise((resolve) => {
-            this.resolveRequest = resolve;
-          }));
+            }, { previous: {
+                title: 'Post 1',
+                userId: 1
+              }
+            }));
+          });
 
-          spyOn(console, 'warn');
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
+          });
 
-          this.store.dispatch(this.posts.actionCreators.updatePost(1, {
-            title: 'Post 1',
-            userId: 2
-          }, { previous: {
-              title: 'Post 1',
-              userId: 1
-            }
-          }));
-
-          this.users = this.store.getState().users;
-        });
-
-        afterAll(function() {
-          fetchMock.restore();
-        });
-
-        describe('before the request has completed', function () {
           it('then does NOT remove the associated item', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ 1 ]);
-            expect(this.users.items[2].values.postIds).toEqual(undefined);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items[2].values.postIds).toEqual(undefined);
           });
         });
 
         describe('and the request has completed', () => {
           beforeAll(function () {
-            this.resolveRequest();
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            this.users = this.store.getState().users;
+            fetchMock.put('http://test.com/posts/1', {
+              body: {
+                title: 'Post 1',
+                userId: 2
+              },
+            });
+
+            spyOn(console, 'warn');
+
+            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
+              title: 'Post 1',
+              userId: 2
+            }, { previous: {
+                title: 'Post 1',
+                userId: 1
+              }
+            }));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
           });
 
           it('then does NOT display a warning', function() {
@@ -176,111 +192,127 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.users.items[2].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items[2].values.postIds).toEqual([ 1 ]);
           });
         });
       });
 
       describe('and the previous values have NOT been specified', () => {
-        beforeAll(function () {
-          this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
+        describe('before the request has completed', function () {
+          beforeAll(function () {
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-          fetchMock.put('http://test.com/posts/1', {
-            body: {
+            fetchMock.put('http://test.com/posts/1', new Promise(resolve => {}));
+
+            spyOn(console, 'warn');
+
+            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
               title: 'Post 1',
               userId: 2
-            },
-          }, new Promise((resolve) => {
-            this.resolveRequest = resolve;
-          }));
+            }));
+          });
 
-          spyOn(console, 'warn');
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
+          });
 
-          this.store.dispatch(this.posts.actionCreators.updatePost(1, {
-            title: 'Post 1',
-            userId: 2
-          }));
-
-          this.users = this.store.getState().users;
-        });
-
-        afterAll(function() {
-          fetchMock.restore();
-        });
-
-        describe('before the request has completed', function () {
           it('then does NOT remove the associated item', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
           });
         });
 
         describe('and the request has completed', () => {
           beforeAll(function () {
-            this.resolveRequest();
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            this.users = this.store.getState().users;
+            fetchMock.put('http://test.com/posts/1', {
+              body: {
+                title: 'Post 1',
+                userId: 2
+              },
+            });
+
+            spyOn(console, 'warn');
+
+            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
+              title: 'Post 1',
+              userId: 2
+            }));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
           });
 
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: UPDATE_POST did no specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the third argument to update*().'
+              'Redux and the REST: UPDATE_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the third argument to update*().'
             );
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.users.items[2].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items[2].values.postIds).toEqual([ 1 ]);
           });
         });
       });
-
     });
 
     describe('and the association\'s DESTROY action occurs', function () {
       describe('and the previous values have been specified', () => {
-        beforeAll(function () {
-          this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
+        describe('before the request has completed', function () {
+          beforeAll(function () {
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-          fetchMock.delete('http://test.com/posts/1', {
-            body: { },
-          }, new Promise((resolve) => {
-            this.resolveRequest = resolve;
-          }));
+            fetchMock.delete('http://test.com/posts/1', new Promise(resolve => {}));
 
-          spyOn(console, 'warn');
+            spyOn(console, 'warn');
 
-          this.store.dispatch(this.posts.actionCreators.destroyPost(1, { previous: {
+            this.store.dispatch(this.posts.actionCreators.destroyPost(1, {
               title: 'Post 1',
               userId: 1
-            }
-          }));
+            }));
+          });
 
-          this.users = this.store.getState().users;
-        });
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
+          });
 
-        afterAll(function() {
-          fetchMock.restore();
-        });
-
-        describe('before the request has completed', function () {
           it('then does NOT remove the associated item', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
           });
         });
 
         describe('and the request has completed', () => {
           beforeAll(function () {
-            this.resolveRequest();
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            this.users = this.store.getState().users;
+            fetchMock.delete('http://test.com/posts/1', {
+                  body: {},
+            });
+
+            spyOn(console, 'warn');
+
+            this.store.dispatch(this.posts.actionCreators.destroyPost(1, {
+              title: 'Post 1',
+              userId: 1
+            }));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
           });
 
           it('then does NOT display a warning', function() {
@@ -289,60 +321,64 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
           });
         });
       });
 
       describe('and the previous values have NOT been specified', () => {
-        beforeAll(function () {
-          this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
-
-          fetchMock.delete('http://test.com/posts/1', {
-            body: { },
-          }, new Promise((resolve) => {
-            this.resolveRequest = resolve;
-          }));
-
-          spyOn(console, 'warn');
-
-          this.store.dispatch(this.posts.actionCreators.destroyPost(1));
-
-          this.users = this.store.getState().users;
-        });
-
-        afterAll(function() {
-          fetchMock.restore();
-        });
-
         describe('before the request has completed', function () {
+          beforeAll(function () {
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
+
+            fetchMock.delete('http://test.com/posts/1', new Promise(resolve => {}));
+
+            spyOn(console, 'warn');
+
+            this.store.dispatch(this.posts.actionCreators.destroyPost(1));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
+          });
+
           it('then does NOT remove the associated item', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
           });
         });
 
         describe('and the request has completed', () => {
           beforeAll(function () {
-            this.resolveRequest();
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            this.users = this.store.getState().users;
+            fetchMock.delete('http://test.com/posts/1', {
+              body: {},
+            });
+
+            spyOn(console, 'warn');
+
+            this.store.dispatch(this.posts.actionCreators.destroyPost(1));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
           });
 
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: DESTROY_POST did no specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the second argument to destroy*().'
+              'Redux and the REST: DESTROY_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the second argument to destroy*().'
             );
           });
 
           it('then removes the associated item', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
           });
         });
       });
-
     });
-
   });
 
   describe('when the association is many-to-many', function () {
@@ -434,88 +470,104 @@ describe('hasAndBelongsToMany:', function () {
     });
 
     describe('and the association\'s CREATE action occurs', function () {
-      beforeAll(function () {
-        this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
-
-        fetchMock.post('http://test.com/posts', {
-          body: { id: 3, userIds: [ 1 ], title: 'New Post 3' },
-        }, new Promise((resolve) => {
-          this.resolveRequest = resolve;
-        }));
-
-        this.store.dispatch(this.posts.actionCreators.createPost('temp', { userIds: [ 1 ], title: 'New Post 3' }));
-
-        this.users = this.store.getState().users;
-      });
-
-      afterAll(function() {
-        fetchMock.restore();
-      });
-
       describe('before the request has completed', function () {
+        beforeAll(function () {
+          this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
+
+          fetchMock.post('http://test.com/posts', new Promise(resolve => {}));
+
+          this.store.dispatch(this.posts.actionCreators.createPost('temp', { userIds: [ 1 ], title: 'New Post 3' }));
+        });
+
+        afterAll(function() {
+          fetchMock.restore();
+          this.store = null;
+        });
+
         it('then adds the new association to the default attribute', function() {
-          expect(this.users.items[1].values.postIds).toEqual([ 1, 'temp' ]);
+          expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1, 'temp' ]);
         });
       });
 
       describe('and the request has completed', () => {
         beforeAll(function () {
-          this.resolveRequest();
-
-          this.users = this.store.getState().users;
-        });
-
-        it('then updates the key of the association', function() {
-          expect(this.users.items[1].values.postIds).toEqual([ 1, 3 ]);
-        });
-      });
-
-    });
-
-    describe('and the association\'s UPDATE action occurs', function () {
-      describe('and the previous values have been specified', () => {
-        beforeAll(function () {
           this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-          fetchMock.put('http://test.com/posts/1', {
-            body: {
-              title: 'Post 1',
-              userIds: [ 2 ]
-            },
-          }, new Promise((resolve) => {
-            this.resolveRequest = resolve;
-          }));
+          fetchMock.post('http://test.com/posts', {
+            body: { id: 3, userIds: [1], title: 'New Post 3' },
+          });
 
-          spyOn(console, 'warn');
-
-          this.store.dispatch(this.posts.actionCreators.updatePost(1, {
-            title: 'Post 1',
-            userIds: [ 2 ]
-          }, { previous: {
-              title: 'Post 1',
-              userIds: [ 1 ]
-            }
-          }));
-
-          this.users = this.store.getState().users;
+          this.store.dispatch(this.posts.actionCreators.createPost('temp', { userIds: [ 1 ], title: 'New Post 3' }));
         });
 
         afterAll(function() {
           fetchMock.restore();
+          this.store = null;
         });
 
+        it('then updates the key of the association', function() {
+          expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1, 3 ]);
+        });
+      });
+    });
+
+    describe('and the association\'s UPDATE action occurs', function () {
+      describe('and the previous values have been specified', () => {
         describe('before the request has completed', function () {
+          beforeAll(function () {
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
+
+            fetchMock.put('http://test.com/posts/1', new Promise(resolve => {}));
+
+            spyOn(console, 'warn');
+
+            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
+              title: 'Post 1',
+              userIds: [ 2 ]
+            }, { previous: {
+                title: 'Post 1',
+                userIds: [ 1 ]
+              }
+            }));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
+          });
+
           it('then does NOT remove the associated item', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ 1 ]);
-            expect(this.users.items[2].values.postIds).toEqual(undefined);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items[2].values.postIds).toEqual(undefined);
           });
         });
 
         describe('and the request has completed', () => {
           beforeAll(function () {
-            this.resolveRequest();
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            this.users = this.store.getState().users;
+            fetchMock.put('http://test.com/posts/1', {
+              body: {
+                title: 'Post 1',
+                userIds: [2]
+              },
+            });
+
+            spyOn(console, 'warn');
+
+            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
+              title: 'Post 1',
+              userIds: [ 2 ]
+            }, { previous: {
+                title: 'Post 1',
+                userIds: [ 1 ]
+              }
+            }));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
           });
 
           it('then does NOT display a warning', function() {
@@ -524,68 +576,77 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.users.items[2].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items[2].values.postIds).toEqual([ 1 ]);
           });
         });
       });
 
       describe('and the previous values have NOT been specified', () => {
-        beforeAll(function () {
-          this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
+        describe('before the request has completed', function () {
+          beforeAll(function () {
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-          fetchMock.put('http://test.com/posts/1', {
-            body: {
+            fetchMock.put('http://test.com/posts/1', new Promise(resolve => {}));
+
+            spyOn(console, 'warn');
+
+            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
               title: 'Post 1',
               userIds: [ 2 ]
-            },
-          }, new Promise((resolve) => {
-            this.resolveRequest = resolve;
-          }));
+            }));
+          });
 
-          spyOn(console, 'warn');
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
+          });
 
-          this.store.dispatch(this.posts.actionCreators.updatePost(1, {
-            title: 'Post 1',
-            userIds: [ 2 ]
-          }));
-
-          this.users = this.store.getState().users;
-        });
-
-        afterAll(function() {
-          fetchMock.restore();
-        });
-
-        describe('before the request has completed', function () {
           it('then does NOT remove the associated item', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
           });
         });
 
         describe('and the request has completed', () => {
           beforeAll(function () {
-            this.resolveRequest();
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            this.users = this.store.getState().users;
+            fetchMock.put('http://test.com/posts/1', {
+              body: {
+                title: 'Post 1',
+                userIds: [2]
+              },
+            });
+
+            spyOn(console, 'warn');
+
+            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
+              title: 'Post 1',
+              userIds: [ 2 ]
+            }));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
           });
 
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: UPDATE_POST did no specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the third argument to update*().'
+              'Redux and the REST: UPDATE_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the third argument to update*().'
             );
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.users.items[2].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items[2].values.postIds).toEqual([ 1 ]);
           });
         });
       });
@@ -594,41 +655,49 @@ describe('hasAndBelongsToMany:', function () {
 
     describe('and the association\'s DESTROY action occurs', function () {
       describe('and the previous values have been specified', () => {
-        beforeAll(function () {
-          this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
+        describe('before the request has completed', function () {
+          beforeAll(function () {
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-          fetchMock.delete('http://test.com/posts/1', {
-            body: { },
-          }, new Promise((resolve) => {
-            this.resolveRequest = resolve;
-          }));
+            fetchMock.delete('http://test.com/posts/1', new Promise(resolve => {}));
 
-          spyOn(console, 'warn');
+            spyOn(console, 'warn');
 
-          this.store.dispatch(this.posts.actionCreators.destroyPost(1, { previous: {
+            this.store.dispatch(this.posts.actionCreators.destroyPost(1, {
               title: 'Post 1',
               userIds: [ 1 ]
-            }
-          }));
+            }));
+          });
 
-          this.users = this.store.getState().users;
-        });
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
+          });
 
-        afterAll(function() {
-          fetchMock.restore();
-        });
-
-        describe('before the request has completed', function () {
           it('then does NOT remove the associated item', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
           });
         });
 
         describe('and the request has completed', () => {
           beforeAll(function () {
-            this.resolveRequest();
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            this.users = this.store.getState().users;
+            fetchMock.delete('http://test.com/posts/1', {
+              body: {},
+            });
+
+            spyOn(console, 'warn');
+
+            this.store.dispatch(this.posts.actionCreators.destroyPost(1, {
+              title: 'Post 1',
+              userIds: [ 1 ]
+            }));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
           });
 
           it('then does NOT display a warning', function() {
@@ -637,59 +706,63 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
           });
         });
       });
 
       describe('and the previous values have NOT been specified', () => {
-        beforeAll(function () {
-          this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
-
-          fetchMock.delete('http://test.com/posts/1', {
-            body: { },
-          }, new Promise((resolve) => {
-            this.resolveRequest = resolve;
-          }));
-
-          spyOn(console, 'warn');
-
-          this.store.dispatch(this.posts.actionCreators.destroyPost(1));
-
-          this.users = this.store.getState().users;
-        });
-
-        afterAll(function() {
-          fetchMock.restore();
-        });
-
         describe('before the request has completed', function () {
+          beforeAll(function () {
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
+
+            fetchMock.delete('http://test.com/posts/1', new Promise(resolve => {}));
+
+            spyOn(console, 'warn');
+
+            this.store.dispatch(this.posts.actionCreators.destroyPost(1));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
+          });
+
           it('then does NOT remove the associated item', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
           });
         });
 
         describe('and the request has completed', () => {
           beforeAll(function () {
-            this.resolveRequest();
+            this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            this.users = this.store.getState().users;
+            fetchMock.delete('http://test.com/posts/1', {
+                  body: {},
+            });
+
+            spyOn(console, 'warn');
+
+            this.store.dispatch(this.posts.actionCreators.destroyPost(1));
+          });
+
+          afterAll(function() {
+            fetchMock.restore();
+            this.store = null;
           });
 
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: DESTROY_POST did no specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the second argument to destroy*().'
+              'Redux and the REST: DESTROY_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the second argument to destroy*().'
             );
           });
 
           it('then removes the associated item', function() {
-            expect(this.users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
           });
         });
       });
-
     });
-
   });
 });

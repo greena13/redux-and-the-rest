@@ -9,7 +9,7 @@
     "build-production": "BABEL_ENV=production NODE_ENV=production rollup -c",
     "build-tests": "rm -rf cjs && BABEL_ENV=test NODE_ENV=development babel src -d cjs",
     "tests": "npm run build-tests && jasmine",
-    "watch-tests": "nodemon --exec 'npm run tests || true'"
+    "watch-tests": "nodemon --exec 'clear && npm run tests || true'"
   },
   "repository": {
     "type": "git",

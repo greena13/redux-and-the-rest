@@ -72,95 +72,108 @@ describe('belongsTo:', function () {
     });
 
     describe('and the previous values are included in the destroy action', function () {
-      beforeAll(function () {
-        fetchMock.delete('http://test.com/addresses/1', {
-          body: { },
-        }, new Promise((resolve) => {
-          this.resolveRequest = resolve;
-        }));
+      describe('before a request to destroy an associated resource item has completed', function () {
+        beforeAll(function () {
+          fetchMock.delete('http://test.com/addresses/1', new Promise(resolve => {}));
 
-        this.store = buildStore({ ...this.initialState }, {
-          users: this.reducers,
-          addresses: this.addresses.reducers
+          this.store = buildStore({ ...this.initialState }, {
+            users: this.reducers,
+            addresses: this.addresses.reducers
+          });
+
+          this.store.dispatch(this.addresses.actionCreators.destroyAddress(1, { userId: 1, city: 'City 3' }));
         });
 
-        this.store.dispatch(this.addresses.actionCreators.destroyAddress(1, { userId: 1, city: 'City 3' }));
+        afterAll(function() {
+          fetchMock.restore();
+          this.store = null;
+        });
 
-        this.users = this.store.getState().users;
-      });
-
-      afterAll(function() {
-        fetchMock.restore();
-      });
-
-      describe('before a request to destroy an associated resource item has completed', function () {
         it('then does NOT remove the item', function() {
-          expect(this.users.items[1]).toEqual(this.initialState.users.items[1]);
+          expect(this.store.getState().users.items[1]).toEqual(this.initialState.users.items[1]);
         });
       });
 
       describe('after a request to destroy an associated resource item has completed', () => {
         beforeAll(function () {
-          this.resolveRequest();
+          fetchMock.delete('http://test.com/addresses/1', {
+            body: {},
+          });
 
-          this.users = this.store.getState().users;
+          this.store = buildStore({ ...this.initialState }, {
+            users: this.reducers,
+            addresses: this.addresses.reducers
+          });
+
+          this.store.dispatch(this.addresses.actionCreators.destroyAddress(1, { userId: 1, city: 'City 3' }));
+        });
+
+        afterAll(function() {
+          fetchMock.restore();
+          this.store = null;
         });
 
         it('then removes the item', function() {
-          expect(this.users.items[1]).toEqual(undefined);
+          expect(this.store.getState().users.items[1]).toEqual(undefined);
         });
       });
     });
 
     describe('and the previous values are NOT included in the destroy action', function () {
-      beforeAll(function () {
-        fetchMock.delete('http://test.com/addresses/1', {
-          body: { },
-        }, new Promise((resolve) => {
-          this.resolveRequest = resolve;
-        }));
-
-        this.store = buildStore({ ...this.initialState }, {
-          users: this.reducers,
-          addresses: this.addresses.reducers
-        });
-
-        spyOn(console, 'warn');
-
-        this.store.dispatch(this.addresses.actionCreators.destroyAddress(1));
-
-        this.users = this.store.getState().users;
-      });
-
-      afterAll(function() {
-        fetchMock.restore();
-      });
-
       describe('before a request to destroy an associated resource item has completed', function () {
-        it('then does NOT remove the item', function() {
-          expect(this.users.items[1]).toEqual(this.initialState.users.items[1]);
+        beforeAll(function () {
+          fetchMock.delete('http://test.com/addresses/1', new Promise(resolve => {}));
+
+          this.store = buildStore({ ...this.initialState }, {
+            users: this.reducers,
+            addresses: this.addresses.reducers
+          });
+
+          this.store.dispatch(this.addresses.actionCreators.destroyAddress(1));
         });
 
-        it('then displays a warning', function() {
-          // eslint-disable-next-line no-console
-          expect(console.warn).toHaveBeenCalledWith(
-            'Redux and the REST: DESTROY_ADDRESS did no specify any previous values. This makes updating \'users.addressId\' much less efficient. Provide the values of the item you are destroying as the second argument to destroy*().'
-          );
+        afterAll(function() {
+          fetchMock.restore();
+          this.store = null;
+        });
+
+        it('then does NOT remove the item', function() {
+          expect(this.store.getState().users.items[1]).toEqual(this.initialState.users.items[1]);
         });
       });
 
       describe('after a request to destroy an associated resource item has completed', () => {
         beforeAll(function () {
-          this.resolveRequest();
+          fetchMock.delete('http://test.com/addresses/1', {
+                body: {},
+          });
 
-          this.users = this.store.getState().users;
+          this.store = buildStore({ ...this.initialState }, {
+            users: this.reducers,
+            addresses: this.addresses.reducers
+          });
+
+          spyOn(console, 'warn');
+
+          this.store.dispatch(this.addresses.actionCreators.destroyAddress(1));
+        });
+
+        afterAll(function() {
+          fetchMock.restore();
+          this.store = null;
         });
 
         it('then removes the item', function() {
-          expect(this.users.items[1]).toEqual(undefined);
+          expect(this.store.getState().users.items[1]).toEqual(undefined);
+        });
+
+        it('then displays a warning', function() {
+          // eslint-disable-next-line no-console
+          expect(console.warn).toHaveBeenCalledWith(
+            'Redux and the REST: DESTROY_ADDRESS did not specify any previous values. This makes updating \'users.addressId\' much less efficient. Provide the values of the item you are destroying as the second argument to destroy*().'
+          );
         });
       });
     });
-
   });
 });

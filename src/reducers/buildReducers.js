@@ -35,7 +35,7 @@ function setCollection(resources, { status, projection, items, key, httpCode, co
         }
       }
     };
-  } else if( status === SUCCESS) {
+  } else if(status === SUCCESS) {
     const newItems = {
       ...resources.items,
       ...items,
@@ -518,11 +518,9 @@ function removeItem(resources, { type, status, key, item }) {
         }
       }
     };
-
   } else if (status === SUCCESS) {
     return removeItemsFromResources(resources, key);
   } else if (status === DESTROY_ERROR) {
-
     return {
       ...resources,
       items: {

@@ -1,4 +1,5 @@
 import { DESTROYING } from '../../constants/Statuses';
+import isEmpty from '../../utils/collection/isEmpty';
 
 function deleteResourceUpdate(options, previousValues) {
   const { action, key } = options;
@@ -6,7 +7,7 @@ function deleteResourceUpdate(options, previousValues) {
   return {
     type: action,
     status: DESTROYING, key,
-    previousValues
+    previousValues: isEmpty(previousValues) ? null : previousValues
   };
 }
 

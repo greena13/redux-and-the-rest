@@ -30,13 +30,6 @@ describe('belongsTo:', function () {
           ...RESOURCES,
         }
       };
-    });
-
-    afterAll(function () {
-      fetchMock.restore();
-    });
-
-    beforeAll(function () {
 
       /**
        * @type {{ actions, reducers, createAddress }}
@@ -64,41 +57,56 @@ describe('belongsTo:', function () {
       });
 
       this.reducers = reducers;
-
-      this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
-
-      fetchMock.post('http://test.com/addresses', {
-        body: { id: 3, residentId: 1, city: 'City 3' },
-      }, new Promise((resolve) => {
-        this.resolveRequest = resolve;
-      }));
-
-      this.store.dispatch(this.addresses.actionCreators.createAddress('temp', { residentId: 1, city: 'City 3' }));
-
-      this.users = this.store.getState().users;
-    });
-
-    afterAll(function() {
-      fetchMock.restore();
     });
 
     describe('before the request has completed', function () {
+      beforeAll(function () {
+        fetchMock.post('http://test.com/addresses', new Promise(resolve => {}));
+
+        this.store = buildStore({ ...this.initialState }, {
+          users: this.reducers,
+          addresses: this.addresses.reducers
+        });
+
+        this.store.dispatch(
+          this.addresses.actionCreators.createAddress('temp', { residentId: 1, city: 'City 3' })
+        );
+      });
+
+      afterAll(function() {
+        fetchMock.restore();
+        this.store = null;
+      });
+
       it('then uses the value of the \'as\' option to find the foreign key on the associated resource', function() {
-        expect(this.users.items[1].values.addressId).toEqual('temp');
+        expect(this.store.getState().users.items[1].values.addressId).toEqual('temp');
       });
     });
 
     describe('and the request has completed', () => {
       beforeAll(function () {
-        this.resolveRequest();
+        fetchMock.post('http://test.com/addresses', {
+          body: { id: 3, residentId: 1, city: 'City 3' },
+        });
 
-        this.users = this.store.getState().users;
+        this.store = buildStore({ ...this.initialState }, {
+          users: this.reducers,
+          addresses: this.addresses.reducers
+        });
+
+        this.store.dispatch(
+          this.addresses.actionCreators.createAddress('temp', { residentId: 1, city: 'City 3' })
+        );
+      });
+
+      afterAll(function() {
+        fetchMock.restore();
+        this.store = null;
       });
 
       it('then uses the value of the \'as\' option to find the foreign key on the associated resource', function() {
-        expect(this.users.items[1].values.addressId).toEqual(3);
+        expect(this.store.getState().users.items[1].values.addressId).toEqual(3);
       });
     });
-
   });
 });
