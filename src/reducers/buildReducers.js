@@ -559,21 +559,21 @@ const STANDARD_REDUCERS = {
   clear: clearResources,
 };
 
-/**
- * Dictionary or reducer functions to use when the localOnly option is set, causing changes to be performed
- * synchronously, without any requests being made to an external API.
- */
-const LOCAL_ONLY_REDUCERS = {
-  ...STANDARD_REDUCERS,
-  create: setItem,
-  update: setItem
-};
-
 const PROGRESS_COMPATIBLE_ACTIONS = {
   index: true,
   show: true,
   update: true,
   create: true
+};
+
+/**
+ * Dictionary or reducer functions to use when the localOnly option is set, causing changes to be performed
+ * synchronously, without any requests being made to an external API.
+ */
+const LOCAL_ONLY_REDUCERS = {
+  ...without(STANDARD_REDUCERS, Object.keys(PROGRESS_COMPATIBLE_ACTIONS)),
+  create: setItem,
+  update: setItem
 };
 
 /**
@@ -659,7 +659,11 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
 
       memo[actionsDictionary.get(key)] = { options: reducerOptions, reducer: _reducer };
     } else {
-      warn(`Action '${key}' must match the collection of standard reducers (${Object.keys(STANDARD_REDUCERS).join(', ')}) or define a 'reducer' option.`);
+      if (resourceOptions.localOnly && STANDARD_REDUCERS[key]) {
+        warn(`Action '${key}' is not compatible with the localOnly option.`);
+      } else {
+        warn(`Action '${key}' must match the collection of standard reducers (${Object.keys(STANDARD_REDUCERS).join(', ')}) or define a 'reducer' option.`);
+      }
     }
 
     return memo;

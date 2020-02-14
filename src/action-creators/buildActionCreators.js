@@ -349,7 +349,6 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
     if (resourceOptions.localOnly && RemoteOnlyActionsDictionary[key]) {
       return memo;
     }
-
     const actionName = actions.get(key);
 
     /**

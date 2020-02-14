@@ -51,6 +51,8 @@ describe('localOnly:', function () {
 
   describe('when set to true', function () {
     beforeAll(function () {
+      spyOn(console, 'warn');
+
       const {
         reducers: usersReducers,
         actionCreators: { fetchUser, fetchUsers, newUser, createUser, editUser, updateUser, destroyUser }
@@ -75,6 +77,16 @@ describe('localOnly:', function () {
     it('then does NOT export the fetch action creators', function() {
       expect(typeof this.fetchUser).not.toEqual('function');
       expect(typeof this.fetchUsers).not.toEqual('function');
+    });
+
+    it('then warns about some actions being incompatible with the option', function() {
+      expect(console.warn).toHaveBeenCalledWith(
+        'Redux and the REST: Action \'index\' is not compatible with the localOnly option.'
+      );
+
+      expect(console.warn).toHaveBeenCalledWith(
+        'Redux and the REST: Action \'show\' is not compatible with the localOnly option.'
+      );
     });
 
     describe('and the resource\'s CREATE action occurs WITHOUT a preceding NEW action', function () {
