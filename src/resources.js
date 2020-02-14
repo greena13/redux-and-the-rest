@@ -1,4 +1,4 @@
-import ActionsDictionary from './actions/ActionsDictionary';
+import ActionsDictionary from './action-objects/ActionsDictionary';
 
 import buildReducers from './reducers/buildReducers';
 import buildActionCreators from './action-creators/buildActionCreators';
