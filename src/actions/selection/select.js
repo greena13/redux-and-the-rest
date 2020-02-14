@@ -6,11 +6,13 @@ import warn from '../../utils/dev/warn';
  ***************************************************************************************************************/
 
 /**
- * A function that can be called when a Redux action should be dispatched to perform an asynchronous action -
- * typically to make a request to an external API and wait for the response.
- * @typedef {function(*): Promise<unknown> | Promise<*>} Thunk
+ * Redux action creator used for selecting a resource item and replacing any already selected items
+ * @param {ActionObject} action The action containing the data to use to create or refine the new resource item
+ * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
+ *        of the resource's URL
+ * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
+ * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-
 function actionCreator({ action, keyBy }, params, actionCreatorOptions = {}) {
   const key = getItemKey(params, { keyBy });
 
@@ -23,8 +25,14 @@ function actionCreator({ action, keyBy }, params, actionCreatorOptions = {}) {
  * Reducer
  ***************************************************************************************************************/
 
+/**
+ * Handles selecting a resource item and replacing any selected items
+ * @param {ResourcesReduxState} resources The current state of part of the Redux store that contains
+ *        the resources
+ * @param action
+ * @returns {ResourcesReduxState} The new resource state
+ */
 function reducer(resources, { type, key, value }) {
-
   if (resources.items[key]) {
     return {
       ...resources,

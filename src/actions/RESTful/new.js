@@ -11,6 +11,18 @@ import without from '../../utils/collection/without';
  * Action creators
  ***************************************************************************************************************/
 
+/**
+ * Redux action creator used for adding a new resource item to the Redux store WITHOUT sending it to a remote API
+ * (yet). This action is used for storing a new resource item locally before actually creating it
+ * (which sends the new attributes to the remote API).
+ * @param {Object} options Configuration options built from those provided when the resource was defined
+ * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
+ *        of the resource's URL
+ * @param {Object} values The new attribute values to merge into the exist ones of the new resource item, or to
+ *        use to create the resource item for the first time.
+ * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
+ * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
+ */
 function actionCreator(options, params, values = {}, actionCreatorOptions = {}) {
   const { action, transforms, keyBy, urlOnlyParams } = options;
 
@@ -29,15 +41,26 @@ function actionCreator(options, params, values = {}, actionCreatorOptions = {}) 
   };
 }
 
+/**
+ * Redux action creator used for clearing the new resource.
+ * @param action
+ * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
+ */
 function clearActionCreator({ action }) {
   return { type: action };
 }
-
 
 /**************************************************************************************************************
  * Reducer
  ***************************************************************************************************************/
 
+/**
+ * Handles reducing a resource item in a Redux store as it's created, before being sent to a remote API.
+ * @param {ResourcesReduxState} resources The current state of part of the Redux store that contains
+ *        the resources
+ * @param {ActionObject} action The action containing the data to use to create or refine the new resource item
+ * @returns {ResourcesReduxState} The new resource state
+ */
 function reducer(resources, { type, temporaryKey, item, collectionOperations }) {
   assertInDevMode(() => {
     const existingItem = resources.items[temporaryKey];
@@ -66,6 +89,12 @@ function reducer(resources, { type, temporaryKey, item, collectionOperations }) 
   };
 }
 
+/**
+ * Handles reducing clearing the new resource item in a Redux store
+ * @param {ResourcesReduxState} resources The current state of part of the Redux store that contains
+ *        the resources
+ * @returns {ResourcesReduxState} The new resource state
+ */
 function clearReducer(resources) {
   const { newItemKey, items, collections, selectionMap } = resources;
 

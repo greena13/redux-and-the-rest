@@ -5,6 +5,14 @@ import getItemKey from '../../action-creators/helpers/getItemKey';
  * Action creators
  ***************************************************************************************************************/
 
+/**
+ * Redux action creator used for selecting a resource item and adding it to those already selected
+ * @param {ActionObject} action The action containing the data to use to create or refine the new resource item
+ * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
+ *        of the resource's URL
+ * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
+ * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
+ */
 function actionCreator({ action, keyBy }, params, actionCreatorOptions = {}) {
   const key = getItemKey(params, { keyBy });
 
@@ -17,6 +25,13 @@ function actionCreator({ action, keyBy }, params, actionCreatorOptions = {}) {
  * Reducer
  ***************************************************************************************************************/
 
+/**
+ * Handles selecting a resource item and adding it to those already selected
+ * @param {ResourcesReduxState} resources The current state of part of the Redux store that contains
+ *        the resources
+ * @param action
+ * @returns {ResourcesReduxState} The new resource state
+ */
 function reducer(resources, { type, key, value }) {
   if (resources.items[key]) {
     return {
