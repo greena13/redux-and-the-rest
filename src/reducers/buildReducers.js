@@ -20,10 +20,25 @@ import progressReducer from './helpers/progressReducer';
 import { getConfiguration } from '../configuration';
 import standardiseAssociationOptions from '../utils/standardiseAssociationOptions';
 
-function setCollection(resources, { status, projection, items, key, httpCode, collection, error }) {
+
+/**
+ * Handles reducing a resource collection in a Redux store as it moves through its lifecycle events
+ * @param {ResourcesReduxState} resources The current state of part of the Redux store that contains
+ *        the resources
+ * @param {ActionObject} action The action containing the data to update the resource state
+ * @returns {ResourcesReduxState} The new resource state
+ */
+function setCollection(resources, { status, items, key, httpCode, collection, error }) {
   const currentList = resources.collections[key] || COLLECTION;
 
   if (status === FETCHING) {
+    /**
+     * When a collection is being fetched, we simply update the collection's status and projection values,
+     * leaving any items in the collection that are already there untouched.
+     *
+     * Note that we completely override the projection object with the new values - we dont' merge it.
+     */
+
     return {
       ...resources,
       collections: {
@@ -36,6 +51,12 @@ function setCollection(resources, { status, projection, items, key, httpCode, co
       }
     };
   } else if(status === SUCCESS) {
+    /**
+     * When a collection has been successfully fetched, we merge the items contained in the API's response
+     * body with those already in the store. This allows us to work with pagination and fetch more items on
+     * the next "page" of the collection.
+     */
+
     const newItems = {
       ...resources.items,
       ...items,
@@ -62,6 +83,10 @@ function setCollection(resources, { status, projection, items, key, httpCode, co
 
   } else if (status === ERROR) {
 
+    /**
+     * When the attempt to fetch a collection from the API results in an error, we leave the current contents
+     * of the collection and update its state and projection to reflect the details of the error.
+     */
     const newLists = {
       ...resources.collections,
       [key]: {
@@ -70,8 +95,7 @@ function setCollection(resources, { status, projection, items, key, httpCode, co
           type: status,
           httpCode,
           error,
-        },
-        projection
+        }
       }
     };
 
@@ -86,13 +110,33 @@ function setCollection(resources, { status, projection, items, key, httpCode, co
 
 }
 
-function setItem(resources, { status, projection, key, error, httpCode, item }) {
+/**
+ * Handles reducing a resource item in a Redux store as it moves through its lifecycle events
+ * @param {ResourcesReduxState} resources The current state of part of the Redux store that contains
+ *        the resources
+ * @param {ActionObject} action The action containing the data to update the resource state
+ * @returns {ResourcesReduxState} The new resource state
+ */
+function setItem(resources, { status, key, error, httpCode, item }) {
 
+  /**
+   * Fetch the current values for the resource if they are already in the store, otherwise fallback to an
+   * empty resource item
+   */
   const currentItem = resources.items[key] || ITEM;
 
   if (status === FETCHING) {
-
     if (currentItem.status.type === SUCCESS) {
+      /**
+       * When a resource item is being fetched and that resource already exists in the store - i.e. we are
+       * re-retrieving it from the external APi - then we persist the values already in the store and update the
+       * rest of the item's information, such as its state and projection.
+       *
+       * This allows use to move between projections of less data to more data (e.g. a PREVIEW to a FULL)
+       * without losing any attribute values we already have at any point in the resource's lifecycle. This is
+       * useful when displaying a preview of a resource until all the values have arrived.
+       */
+
       return {
         ...resources,
         items: {
@@ -108,6 +152,12 @@ function setItem(resources, { status, projection, key, error, httpCode, item }) 
       };
 
     } else {
+      /**
+       * When a resource item is being fetched and it does NOT already exist in the store, we simply take the
+       * entire set of attributes of the item (including its values, state and projection) and add them to the
+       * store.
+       */
+
       return {
         ...resources,
         items: {
@@ -118,6 +168,12 @@ function setItem(resources, { status, projection, key, error, httpCode, item }) 
     }
 
   } else if (status === SUCCESS) {
+    /**
+     * When a resource item has been successfully fetched, we merge the item's current status information with
+     * the action's new status information and then allow the new item values to override whatever is already
+     * in the store.
+     */
+
     const newStatus = {
       ...currentItem.status,
       ...item.status
@@ -146,8 +202,7 @@ function setItem(resources, { status, projection, key, error, httpCode, item }) 
             type: status,
             httpCode,
             error
-          },
-          projection
+          }
         }
       }
     };
@@ -544,27 +599,50 @@ function clearResources() {
  * Dictionary of standard reducer functions for keeping the local store synchronised with a remote RESTful API.
  */
 const STANDARD_REDUCERS = {
+  /**
+   * RESTful actions
+   */
   index: setCollection,
   show: setItem,
-  select: selectItem,
-  selectAnother: selectAnotherItem,
-  deselect: deselectItem,
-  clearSelected: clearSelectedItems,
   new: addNewItem,
-  clearNew: clearNewItem,
   create: createNewItem,
   edit: editItem,
   update: updateItem,
   destroy: removeItem,
+
+  /**
+   * Clear actions
+   */
   clear: clearResources,
+  clearNew: clearNewItem,
+
+  /**
+   * Selection actions
+   */
+  select: selectItem,
+  selectAnother: selectAnotherItem,
+  deselect: deselectItem,
+  clearSelected: clearSelectedItems
 };
 
+/**
+ * Dictionary of RESTful actions that have progress events
+ * @type {Object<string, boolean>}
+ */
 const PROGRESS_COMPATIBLE_ACTIONS = {
   index: true,
   show: true,
   update: true,
   create: true
 };
+
+function getProgressReducer(key) {
+  if (key === 'index') {
+    return (resources, action) => progressReducer(resources, action, 'collections');
+  } else {
+    return progressReducer;
+  }
+}
 
 /**
  * Dictionary or reducer functions to use when the localOnly option is set, causing changes to be performed
@@ -579,7 +657,8 @@ const LOCAL_ONLY_REDUCERS = {
 /**
  * Function that accepts the current state and Redux action and returns the correct new state.
  * @callback ReducerFunction
- * @param {ResourcesReduxState} currentState The current state of there resource
+ * @param {ResourcesReduxState} currentState The current state of the part of the Redux store that contains
+ *        the resources
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
@@ -599,7 +678,6 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
   /**
    * Build the map of actions that should effect the current resource
    */
-
   const configuration = getConfiguration();
 
   /**
@@ -608,34 +686,64 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
    */
   const effectiveReducers = resourceOptions.localOnly ? LOCAL_ONLY_REDUCERS : STANDARD_REDUCERS;
 
+  /**
+   * Iterate over the list of defined actions, creating the corresponding reducer and storing it in a map to
+   * be retrieved and called each time the action occurs
+   */
   const reducersDict = Object.keys(actionsOptions).reduce((memo, key) => {
     const actionOptions = actionsOptions[key];
+
+    /**
+     * Allow overriding the default reducer (or specifying a reducer for a custom action) otherwise default
+     * to the standard reducer
+     */
     const reducer = (isObject(actionOptions) && actionOptions.reducer) || effectiveReducers[key];
 
-    if (reducer) {
+    if (!reducer) {
+
+      if (resourceOptions.localOnly && STANDARD_REDUCERS[key]) {
+        warn(`Action '${key}' is not compatible with the localOnly option.`);
+      } else {
+        const standardReducersList = Object.keys(STANDARD_REDUCERS).join(', ');
+
+        warn(`Action '${key}' must match the collection of standard reducers (${standardReducersList}) or define a 'reducer' option.`);
+      }
+    } else {
+      /**
+       * Construct the correct reducer options, merging the those specified (in order of precedence):
+       * - In the individual action definitions passed to the resource function ("Action options")
+       * - Using the general options passed to the resources function ("Resource options"
+       * - Using the configure function ("Global options")
+       *
+       * These options can still be overridden by options passed to the action creator each time it's called
+       */
       const reducerOptions = resolveOptions(
-        {
-          beforeReducers: [],
-          afterReducers: [],
-        },
-        configuration,
-        resourceOptions,
-        actionOptions,
-        [
-          'progress',
-          'beforeReducers',
-          'afterReducers',
-        ]
+        /**
+         * List of objects to source options from
+         */
+        { beforeReducers: [], afterReducers: [], }, configuration, resourceOptions, actionOptions,
+        /**
+         * List of options to pluck
+         */
+        ['progress', 'beforeReducers', 'afterReducers',]
       );
 
+      /**
+       * Set up the additional transform functions required to process progress updates if the progress
+       * actions have been enabled.
+       */
       if (reducerOptions.progress && (!STANDARD_REDUCERS[key] || PROGRESS_COMPATIBLE_ACTIONS[key])) {
         reducerOptions.beforeReducers = [
           ...reducerOptions.beforeReducers,
-          key === 'index' ? (resources, action) => progressReducer(resources, action, 'collections') : progressReducer
+          getProgressReducer(key)
         ];
       }
 
       const _reducer = function(){
+        /**
+         * If there are additional transform functions to be run before or after the primary reducer
+         * enqueue them to run in sequence, passing the result of each to the next
+         */
         if (reducerOptions.beforeReducers.length > 0 || reducerOptions.afterReducers.length > 0) {
           return (resources, action) => {
             let _resources = resources;
@@ -657,13 +765,10 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
         }
       }();
 
-      memo[actionsDictionary.get(key)] = { options: reducerOptions, reducer: _reducer };
-    } else {
-      if (resourceOptions.localOnly && STANDARD_REDUCERS[key]) {
-        warn(`Action '${key}' is not compatible with the localOnly option.`);
-      } else {
-        warn(`Action '${key}' must match the collection of standard reducers (${Object.keys(STANDARD_REDUCERS).join(', ')}) or define a 'reducer' option.`);
-      }
+      memo[actionsDictionary.get(key)] = {
+        options: reducerOptions,
+        reducer: _reducer
+      };
     }
 
     return memo;
@@ -672,19 +777,20 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
   /**
    * Add actions for which the current resource should be cleared
    */
-
   arrayFrom(resourceOptions.clearOn).forEach((action) => {
     reducersDict[action] = { reducer: STANDARD_REDUCERS.clear };
   });
 
+  /**
+   * Add actions for which the current resource should call a reducer function
+   */
   arrayFrom(resourceOptions.reducesOn).forEach(({ action, reducer }) => {
     reducersDict[action] = { reducer };
   });
 
   /**
-   * Actions that update this resources' foreign keys
+   * Add actions that update this resources' foreign keys
    */
-
   if (resourceOptions.hasAndBelongsToMany) {
     Object.keys(resourceOptions.hasAndBelongsToMany).forEach((associationName) => {
       const associationOptions = standardiseAssociationOptions(

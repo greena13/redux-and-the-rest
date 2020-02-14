@@ -31,6 +31,20 @@ import getCollectionKey from './helpers/getCollectionKey';
 import { getConfiguration } from '../configuration';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 
+/**
+ * A function that can be called when a Redux action should be dispatched to perform an asynchronous action -
+ * typically to make a request to an external API and wait for the response.
+ * @typedef {function(*): Promise<unknown> | Promise<*>} Thunk
+ */
+
+/**
+ * Redux action creator used for fetching a collection or resources from an index RESTful API endpoint
+ * @param {Object} options Configuration options built from those provided when the resource was defined
+ * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
+ *        of the resource's URL
+ * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
+ * @returns {Thunk}
+ */
 function fetchCollection(options, params, actionCreatorOptions = { }) {
   const {
     action, url: urlTemplate, name, keyBy, urlOnlyParams, progress, projection
@@ -40,8 +54,16 @@ function fetchCollection(options, params, actionCreatorOptions = { }) {
   const url = generateUrl({ url: urlTemplate, name }, params);
 
   return (dispatch) => {
+    /**
+     * Immediately dispatch an action to change the state of the collection to be FETCHING
+     */
     dispatch(requestCollection({ action, projection: actionCreatorOptions.projection || projection }, key));
 
+    /**
+     * Make a request to the external API and dispatch another action when the response is received, populating
+     * the store with the contents of its body and changing the state to SUCCESS or ERROR, depending on the
+     * result.
+     */
     return makeRequest({
       ...options,
       key, keyBy, params,
@@ -55,6 +77,14 @@ function fetchCollection(options, params, actionCreatorOptions = { }) {
   };
 }
 
+/**
+ * Redux action creator used for fetching a single resource item from a show RESTful API endpoint
+ * @param {Object} options Configuration options built from those provided when the resource was defined
+ * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
+ *        of the resource's URL
+ * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
+ * @returns {Thunk}
+ */
 function fetchResource(options, params, actionCreatorOptions = { }) {
   const {
     action, transforms, url: urlTemplate, name, keyBy, progress, projection
@@ -64,8 +94,16 @@ function fetchResource(options, params, actionCreatorOptions = { }) {
   const url = generateUrl({ url: urlTemplate, name }, params);
 
   return (dispatch) => {
+    /**
+     * Immediately dispatch an action to change the state of the resource item to be FETCHING
+     */
     dispatch(requestResource({ action, transforms, key, projection  }, actionCreatorOptions));
 
+    /**
+     * Make a request to the external API and dispatch another action when the response is received, populating
+     * the store with the contents of its body and changing the state to SUCCESS or ERROR, depending on the
+     * result.
+     */
     return makeRequest({
       ...options,
       key, keyBy, params,
@@ -304,8 +342,8 @@ const LOCAL_ONLY_ACTION_CREATORS = {
  */
 
 /**
- * @typedef {Object} ActionObject An object representing an action being dispatched in the Redux store
- * @property {string} type
+ * @typedef {Object.<string, any>} ActionObject An object representing an action being dispatched in the
+ *          Redux store
  */
 
 /**

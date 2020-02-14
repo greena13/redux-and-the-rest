@@ -15,116 +15,214 @@ describe('projection:', function () {
           index: true
         });
 
-        this.fetchUsers = fetchUsers;
         this.reducers = reducers;
+        this.fetchUsers = fetchUsers;
       });
 
       describe('and the projection type is NOT set when calling the action creator', function() {
-        describe('before the request has completed', function () {
-          beforeAll(function () {
-            fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+        describe('and the request succeeds', () => {
+          describe('before the request has completed', function () {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
 
-            this.store = buildStore({
-              users: {
-                ...RESOURCES
-              }
-            }, { users: this.reducers } );
+              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
 
-            this.store.dispatch(this.fetchUsers());
+              this.store.dispatch(this.fetchUsers());
+            });
 
-            this.user = this.store.getState().users.items[1];
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then the item and collection\'s projection type is COMPLETE', function() {
+              expect(this.store.getState().users.collections[''].projection.type).toEqual(COMPLETE);
+            });
           });
 
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
+          describe('when the request completes', function() {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
 
-          it('then the item and collection\'s projection type is COMPLETE', function() {
-            expect(this.store.getState().users.collections[''].projection.type).toEqual(COMPLETE);
+              fetchMock.get('http://test.com/users', {
+                body: [{ id: 1, username: 'Robert' }],
+              });
+
+              this.store.dispatch(this.fetchUsers());
+            });
+
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then the item and collection\'s projection type is COMPLETE', function() {
+              expect(this.store.getState().users.items[1].projection.type).toEqual(COMPLETE);
+              expect(this.store.getState().users.collections[''].projection.type).toEqual(COMPLETE);
+            });
           });
         });
 
-        describe('when the request completes', function() {
-          beforeAll(function () {
-            fetchMock.get('http://test.com/users', {
-              body: [{ id: 1, username: 'Robert' }]
+        describe('and the request errors', () => {
+          describe('before the request has completed', function () {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
+
+              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+
+              this.store.dispatch(this.fetchUsers());
             });
 
-            this.store = buildStore({
-              users: {
-                ...RESOURCES
-              }
-            }, { users: this.reducers } );
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
 
-            this.store.dispatch(this.fetchUsers());
-
-            this.user = this.store.getState().users.items[1];
+            it('then the collection\'s projection type is COMPLETE', function() {
+              expect(this.store.getState().users.collections[''].projection.type).toEqual(COMPLETE);
+            });
           });
 
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
+          describe('when the request completes', function() {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
 
-          it('then the item and collection\'s projection type is COMPLETE', function() {
-            expect(this.store.getState().users.items[1].projection.type).toEqual(COMPLETE);
-            expect(this.store.getState().users.collections[''].projection.type).toEqual(COMPLETE);
+              fetchMock.get('http://test.com/users', {
+                body: { error: 'Not Found' },
+                status: 404
+              });
+
+              this.store.dispatch(this.fetchUsers());
+            });
+
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then the collection\'s projection type is COMPLETE', function() {
+              expect(this.store.getState().users.collections[''].projection.type).toEqual(COMPLETE);
+            });
           });
         });
       });
 
       describe('and the projection type is set when calling the action creator', function() {
-        describe('before the request has completed', function () {
-          beforeAll(function() {
-            fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+        describe('and the request succeeds', () => {
+          describe('before the request has completed', function () {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
 
-            this.store = buildStore({
-              users: {
-                ...RESOURCES
-              }
-            }, { users: this.reducers } );
+              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
 
-            this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW }}));
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW }}));
+            });
 
-            this.user = this.store.getState().users.items[1];
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then uses the value passed to the action creator for the item\'s projection type', function() {
+              expect(this.store.getState().users.collections[''].projection.type).toEqual(PREVIEW);
+            });
           });
 
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
+          describe('when the request completes', function() {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
 
-          it('then uses the value passed to the action creator for the item\'s projection type', function() {
-            expect(this.store.getState().users.collections[''].projection.type).toEqual(PREVIEW);
+              fetchMock.get('http://test.com/users', {
+                    body: [{ id: 1, username: 'Robert' }],
+              });
+
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW }}));
+            });
+
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then uses the value passed to the action creator for the item\'s projection type', function() {
+              expect(this.store.getState().users.items[1].projection.type).toEqual(PREVIEW);
+              expect(this.store.getState().users.collections[''].projection.type).toEqual(PREVIEW);
+            });
           });
         });
 
-        describe('when the request completes', function() {
-          beforeAll(function() {
-            fetchMock.get('http://test.com/users', {
-              body: [{ id: 1, username: 'Robert' }]
+        describe('and the request errors', () => {
+          describe('before the request has completed', function () {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
+
+              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW }}));
             });
 
-            this.store = buildStore({
-              users: {
-                ...RESOURCES
-              }
-            }, { users: this.reducers } );
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
 
-            this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW }}));
-
-            this.user = this.store.getState().users.items[1];
+            it('then the collection\'s projection type is the value passed to the action creator', function() {
+              expect(this.store.getState().users.collections[''].projection.type).toEqual(PREVIEW);
+            });
           });
 
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
+          describe('when the request completes', function() {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
 
-          it('then uses the value passed to the action creator for the item\'s projection type', function() {
-            expect(this.store.getState().users.items[1].projection.type).toEqual(PREVIEW);
-            expect(this.store.getState().users.collections[''].projection.type).toEqual(PREVIEW);
+              fetchMock.get('http://test.com/users', {
+                body: { error: 'Not Found' },
+                status: 404
+              });
+
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW }}));
+            });
+
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then the collection\'s projection type is the value passed to the action creator', function() {
+              expect(this.store.getState().users.collections[''].projection.type).toEqual(PREVIEW);
+            });
           });
         });
       });
@@ -146,111 +244,209 @@ describe('projection:', function () {
       });
 
       describe('and the projection type is NOT set when calling the action creator', function() {
-        describe('before the request has completed', function () {
-          beforeAll(function () {
-            fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+        describe('and the request succeeds', () => {
+          describe('before the request has completed', function () {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
 
-            this.store = buildStore({
-              users: {
-                ...RESOURCES
-              }
-            }, { users: this.reducers } );
+              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
 
-            this.store.dispatch(this.fetchUsers());
+              this.store.dispatch(this.fetchUsers());
+            });
 
-            this.user = this.store.getState().users.items[1];
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then the item and collection\'s projection type is the value specified when defining the resource', function() {
+              expect(this.store.getState().users.collections[''].projection.type).toEqual('RESOURCE_PROJECTION');
+            });
           });
 
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
+          describe('when the request completes', function() {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
 
-          it('then the collection\'s projection type is the value specified when defining the resource', function() {
-            expect(this.store.getState().users.collections[''].projection.type).toEqual('RESOURCE_PROJECTION');
+              fetchMock.get('http://test.com/users', {
+                body: [{ id: 1, username: 'Robert' }],
+              });
+
+              this.store.dispatch(this.fetchUsers());
+            });
+
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then the item and collection\'s projection type is the value specified when defining the resource', function() {
+              expect(this.store.getState().users.items[1].projection.type).toEqual('RESOURCE_PROJECTION');
+              expect(this.store.getState().users.collections[''].projection.type).toEqual('RESOURCE_PROJECTION');
+            });
           });
         });
 
-        describe('when the request completes', function() {
-          beforeAll(function () {
-            fetchMock.get('http://test.com/users', {
-              body: [{ id: 1, username: 'Robert' }]
+        describe('and the request errors', () => {
+          describe('before the request has completed', function () {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
+
+              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+
+              this.store.dispatch(this.fetchUsers());
             });
 
-            this.store = buildStore({
-              users: {
-                ...RESOURCES
-              }
-            }, { users: this.reducers } );
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
 
-            this.store.dispatch(this.fetchUsers());
-
-            this.user = this.store.getState().users.items[1];
+            it('then the collection\'s projection type is the value specified when defining the resource', function() {
+              expect(this.store.getState().users.collections[''].projection.type).toEqual('RESOURCE_PROJECTION');
+            });
           });
 
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
+          describe('when the request completes', function() {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
 
-          it('then the item and collection\'s projection type is the value specified when defining the resource', function() {
-            expect(this.store.getState().users.items[1].projection.type).toEqual('RESOURCE_PROJECTION');
-            expect(this.store.getState().users.collections[''].projection.type).toEqual('RESOURCE_PROJECTION');
+              fetchMock.get('http://test.com/users', {
+                body: { error: 'Not Found' },
+                status: 404
+              });
+
+              this.store.dispatch(this.fetchUsers());
+            });
+
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then the collection\'s projection type is the value specified when defining the resource', function() {
+              expect(this.store.getState().users.collections[''].projection.type).toEqual('RESOURCE_PROJECTION');
+            });
           });
         });
       });
 
       describe('and the projection type is set when calling the action creator', function() {
-        describe('before the request has completed', function () {
-          beforeAll(function() {
-            fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+        describe('and the request succeeds', () => {
+          describe('before the request has completed', function () {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
 
-            this.store = buildStore({
-              users: {
-                ...RESOURCES
-              }
-            }, { users: this.reducers } );
+              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
 
-            this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' }}));
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' }}));
+            });
 
-            this.user = this.store.getState().users.items[1];
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then uses the value passed to the action creator for the collection\'s projection type', function() {
+              expect(this.store.getState().users.collections[''].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+            });
           });
 
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
+          describe('when the request completes', function() {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
 
-          it('then uses the value passed to the action creator for the item and collection\'s projection type', function() {
-            expect(this.store.getState().users.collections[''].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+              fetchMock.get('http://test.com/users', {
+                body: [{ id: 1, username: 'Robert' }],
+              });
+
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' }}));
+            });
+
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then uses the value passed to the action creator for the item and collection\'s projection type', function() {
+              expect(this.store.getState().users.items[1].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+              expect(this.store.getState().users.collections[''].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+            });
           });
         });
 
-        describe('when the request completes', function() {
-          beforeAll(function() {
-            fetchMock.get('http://test.com/users', {
-              body: [{ id: 1, username: 'Robert' }]
+        describe('and the request errors', () => {
+          describe('before the request has completed', function () {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
+
+              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' }}));
             });
 
-            this.store = buildStore({
-              users: {
-                ...RESOURCES
-              }
-            }, { users: this.reducers } );
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
 
-            this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' }}));
-
-            this.user = this.store.getState().users.items[1];
+            it('then uses the value passed to the action creator for the collection\'s projection type', function() {
+              expect(this.store.getState().users.collections[''].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+            });
           });
 
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
+          describe('when the request completes', function() {
+            beforeAll(function () {
+              this.store = buildStore({
+                users: {
+                  ...RESOURCES
+                }
+              }, { users: this.reducers } );
 
-          it('then uses the value passed to the action creator for the item and collection\'s projection type', function() {
-            expect(this.store.getState().users.items[1].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
-            expect(this.store.getState().users.collections[''].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+              fetchMock.get('http://test.com/users', {
+                body: { error: 'Not Found' },
+                status: 404
+              });
+
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' }}));
+            });
+
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then uses the value passed to the action creator for the collection\'s projection type', function() {
+              expect(this.store.getState().users.collections[''].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+            });
           });
         });
       });

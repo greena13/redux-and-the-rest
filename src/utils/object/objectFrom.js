@@ -6,11 +6,11 @@ function objectFrom(target, value = null) {
       memo[element] = value;
 
       return memo;
-    }, {})
+    }, {});
   } else if (isObject(target)) {
     return target;
   } else {
-    return { [target]: value }
+    return { [target]: value };
   }
 }
 

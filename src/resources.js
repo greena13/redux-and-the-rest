@@ -26,7 +26,7 @@ import getCollection from './utils/getCollection';
  */
 
 /**
- * @typedef {Object<string, ResourcesDefinition>} AssociationOptions A Mapping between the name of an
+ * @typedef {Object<string, ResourcesDefinition>} AssociationOptionsMap A Mapping between the name of an
  *          associated resource, and its definition.
  */
 
@@ -126,10 +126,22 @@ import getCollection from './utils/getCollection';
 function resources(resourceOptions, actionOptions = {}) {
   const { name } = resourceOptions;
 
+  /**
+   * Standardise the shape of the action options to support all forms:
+   *  Array Syntax:
+   *    ['index', 'show']
+   *
+   *  Object syntax:
+   *    { index: true, show: true }
+   *
+   *  Extended object syntax:
+   *    { index: { keyBy: 'identifier' }, show: { keyBy: 'id' } }
+   *
+   * @type {ActionOptionsMap}
+   */
   const _actionOptions = objectFrom(actionOptions, {});
 
   const actions = new ActionsDictionary(name, resourceOptions, Object.keys(_actionOptions));
-
   const reducers = buildReducers(resourceOptions, actions, _actionOptions);
   const actionCreators = buildActionCreators(resourceOptions, actions, _actionOptions);
 

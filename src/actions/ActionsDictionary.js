@@ -30,22 +30,51 @@ import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionar
  * @type {ActionDictionary}
  */
 const STANDARD_ACTIONS = {
+
+  /**
+   * RESTful actions
+   */
   index: 'FETCH_ITEMS',
   show: 'FETCH_ITEM',
-  select: 'SELECT_ITEM',
-  selectAnother: 'SELECT_ANOTHER_ITEM',
-  deselect: 'DESELECT_ITEM',
-  clearSelected: 'CLEAR_SELECTED_ITEMS',
   new: 'NEW_ITEM',
   clearNew: 'CLEAR_NEW_ITEM',
   create: 'CREATE_ITEM',
   edit: 'EDIT_ITEM',
   update: 'UPDATE_ITEM',
-  destroy: 'DESTROY_ITEM'
+  destroy: 'DESTROY_ITEM',
+
+  /**
+   * Selection actions
+   */
+  select: 'SELECT_ITEM',
+  selectAnother: 'SELECT_ANOTHER_ITEM',
+  deselect: 'DESELECT_ITEM',
+  clearSelected: 'CLEAR_SELECTED_ITEMS',
 };
 
+
 /**
- * Factory for creating the ActionDictionary for a resource's actions
+ * Generates the name of an action, substituting the name of a resource into a generalized template string
+ * @param {string} resourceName The name of the resource
+ * @param {string} actionAlias The alias of the general action
+ * @returns {string} A constant that can use used as the action name for the specific action and resource
+ */
+function getActionName(resourceName, actionAlias) {
+  const standardAction = STANDARD_ACTIONS[actionAlias];
+
+  if (standardAction) {
+    if (standardAction.indexOf('ITEMS') === -1) {
+      return standardAction.replace('ITEM', constantize(toSingular(resourceName)));
+    } else {
+      return standardAction.replace('ITEMS', constantize(toPlural(resourceName)));
+    }
+  } else {
+    return `${constantize(actionAlias)}_${constantize(resourceName)}`;
+  }
+}
+
+/**
+ * Dictionary of actions names to action type constants
  */
 class ActionsDictionary {
   constructor (name, resourceOptions, actionList = []) {
@@ -64,19 +93,7 @@ class ActionsDictionary {
         return;
       }
 
-      this.actionsMap[action] = function(){
-        const standardAction = STANDARD_ACTIONS[action];
-
-        if (standardAction) {
-          if (standardAction.indexOf('ITEMS') === -1) {
-            return standardAction.replace('ITEM', constantize(toSingular(name)));
-          } else {
-            return standardAction.replace('ITEMS', constantize(toPlural(name)));
-          }
-        } else {
-          return `${constantize(action)}_${constantize(name)}`;
-        }
-      }();
+      this.actionsMap[action] = getActionName(name, action);
     });
   }
 

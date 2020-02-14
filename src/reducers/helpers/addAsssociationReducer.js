@@ -13,73 +13,6 @@ import contains from '../../utils/collection/contains';
 import serializeKey from '../../utils/serializeKey';
 import isEmpty from '../../utils/collection/isEmpty';
 
-function addAssociationReducer(
-  reducersDict,
-  name,
-  relationType,
-  associationName,
-  { resource: { actions = {}, foreignKey, as, dependent, key, collectionParameter } }) {
-
-  const foreignKeyName = getForeignKeyName({
-    foreignKey, as, name
-  });
-
-  const keyName = getKeyName({ key, relationType, associationName });
-
-  const reducerOptions = {
-    name,
-    relationType,
-    foreignKeyName,
-    keyName,
-    dependent,
-    collectionParameter
-  };
-
-  addAssociationReducersTo(reducersDict, { actions, reducerOptions });
-}
-
-function getForeignKeyName({ foreignKey, as, name }) {
-  if (foreignKey) {
-    return foreignKey;
-  } else {
-    if (as) {
-      return `${toSingular(as)}Id`;
-    } else {
-      return `${toSingular(name)}Id`;
-    }
-  }
-}
-
-function getKeyName({ key, relationType, associationName }) {
-  if (key) {
-    return key;
-  } else {
-    if (relationType === 'belongsTo') {
-      return `${toSingular(associationName)}Id`;
-    } else {
-      return `${toSingular(associationName)}Ids`;
-    }
-  }
-}
-
-const associationReducersDict = {
-  create: addCreatedHasManyAssociation,
-  update: updateHasManyAssociation,
-  destroy: removeDestroyedHasManyAssociation
-};
-
-function addAssociationReducersTo(reducersDict, { actions, reducerOptions }) {
-  Object.keys(associationReducersDict).forEach((actionKey) => {
-    const actionName = actions[actionKey];
-
-    if (actionName) {
-      reducersDict[actionName] = {
-        reducer: (resources, action) => associationReducersDict[actionKey](resources, action, reducerOptions)
-      };
-    }
-  });
-}
-
 function addCreatedHasManyAssociation(resources, { temporaryKey, key, status, item: associationItem }, { relationType, foreignKeyName, keyName }) {
   const associationValues = associationItem.values;
 
@@ -360,6 +293,84 @@ function removeDestroyedHasManyAssociation(resources, { key, type, status, previ
   } else {
     return resources;
   }
+}
+
+function getForeignKeyName({ foreignKey, as, name }) {
+  if (foreignKey) {
+    return foreignKey;
+  } else {
+    if (as) {
+      return `${toSingular(as)}Id`;
+    } else {
+      return `${toSingular(name)}Id`;
+    }
+  }
+}
+
+function getKeyName({ key, relationType, associationName }) {
+  if (key) {
+    return key;
+  } else {
+    if (relationType === 'belongsTo') {
+      return `${toSingular(associationName)}Id`;
+    } else {
+      return `${toSingular(associationName)}Ids`;
+    }
+  }
+}
+
+/**
+ * @typedef AssociationOptions Accepted options when defining an associated resource
+ * @property {ActionDictionary} actions Associated resource's actions
+ * @property {string} property Name of the primary key the associate resource uses to refer to this one
+ * @property {string} foreignKey Name of the attribute that stores the id or ids of the associated resource
+ *          on the current one.
+ * @property {string} as If a foreign key is not specified, this association name is used as the prefix with
+ *         a suffix of id or ids to derive the foreign key
+ * @property {string} dependent When set to 'destroy' it removes the associated resource if the current one is
+ *        removed from the store.
+ * @property {object|string} collectionParameter The key of the collection to add newly created associated
+ *        objects to
+ */
+
+function addAssociationReducer(
+  reducersDict,
+  name,
+  relationType,
+  associationName,
+  { actions = {}, foreignKey, as, dependent, key, collectionParameter }) {
+
+  const foreignKeyName = getForeignKeyName({ foreignKey, as, name });
+  const keyName = getKeyName({ key, relationType, associationName });
+
+  const reducerOptions = {
+    name,
+    relationType,
+    foreignKeyName,
+    keyName,
+    dependent,
+    collectionParameter
+  };
+
+  addAssociationReducersTo(reducersDict, { actions, reducerOptions });
+}
+
+const associationReducersDict = {
+  create: addCreatedHasManyAssociation,
+  update: updateHasManyAssociation,
+  destroy: removeDestroyedHasManyAssociation
+};
+
+function addAssociationReducersTo(reducersDict, { actions, reducerOptions }) {
+  Object.keys(associationReducersDict).forEach((actionKey) => {
+    const actionName = actions[actionKey];
+
+    if (actionName) {
+      reducersDict[actionName] = {
+        reducer: (resources, action) => associationReducersDict[actionKey](resources, action, reducerOptions)
+      };
+    }
+  });
 }
 
 export default addAssociationReducer;

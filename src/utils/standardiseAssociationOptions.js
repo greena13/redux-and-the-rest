@@ -1,5 +1,3 @@
-
-
 /**
  * Standardises association options to convert the basic syntax:
  *  belongs_to: {
@@ -18,9 +16,10 @@
  */
 function standardiseAssociationOptions(options) {
   if (options.__isResource) {
-    return { resource: options };
-  } else {
     return options;
+  } else {
+    const { resource, ..._options} = options;
+    return { ...resource, ..._options};
   }
 }
 
