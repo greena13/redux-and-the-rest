@@ -605,11 +605,34 @@ A blank item has the following schema:
 {
   values: {},
   status: { type: null },
+  projection: { type: null }
 };
 ```
 
 * `values`: This is where all of the item's attributes are stored.
 * `status`: This is where status information is stored, separate from the item's attributes. This allows the `values` to remain pure - so if you are editing an item, all you need to do is send the new `values` back to the server, without having to worry about any irrelevant attributes being mixed in.
+* `projection`: This is where information about the nature of the item's set of attributes is stored. A `type` attribute indicates whether all of the resource item's attributes have been retrieved (`COMPLETE` by default), or whether only some of them have (e.g. `PREVIEW`). Other information can also be stored here, and is configurable when the resource action is defined or when the action creator is called.
+
+
+Setting the `projection` when defining the resource:
+
+```
+const { reducers, actionCreators: { fetchUsers } } = resources({
+  name: 'users',
+  url: 'http://test.com/users',
+  keyBy: 'id',
+}, {
+  show: {
+    projection: { type: 'PREVIEW' }
+  }
+});
+```
+
+Setting the `projection` when calling the action creator:
+
+```javascript
+dispatch(fetchUser(1, { projection: { type: 'PREVIEW' }}));
+```
 
 ##### Collection schema
 
@@ -619,11 +642,33 @@ A blank collection has the following schema:
 {
   positions: [],
   status: { type: null },
+  projection: { type: null }
 };
 ```
 
 * `positions`: This is an array of keys of the items that exist in the collection. It stores the order of the items separate from the items themselves, so the items may be efficiently stored (without any duplicates) when we have multiple collections that may share them. It also means that we may update individual item's values, without having to alter all of the collections they are a part of.
 * `status`: This is where status information is stored for the entire collection.
+* `projection`: This is where information about the nature of the collection is stored. A `type` attribute indicates whether all of the resource items in the collection have been retrieved (`COMPLETE` by default), or whether only some of them have. Other information can also be stored here, and is configurable when the resource action is defined or when the action creator is called.
+
+Setting the `projection` when defining the resource:
+
+```
+const { reducers, actionCreators: { fetchUsers } } = resources({
+  name: 'users',
+  url: 'http://test.com/users',
+  keyBy: 'id',
+}, {
+  index: {
+    projection: { type: 'PAGINATED' }
+  }
+});
+```
+
+Setting the `projection` when calling the action creator:
+
+```javascript
+dispatch(fetchUsers({}, { projection: { type: 'PAGINATED', page: 1 }}));
+```
 
 ### Data lifecycle
 
