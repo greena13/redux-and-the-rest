@@ -4,6 +4,7 @@ import { ITEM } from '../../constants/DataStructures';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
+import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 
 /**************************************************************************************************************
  * Action creators
@@ -56,7 +57,13 @@ function reducer(resources, { type, key, item }) {
    */
   assertInDevMode(() => {
     if (!items[key]) {
-      warn(`${type}'s key '${key}' does not match any items in the store. Use a new*() to create a new item or check the arguments passed to edit*(). (A new item was created to contain the edit.)`);
+      const actionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'new' });
+
+      warn(
+        `${type}'s key '${key}' does not match any items in the store. Use a ${actionCreatorName}() to create ` +
+        `a new item or check the arguments passed to ${getActionCreatorNameFrom(type)}(). (A new item was ` +
+        'created to contain the edit.)'
+      );
     }
   });
 

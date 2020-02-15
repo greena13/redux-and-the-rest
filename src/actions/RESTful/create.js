@@ -227,7 +227,11 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
   if (status === CREATING) {
     assertInDevMode(() => {
       if (currentItem.status.type && currentItem.status.type !== NEW) {
-        warn(`${type} has the same key '${temporaryKey}' as an existing item. Use update*() to update an existing item, or ensure the new item has a unique temporary key. (The create request was still sent to the server.)`);
+        warn(
+          `${type} has the same key '${temporaryKey}' as an existing item. ` +
+          `Use ${getActionCreatorNameFrom(type, { replaceVerb: 'update' })}() to update an existing item, ` +
+          'or ensure the new item has a unique temporary key. (The create request was still sent to the server.)'
+        );
       }
     });
 

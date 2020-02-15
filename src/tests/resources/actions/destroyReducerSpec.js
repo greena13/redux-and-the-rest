@@ -160,7 +160,7 @@ describe('Destroy reducer:', function () {
           {
             description: 'and it has a status of NEW',
             statusType: NEW,
-            warning: 'Redux and the REST: DESTROY_USER\'s key \'1\' matched a new item. Use clearNew*() to clear items that haven\'t been saved to the server. (Destroy request was still sent to the server.)'
+            warning: 'Redux and the REST: DESTROY_USER\'s key \'1\' matched a new item. Use clearNewUser() to clear items that haven\'t been saved to the server. (Destroy request was still sent to the server.)'
           },
           {
             description: 'and it has a status of DESTROYING',

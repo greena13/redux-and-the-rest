@@ -253,7 +253,7 @@ describe('hasAndBelongsToMany:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: UPDATE_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the third argument to update*().'
+              'Redux and the REST: UPDATE_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the third argument to updatePost().'
             );
           });
 
@@ -369,7 +369,7 @@ describe('hasAndBelongsToMany:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: DESTROY_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the second argument to destroy*().'
+              'Redux and the REST: DESTROY_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the second argument to destroyPost().'
             );
           });
 
@@ -637,7 +637,7 @@ describe('hasAndBelongsToMany:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: UPDATE_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the third argument to update*().'
+              'Redux and the REST: UPDATE_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the third argument to updatePost().'
             );
           });
 
@@ -754,7 +754,7 @@ describe('hasAndBelongsToMany:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: DESTROY_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the second argument to destroy*().'
+              'Redux and the REST: DESTROY_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the second argument to destroyPost().'
             );
           });
 

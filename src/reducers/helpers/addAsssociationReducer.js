@@ -12,6 +12,7 @@ import removeItemsFromResources from './removeItemsFromResources';
 import contains from '../../utils/collection/contains';
 import serializeKey from '../../utils/serializeKey';
 import isEmpty from '../../utils/collection/isEmpty';
+import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 
 function addCreatedHasManyAssociation(resources, { temporaryKey, key, status, item: associationItem }, { relationType, foreignKeyName, keyName }) {
   const associationValues = associationItem.values;
@@ -126,7 +127,13 @@ function updateHasManyAssociation(resources, { key, type, status, item: associat
 
     } else {
       assertInDevMode(() => {
-        warn(`${type} did not specify any previous values. This makes updating '${name}.${keyName}' much less efficient. Provide the values of the item you are destroying as the third argument to update*().`);
+        const actionCreatorName = getActionCreatorNameFrom(type);
+
+        warn(
+          `${type} did not specify any previous values. This makes updating '${name}.${keyName}' much ` +
+          'less efficient. Provide the values of the item you are destroying as the third argument to ' +
+          `${actionCreatorName}().`
+        );
       });
 
       return {
@@ -182,8 +189,14 @@ function removeDestroyedHasManyAssociation(resources, { key, type, status, previ
   if (status === SUCCESS) {
     const _resources = function(){
       if (isEmpty(previousValues)) {
+
         assertInDevMode(() => {
-          warn(`${type} did not specify any previous values. This makes updating '${name}.${keyName}' much less efficient. Provide the values of the item you are destroying as the second argument to destroy*().`);
+          const actionControllerName = getActionCreatorNameFrom(type);
+
+          warn(
+            `${type} did not specify any previous values. This makes updating '${name}.${keyName}' much less ` +
+            `efficient. Provide the values of the item you are destroying as the second argument to ${actionControllerName}().`
+          );
         });
 
         if (dependent === 'destroy') {

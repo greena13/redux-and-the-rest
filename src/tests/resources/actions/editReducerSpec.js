@@ -44,7 +44,8 @@ describe('Edit reducer:', function () {
 
         it('then warns about the missing item', function() {
           // eslint-disable-next-line no-console
-          expect(console.warn).toHaveBeenCalledWith('Redux and the REST: EDIT_USER\'s key \'1\' does not match any items in the store. Use a new*() to create a new item or check the arguments passed to edit*(). (A new item was created to contain the edit.)');
+          expect(console.warn).toHaveBeenCalledWith(
+            'Redux and the REST: EDIT_USER\'s key \'1\' does not match any items in the store. Use a newUser() to create a new item or check the arguments passed to editUser(). (A new item was created to contain the edit.)');
         });
 
         it('then adds an item with the correct values', function() {

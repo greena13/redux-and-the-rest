@@ -236,7 +236,7 @@ describe('Create reducer:', function () {
 
       it('then warns about the collision', function() {
         // eslint-disable-next-line no-console
-        expect(console.warn).toHaveBeenCalledWith('Redux and the REST: CREATE_USER has the same key \'1\' as an existing item. Use update*() to update an existing item, or ensure the new item has a unique temporary key. (The create request was still sent to the server.)');
+        expect(console.warn).toHaveBeenCalledWith('Redux and the REST: CREATE_USER has the same key \'1\' as an existing item. Use updateUser() to update an existing item, or ensure the new item has a unique temporary key. (The create request was still sent to the server.)');
       });
 
       it('then adds replaces the existing item\'s values', function() {

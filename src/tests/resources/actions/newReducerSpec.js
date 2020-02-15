@@ -130,7 +130,7 @@ describe('New reducer:', () => {
         it('then warns about the existing new record with the same key', function() {
           // eslint-disable-next-line no-console
           expect(console.warn).toHaveBeenCalledWith(
-            'Redux and the REST: \'NEW_USER\' has same key \'temp\' as the previous new item, which has not finished saving to the server. If you wish to create new items before the previous ones have finished saving, ensure you use unique temporary keys. If you want to discard the previous item, use the clearNew*() action. (Previous item was overridden with new values.)'
+            'Redux and the REST: \'NEW_USER\' has same key \'temp\' as the previous new item, which has not finished saving to the server. If you wish to create new items before the previous ones have finished saving, ensure you use unique temporary keys. If you want to discard the previous item, use the clearNewUser() action. (Previous item was overridden with new values.)'
           );
         });
 
@@ -265,7 +265,7 @@ describe('New reducer:', () => {
         it('then warns about the existing record with the same key', function() {
           // eslint-disable-next-line no-console
           expect(console.warn).toHaveBeenCalledWith(
-            'Redux and the REST: \'NEW_USER\' has same key \'1\' as existing item, use edit*() to update it instead, or clearNew*() if you want to discard the previous values. (Previous item was overridden with new values.)'
+            'Redux and the REST: \'NEW_USER\' has same key \'1\' as existing item, use editUser() to update it instead, or clearNewUser() if you want to discard the previous values. (Previous item was overridden with new values.)'
           );
         });
 

@@ -170,7 +170,7 @@ describe('belongsTo:', function () {
               it('then does NOT display a warning', function() {
                 // eslint-disable-next-line no-console
                 expect(console.warn).not.toHaveBeenCalledWith(
-                  'Redux and the REST: DESTROY_ADDRESS did not specify any previous values. This makes updating \'users.addressId\' much less efficient. Provide the values of the item you are destroying as the second argument to destroy*().'
+                  'Redux and the REST: DESTROY_ADDRESS did not specify any previous values. This makes updating \'users.addressId\' much less efficient. Provide the values of the item you are destroying as the second argument to destroyAddress().'
                 );
               });
             });
@@ -231,7 +231,7 @@ describe('belongsTo:', function () {
               it('then displays a warning', function() {
                 // eslint-disable-next-line no-console
                 expect(console.warn).toHaveBeenCalledWith(
-                  'Redux and the REST: DESTROY_ADDRESS did not specify any previous values. This makes updating \'users.addressId\' much less efficient. Provide the values of the item you are destroying as the second argument to destroy*().'
+                  'Redux and the REST: DESTROY_ADDRESS did not specify any previous values. This makes updating \'users.addressId\' much less efficient. Provide the values of the item you are destroying as the second argument to destroyAddress().'
                 );
               });
             });

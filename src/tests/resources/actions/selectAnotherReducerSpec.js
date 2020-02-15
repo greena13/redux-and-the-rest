@@ -53,7 +53,7 @@ describe('Select another reducer:', function () {
     it('then warns about the resource not being in the store', function() {
       // eslint-disable-next-line no-console
       expect(console.warn).toHaveBeenCalledWith(
-        'Redux and the REST: selectMap is not intended to hold references to items that are not in the store. SELECT_ANOTHER_USER\'s key \'3\' did not match any of the item keys: 1, 2. Check the options passed to selectAnother*(). (The selection was ignored.)'
+        'Redux and the REST: selectMap is not intended to hold references to items that are not in the store. SELECT_ANOTHER_USER\'s key \'3\' did not match any of the item keys: 1, 2. Check the options passed to selectAnotherUser(). (The selection was ignored.)'
       );
     });
 

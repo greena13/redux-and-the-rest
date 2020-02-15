@@ -7,6 +7,7 @@ import warn from '../../utils/dev/warn';
 import { ERROR, NEW, SUCCESS, UPDATING } from '../../constants/Statuses';
 import { ITEM } from '../../constants/DataStructures';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
+import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -166,9 +167,19 @@ function reducer(resources, { type, key, status, item, httpCode, error }) {
      * if the user is attempting to update a resource that has not yet been saved to the external API
      */
     if (!items[key]) {
-      warn(`${type}'s key '${key}' did not match any items in the store. Check the arguments passed to update*(). (Update request still sent to the server.)`);
+      const actionCreatorName = getActionCreatorNameFrom(type);
+
+      warn(
+        `${type}'s key '${key}' did not match any items in the store. Check the arguments passed to ` +
+        `${actionCreatorName}(). (Update request still sent to the server.)`
+      );
     } else if (items[key].status.type === NEW) {
-      warn(`${type}'s key '${key}' matched a new resource. Use edit*() to modify an item that has not been saved to the server yet. (Update request still sent to the server.)`);
+      const actionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'edit' });
+
+      warn(
+        `${type}'s key '${key}' matched a new resource. Use ${actionCreatorName}() to modify an item that has ` +
+        'not been saved to the server yet. (Update request still sent to the server.)'
+      );
     }
   });
 

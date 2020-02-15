@@ -44,7 +44,7 @@ describe('Update reducer:', function () {
 
         it('then warns about trying to update an item not in the store', function() {
           // eslint-disable-next-line no-console
-          expect(console.warn).toHaveBeenCalledWith('Redux and the REST: UPDATE_USER\'s key \'1\' did not match any items in the store. Check the arguments passed to update*(). (Update request still sent to the server.)');
+          expect(console.warn).toHaveBeenCalledWith('Redux and the REST: UPDATE_USER\'s key \'1\' did not match any items in the store. Check the arguments passed to updateUser(). (Update request still sent to the server.)');
         });
 
         it('then adds a new item with a status of UPDATING', function() {
