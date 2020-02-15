@@ -1,4 +1,7 @@
-import { COLLECTION, COMPLETE, ERROR, FETCHING, ITEM, SUCCESS } from '../../index';
+import { COLLECTION, ITEM } from '../../constants/DataStructures';
+import { ERROR, FETCHING, SUCCESS } from '../../constants/Statuses';
+import { COMPLETE } from '../../constants/ProjectionTypes';
+
 import getCollectionKey from '../../action-creators/helpers/getCollectionKey';
 import generateUrl from '../../action-creators/helpers/generateUrl';
 import makeRequest from '../../action-creators/helpers/makeRequest';

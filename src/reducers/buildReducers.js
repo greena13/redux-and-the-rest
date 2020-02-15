@@ -1,8 +1,4 @@
-import {
-  NEW,
-} from '../constants/Statuses';
-
-import { ITEM, RESOURCES } from '../constants/DataStructures';
+import { RESOURCES } from '../constants/DataStructures';
 import without from '../utils/collection/without';
 import isObject from '../utils/object/isObject';
 import warn from '../utils/dev/warn';
