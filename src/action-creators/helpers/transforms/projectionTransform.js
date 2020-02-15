@@ -1,4 +1,4 @@
-import { COMPLETE } from '../../..';
+import { COMPLETE } from '../../../constants/ProjectionTypes';
 
 function projectionTransform(options, actionCreatorOptions, item) {
   const projection = function(){

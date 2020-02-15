@@ -1,7 +1,8 @@
 import getItemKey from '../../action-creators/helpers/getItemKey';
 import generateUrl from '../../action-creators/helpers/generateUrl';
 import makeRequest from '../../action-creators/helpers/makeRequest';
-import { ERROR, FETCHING, ITEM, SUCCESS } from '../..';
+import { ERROR, FETCHING, SUCCESS } from '../../constants/Statuses';
+import { ITEM } from '../../constants/DataStructures'
 
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 

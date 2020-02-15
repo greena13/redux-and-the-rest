@@ -4,7 +4,8 @@ import wrapInObject from '../../utils/object/wrapInObject';
 import makeRequest from '../../action-creators/helpers/makeRequest';
 import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
-import { ERROR, ITEM, NEW, SUCCESS, UPDATING } from '../..';
+import { ERROR, NEW, SUCCESS, UPDATING } from '../../constants/Statuses';
+import { ITEM } from '../../constants/DataStructures';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 
 /**************************************************************************************************************

@@ -4,6 +4,7 @@
 
 /**
  * Redux action creator used for clearing all of the selected resource items
+ * @param {Object} options Configuration options built from those provided when the resource was defined
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator({ action }) {

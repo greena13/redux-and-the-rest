@@ -7,7 +7,7 @@ import without from '../../utils/collection/without';
 
 /**
  * Redux action creator used for deselecting a selected resource item
- * @param {ActionObject} action The action containing the data to use to create or refine the new resource item
+ * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state

@@ -1,4 +1,4 @@
-import { COLLECTION } from '../..';
+import { COLLECTION } from '../../constants/DataStructures';
 
 function applyCollectionOperators(collections, collectionOperations = {}, temporaryKey) {
   const updatedCollections = {};

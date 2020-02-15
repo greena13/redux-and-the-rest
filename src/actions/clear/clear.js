@@ -1,4 +1,4 @@
-import { RESOURCES } from '../..';
+import { RESOURCES } from '../../constants/DataStructures';
 
 /**************************************************************************************************************
  * Reducer
