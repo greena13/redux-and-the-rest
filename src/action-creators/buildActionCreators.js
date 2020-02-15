@@ -17,6 +17,7 @@ import selectAction from '../actions/selection/select';
 import selectAnotherAction from '../actions/selection/selectAnother';
 import deselectAction from '../actions/selection/deselect';
 import clearSelectedAction from '../actions/selection/clearSelected';
+import without from '../utils/collection/without';
 
 /**
  * Dictionary of standard action creators that perform a mix of synchronous and asynchronous changes where
@@ -43,10 +44,10 @@ const STANDARD_ACTION_CREATORS = {
  * requests to a remote RESTful API and instead perform the changes locally and synchronously.
  */
 const LOCAL_ONLY_ACTION_CREATORS = {
-  ...STANDARD_ACTION_CREATORS,
-  create: (options, params, values, actionCreatorOptions = {}) => createAction.localActionCreator({ ...options, params }, actionCreatorOptions, values),
-  update: (options, params, values, actionCreatorOptions = {}) => updateAction.localActionCreator({ ...options, params }, actionCreatorOptions, values),
-  destroy: (options, key, values, actionCreatorOptions = {}) => destroyAction.localActionCreator({ ...options, key }, actionCreatorOptions, values),
+  ...without(STANDARD_ACTION_CREATORS, Object.keys(RemoteOnlyActionsDictionary)),
+  create: createAction.localActionCreator,
+  update: updateAction.localActionCreator,
+  destroy: destroyAction.localActionCreator,
 };
 
 /**

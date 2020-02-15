@@ -77,6 +77,21 @@ function deleteResourceUpdate(options, values) {
 }
 
 /**
+ * Redux action creator used for removing a resource item from the Redux store without making a DELETE request
+ * to a RESTful API endpoint
+ * @param {Object} options Configuration options built from those provided when the resource was defined
+ * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
+ *        of the resource's URL
+ * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
+ * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
+ */
+function localActionCreator(options, params, actionCreatorOptions = {}){
+  const { keyBy } = options;
+  const key = getItemKey(params, { keyBy });
+
+  return removeResource({ ...options, key }, actionCreatorOptions);
+}
+/**
  * Creates an action object to update the Redux store remove a resource item after it has been confirmed as
  * deleted by a remote API
  * @param {Object} options Options specified when defining the resource and action
@@ -200,5 +215,5 @@ function reducer(resources, { type, status, key, item }) {
 export default {
   reducer,
   actionCreator,
-  localActionCreator: removeResource
+  localActionCreator
 };

@@ -24,6 +24,7 @@ import selectAnotherAction from '../actions/selection/selectAnother';
 import deselectAction from '../actions/selection/deselect';
 import clearSelectedAction from '../actions/selection/clearSelected';
 import clearAction from '../actions/clear/clear';
+import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 
 /**
  * Dictionary of standard reducer functions for keeping the local store synchronised with a remote RESTful API.
@@ -75,8 +76,8 @@ function getProgressReducer(key) {
  * synchronously, without any requests being made to an external API.
  */
 const LOCAL_ONLY_REDUCERS = {
-  ...without(STANDARD_REDUCERS, Object.keys(PROGRESS_COMPATIBLE_ACTIONS)),
-  create: showAction.reducer,
+  ...without(STANDARD_REDUCERS, Object.keys(RemoteOnlyActionsDictionary)),
+  create: createAction.reducer,
   update: showAction.reducer
 };
 

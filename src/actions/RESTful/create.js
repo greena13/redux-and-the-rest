@@ -94,6 +94,20 @@ function submitCreateResource(options, actionCreatorOptions, values, collectionO
 }
 
 /**
+ * Redux action creator used for creating a request item in the Redux store without sending any requests to an
+ * external API
+ * @param {Object} options Configuration options built from those provided when the resource was defined
+ * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
+ *        of the resource's URL
+ * @param {Object} values The attribute values to use to create the resource
+ * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
+ * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
+ */
+function localActionCreator(options, params, values, actionCreatorOptions = {}) {
+  return receiveCreatedResource({ ...options, params }, actionCreatorOptions, values);
+}
+
+/**
  * Creates an action object to update the Redux store to list a resource item as having been confirmed as created
  * by an external API
  * @param {Object} options Options specified when defining the resource and action
@@ -252,5 +266,5 @@ function reducer(resources, { type, temporaryKey, key, collectionOperations = {}
 export default {
   reducer,
   actionCreator,
-  localActionCreator: receiveCreatedResource
+  localActionCreator
 };

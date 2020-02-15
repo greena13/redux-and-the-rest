@@ -121,7 +121,6 @@ function clearReducer(resources) {
   }
 }
 
-
 export default {
   reducer,
   clearReducer,

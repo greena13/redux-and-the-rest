@@ -84,6 +84,24 @@ function submitUpdateResource(options, actionCreatorOptions, values) {
 }
 
 /**
+ * Redux action creator used for updating a resource locally (without making any requests to a RESTful API endpoint)
+ * @param {Object} options Configuration options built from those provided when the resource was defined
+ * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
+ *        of the resource's URL
+ * @param {Object} values The attribute values to use to update the resource
+ * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
+ * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
+ */
+function localActionCreator(options, params, values, actionCreatorOptions = {}) {
+  return receiveUpdatedResource(
+    { ...options, params },
+    actionCreatorOptions,
+    values,
+    actionCreatorOptions.previous
+  );
+}
+
+/**
  * Creates an action object to update a resource item after it's been confirmed as updated on an external API
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} actionCreatorOptions Options passed to the action creator
@@ -238,5 +256,5 @@ function reducer(resources, { type, key, status, item, httpCode, error }) {
 export default {
   reducer,
   actionCreator,
-  localActionCreator: receiveUpdatedResource
+  localActionCreator
 };
