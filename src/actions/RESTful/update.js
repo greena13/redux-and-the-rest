@@ -111,7 +111,7 @@ function localActionCreator(options, params, values, actionCreatorOptions = {}) 
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function receiveUpdatedResource(options, actionCreatorOptions, values, previousValues) {
-  const { transforms, action, params, keyBy } = options;
+  const { transforms, action, params, keyBy, localOnly } = options;
 
   return {
     type: action,
@@ -121,7 +121,8 @@ function receiveUpdatedResource(options, actionCreatorOptions, values, previousV
       values,
       status: { type: SUCCESS, syncedAt: Date.now() }
     }),
-    previousValues
+    previousValues,
+    localOnly
   };
 }
 

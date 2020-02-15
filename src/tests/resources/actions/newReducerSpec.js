@@ -50,7 +50,6 @@ describe('New reducer:', () => {
           );
 
           this.store.dispatch(this.newUser(idArgs, {
-            id: 2,
             username: 'Jill',
           }));
 
@@ -58,7 +57,7 @@ describe('New reducer:', () => {
         });
 
         it('then adds the new item', function() {
-          expect(this.users.items.temp.values).toEqual({ id: 2, username: 'Jill' });
+          expect(this.users.items.temp.values).toEqual({ username: 'Jill' });
         });
 
         it('then sets the status type of the new item to NEW', function() {

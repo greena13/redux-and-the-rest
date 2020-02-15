@@ -1,7 +1,7 @@
-import { ITEM } from '../constants/DataStructures';
 import serializeKey from './serializeKey';
 import isObject from './object/isObject';
 import arrayFrom from './array/arrayFrom';
+import internalGetItem from './internalGetItem';
 
 function getItem({ keyBy }, resource, parameters) {
   const key = function(){
@@ -18,7 +18,7 @@ function getItem({ keyBy }, resource, parameters) {
     }
   }();
 
-  return resource.items[key] || ITEM;
+  return internalGetItem(resource, key);
 }
 
 export default getItem;

@@ -18,11 +18,11 @@ describe('Create reducer:', function () {
 
   [
     {
-      description: 'when no actions have come before it',
+      description: 'Given no actions have come before it',
       initialState: { users: { ...RESOURCES } }
     },
     {
-      description: 'when a NEW action has come before it',
+      description: 'Given a NEW action has come before it',
       initialState: {
         users: {
           items: {
@@ -40,17 +40,17 @@ describe('Create reducer:', function () {
     describe(description, function () {
       [
         {
-          idArgsDescription: 'and only the item\'s id is passed to the action creator',
+          idArgsDescription: 'and only the item\'s id is passed to the action creator,',
           idArgs: 'temp'
         },
         {
-          idArgsDescription: 'and the item\'s id is passed as an object to the action creator',
+          idArgsDescription: 'and the item\'s id is passed as an object to the action creator,',
           idArgs: { id: 'temp' }
         }
       ].forEach(({ idArgsDescription, idArgs }) => {
         describe(idArgsDescription, function() {
-          describe('and the API request succeeds', function () {
-            describe('before the request has completed', function () {
+          describe('and the API request succeeds,', function () {
+            describe('before the request has completed,', function () {
               beforeAll(function () {
                 fetchMock.post('http://test.com/users', new Promise(resolve => {}));
 
@@ -83,7 +83,7 @@ describe('Create reducer:', function () {
               });
             });
 
-            describe('when the request has completed', () => {
+            describe('when the request has completed,', () => {
               beforeAll(function () {
                 fetchMock.post('http://test.com/users', {
                   body: { id: 1, username: 'Bob' },

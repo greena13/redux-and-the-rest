@@ -11,6 +11,9 @@ import applyCollectionOperators from '../../reducers/helpers/applyCollectionOper
 import without from '../../utils/collection/without';
 import replace from '../../utils/collection/replace';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
+import processActionCreatorOptions from '../../action-creators/helpers/processActionCreatorOptions';
+import internalGetItem from '../../utils/internalGetItem';
+import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -19,13 +22,21 @@ import applyTransforms from '../../reducers/helpers/applyTransforms';
 /**
  * Redux action creator used for sending a CREATE request to a RESTful API endpoint
  * @param {Object} options Configuration options built from those provided when the resource was defined
- * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
- *        of the resource's URL
- * @param {Object} values The attribute values to use to create the resource
- * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
+ * @param {Object|string} paramsOrValues The first argument which can either a string or object that is serialized
+ *        and used to fill in the dynamic parameters of the resource's URL (params) or the attribute values to
+ *        use to create the resource.
+ * @param {Object} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
+ *        options passed to the action creator when it is called.
+ * @param {Object} optionalActionCreatorOptions=undefined The optional additional options passed to the action controller.
  * @returns {Thunk}
  */
-function actionCreator(options, params, values, actionCreatorOptions = {}) {
+function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
+  const { params, values, actionCreatorOptions } = processActionCreatorOptions(
+    paramsOrValues,
+    valuesOrActionCreatorOptions,
+    optionalActionCreatorOptions
+  );
+
   const {
     action,
     transforms,
@@ -36,7 +47,19 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
     projection
   } = options;
 
-  const key = getItemKey(params, { keyBy });
+  const key = function(){
+    const specifiedKey = getItemKey([params, values], { keyBy });
+
+    if (specifiedKey) {
+      return specifiedKey;
+    } else {
+      /**
+       * We automatically generate a new temporary Id if one is not specified
+       */
+      return Date.now().toString();
+    }
+  }();
+
   const url = generateUrl({ url: urlTemplate, keyBy, ignoreOptionalParams: true }, wrapInObject(params, keyBy));
 
   return (dispatch) => {
@@ -97,13 +120,22 @@ function submitCreateResource(options, actionCreatorOptions, values, collectionO
  * Redux action creator used for creating a request item in the Redux store without sending any requests to an
  * external API
  * @param {Object} options Configuration options built from those provided when the resource was defined
- * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
- *        of the resource's URL
- * @param {Object} values The attribute values to use to create the resource
- * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
+ * @param {Object|string} paramsOrValues The first argument which can either a string or object that is serialized
+ *        and used to fill in the dynamic parameters of the resource's URL (params) or the attribute values to
+ *        use to create the resource.
+ * @param {Object} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
+ *        options passed to the action creator when it is called.
+ * @param {Object} optionalActionCreatorOptions=undefined The optional additional options passed to the
+ *        action controller.
  * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
  */
-function localActionCreator(options, params, values, actionCreatorOptions = {}) {
+function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
+  const { params, values, actionCreatorOptions } = processActionCreatorOptions(
+    paramsOrValues,
+    valuesOrActionCreatorOptions,
+    optionalActionCreatorOptions
+  );
+
   return receiveCreatedResource({ ...options, params }, actionCreatorOptions, values);
 }
 
@@ -116,18 +148,43 @@ function localActionCreator(options, params, values, actionCreatorOptions = {}) 
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function receiveCreatedResource(options, actionCreatorOptions, values) {
-  const { action, keyBy, transforms, key, params, collectionOperations } = options;
+  const { action, keyBy, transforms, params, collectionOperations, localOnly } = options;
+
+  const key = function(){
+    const specifiedKey = getItemKey([params, values], { keyBy });
+
+    if (specifiedKey) {
+      return specifiedKey;
+    } else {
+      const actionCreatorName = getActionCreatorNameFrom(action);
+
+      assertInDevMode(() => {
+        warn(
+          `${actionCreatorName}() did not specify a temporary key. One has been generated and stored in ` +
+          'newItemKey, but unless you save a reference to it, it will be lost when you create the next item. ' +
+          'It\'s therefore recommended when using the localOnly option to always specify a key by passing it ' +
+          `as the first argument to ${actionCreatorName}.`
+        );
+      });
+
+      /**
+       * We automatically generate a new temporary Id if one is not specified
+       */
+      return Date.now().toString();
+    }
+  }();
 
   return {
     type: action,
     status: SUCCESS,
-    key: getItemKey([params, values], { keyBy }),
-    temporaryKey: key,
+    key,
+    temporaryKey: options.key,
     collectionOperations,
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       values,
       status: { type: SUCCESS, syncedAt: Date.now() }
-    })
+    }),
+    localOnly
   };
 }
 
@@ -163,7 +220,7 @@ function handleCreateResourceError(options, actionCreatorOptions, httpCode, erro
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { type, temporaryKey, key, collectionOperations = {}, status, item, httpCode, error }) {
+function reducer(resources, { localOnly, type, temporaryKey, key, collectionOperations = {}, status, item, httpCode, error }) {
   const { items } = resources;
   const currentItem = items[temporaryKey] || ITEM;
 
@@ -175,12 +232,28 @@ function reducer(resources, { type, temporaryKey, key, collectionOperations = {}
     });
 
     /**
+     * If the newItemKey points to a resource item of type NEW, then we clear it, to be replaced by the resource
+     * item that is now being created.
+     *
+     * We can't always clear the item pointed to by newItemKey because this attribute is used to point to
+     * resource items after they have been created. So if if we created two items one after another, the first
+     * would be removed from the store when the second was created.
+     */
+    const itemsToPersist = function(){
+      if (internalGetItem(resources, resources.newItemKey).status.type === NEW) {
+        return without(items, resources.newItemKey);
+      } else {
+        return items;
+      }
+    }();
+
+    /**
      * If a new resource is being added to the store as CREATING (we're waiting for a remote API to confirm its
      * creation), we add it to the repository of items with a temporary id until a permanent one can assigned
      * by a remote API.
      */
     const newItems = {
-      ...items,
+      ...itemsToPersist,
       [temporaryKey]: {
         ...currentItem,
         ...item
@@ -199,13 +272,28 @@ function reducer(resources, { type, temporaryKey, key, collectionOperations = {}
     };
 
   } else if (status === SUCCESS) {
-    /**
-     * Once the remote API has confirmed the creation of the new resource item (and assigned it a permanent id),
-     * we replace the one in the local Redux store with the values the remote API sends back in the response,
-     * and we index them under the new permanent id.
-     */
+    const itemsToPersist = function(){
+      if (localOnly && internalGetItem(resources, resources.newItemKey).status.type === NEW) {
+        /**
+         * When in localOnly mode, there is no remote API call, so the CREATING step is skipped and the SUCCESS
+         * is the first to happen. If so, we check if there is an existing resource item in the NEW status, and
+         * clear it, so when a user NEWs a resource and then CREATEs it and doesn't specify a temporary
+         * id (leaving one to be automatically generated each time), the original NEW resource item is properly
+         * cleaned up.
+         */
+        return without(items, resources.newItemKey);
+      } else {
+        /**
+         * Once the remote API has confirmed the creation of the new resource item (and assigned it a permanent id),
+         * we replace the one in the local Redux store with the values the remote API sends back in the response,
+         * and we index them under the new permanent id.
+         */
+        return without(items, temporaryKey);
+      }
+    }();
+
     const newItems = {
-      ...without(items, temporaryKey),
+      ...itemsToPersist,
       [key]: {
         ...item,
         status: {

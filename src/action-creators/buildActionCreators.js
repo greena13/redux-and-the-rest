@@ -18,6 +18,7 @@ import selectAnotherAction from '../actions/selection/selectAnother';
 import deselectAction from '../actions/selection/deselect';
 import clearSelectedAction from '../actions/selection/clearSelected';
 import without from '../utils/collection/without';
+import getActionCreatorNameFrom from './helpers/getActionCreatorNameFrom';
 
 /**
  * Dictionary of standard action creators that perform a mix of synchronous and asynchronous changes where
@@ -107,7 +108,8 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
      */
     const actionOptions = wrapInObject(actionsOptions[key]);
 
-    const actionCreatorName = camelCase(actionName);
+    const actionCreatorName = getActionCreatorNameFrom(actionName);
+
     const actionCreator = isObject(actionOptions) && actionOptions.actionCreator;
 
     const standardActionCreator = effectiveActionCreators[key];
@@ -132,7 +134,8 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
           'progress',
           'requestErrorHandler',
           'request',
-          'projection'
+          'projection',
+          'localOnly'
         ]
       );
 

@@ -100,12 +100,13 @@ function localActionCreator(options, params, actionCreatorOptions = {}){
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function removeResource(options, previousValues) {
-  const { action, key } = options;
+  const { action, key, localOnly } = options;
 
   return {
     type: action,
     status: SUCCESS, key,
-    previousValues
+    previousValues,
+    localOnly
   };
 }
 
