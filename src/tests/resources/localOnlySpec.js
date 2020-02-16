@@ -26,7 +26,7 @@ describe('localOnly:', function () {
     };
   });
 
-  describe('when it is not used', function () {
+  describe('Given the localOnly option is NOT set', function () {
     beforeAll(function () {
       const {
         reducers: usersReducers,
@@ -49,7 +49,7 @@ describe('localOnly:', function () {
     });
   });
 
-  describe('when set to true', function () {
+  describe('Given the localOnly option is set to true', function () {
     beforeAll(function () {
       spyOn(console, 'warn');
 
@@ -128,7 +128,7 @@ describe('localOnly:', function () {
       });
 
       it('then immediately updates the resource', function() {
-        expect(this.users.items[1].values).toEqual(this.newValues);
+        expect(this.users.items[1].values).toEqual({ ...this.initialState.users.items[1].values, ...this.newValues });
         expect(this.users.items[1].status.type).toEqual(SUCCESS);
       });
     });
@@ -144,7 +144,7 @@ describe('localOnly:', function () {
       });
 
       it('then immediately updates the resource', function() {
-        expect(this.users.items[1].values).toEqual(this.newValues);
+        expect(this.users.items[1].values).toEqual({ ...this.initialState.users.items[1].values, ...this.newValues });
         expect(this.users.items[1].status.type).toEqual(SUCCESS);
       });
     });

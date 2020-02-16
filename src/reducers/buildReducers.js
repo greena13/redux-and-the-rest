@@ -74,11 +74,7 @@ function getProgressReducer(key) {
  * Dictionary or reducer functions to use when the localOnly option is set, causing changes to be performed
  * synchronously, without any requests being made to an external API.
  */
-const LOCAL_ONLY_REDUCERS = {
-  ...without(STANDARD_REDUCERS, Object.keys(RemoteOnlyActionsDictionary)),
-  create: createAction.reducer,
-  update: showAction.reducer
-};
+const LOCAL_ONLY_REDUCERS = without(STANDARD_REDUCERS, Object.keys(RemoteOnlyActionsDictionary));
 
 /**
  * Function that accepts the current state and Redux action and returns the correct new state.
