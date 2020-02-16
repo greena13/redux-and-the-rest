@@ -13,6 +13,8 @@ let configuration = {};
  *           but ignored when storing the request's response.
  * @property {Function} responseAdaptor Function used to adapt the responses for requests before it is handed
  *           over to the reducers.
+ * @property {Function} requestAdaptor Function used to adapt the JavaScript object before it is handed over to
+ *           become the body of the request to be sent to an external API.
  *
  * @property {Array.<ReducerFunction>} beforeReducers A list of functions to call before passing the resource to
  *           the reducer. This is useful if you want to use the default reducer, but provide some additional

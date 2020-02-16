@@ -243,6 +243,12 @@ export interface GlobalConfigurationOptions<T> {
     responseAdaptor?: Function,
 
     /**
+     * Function used to adapt the JavaScript object before it is handed over to become the body of the request
+     * to be sent to an external API.
+     */
+    requestAdaptor?: Function,
+
+    /**
      * A list of functions to call before passing the resource to the reducer. This is useful if you want to
      * use the default reducer, but provide some additional pre-processing to standardise the resource before
      * it is added to the store.
@@ -339,6 +345,12 @@ export interface ActionOptions<T> {
      * Function used to adapt the response for a particular request before it is handed over to the reducers.
      */
     responseAdaptor?: Function,
+
+    /**
+     * Function used to adapt the JavaScript object before it is handed over to become the body of the request
+     * to be sent to an external API.
+     */
+    requestAdaptor?: Function,
 
     /**
      * A custom reducer function to adapt the resource as it exists in the Redux store. By default, the

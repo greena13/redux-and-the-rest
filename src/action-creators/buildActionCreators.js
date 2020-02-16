@@ -133,6 +133,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
           'keyBy',
           'urlOnlyParams',
           'responseAdaptor',
+          'requestAdaptor',
           'progress',
           'requestErrorHandler',
           'request',

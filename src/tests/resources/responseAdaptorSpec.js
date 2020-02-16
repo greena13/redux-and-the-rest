@@ -602,5 +602,4 @@ describe('Specifying a response adaptor:', function () {
       fetchMock.restore();
     });
   });
-
 });

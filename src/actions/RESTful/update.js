@@ -24,7 +24,7 @@ import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCre
  */
 function actionCreator(options, params, values, actionCreatorOptions = {}) {
   const {
-    action, transforms, url: urlTemplate, name, progress, keyBy, projection
+    action, transforms, url: urlTemplate, name, progress, keyBy, projection, requestAdaptor
   } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
@@ -52,7 +52,7 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
       credentials: true,
       request: {
         method: 'PUT',
-        body: JSON.stringify(values),
+        body: JSON.stringify(requestAdaptor ? requestAdaptor(values) : values),
       },
       onSuccess: receiveUpdatedResource,
       onError: handleUpdateResourceError,

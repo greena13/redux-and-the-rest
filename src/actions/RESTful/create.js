@@ -44,7 +44,8 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     urlOnlyParams,
     keyBy,
     progress,
-    projection
+    projection,
+    requestAdaptor
   } = options;
 
 
@@ -82,7 +83,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
       credentials: true,
       request: {
         method: 'POST',
-        body: JSON.stringify(values),
+        body: JSON.stringify(requestAdaptor ? requestAdaptor(values) : values),
       },
       onSuccess: receiveCreatedResource,
       onError: handleCreateResourceError,
