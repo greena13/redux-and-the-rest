@@ -1,6 +1,5 @@
 import warn from '../utils/dev/warn';
 import isObject from '../utils/object/isObject';
-import camelCase from '../utils/string/camelCase';
 import wrapInObject from '../utils/object/wrapInObject';
 import resolveOptions from './helpers/resolveOptions';
 import projectionTransform from './helpers/transforms/projectionTransform';
@@ -9,6 +8,7 @@ import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionar
 import indexAction from '../actions/RESTful/index';
 import showAction from '../actions/RESTful/show';
 import newAction from '../actions/RESTful/new';
+import clearNewAction from '../actions/RESTful/clearNew';
 import createAction from '../actions/RESTful/create';
 import editAction from '../actions/RESTful/edit';
 import updateAction from '../actions/RESTful/update';
@@ -28,7 +28,7 @@ const STANDARD_ACTION_CREATORS = {
   index: indexAction.actionCreator,
   show: showAction.actionCreator,
   new: newAction.actionCreator,
-  clearNew: newAction.clearActionCreator,
+  clearNew: clearNewAction.actionCreator,
   create: createAction.actionCreator,
   edit: editAction.actionCreator,
   update: updateAction.actionCreator,

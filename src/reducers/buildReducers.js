@@ -11,6 +11,7 @@ import standardiseAssociationOptions from '../utils/standardiseAssociationOption
 import indexAction from '../actions/RESTful/index';
 import showAction from '../actions/RESTful/show';
 import newAction from '../actions/RESTful/new';
+import clearNewAction from '../actions/RESTful/clearNew';
 import createAction from '../actions/RESTful/create';
 import editAction from '../actions/RESTful/edit';
 import updateAction from '../actions/RESTful/update';
@@ -32,7 +33,7 @@ const STANDARD_REDUCERS = {
   index: indexAction.reducer,
   show: showAction.reducer,
   new: newAction.reducer,
-  clearNew: newAction.clearReducer,
+  clearNew: clearNewAction.reducer,
   create: createAction.reducer,
   edit: editAction.reducer,
   update: updateAction.reducer,
