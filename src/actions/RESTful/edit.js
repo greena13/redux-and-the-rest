@@ -1,5 +1,5 @@
 import getItemKey from '../../action-creators/helpers/getItemKey';
-import { EDITING } from '../../constants/Statuses';
+import { EDITING, NEW } from '../../constants/Statuses';
 import { ITEM } from '../../constants/DataStructures';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import assertInDevMode from '../../utils/assertInDevMode';
@@ -62,7 +62,7 @@ function reducer(resources, { type, key, item }) {
       const actionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'new' });
 
       warn(
-        `${type}'s key '${key}' does not match any items in the store. Use a ${actionCreatorName}() to create ` +
+        `${type}'s key '${key}' does not match any items in the store. Use ${actionCreatorName}() to create ` +
         `a new item or check the arguments passed to ${getActionCreatorNameFrom(type)}(). (A new item was ` +
         'created to contain the edit.)'
       );
@@ -71,27 +71,40 @@ function reducer(resources, { type, key, item }) {
 
   const currentItem = items[key] || ITEM;
 
-  /**
-   * We do a shallow merge of the values that already exist in the redux store for the resource item
-   * with the new values being supplied as part of the edit.
-   *
-   * This allows for partial edits - without having to re-specify the entire list of previous attribute values
-   */
-  const newValues = {
-    ...currentItem.values,
-    ...item.values
-  };
+  if (currentItem.status.type === NEW) {
+    assertInDevMode(() => {
+      const actionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'editNew' });
 
-  return {
-    ...resources,
-    items: {
-      ...items,
-      [key]: {
-        ...item,
-        values: newValues,
+      warn(
+        `${type}'s key '${key}' matches a NEW item. Use a ${actionCreatorName}() to edit ` +
+        'new items that have not yet been saved to an external API. Update ignored.'
+      );
+    });
+
+    return resources;
+  } else {
+    /**
+     * We do a shallow merge of the values that already exist in the redux store for the resource item
+     * with the new values being supplied as part of the edit.
+     *
+     * This allows for partial edits - without having to re-specify the entire list of previous attribute values
+     */
+    const newValues = {
+      ...currentItem.values,
+      ...item.values
+    };
+
+    return {
+      ...resources,
+      items: {
+        ...items,
+        [key]: {
+          ...item,
+          values: newValues,
+        }
       }
-    }
-  };
+    };
+  }
 }
 
 export default {

@@ -38,6 +38,7 @@ const STANDARD_ACTIONS = {
   show: 'FETCH_ITEM',
   new: 'NEW_ITEM',
   clearNew: 'CLEAR_NEW_ITEM',
+  editNew: 'EDIT_NEW_ITEM',
   create: 'CREATE_ITEM',
   edit: 'EDIT_ITEM',
   update: 'UPDATE_ITEM',

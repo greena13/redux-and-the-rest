@@ -45,7 +45,7 @@ describe('Edit reducer:', function () {
         it('then warns about the missing item', function() {
           // eslint-disable-next-line no-console
           expect(console.warn).toHaveBeenCalledWith(
-            'Redux and the REST: EDIT_USER\'s key \'1\' does not match any items in the store. Use a newUser() to create a new item or check the arguments passed to editUser(). (A new item was created to contain the edit.)');
+            'Redux and the REST: EDIT_USER\'s key \'1\' does not match any items in the store. Use newUser() to create a new item or check the arguments passed to editUser(). (A new item was created to contain the edit.)');
         });
 
         it('then adds an item with the correct values', function() {
@@ -59,10 +59,6 @@ describe('Edit reducer:', function () {
 
       describe('and the resource is in the store', function () {
         [
-          {
-            description: 'and it has a status of NEW',
-            status: { type: NEW }
-          },
           {
             description: 'and it has a status of SUCCESS',
             status: { type: SUCCESS }
@@ -100,6 +96,49 @@ describe('Edit reducer:', function () {
             });
           });
         });
+      });
+    });
+  });
+
+  describe('Given a new resource item exists in the store and the edit action controller is called to update it', () => {
+    beforeAll(function () {
+      this.store = buildStore({
+        users: {
+          ...this.resourceBefore,
+          items: {
+            temp: {
+              values: {
+                username: 'Jane'
+              },
+              status: {
+                type: NEW
+              }
+            }
+          },
+          newItemKey: 'temp'
+        }
+      }, {
+        users: this.reducers
+      });
+
+      spyOn(console, 'warn');
+
+      this.store.dispatch(this.editUser('temp', { username: 'Bob' }));
+    });
+
+    it('then warns that the edit action controller is not intended to edit new resource items', function() {
+      expect(console.warn).toHaveBeenCalledWith(
+        'Redux and the REST: EDIT_USER\'s key \'temp\' matches a NEW item. Use a editNewUser() to edit new items that have not yet been saved to an external API. Update ignored.'
+      );
+    });
+
+    it('then does not update the new resource item\'s values or state', function() {
+      expect(this.store.getState().users.items.temp.values).toEqual({
+        username: 'Jane'
+      });
+
+      expect(this.store.getState().users.items.temp.status).toEqual({
+        type: NEW
       });
     });
   });

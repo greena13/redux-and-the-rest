@@ -1,6 +1,6 @@
 import getItemKey from '../../action-creators/helpers/getItemKey';
 import { ITEM } from '../../constants/DataStructures';
-import { NEW } from '../../constants/Statuses';
+import { EDITING, NEW } from '../../constants/Statuses';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import extractCollectionOperations from '../../action-creators/helpers/extractCollectionOperations';
 import assertInDevMode from '../../utils/assertInDevMode';

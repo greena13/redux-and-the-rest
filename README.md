@@ -117,6 +117,7 @@ users = getCollection(store.getState().users);
    * [Add a new resource item to the store](#add-a-new-resource-item-to-the-store)
       * [New action creator options](#new-action-creator-options)
    * [Clear the new resource item from the store](#clear-the-new-resource-item-from-the-store)
+   * [Edit the new resource item in the store](#edit-the-new-resource-item-in-the-store)
    * [Edit a resource item in the store](#edit-a-resource-item-in-the-store)
    * [Select a resource item in the store](#select-a-resource-item-in-the-store)
    * [Select another resource item in the store](#select-another-resource-item-in-the-store)
@@ -130,7 +131,6 @@ users = getCollection(store.getState().users);
          * [Specifying query parameters](#specifying-query-parameters)
       * [Pagination](#pagination)
    * [Configuring other request properties](#configuring-other-request-properties)
-
 
 ## Install & Setup
 
@@ -949,11 +949,29 @@ This is useful when the user wishes to cancel or navigate away from creating a n
 | Action name for defining with `actionOptions` | `new` |
 | Action creator name | `new<SingularizedResourceName>()` |
 
+### Edit the new resource item in the store
+
+The editNew action creator updates the new resource item in the store before it's been saved to an external API, with new values.
+
+This is useful when you want to create the new resource item over several pages or steps, before saving it to the server.
+
+This is different from the edit action creator in that it only allows editing the current new resource item, and maintains the `NEW` state, so you can differentiate between editing a resource that has been saved to an external API and one that is still being refined before being saved.
+
+| Property | Value |
+| :--- | :--- |
+| Action name for defining with `actionOptions` | `editNew` |
+| Action creator name | `editNew<SingularizedResourceName>()` |
+| First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
+| Second action creator argument | Resource item's attributes - An object of attributes to save as the resource item's new values in the store. |
+| `status.type` lifecycle |  `NEW` |
+
 ### Edit a resource item in the store
 
 The edit action creator updates a resource item in the store with new values, without sending any requests to the server.
 
 This is useful when you want to edit a particular resource item over several pages or steps, before saving it to the server.
+
+It should not be used for editing a new resource item - user the editNew action creator instead.
 
 | Property | Value |
 | :--- | :--- |

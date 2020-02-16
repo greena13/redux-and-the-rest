@@ -12,6 +12,7 @@ import indexAction from '../actions/RESTful/index';
 import showAction from '../actions/RESTful/show';
 import newAction from '../actions/RESTful/new';
 import clearNewAction from '../actions/RESTful/clearNew';
+import editNewAction from '../actions/RESTful/editNew';
 import createAction from '../actions/RESTful/create';
 import editAction from '../actions/RESTful/edit';
 import updateAction from '../actions/RESTful/update';
@@ -34,6 +35,7 @@ const STANDARD_REDUCERS = {
   show: showAction.reducer,
   new: newAction.reducer,
   clearNew: clearNewAction.reducer,
+  editNew: editNewAction.reducer,
   create: createAction.reducer,
   edit: editAction.reducer,
   update: updateAction.reducer,

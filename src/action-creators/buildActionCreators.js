@@ -9,6 +9,7 @@ import indexAction from '../actions/RESTful/index';
 import showAction from '../actions/RESTful/show';
 import newAction from '../actions/RESTful/new';
 import clearNewAction from '../actions/RESTful/clearNew';
+import editNewAction from '../actions/RESTful/editNew';
 import createAction from '../actions/RESTful/create';
 import editAction from '../actions/RESTful/edit';
 import updateAction from '../actions/RESTful/update';
@@ -29,6 +30,7 @@ const STANDARD_ACTION_CREATORS = {
   show: showAction.actionCreator,
   new: newAction.actionCreator,
   clearNew: clearNewAction.actionCreator,
+  editNew: editNewAction.actionCreator,
   create: createAction.actionCreator,
   edit: editAction.actionCreator,
   update: updateAction.actionCreator,
