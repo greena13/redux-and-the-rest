@@ -27,8 +27,9 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
     action, transforms, url: urlTemplate, name, progress, keyBy, projection
   } = options;
 
-  const key = getItemKey(params, { keyBy });
-  const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, keyBy));
+  const normalizedParams = wrapInObject(params, keyBy);
+  const key = getItemKey(normalizedParams, { keyBy });
+  const url = generateUrl({ url: urlTemplate, name }, wrapInObject(normalizedParams, keyBy));
 
   return (dispatch) => {
     dispatch(
@@ -45,7 +46,8 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
 
       previousValues: actionCreatorOptions.previous,
       url,
-      key, keyBy, params,
+      key, keyBy,
+      params: normalizedParams,
       dispatch,
       credentials: true,
       request: {
@@ -114,10 +116,12 @@ function localActionCreator(options, params, values, actionCreatorOptions = {}) 
 function receiveUpdatedResource(options, actionCreatorOptions, values, previousValues) {
   const { transforms, action, params, keyBy, localOnly } = options;
 
+  const normalizedParams = wrapInObject(params, keyBy);
+
   return {
     type: action,
     status: SUCCESS,
-    key: getItemKey([params, values], { keyBy }),
+    key: getItemKey([values, normalizedParams], { keyBy }),
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       values,
       status: { type: SUCCESS, syncedAt: Date.now() }

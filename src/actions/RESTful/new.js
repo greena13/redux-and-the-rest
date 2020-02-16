@@ -8,6 +8,7 @@ import warn from '../../utils/dev/warn';
 import applyCollectionOperators from '../../reducers/helpers/applyCollectionOperators';
 import processActionCreatorOptions from '../../action-creators/helpers/processActionCreatorOptions';
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
+import wrapInObject from '../../utils/object/wrapInObject';
 
 /**************************************************************************************************************
  * Action creators
@@ -36,10 +37,11 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
 
   const { action, transforms, keyBy, urlOnlyParams } = options;
 
+  const normalizedParams = wrapInObject(params, keyBy);
   /**
    * We automatically generate a new temporary Id if one is not specified
    */
-  const temporaryKey = getItemKey([params, values], { keyBy }) || Date.now().toString();
+  const temporaryKey = getItemKey([normalizedParams, values], { keyBy }) || Date.now().toString();
 
   return {
     type: action,

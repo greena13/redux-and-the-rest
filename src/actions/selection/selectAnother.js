@@ -1,6 +1,7 @@
 import warn from '../../utils/dev/warn';
 import getItemKey from '../../action-creators/helpers/getItemKey';
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
+import wrapInObject from '../../utils/object/wrapInObject';
 
 /**************************************************************************************************************
  * Action creators
@@ -15,7 +16,8 @@ import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCre
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator({ action, keyBy }, params, actionCreatorOptions = {}) {
-  const key = getItemKey(params, { keyBy });
+  const normalizedParams = wrapInObject(params, keyBy);
+  const key = getItemKey(normalizedParams, { keyBy });
 
   return {
     type: action, key, value: actionCreatorOptions.value || true

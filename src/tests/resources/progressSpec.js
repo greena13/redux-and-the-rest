@@ -81,7 +81,7 @@ describe('progress option', function () {
       });
     });
 
-    describe('when it is set to a truthy value', function () {
+    describe('Given it is set to a truthy value', function () {
       beforeAll(function () {
         const { reducers, actionCreators: { createUser } } = resources({
           name: 'users',
@@ -103,7 +103,7 @@ describe('progress option', function () {
         XHRMock.tearDown();
       });
 
-      describe('and the API request succeeds', function () {
+      describe('and the API request succeeds,', function () {
         beforeAll(function () {
           this.xhrMock = XHRMock.post('http://test.com/users', {
             body: { id: 1, username: 'Bob' },
@@ -194,7 +194,7 @@ describe('progress option', function () {
             });
           });
 
-          describe('and the response is downloading', () => {
+          describe('and the response is still downloading', () => {
             beforeAll(function () {
               this.xhrMock.setDownloadProgress({
                 lengthComputable: true,
@@ -224,32 +224,32 @@ describe('progress option', function () {
                 lengthComputable: true,
               });
             });
+          });
 
-            describe('and downloading the response is complete', () => {
-              beforeAll(function () {
-                return this.xhrMock.completeDownload().then(() => {
-                  this.userStatus = this.store.getState().users.items[1].status;
-                });
+          describe('and the response has finished downloading', () => {
+            beforeAll(function () {
+              return this.xhrMock.completeDownload().then(() => {
+                this.userStatus = this.store.getState().users.items[1].status;
+              });
+            });
+
+            it('then the item\'s status type is set to SUCCESS', function() {
+              expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+            });
+
+            it('then the item\'s progressUp status is updated with the current values', function() {
+              expect(this.store.getState().users.items[1].status.progressUp).toEqual({
+                percent: 100,
+                loaded: 24,
+                total: 24,
+                lengthComputable: true,
               });
 
-              it('then the item\'s status type is set to SUCCESS', function() {
-                expect(this.userStatus.type).toEqual(SUCCESS);
-              });
-
-              it('then the item\'s progressUp status is updated with the current values', function() {
-                expect(this.userStatus.progressUp).toEqual({
-                  percent: 100,
-                  loaded: 24,
-                  total: 24,
-                  lengthComputable: true,
-                });
-
-                expect(this.userStatus.progressDown).toEqual({
-                  percent: 100,
-                  loaded: 25,
-                  total: 25,
-                  lengthComputable: true,
-                });
+              expect(this.store.getState().users.items[1].status.progressDown).toEqual({
+                percent: 100,
+                loaded: 25,
+                total: 25,
+                lengthComputable: true,
               });
             });
           });

@@ -8,6 +8,7 @@ import makeRequest from '../../action-creators/helpers/makeRequest';
 import getItemKey from '../../action-creators/helpers/getItemKey';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import projectionTransform from '../../action-creators/helpers/transforms/projectionTransform';
+import wrapInObject from '../../utils/object/wrapInObject';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -99,7 +100,8 @@ function receiveCollection(options, actionCreatorOptions, collection) {
    * @type {Object<CollectionKey, ResourceCollection>}
    */
   const items = collection.reduce((memo, values) => {
-    const itemKey = getItemKey([ params, values ], { keyBy });
+    const normalizedParams = wrapInObject(params, keyBy);
+    const itemKey = getItemKey([ values, normalizedParams ], { keyBy });
 
     /**
      * Push the item's key to the positions list to record where in the list the item is located

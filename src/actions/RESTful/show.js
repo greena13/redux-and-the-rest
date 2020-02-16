@@ -5,6 +5,7 @@ import { ERROR, FETCHING, SUCCESS } from '../../constants/Statuses';
 import { ITEM } from '../../constants/DataStructures'
 
 import applyTransforms from '../../reducers/helpers/applyTransforms';
+import wrapInObject from '../../utils/object/wrapInObject';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -23,8 +24,9 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
     action, transforms, url: urlTemplate, name, keyBy, progress, projection
   } = options;
 
-  const key = getItemKey(params, { keyBy });
-  const url = generateUrl({ url: urlTemplate, name }, params);
+  const normalizedParams = wrapInObject(params, keyBy);
+  const key = getItemKey(normalizedParams, { keyBy });
+  const url = generateUrl({ url: urlTemplate, name }, normalizedParams);
 
   return (dispatch) => {
     /**
@@ -93,10 +95,12 @@ function receiveResource(options, actionCreatorOptions, values) {
     projection
   });
 
+  const normalizedParams = wrapInObject(params, keyBy);
+
   return {
     type: action,
     status: SUCCESS,
-    key: getItemKey([params, item.values], { keyBy }),
+    key: getItemKey([item.values, normalizedParams], { keyBy }),
     item
   };
 }

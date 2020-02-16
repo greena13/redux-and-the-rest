@@ -32,8 +32,10 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
     progress
   } = options;
 
-  const key = getItemKey(params, { keyBy });
-  const url = generateUrl({ url: urlTemplate, name }, wrapInObject(params, keyBy));
+  const normalizedParams = wrapInObject(params, keyBy);
+
+  const key = getItemKey(normalizedParams, { keyBy });
+  const url = generateUrl({ url: urlTemplate, name }, normalizedParams);
 
   return (dispatch) => {
     dispatch(deleteResourceUpdate({ action, key }, actionCreatorOptions));
@@ -88,7 +90,9 @@ function deleteResourceUpdate(options, values) {
  */
 function localActionCreator(options, params, actionCreatorOptions = {}){
   const { keyBy } = options;
-  const key = getItemKey(params, { keyBy });
+  const normalizedParams = wrapInObject(params, keyBy);
+
+  const key = getItemKey(normalizedParams, { keyBy });
 
   return removeResource({ ...options, key }, actionCreatorOptions);
 }

@@ -5,7 +5,7 @@ import hasKey from '../../utils/object/hasKey';
 import isUndefined from '../../utils/isUndefined';
 
 function getItemKey(params, { keyBy }) {
-  const _params = arrayFrom(params).reverse();
+  const _params = arrayFrom(params);
 
   if (Array.isArray(keyBy) && keyBy.length > 1) {
     const keys = keyBy.reduce((memo, key) => {

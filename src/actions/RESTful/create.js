@@ -47,8 +47,11 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     projection
   } = options;
 
+
+  const normalizedParams = wrapInObject(params, keyBy);
+
   const key = function(){
-    const specifiedKey = getItemKey([params, values], { keyBy });
+    const specifiedKey = getItemKey([normalizedParams, values], { keyBy });
 
     if (specifiedKey) {
       return specifiedKey;
@@ -60,7 +63,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     }
   }();
 
-  const url = generateUrl({ url: urlTemplate, keyBy, ignoreOptionalParams: true }, wrapInObject(params, keyBy));
+  const url = generateUrl({ url: urlTemplate, keyBy, ignoreOptionalParams: true }, normalizedParams);
 
   return (dispatch) => {
     const collectionOperations = extractCollectionOperations(actionCreatorOptions, urlOnlyParams);
@@ -71,7 +74,8 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
 
     return makeRequest({
       ...options,
-      key, keyBy, params,
+      key, keyBy,
+      params: normalizedParams,
       collectionOperations,
       url,
       dispatch,
@@ -151,7 +155,9 @@ function receiveCreatedResource(options, actionCreatorOptions, values) {
   const { action, keyBy, transforms, params, collectionOperations, localOnly } = options;
 
   const key = function(){
-    const specifiedKey = getItemKey([params, values], { keyBy });
+    const normalizedParams = wrapInObject(params, keyBy);
+
+    const specifiedKey = getItemKey([values, normalizedParams], { keyBy });
 
     if (specifiedKey) {
       return specifiedKey;

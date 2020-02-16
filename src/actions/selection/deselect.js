@@ -1,5 +1,6 @@
 import getItemKey from '../../action-creators/helpers/getItemKey';
 import without from '../../utils/collection/without';
+import wrapInObject from '../../utils/object/wrapInObject';
 
 /**************************************************************************************************************
  * Action creators
@@ -13,7 +14,8 @@ import without from '../../utils/collection/without';
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator({ action, keyBy }, params) {
-  const key = getItemKey(params, { keyBy });
+  const normalizedParams = wrapInObject(params, keyBy);
+  const key = getItemKey(normalizedParams, { keyBy });
 
   return {
     type: action,
