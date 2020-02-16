@@ -1,4 +1,4 @@
-import { NEW } from '../..';
+import { NEW } from '../../constants/Statuses';
 import without from '../../utils/collection/without';
 
 /**************************************************************************************************************
