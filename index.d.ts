@@ -68,6 +68,11 @@ export type StatusType = string;
  */
 export interface ResourceStatus {
     type: StatusType | null;
+    httpCode?: number,
+    error?: {
+        type: string;
+        occurredAt: number;
+    }
 }
 
 /**
