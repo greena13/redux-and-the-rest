@@ -59,6 +59,11 @@ export const COMPLETE: string;
 export const PREVIEW: string;
 
 /**
+ * The status used when an external API has errored
+ */
+export const NETWORK_ERROR: string;
+
+/**
  * One of the statuses a resource item or resource collection can be in
  */
 export type StatusType = string;
