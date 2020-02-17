@@ -148,7 +148,7 @@ export interface ResourceCollectionWithItems<T> extends ResourceCollection {
  * Returns a collection of a particular resource from a Redux store, populating it with the correct items, in
  * the right order.
  */
-export interface GetCollectionFunction<T> { (currentState: ResourceReduxState<T>, params: object | string): ResourceCollectionWithItems<T> }
+export interface GetCollectionFunction<T> { (currentState: ResourceReduxState<T>, params?: object | string): ResourceCollectionWithItems<T> }
 
 /**
  * The type of Redux action that is emitted when that action occurs
