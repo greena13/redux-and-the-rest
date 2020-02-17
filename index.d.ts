@@ -59,6 +59,11 @@ export const COMPLETE: string;
 export const PREVIEW: string;
 
 /**
+ * The status used when an external API has errored
+ */
+export const NETWORK_ERROR: string;
+
+/**
  * One of the statuses a resource item or resource collection can be in
  */
 export type StatusType = string;
@@ -68,6 +73,11 @@ export type StatusType = string;
  */
 export interface ResourceStatus {
     type: StatusType | null;
+    httpCode?: number,
+    error?: {
+        type: string;
+        occurredAt: number;
+    }
 }
 
 /**
@@ -138,7 +148,7 @@ export interface ResourceCollectionWithItems<T> extends ResourceCollection {
  * Returns a collection of a particular resource from a Redux store, populating it with the correct items, in
  * the right order.
  */
-export interface GetCollectionFunction<T> { (currentState: ResourceReduxState<T>, params: object | string): ResourceCollectionWithItems<T> }
+export interface GetCollectionFunction<T> { (currentState: ResourceReduxState<T>, params?: object | string): ResourceCollectionWithItems<T> }
 
 /**
  * The type of Redux action that is emitted when that action occurs
@@ -198,6 +208,11 @@ export interface ResourcesDefinition<T> {
      * Function that returns a particular item of a resource type
      */
     getItem: GetItemFunction<T>,
+
+    /**
+     * Function that returns the new item of a resource type
+     */
+    getNewItem: GetItemFunction<T>,
 
     /**
      * Function that returns a particular collection of resources
