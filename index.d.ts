@@ -210,6 +210,11 @@ export interface ResourcesDefinition<T> {
     getItem: GetItemFunction<T>,
 
     /**
+     * Function that returns the new item of a resource type
+     */
+    getNewItem: GetItemFunction<T>,
+
+    /**
      * Function that returns a particular collection of resources
      */
     getCollection: GetCollectionFunction<T>
