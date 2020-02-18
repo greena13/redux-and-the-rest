@@ -1,5 +1,6 @@
 import { RequestInit, RequestCredentials } from 'whatwg-fetch';
-import {AnyAction, Dispatch, Reducer, ReducersMapObject} from "redux";
+import { AnyAction, Reducer, ReducersMapObject } from 'redux';
+import { ThunkAction } from 'redux-thunk'
 
 /**
  * The status used when a new resource item has not yet been saved to an external API
@@ -186,14 +187,9 @@ export type ActionType = string;
 export type ActionDictionary = {[key: string]: ActionType };
 
 /**
- * Performs an asynchronous action and calls dispatch when it is done with a new AnyAction
+ * Function that dispatches an AnyAction or an ThunkAction
  */
-export interface ActionThunk { (dispatch: Dispatch): Promise<any> }
-
-/**
- * Function that dispatches an AnyAction or an ActionThunk
- */
-export interface ActionCreatorFunction { (...args: any[]): AnyAction | ActionThunk }
+export interface ActionCreatorFunction { (...args: any[]): AnyAction | ThunkAction<any,any,any,any> }
 
 /**
  * A dictionary of ActionCreatorFunctions indexed by their ActionCreatorName
