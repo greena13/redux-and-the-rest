@@ -121,39 +121,44 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
       memo[actionCreatorName] = actionCreator;
 
     } else if (standardActionCreator) {
-      memo[actionCreatorName] = (arg1, arg2, arg3) => {
-        const _options = resolveOptions(
-          {
-            keyBy: 'id'
-          },
-          configuration,
-          resourceOptions,
-          actionOptions,
-          [
-            'url',
-            'keyBy',
-            'urlOnlyParams',
-            'responseAdaptor',
-            'requestAdaptor',
-            'progress',
-            'requestErrorHandler',
-            'request',
-            'projection',
-            'localOnly'
-          ]
-        );
+      const _options = resolveOptions(
+        {
+          keyBy: 'id'
+        },
+        configuration,
+        resourceOptions,
+        actionOptions,
+        [
+          'url',
+          'keyBy',
+          'urlOnlyParams',
+          'responseAdaptor',
+          'requestAdaptor',
+          'progress',
+          'requestErrorHandler',
+          'request',
+          'projection',
+          'localOnly'
+        ]
+      );
 
-        const actionCreatorConfig = {
-          action: actions.get(key),
-          transforms: [],
-          name,
-          urlOnlyParams: [],
-          ..._options
+      const actionCreatorConfig = {
+        action: actions.get(key),
+        transforms: [],
+        name,
+        urlOnlyParams: [],
+        ..._options
+      };
+
+      actionCreatorConfig.transforms.push(projectionTransform);
+
+      memo[actionCreatorName] = (arg1, arg2, arg3) => {
+        const reloadedOptions = {
+          ...configuration,
+          actionCreatorConfig
         };
 
-        actionCreatorConfig.transforms.push(projectionTransform);
-
-        return standardActionCreator(actionCreatorConfig, arg1, arg2, arg3);
+        return standardActionCreator(reloadedOptions, arg1, arg2, arg3);
       }
 
     } else {
