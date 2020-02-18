@@ -253,15 +253,16 @@ export interface GlobalConfigurationOptions<T> {
     urlOnlyParams?: Array<string>,
 
     /**
-     * Function used to adapt the responses for requests before it is handed over to the reducers.
+     * Function used to adapt the responses for requests before it is handed over to the reducers. The function
+     * must return the results as an object with properties values and (optionally) error.
      */
-    responseAdaptor?: Function,
+    responseAdaptor?: (responseBody: Object, response: Response) => { values: Object, error?: Object | string },
 
     /**
      * Function used to adapt the JavaScript object before it is handed over to become the body of the request
      * to be sent to an external API.
      */
-    requestAdaptor?: Function,
+    requestAdaptor?: (requestBody: Object) => Object,
 
     /**
      * Whether to include any cookies with the request that may be stored in the user agent's cookie jar for
@@ -363,15 +364,16 @@ export interface ActionOptions<T> {
     progress?: boolean,
 
     /**
-     * Function used to adapt the response for a particular request before it is handed over to the reducers.
+     * Function used to adapt the responses for requests before it is handed over to the reducers. The function
+     * must return the results as an object with properties values and (optionally) error.
      */
-    responseAdaptor?: Function,
+    responseAdaptor?: (responseBody: Object, response: Response) => { values: Object, error?: Object | string },
 
     /**
      * Function used to adapt the JavaScript object before it is handed over to become the body of the request
      * to be sent to an external API.
      */
-    requestAdaptor?: Function,
+    requestAdaptor?: (requestBody: Object) => Object,
 
     /**
      * Whether to include any cookies with the request that may be stored in the user agent's cookie jar for

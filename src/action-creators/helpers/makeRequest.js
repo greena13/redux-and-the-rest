@@ -17,8 +17,9 @@ import { NETWORK_ERROR } from '../../constants/NetworkStatuses';
  * @param {boolean} options.progress=false Whether to enable progress update events for uploading request and downloading
  *        the response. When no progress events are enabled, the global fetch API is used. When they are enabled
  *        then an XMLHttpRequest is created.
- * @param {function} options.responseAdaptor A function to adaptor the response of the JSON body before handing
- *        it to the Redux reducer.
+ * @param {ResponseAdaptorFunction} options.responseAdaptor A function to adaptor the response of the JSON body
+ *        before handing it to the Redux reducer. The function must return the results as an object with
+ *        properties: values and (optionally) error.
  *
  * @param {function} options.dispatch A Redux store's dispatch function, to be called when the request succeeds
  *        or fails.

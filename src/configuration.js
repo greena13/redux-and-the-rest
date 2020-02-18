@@ -1,6 +1,12 @@
 let configuration = {};
 
 /**
+ * @typedef {function(Object, Response): {values: Object, error: Object = null}} ResponseAdaptorFunction
+ * @param {Object} responseBody The body of the JSON response
+ * @param {Response} response The response object itself
+ */
+
+/**
  * @typedef GlobalConfigurationOptions
  * @property {string} keyBy The resource attribute used to key/index all items of the current resource type.
  *           This will be the value you pass to each action creator to identify the target of each action. By
@@ -11,8 +17,9 @@ let configuration = {};
  *           and destroy only update the store locally, without making any HTTP requests.
  * @property {string[]} urlOnlyParams The attributes passed to action creators that should be used to create the request URL,
  *           but ignored when storing the request's response.
- * @property {Function} responseAdaptor Function used to adapt the responses for requests before it is handed
- *           over to the reducers.
+ * @property {ResponseAdaptorFunction} responseAdaptor Function used to adapt the response for a particular
+ *           request before it is handed over to the reducers. The function must return the results as an object
+ *           with properties: values and (optionally) error.
  * @property {Function} requestAdaptor Function used to adapt the JavaScript object before it is handed over to
  *           become the body of the request to be sent to an external API.
  * @property {boolean} credentials=false Whether to include any cookies with the request that may be stored in

@@ -382,7 +382,7 @@ const { actionCreators: { fetchUsers } } = resources(
 | `localOnly` | boolean | false | Set to true for resources that should be edited locally, only. The `show` and `index` actions are disabled (the `fetch*` action creators are not exported) and the `create`, `update` and `destroy` only update the store locally, without making any HTTP requests. |
 | `url` | string |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
 | `urlOnlyParams` | string[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
-| `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers |
+| `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error`. |
 | `credentials` | boolean | `false` | Whether to include any cookies with the request that may be stored in the user agent's cookie jar for the request's domain. |
 | `requestAdaptor` | Function | Identity function | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
 
@@ -435,7 +435,7 @@ const { actionCreators: { fetchUsers } } = resources(
 | --------------------------------------- | :----: | :----: | :-- |
 | `url` |  string |`resourceOptions.url` | The URL template to use for this particular action. |
 | `urlOnlyParams` | string[] | `resourceOptions.urlOnlyParams` | The attributes passed to the action creator that should be used to create the request URL, and ignored when storing the result in the store. |
-| `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers |
+| `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error`. |
 | `requestAdaptor` | Function | Identity function | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
 | `credentials` | boolean | `false` | Whether to include any cookies with the request that may be stored in the user agent's cookie jar for the request's domain. |
 | `progress` | boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `index`, `show`, `create`, `update` and any custom actions. |
