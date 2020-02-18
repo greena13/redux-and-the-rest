@@ -121,7 +121,7 @@ export type ResourceCollectionId = string;
 /**
  * A collection of a particular resource
  */
-export interface ResourceCollection {
+export interface ResourceCollection<T> {
     /**
      * A list of ids of resources in the order they appear in that collection.
      */
@@ -132,7 +132,9 @@ export interface ResourceCollection {
      */
     status: ResourceStatus,
 
-    projection: Projection
+    projection: Projection,
+
+    items: Array<ResourceItem<T>>
 }
 
 export interface ResourceReduxState<T> {
@@ -144,7 +146,7 @@ export interface ResourceReduxState<T> {
     /**
      * The set of collections of a particular resource type
      */
-    collections: { [key: string]: ResourceCollection; },
+    collections: { [key: string]: ResourceCollection<T>; },
 
     /**
      * A dictionary of the resources that are currently selected.
@@ -164,17 +166,10 @@ export interface ResourceReduxState<T> {
 export interface GetItemFunction<T> { (currentState: ResourceReduxState<T>, params: object | string): ResourceItem<T> }
 
 /**
- * Collection of resources, with its items in an array
- */
-export interface ResourceCollectionWithItems<T> extends ResourceCollection {
-    items: Array<ResourceItem<T>>
-}
-
-/**
  * Returns a collection of a particular resource from a Redux store, populating it with the correct items, in
  * the right order.
  */
-export interface GetCollectionFunction<T> { (currentState: ResourceReduxState<T>, params?: object | string): ResourceCollectionWithItems<T> }
+export interface GetCollectionFunction<T> { (currentState: ResourceReduxState<T>, params?: object | string): ResourceCollection<T> }
 
 /**
  * The type of Redux action that is emitted when that action occurs
