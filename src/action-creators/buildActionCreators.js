@@ -121,38 +121,40 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
       memo[actionCreatorName] = actionCreator;
 
     } else if (standardActionCreator) {
-      const _options = resolveOptions(
-        {
-          keyBy: 'id'
-        },
-        configuration,
-        resourceOptions,
-        actionOptions,
-        [
-          'url',
-          'keyBy',
-          'urlOnlyParams',
-          'responseAdaptor',
-          'requestAdaptor',
-          'progress',
-          'requestErrorHandler',
-          'request',
-          'projection',
-          'localOnly'
-        ]
-      );
+      memo[actionCreatorName] = (arg1, arg2, arg3) => {
+        const _options = resolveOptions(
+          {
+            keyBy: 'id'
+          },
+          configuration,
+          resourceOptions,
+          actionOptions,
+          [
+            'url',
+            'keyBy',
+            'urlOnlyParams',
+            'responseAdaptor',
+            'requestAdaptor',
+            'progress',
+            'requestErrorHandler',
+            'request',
+            'projection',
+            'localOnly'
+          ]
+        );
 
-      const actionCreatorConfig = {
-        action: actions.get(key),
-        transforms: [],
-        name,
-        urlOnlyParams: [],
-        ..._options
-      };
+        const actionCreatorConfig = {
+          action: actions.get(key),
+          transforms: [],
+          name,
+          urlOnlyParams: [],
+          ..._options
+        };
 
-      actionCreatorConfig.transforms.push(projectionTransform);
+        actionCreatorConfig.transforms.push(projectionTransform);
 
-      memo[actionCreatorName] = (arg1, arg2, arg3) => standardActionCreator(actionCreatorConfig, arg1, arg2, arg3);
+        return standardActionCreator(actionCreatorConfig, arg1, arg2, arg3);
+      }
 
     } else {
       warn(`'${key}' must match the collection of standard action creators (${Object.keys(STANDARD_ACTION_CREATORS).join(', ')}) or define an 'actionCreator' option. Check the options for ${name}`);
