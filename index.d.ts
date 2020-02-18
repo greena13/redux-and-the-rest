@@ -264,6 +264,12 @@ export interface GlobalConfigurationOptions<T> {
     requestAdaptor?: Function,
 
     /**
+     * Whether to include any cookies with the request that may be stored in the user agent's cookie jar for
+     * the request's domain.
+     */
+    credentials?: boolean,
+
+    /**
      * A list of functions to call before passing the resource to the reducer. This is useful if you want to
      * use the default reducer, but provide some additional pre-processing to standardise the resource before
      * it is added to the store.
@@ -366,6 +372,12 @@ export interface ActionOptions<T> {
      * to be sent to an external API.
      */
     requestAdaptor?: Function,
+
+    /**
+     * Whether to include any cookies with the request that may be stored in the user agent's cookie jar for
+     * the request's domain.
+     */
+    credentials?: boolean,
 
     /**
      * A custom reducer function to adapt the resource as it exists in the Redux store. By default, the

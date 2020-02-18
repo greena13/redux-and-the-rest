@@ -80,7 +80,6 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
       collectionOperations,
       url,
       dispatch,
-      credentials: true,
       request: {
         method: 'POST',
         body: JSON.stringify(requestAdaptor ? requestAdaptor(values) : values),

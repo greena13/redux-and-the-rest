@@ -46,7 +46,6 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
       key, keyBy, params,
       url,
       dispatch,
-      credentials: true,
       onSuccess: receiveCollection,
       onError: handleCollectionError,
       progress

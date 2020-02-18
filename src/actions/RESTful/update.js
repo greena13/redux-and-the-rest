@@ -49,7 +49,6 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
       key, keyBy,
       params: normalizedParams,
       dispatch,
-      credentials: true,
       request: {
         method: 'PUT',
         body: JSON.stringify(requestAdaptor ? requestAdaptor(values) : values),

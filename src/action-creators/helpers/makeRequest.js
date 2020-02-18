@@ -12,8 +12,8 @@ import { NETWORK_ERROR } from '../../constants/NetworkStatuses';
  * @param {string} options.url The complete URI to use to make the request to
  * @param {Object} options.request The request configuration object to be passed to the fetch method, or the
  *        new XMLHttpRequest object, when the progress option is used.
- * @param {boolean} options.credentials=false Whether to include any cookies that may be stored in the cookie jar,
- *        when making the request.
+ * @param {boolean} options.credentials=false Whether to include any cookies with the request that may be stored in
+ *        the user agent's cookie jar for the request's domain.
  * @param {boolean} options.progress=false Whether to enable progress update events for uploading request and downloading
  *        the response. When no progress events are enabled, the global fetch API is used. When they are enabled
  *        then an XMLHttpRequest is created.

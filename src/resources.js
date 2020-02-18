@@ -56,6 +56,8 @@ import getCollection from './utils/getCollection';
  *           over to the reducers.
  * @property {Function} requestAdaptor Function used to adapt the JavaScript object before it is handed over to
  *           become the body of the request to be sent to an external API.
+ * @property {boolean} credentials=false Whether to include any cookies with the request that may be stored in
+ *           the user agent's cookie jar for the request's domain.
  *
  * @property {Array.<ReducerFunction>} [beforeReducers] A list of functions to call before passing the resource to
  *           the reducer. This is useful if you want to use the default reducer, but provide some additional
@@ -95,6 +97,8 @@ import getCollection from './utils/getCollection';
  *           it is handed over to the reducers.
  * @property {Function} requestAdaptor Function used to adapt the JavaScript object before it is handed over to
  *           become the body of the request to be sent to an external API.
+ * @property {boolean} credentials=false Whether to include any cookies with the request that may be stored in
+ *           the user agent's cookie jar for the request's domain.
  * @property {Array.<ReducerFunction>} beforeReducers A list of functions to call before passing the resource to
  *           the reducer. This is useful if you want to use the default reducer, but provide some additional
  *           pre-processing to standardise the resource before it is added to the store.

@@ -46,7 +46,6 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
       url, key,
       previousValues: actionCreatorOptions.previous,
       dispatch,
-      credentials: true,
       request: {
         method: 'delete',
       },

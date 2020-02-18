@@ -44,7 +44,6 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
       key, keyBy, params,
       url,
       dispatch,
-      credentials: true,
       onSuccess: receiveResource,
       onError: handleResourceError,
       progress
