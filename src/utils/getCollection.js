@@ -19,7 +19,7 @@ function getCollection({ name }, resource, parameters = {}) {
   const items = collection.positions.map((key) => resource.items[key]);
 
   return {
-    [name]: items,
+    items,
     ...collection
   };
 }
