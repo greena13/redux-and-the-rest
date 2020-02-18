@@ -184,7 +184,7 @@ export type ActionDictionary = {[key: string]: ActionType };
 /**
  * Function that dispatches an AnyAction or an ThunkAction
  */
-export interface ActionCreatorFunction { (...args: any[]): AnyAction | ThunkAction<void, any, any, AnyAction> }
+export interface ActionCreatorFunction { (...args: any[]): ThunkAction<void, any, any, AnyAction> }
 
 /**
  * A dictionary of ActionCreatorFunctions indexed by their ActionCreatorName
