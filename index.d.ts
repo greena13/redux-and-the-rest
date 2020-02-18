@@ -1,4 +1,5 @@
 import { RequestInit, RequestCredentials } from 'whatwg-fetch';
+import {AnyAction, Dispatch, Reducer, ReducersMapObject} from "redux";
 
 /**
  * The status used when a new resource item has not yet been saved to an external API
@@ -70,16 +71,36 @@ export const NETWORK_ERROR: string;
  */
 export type StatusType = string;
 
+interface ErrorStatusRequired {
+    type: string,
+    occurredAt: number
+}
+
+/**
+ * Information about a request error
+ */
+export interface ErrorStatus extends ErrorStatusRequired {
+    [extraValues: string]: any
+}
+
 /**
  * An object containing the status information of a particular resource item or resource collection.
  */
 export interface ResourceStatus {
     type: StatusType | null;
     httpCode?: number,
-    error?: {
-        type: string;
-        occurredAt: number;
-    }
+    error?: ErrorStatus
+}
+
+interface ProjectionRequired {
+    type: string
+}
+
+/**
+ * Information about the type of projection the resource item or collection represents
+ */
+export interface Projection extends ProjectionRequired {
+    [extraValues: string]: any
 }
 
 /**
@@ -87,7 +108,8 @@ export interface ResourceStatus {
  */
 export interface ResourceItem<T> {
     values: T,
-    status: ResourceStatus
+    status: ResourceStatus,
+    projection: Projection
 }
 
 /**
@@ -108,6 +130,8 @@ export interface ResourceCollection {
      * The status information of the resource collection
      */
     status: ResourceStatus,
+
+    projection: Projection
 }
 
 export interface ResourceReduxState<T> {
@@ -138,7 +162,6 @@ export interface ResourceReduxState<T> {
  */
 export interface GetItemFunction<T> { (currentState: ResourceReduxState<T>, params: object | string): ResourceItem<T> }
 
-
 /**
  * Collection of resources, with its items in an array
  */
@@ -163,26 +186,14 @@ export type ActionType = string;
 export type ActionDictionary = {[key: string]: ActionType };
 
 /**
- * An object representing an action being dispatched in the Redux store
+ * Performs an asynchronous action and calls dispatch when it is done with a new AnyAction
  */
-export interface ActionObject {
-    type: string;
-}
+export interface ActionThunk { (dispatch: Dispatch): Promise<any> }
 
 /**
- * Function that accepts the current state and Redux action and returns the correct new state.
+ * Function that dispatches an AnyAction or an ActionThunk
  */
-export interface ReducerFunction<T> { (currentState: ResourceReduxState<T>, action: ActionObject): ResourceReduxState<T> }
-
-/**
- * Performs an asynchronous action and calls dispatch when it is done with a new ActionObject
- */
-export interface ActionThunk { (dispatch: Function): void }
-
-/**
- * Function that dispatches an ActionObject or an ActionThunk
- */
-export interface ActionCreatorFunction { (...args: any[]): ActionObject | ActionThunk }
+export interface ActionCreatorFunction { (...args: any[]): AnyAction | ActionThunk }
 
 /**
  * A dictionary of ActionCreatorFunctions indexed by their ActionCreatorName
@@ -204,7 +215,7 @@ export interface ResourcesDefinition<T> {
      *  Reducer function that will accept the resource's current state and an action and return the new
      *  resource state
      */
-    reducers: ReducerFunction<T>,
+    reducers: Reducer,
 
     /**
      * Function that returns a particular item of a resource type
@@ -227,19 +238,12 @@ export interface ResourcesDefinition<T> {
  */
 export type AssociationOptions<T> = { [key: string]: ResourcesDefinition<T>; }
 
-/**
- * A mapping between an ActionType and the ReducerFunction that should be called when an action of that
- * type is dispatched.
- */
-export type ActionReducerFunctionPair<T> = { [key: string]: ReducerFunction<T> }
-
-
-export interface GlobalConfigurationOptions<T> {
+export interface GlobalConfigurationOptions {
     /**
      * The resource attribute used to key/index all items of the current resource type. This will be the value
      * you pass to each action creator to identify the target of each action. By default, 'id' is used.
      */
-    keyBy?: string,
+    keyBy?: string | Array<string>,
 
     /**
      * Set to true for resources that should be edited locally, only. The show and index actions are disabled
@@ -283,21 +287,21 @@ export interface GlobalConfigurationOptions<T> {
      * use the default reducer, but provide some additional pre-processing to standardise the resource before
      * it is added to the store.
      */
-    beforeReducers?: Array<ReducerFunction<T>>,
+    beforeReducers?: Array<Reducer>,
 
     /**
      * A list of functions to call after passing the resource to the reducer. This is useful if you want to use
      * the default reducer, but provide some additional post-processing to standardise the resource before it
      * is added to the store.
      */
-    afterReducers?: Array<ReducerFunction<T>>,
+    afterReducers?: Array<Reducer>,
 }
 
 /**
  * Options used to configure the resource and apply to all actions, unless overridden by more specific
  * configuration in ActionOptions.
  */
-export interface ResourceOptions<T> extends GlobalConfigurationOptions<T> {
+export interface ResourceOptions<T> extends GlobalConfigurationOptions {
     /**
      * The pluralized name of the resource you are defining.
      */
@@ -315,7 +319,7 @@ export interface ResourceOptions<T> extends GlobalConfigurationOptions<T> {
      * A single or list of objects with an action and a reducer, used to specify custom reducers in response to
      * actions external to the current resource.
      */
-    reducesOn?: ActionReducerFunctionPair<T> | Array<ActionReducerFunctionPair<T>>,
+    reducesOn?: ReducersMapObject | Array<ReducersMapObject>,
 
     /**
      * A single or list of actions for which the current resource should be cleared.
@@ -333,7 +337,6 @@ export interface ResourceOptions<T> extends GlobalConfigurationOptions<T> {
     belongsTo?: AssociationOptions<T>,
 }
 
-
 /**
  * Options used to configure individual resource actions and override any options specified in GlobalOptions
  * or ResourceOptions.
@@ -343,7 +346,7 @@ export interface ActionOptions<T> {
      * The resource attribute used to key/index all items of the current resource type. This will be the value
      * you pass to each action creator to identify the target of each action. By default, 'id' is used.
      */
-    keyBy?: string,
+    keyBy?: string | Array<string>,
 
     /**
      * Set to true for resources that should be edited locally, only. The show and index actions are disabled
@@ -375,13 +378,13 @@ export interface ActionOptions<T> {
      * Function used to adapt the responses for requests before it is handed over to the reducers. The function
      * must return the results as an object with properties values and (optionally) error.
      */
-    responseAdaptor?: (responseBody: Object, response: Response) => { values: Object, error?: Object | string },
+    responseAdaptor?: (responseBody: Object, response: Response) => { values: T, error?: Object | string },
 
     /**
      * Function used to adapt the JavaScript object before it is handed over to become the body of the request
      * to be sent to an external API.
      */
-    requestAdaptor?: (requestBody: Object) => Object,
+    requestAdaptor?: (requestBody: T) => Object,
 
     /**
      * Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the
@@ -400,7 +403,7 @@ export interface ActionOptions<T> {
      * standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful
      * actions.
      */
-    reducer?: ReducerFunction<T>,
+    reducer?: Reducer,
 
     /**
      * A list of functions to call before passing the resource to the reducer. This is useful if you want to
@@ -409,14 +412,14 @@ export interface ActionOptions<T> {
      * is useful if you want to use the default reducer, but provide some additional pre-processing to
      * standardise the resource before it is added to the store.
      */
-    beforeReducers?: Array<ReducerFunction<T>>,
+    beforeReducers?: Array<Reducer>,
 
     /**
      * A list of functions to call after passing the resource to the reducer. This is useful if you want to
      * use the default reducer, but provide some additional post-processing to standardise the resource
      * before it is added to the store.
      */
-    afterReducers?: Array<ReducerFunction<T>>,
+    afterReducers?: Array<Reducer>,
 }
 
 export type ActionOptionsMap<T> = { [key: string]: ActionOptions<T> | Boolean };
@@ -425,7 +428,6 @@ export type ActionOptionsMap<T> = { [key: string]: ActionOptions<T> | Boolean };
  * Defines a new resource, returning the actions, action creators, reducers and helpers to manage it
  */
 export function resources<T>(resourceOptions: ResourceOptions<T>, actionOptions: ActionOptionsMap<T> | string[]): ResourcesDefinition<T>;
-
 
 /**
  * Serializes an object to create a consistent key, no matter the ordering of the attributes, suitable to use
@@ -436,9 +438,9 @@ export function serializeKey(target: any): string | ResourceCollectionId;
 /**
  * Updates or sets the global configuration options
  */
-export function configure(config: GlobalConfigurationOptions<object>): void;
+export function configure(config: GlobalConfigurationOptions): void;
 
 /**
  * Returns the current global configuration options
  */
-export function getConfiguration(): GlobalConfigurationOptions<object>;
+export function getConfiguration(): GlobalConfigurationOptions;
