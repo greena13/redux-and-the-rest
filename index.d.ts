@@ -1,3 +1,5 @@
+import { RequestInit } from 'whatwg-fetch';
+
 /**
  * The status used when a new resource item has not yet been saved to an external API
  */
@@ -271,6 +273,12 @@ export interface GlobalConfigurationOptions<T> {
     credentials?: boolean,
 
     /**
+     * The request configuration object to be passed to the fetch method, or the new XMLHttpRequest object,
+     * when the progress option is used.
+     */
+    request?: RequestInit,
+
+    /**
      * A list of functions to call before passing the resource to the reducer. This is useful if you want to
      * use the default reducer, but provide some additional pre-processing to standardise the resource before
      * it is added to the store.
@@ -380,6 +388,12 @@ export interface ActionOptions<T> {
      * the request's domain.
      */
     credentials?: boolean,
+
+    /**
+     * The request configuration object to be passed to the fetch method, or the new XMLHttpRequest object,
+     * when the progress option is used.
+     */
+    request?: Object,
 
     /**
      * A custom reducer function to adapt the resource as it exists in the Redux store. By default, the

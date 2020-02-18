@@ -46,6 +46,7 @@
     "@babel/core": "^7.8.3",
     "@babel/preset-env": "^7.8.3",
     "@rollup/plugin-replace": "^2.3.0",
+    "@types/whatwg-fetch": "^0.0.33",
     "eslint": "^6.8.0",
     "fetch-mock": "^8.3.2",
     "jasmine": "^3.5.0",

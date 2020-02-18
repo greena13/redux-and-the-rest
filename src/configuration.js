@@ -24,6 +24,8 @@ let configuration = {};
  *           become the body of the request to be sent to an external API.
  * @property {boolean} credentials=false Whether to include any cookies with the request that may be stored in
  *           the user agent's cookie jar for the request's domain.
+ * @property {Object} request The request configuration object to be passed to the fetch method, or the
+ *           new XMLHttpRequest object, when the progress option is used.
  *
  * @property {Array.<ReducerFunction>} beforeReducers A list of functions to call before passing the resource to
  *           the reducer. This is useful if you want to use the default reducer, but provide some additional
