@@ -317,7 +317,9 @@ function makeRequest(options, actionCreatorOptions = {}) {
             {
               type: NETWORK_ERROR,
               occurredAt: Date.now(),
-              ...(error || {})
+              name: error.name,
+              message: error.message,
+              raw: error
             }
           )
         ).then(reject);
@@ -346,7 +348,9 @@ function makeRequest(options, actionCreatorOptions = {}) {
                   {
                     type: NETWORK_ERROR,
                     occurredAt: Date.now(),
-                    ...(error || {})
+                    name: error.name,
+                    message: error.message,
+                    raw: error
                   }
                 )
               )
