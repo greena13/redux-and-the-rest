@@ -58,7 +58,7 @@ const LOCAL_ONLY_ACTION_CREATORS = {
  */
 
 /**
- * @typedef {Object.<string, any>} ActionObject An object representing an action being dispatched in the
+ * @typedef {Object.<string, any>} ActionObject An object resenting an action being dispatched in the
  *          Redux store
  */
 
@@ -88,7 +88,6 @@ const LOCAL_ONLY_ACTION_CREATORS = {
 function buildActionCreators(resourceOptions, actions, actionsOptions) {
   const { name } = resourceOptions;
 
-  const configuration = getConfiguration();
   const effectiveActionCreators = resourceOptions.localOnly ? LOCAL_ONLY_ACTION_CREATORS : STANDARD_ACTION_CREATORS;
 
   return Object.keys(actionsOptions).reduce((memo, key) => {
@@ -125,7 +124,6 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
         {
           keyBy: 'id'
         },
-        configuration,
         resourceOptions,
         actionOptions,
         [
@@ -154,8 +152,8 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
 
       memo[actionCreatorName] = (arg1, arg2, arg3) => {
         const reloadedOptions = {
-          ...configuration,
-          actionCreatorConfig
+          ...getConfiguration(),
+          ...actionCreatorConfig
         };
 
         return standardActionCreator(reloadedOptions, arg1, arg2, arg3);

@@ -5,7 +5,6 @@ import isObject from '../../utils/object/isObject';
 import arrayFrom from '../../utils/array/arrayFrom';
 
 function generateUrl({ url, keyBy, ignoreOptionalParams = false }, paramValues = {}) {
-
   const paramsUsedInUrl = [];
   let isFirstParam = true;
 
