@@ -57,8 +57,8 @@ import getCollection from './utils/getCollection';
  *           with properties: values and (optionally) error.
  * @property {Function} requestAdaptor Function used to adapt the JavaScript object before it is handed over to
  *           become the body of the request to be sent to an external API.
- * @property {boolean} credentials=false Whether to include any cookies with the request that may be stored in
- *           the user agent's cookie jar for the request's domain.
+ * @property {RequestCredentials} credentials Whether to include, omit or send cookies that may be stored in
+ *           the user agent's cookie jar with the request only if it's on the same origin.
  * @property {Object} request The request configuration object to be passed to the fetch method, or the
  *           new XMLHttpRequest object, when the progress option is used.
  *
@@ -101,8 +101,8 @@ import getCollection from './utils/getCollection';
  *           with properties: values and (optionally) error.
  * @property {Function} requestAdaptor Function used to adapt the JavaScript object before it is handed over to
  *           become the body of the request to be sent to an external API.
- * @property {boolean} credentials=false Whether to include any cookies with the request that may be stored in
- *           the user agent's cookie jar for the request's domain.
+ * @property {RequestCredentials} credentials Whether to include, omit or send cookies that may be stored in
+ *           the user agent's cookie jar with the request only if it's on the same origin.
  * @property {Object} request The request configuration object to be passed to the fetch method, or the
  *           new XMLHttpRequest object, when the progress option is used.
  *

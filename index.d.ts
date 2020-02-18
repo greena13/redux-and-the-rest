@@ -1,4 +1,4 @@
-import { RequestInit } from 'whatwg-fetch';
+import { RequestInit, RequestCredentials } from 'whatwg-fetch';
 
 /**
  * The status used when a new resource item has not yet been saved to an external API
@@ -267,10 +267,10 @@ export interface GlobalConfigurationOptions<T> {
     requestAdaptor?: (requestBody: Object) => Object,
 
     /**
-     * Whether to include any cookies with the request that may be stored in the user agent's cookie jar for
-     * the request's domain.
+     * Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the
+     * request only if it's on the same origin.
      */
-    credentials?: boolean,
+    credentials?: RequestCredentials,
 
     /**
      * The request configuration object to be passed to the fetch method, or the new XMLHttpRequest object,
@@ -384,10 +384,10 @@ export interface ActionOptions<T> {
     requestAdaptor?: (requestBody: Object) => Object,
 
     /**
-     * Whether to include any cookies with the request that may be stored in the user agent's cookie jar for
-     * the request's domain.
+     * Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the
+     * request only if it's on the same origin.
      */
-    credentials?: boolean,
+    credentials?: RequestCredentials,
 
     /**
      * The request configuration object to be passed to the fetch method, or the new XMLHttpRequest object,
