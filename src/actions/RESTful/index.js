@@ -9,6 +9,7 @@ import getItemKey from '../../action-creators/helpers/getItemKey';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import projectionTransform from '../../action-creators/helpers/transforms/projectionTransform';
 import wrapInObject from '../../utils/object/wrapInObject';
+import mergeStatus from '../../reducers/helpers/mergeStatus';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -71,7 +72,7 @@ function requestCollection(options, key) {
     status: FETCHING,
     collection: {
       ...COLLECTION,
-      status: { type: FETCHING },
+      status: { type: FETCHING, requestedAt: Date.now() },
       projection: projection
     },
     key,
@@ -163,6 +164,11 @@ function handleCollectionError(options, actionCreatorOptions, httpCode, error) {
 function reducer(resources, { status, items, key, httpCode, collection, error }) {
   const currentList = resources.collections[key] || COLLECTION;
 
+  /**
+   * NOTE: FETCHING occurs first and then *either* SUCCESS or ERROR, but FETCHING may also occur after a
+   * previous SUCCESS or ERROR.
+   */
+
   if (status === FETCHING) {
     /**
      * When a collection is being fetched, we simply update the collection's status and projection values,
@@ -170,14 +176,17 @@ function reducer(resources, { status, items, key, httpCode, collection, error })
      *
      * Note that we completely override the projection object with the new values - we dont' merge it.
      */
-
     return {
       ...resources,
       collections: {
         ...resources.collections,
         [key]: {
           ...currentList,
-          status: collection.status,
+          /**
+           * We persist the syncedAt attribute of the collection if it's been fetched in the past, in case
+           * the request fails, we know the last time it was successfully retrieved
+           */
+          status: mergeStatus(currentList.status, collection.status, { onlyPersist: ['syncedAt'] }),
           projection: collection.projection
         }
       }
@@ -194,16 +203,15 @@ function reducer(resources, { status, items, key, httpCode, collection, error })
       ...items,
     };
 
-    const newStatus = {
-      ...currentList.status,
-      ...collection.status
-    };
-
     const newLists = {
       ...resources.collections,
       [key]: {
         ...collection,
-        status: newStatus
+        /**
+         * We add all status attributes that were added since the request was started (currently only the
+         * syncedAt value).
+         */
+        status: mergeStatus(currentList.status, collection.status),
       }
     };
 
@@ -214,7 +222,6 @@ function reducer(resources, { status, items, key, httpCode, collection, error })
     };
 
   } else if (status === ERROR) {
-
     /**
      * When the attempt to fetch a collection from the API results in an error, we leave the current contents
      * of the collection and update its state and projection to reflect the details of the error.
@@ -223,11 +230,14 @@ function reducer(resources, { status, items, key, httpCode, collection, error })
       ...resources.collections,
       [key]: {
         ...currentList,
-        status: {
+        /**
+         * We merge in new status attributes about the details of the error.
+         */
+        status: mergeStatus(currentList.status, {
           type: status,
           httpCode,
           error,
-        }
+        }),
       }
     };
 

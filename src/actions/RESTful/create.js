@@ -4,7 +4,7 @@ import wrapInObject from '../../utils/object/wrapInObject';
 import extractCollectionOperations from '../../action-creators/helpers/extractCollectionOperations';
 import makeRequest from '../../action-creators/helpers/makeRequest';
 import { COLLECTION, ITEM } from '../../constants/DataStructures';
-import { CREATING, ERROR, NEW, SUCCESS } from '../../constants/Statuses';
+import { CREATING, ERROR, FETCHING, NEW, SUCCESS } from '../../constants/Statuses';
 import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
 import applyCollectionOperators from '../../reducers/helpers/applyCollectionOperators';
@@ -15,6 +15,7 @@ import processActionCreatorOptions from '../../action-creators/helpers/processAc
 import internalGetItem from '../../utils/internalGetItem';
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import isUndefined from '../../utils/isUndefined';
+import mergeStatus from '../../reducers/helpers/mergeStatus';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -116,7 +117,7 @@ function submitCreateResource(options, actionCreatorOptions, values, collectionO
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
       values,
-      status: { type: CREATING }
+      status: { type: CREATING, requestedAt: Date.now() }
     })
   };
 }
@@ -267,7 +268,12 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
       ...itemsToPersist,
       [temporaryKey]: {
         ...currentItem,
-        ...item
+        ...item,
+        /**
+         * We persist the syncedAt attribute of the collection if it's been fetched in the past, in case
+         * the request fails, we know the last time it was successfully synced
+         */
+        status: mergeStatus(currentItem.status, item.status, { onlyPersist: ['syncedAt'] }),
       }
     };
 
@@ -307,10 +313,11 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
       ...itemsToPersist,
       [key]: {
         ...item,
-        status: {
-          ...currentItem.status,
-          ...item.status
-        }
+        /**
+         * We add all status attributes that were added since the request was started (currently only the
+         * syncedAt value).
+         */
+        status: mergeStatus(currentItem.status, item.status),
       }
     };
 
@@ -349,11 +356,14 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
         ...items,
         [temporaryKey]: {
           ...currentItem,
-          status: {
+          /**
+           * We merge in new status attributes about the details of the error.
+           */
+          status: mergeStatus(currentItem.status, {
             type: status,
             httpCode,
-            error
-          }
+            error,
+          }),
         }
       }
     };

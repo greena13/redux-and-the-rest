@@ -6,6 +6,7 @@ import { ITEM } from '../../constants/DataStructures'
 
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import wrapInObject from '../../utils/object/wrapInObject';
+import mergeStatus from '../../reducers/helpers/mergeStatus';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -71,7 +72,7 @@ function requestResource(options, actionCreatorOptions) {
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
       values: { },
-      status: { type: FETCHING }
+      status: { type: FETCHING, requestedAt: Date.now() }
     })
   };
 }
@@ -147,6 +148,12 @@ function reducer(resources, { status, key, error, httpCode, item }) {
   const currentItem = resources.items[key] || ITEM;
 
   if (status === FETCHING) {
+    /**
+     * We persist the syncedAt attribute of the item if it's been fetched in the past, in case
+     * the request fails, we know the last time it was successfully retrieved.
+     */
+    const newStatus = mergeStatus(currentItem.status, item.status, { onlyPersist: ['syncedAt'] });
+
     if (currentItem.status.type === SUCCESS) {
       /**
        * When a resource item is being fetched and that resource already exists in the store - i.e. we are
@@ -167,7 +174,8 @@ function reducer(resources, { status, key, error, httpCode, item }) {
             values: {
               ...currentItem.values,
               ...item.values
-            }
+            },
+            status: newStatus
           }
         }
       };
@@ -183,7 +191,10 @@ function reducer(resources, { status, key, error, httpCode, item }) {
         ...resources,
         items: {
           ...resources.items,
-          [key]: item
+          [key]: {
+            ...item,
+            status: newStatus
+          }
         }
       };
     }
@@ -195,18 +206,17 @@ function reducer(resources, { status, key, error, httpCode, item }) {
      * in the store.
      */
 
-    const newStatus = {
-      ...currentItem.status,
-      ...item.status
-    };
-
     return {
       ...resources,
       items: {
         ...resources.items,
         [key]: {
           ...item,
-          status: newStatus
+          /**
+           * We add all status attributes that were added since the request was started (currently only the
+           * syncedAt value).
+           */
+          status: mergeStatus(currentItem.status, item.status),
         }
       }
     };
@@ -219,11 +229,14 @@ function reducer(resources, { status, key, error, httpCode, item }) {
         ...resources.items,
         [key]: {
           ...currentItem,
-          status: {
+          /**
+           * We merge in new status attributes about the details of the error.
+           */
+          status: mergeStatus(currentItem.status, {
             type: status,
             httpCode,
             error
-          }
+          }),
         }
       }
     };

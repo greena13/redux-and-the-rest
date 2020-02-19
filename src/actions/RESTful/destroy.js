@@ -10,6 +10,7 @@ import removeItemsFromResources from '../../reducers/helpers/removeItemsFromReso
 import isEmpty from '../../utils/collection/isEmpty';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
+import mergeStatus from '../../reducers/helpers/mergeStatus';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -74,6 +75,7 @@ function deleteResourceUpdate(options, values) {
   return {
     type: action,
     status: DESTROYING, key,
+    requestedAt: Date.now(),
     previousValues: isEmpty(values) ? null : values
   };
 }
@@ -150,7 +152,7 @@ function handleDestroyResourceError(options, actionCreatorOptions, httpCode, err
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { type, status, key, item }) {
+function reducer(resources, { type, status, requestedAt, key, item }) {
   assertInDevMode(() => {
     /**
      * Destroying a resource item that is not in the store is still allowed to be sent to the remote API
@@ -194,9 +196,11 @@ function reducer(resources, { type, status, key, item }) {
         ...resources.items,
         [key]: {
           ...currentItem,
-          status: {
-            type: status
-          }
+          /**
+           * We persist the syncedAt attribute of the item if it's been fetched in the past, in case
+           * the request fails, we know the last time it was successfully retrieved.
+           */
+          status: mergeStatus(currentItem.status, { type: status, requestedAt }, { onlyPersist: ['syncedAt'] })
         }
       }
     };
@@ -213,7 +217,8 @@ function reducer(resources, { type, status, key, item }) {
         ...resources.items,
         [key]: {
           ...currentItem,
-          ...item
+          ...item,
+          status: mergeStatus(currentItem.status, item.status)
         }
       }
     };
