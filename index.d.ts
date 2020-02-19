@@ -63,9 +63,10 @@ export const COMPLETE: string;
 export const PREVIEW: string;
 
 /**
- * The status used when an external API has errored
+ * The error type when a client error has occurred when making a request. This can be a local JavaScript
+ * exception, or it can be a network timeout or disconnect.
  */
-export const NETWORK_ERROR: string;
+export const CLIENT_ERROR: string;
 
 /**
  * One of the statuses a resource item or resource collection can be in
@@ -74,7 +75,7 @@ export type StatusType = string;
 
 interface ErrorStatusRequired {
     /**
-     * The type of the error as either NETWORK_ERROR or specified in the response body or error handler
+     * The type of the error as either CLIENT_ERROR or specified in the response body or error handler
      */
     type: string,
 

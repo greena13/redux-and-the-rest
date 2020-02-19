@@ -2,7 +2,7 @@ import isObject from '../../utils/object/isObject';
 import requestProgress from '../requestProgress';
 import { DOWN, UP } from '../../constants/ProgressDirections';
 import without from '../../utils/collection/without';
-import { NETWORK_ERROR } from '../../constants/NetworkStatuses';
+import { CLIENT_ERROR } from '../../constants/NetworkStatuses';
 
 /**
  * Performs a HTTP request to an external API endpoint, based on the configuration options provided
@@ -315,7 +315,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
             actionCreatorOptions,
             0,
             {
-              type: NETWORK_ERROR,
+              type: CLIENT_ERROR,
               occurredAt: Date.now(),
               name: error.name,
               message: error.message,
@@ -346,7 +346,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
                   actionCreatorOptions,
                   0,
                   {
-                    type: NETWORK_ERROR,
+                    type: CLIENT_ERROR,
                     occurredAt: Date.now(),
                     name: error.name,
                     message: error.message,

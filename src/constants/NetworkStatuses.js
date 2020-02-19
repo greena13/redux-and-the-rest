@@ -1,9 +1,10 @@
 /**
- * The status used when an external API request has errorred at the network level
+ * The error type when a client error has occurred when making a request. This can be a local JavaScript
+ * exception, or it can be a network timeout or disconnect.
  * @type {string}
  */
-const NETWORK_ERROR = 'NETWORK_ERROR';
+const CLIENT_ERROR = 'CLIENT_ERROR';
 
 export {
-  NETWORK_ERROR,
+  CLIENT_ERROR,
 };

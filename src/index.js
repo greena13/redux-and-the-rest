@@ -6,6 +6,6 @@ export { COMPLETE, PREVIEW } from './constants/ProjectionTypes';
 
 export { NEW, EDITING, FETCHING, CREATING, UPDATING, DESTROYING, DESTROY_ERROR, SUCCESS, PROGRESS, ERROR } from './constants/Statuses';
 
-export { NETWORK_ERROR } from './constants/NetworkStatuses';
+export { CLIENT_ERROR } from './constants/NetworkStatuses';
 
 export { default as resources } from './resources';
