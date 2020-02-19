@@ -73,8 +73,20 @@ export const NETWORK_ERROR: string;
 export type StatusType = string;
 
 interface ErrorStatusRequired {
+    /**
+     * The type of the error as either NETWORK_ERROR or specified in the response body or error handler
+     */
     type: string,
-    occurredAt: number
+
+    /**
+     * When the error occurred
+     */
+    occurredAt: number,
+
+    /**
+     * The raw Error class when a client-side error occurs
+     */
+    raw?: Error
 }
 
 /**
@@ -89,8 +101,28 @@ export interface ErrorStatus extends ErrorStatusRequired {
  */
 export interface ResourceStatus {
     type: StatusType | null;
+
+    /**
+     * The HTTP status code when an error occurs
+     */
     httpCode?: number,
-    error?: ErrorStatus
+
+    /**
+     * Details of the error, if status type is ERROR
+     */
+    error?: ErrorStatus,
+
+    /**
+     * When a request to fetch, create or update the resource item or collection was last made to an external
+     * API
+     */
+    requestedAt: number,
+
+    /**
+     * When a response to fetch, create or update the resource item or collection was last received from an
+     * external API
+     */
+    syncedAt: number
 }
 
 interface ProjectionRequired {
