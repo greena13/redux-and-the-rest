@@ -14,6 +14,7 @@ import applyTransforms from '../../reducers/helpers/applyTransforms';
 import processActionCreatorOptions from '../../action-creators/helpers/processActionCreatorOptions';
 import internalGetItem from '../../utils/internalGetItem';
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
+import isUndefined from '../../utils/isUndefined';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -159,9 +160,7 @@ function receiveCreatedResource(options, actionCreatorOptions, values) {
 
     const specifiedKey = getItemKey([values, normalizedParams], { keyBy });
 
-    if (specifiedKey) {
-      return specifiedKey;
-    } else {
+    if (isUndefined(specifiedKey)) {
       const actionCreatorName = getActionCreatorNameFrom(action);
 
       assertInDevMode(() => {
@@ -177,6 +176,8 @@ function receiveCreatedResource(options, actionCreatorOptions, values) {
        * We automatically generate a new temporary Id if one is not specified
        */
       return Date.now().toString();
+    } else {
+      return specifiedKey;
     }
   }();
 
