@@ -1,5 +1,5 @@
 import { COLLECTION } from '../constants/DataStructures';
-import serializeKey from './serializeKey';
+import serializeKey from '../public-helpers/serializeKey';
 
 /**
  * @typedef {Object} ResourceCollectionWithItems Collection of resources, with its items in an array

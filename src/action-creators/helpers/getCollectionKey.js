@@ -1,4 +1,4 @@
-import serializeKey from '../../utils/serializeKey';
+import serializeKey from '../../public-helpers/serializeKey';
 import without from '../../utils/collection/without';
 import isObject from '../../utils/object/isObject';
 

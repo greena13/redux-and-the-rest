@@ -1,4 +1,4 @@
-import serializeKey from './serializeKey';
+import serializeKey from '../public-helpers/serializeKey';
 import isObject from './object/isObject';
 import arrayFrom from './array/arrayFrom';
 import internalGetItem from './internalGetItem';

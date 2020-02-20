@@ -1,4 +1,4 @@
-export { default as serializeKey } from './utils/serializeKey';
+export { default as serializeKey } from './public-helpers/serializeKey';
 export { setConfiguration as configure, getConfiguration } from './configuration';
 
 export { RESOURCE, RESOURCES, COLLECTION, ITEM } from './constants/DataStructures';

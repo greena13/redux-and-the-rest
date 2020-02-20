@@ -10,7 +10,7 @@ import without from '../../utils/collection/without';
 import warn from '../../utils/dev/warn';
 import removeItemsFromResources from './removeItemsFromResources';
 import contains from '../../utils/collection/contains';
-import serializeKey from '../../utils/serializeKey';
+import serializeKey from '../../public-helpers/serializeKey';
 import isEmpty from '../../utils/collection/isEmpty';
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 

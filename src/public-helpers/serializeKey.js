@@ -1,4 +1,4 @@
-import isObject from './object/isObject';
+import isObject from '../utils/object/isObject';
 import EmptyKey from '../constants/EmptyKey';
 
 /**

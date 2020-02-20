@@ -1,4 +1,4 @@
-import serializeKey from '../../utils/serializeKey';
+import serializeKey from '../../public-helpers/serializeKey';
 import isObject from '../../utils/object/isObject';
 import arrayFrom from '../../utils/array/arrayFrom';
 import hasKey from '../../utils/object/hasKey';

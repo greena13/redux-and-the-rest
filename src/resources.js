@@ -4,7 +4,7 @@ import buildReducers from './reducers/buildReducers';
 import buildActionCreators from './action-creators/buildActionCreators';
 import objectFrom from './utils/object/objectFrom';
 import getItem from './utils/getItem';
-import getNewItem from './utils/getNewItem';
+import getNewItem from './public-helpers/getNewItem';
 import getCollection from './utils/getCollection';
 import { getConfiguration } from './configuration';
 import InitialResourceStateBuilder from './initialisation/InitialResourceStateBuilder';
