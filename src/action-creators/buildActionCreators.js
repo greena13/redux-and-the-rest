@@ -20,6 +20,8 @@ import deselectAction from '../actions/selection/deselect';
 import clearSelectedAction from '../actions/selection/clearSelected';
 import without from '../utils/collection/without';
 import getActionCreatorNameFrom from './helpers/getActionCreatorNameFrom';
+import DefaultKey from '../constants/DefaultKey';
+import DefaultConfigurationOptions from '../constants/DefaultConfigurationOptions';
 
 /**
  * Dictionary of standard action creators that perform a mix of synchronous and asynchronous changes where
@@ -121,9 +123,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
 
     } else if (standardActionCreator) {
       const _options = resolveOptions(
-        {
-          keyBy: 'id'
-        },
+        DefaultConfigurationOptions,
         resourceOptions,
         actionOptions,
         [

@@ -25,7 +25,7 @@ const reporter = new JasmineConsoleReporter({
   cleanStack: 1,
 
   // (0|false)|1|2|(3|true)|4|Object
-  verbosity: 4,
+  verbosity: 1,
 
   // 'flat'|'indent'
   listStyle: 'indent',

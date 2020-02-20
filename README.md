@@ -101,6 +101,7 @@ users = getCollection(store.getState().users);
       * [Pending statuses](#pending-statuses)
       * [Response statuses](#response-statuses)
       * [Knowing when to call your action creators](#knowing-when-to-call-your-action-creators)
+* [Setting initial state](#setting-initial-state)
 * [RESTful (asynchronous) actions](#restful-asynchronous-actions)
    * [RESTful behaviour overview](#restful-behaviour-overview)
    * [Fetch a resource collection from the server](#fetch-a-resource-collection-from-the-server)
@@ -768,6 +769,62 @@ class NewUserPage extends Component {
     }
 }
 ```
+
+## Setting initial state
+
+`redux-and-the-rest` provides a Builder for each resource that can be used to define the initial resource state in a minimal fashion. This builder provides a chainable interface for specifying values and a `build()` function for returning the initial state, correctly nested and formatted to work with the resource's reducers.
+
+`resources()` returns a `buildInitialState()` helper function that returns an `InitialResourceStateBuilder` instance. This instance lets you set values that will propagate to all of the resource's collections and items.
+
+```javascript
+const { buildInitialState } = resources({
+    name: 'users',
+    url: 'http://test.com/users/:id',
+}, ['show']);
+
+const stateBuilder = buildInitialState([ { id: 1, username: 'John' }]);
+
+createStore(reducers, { users: stateBuilder.build() });
+```
+
+It provides a `addCollection()` function for specifying a collection, which returns a builder scoped to that collection, so you can further specify state and projection values on that collection and its items. The `addCollection()` function accepts an optional params object, used to create the collection's key and an array of items in the collection, as its arguments.
+
+```javascript
+// The default, unkeyed collection
+const collectionBuilder = stateBuilder.addCollection([ { id: 1, username: 'John' }]);
+
+// Collection with a key
+const collectionBuilder = stateBuilder.addCollection('newest', [ { id: 1, username: 'John' }]);
+```
+
+The collection builder also provides an `addItem()` function for adding items to the collection after its been instantiated. The `addItem()` function accepts an optional params object to define the object's key, and an object of the item's attributes.
+
+```javascript
+// Taking the key from the item (using the default of 'id')
+collectionBuilder.addItem({id: 2, username: 'Bob' });
+
+// Specifying params to use to generate the key
+collectionBuilder.addItem(3, {username: 'George' }); // OR
+collectionBuilder.addItem({id: 3}, {username: 'George' });
+```
+
+`InitialResourceStateBuilder` also provides an `addItem()` function, to add items that are not in any specific collection.
+
+```javascript
+const stateBuilder = buildInitialState();
+stateBuilder.addItem({ id: 1, username: 'John'});
+```
+
+All builders allow you to set the state type of its contents using the `setStateType()` and the projection values using `setProjection()`. These methods return the state builder you call them on, so you can chain them together
+
+```javascript
+const itemStateBuilder = stateBuilder.addItem({ id: 1, username: 'John'});
+
+itemStateBuilder.setStatusType(customStatusType).setProjection({ type: 'CUSTOM' });
+```
+
+Items inherit the state and projection of their collection, unless explicitly set. Similarly, collections inherit these values from their resource unless explicitly set.
+
 
 ## RESTful (asynchronous) actions
 

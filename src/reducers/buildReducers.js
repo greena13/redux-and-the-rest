@@ -23,11 +23,13 @@ import deselectAction from '../actions/selection/deselect';
 import clearSelectedAction from '../actions/selection/clearSelected';
 import clearAction from '../actions/clear/clear';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
+import DefaultConfigurationOptions from '../constants/DefaultConfigurationOptions';
 
 /**
  * Dictionary of standard reducer functions for keeping the local store synchronised with a remote RESTful API.
  */
 const STANDARD_REDUCERS = {
+
   /**
    * RESTful actions
    */
@@ -121,16 +123,8 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
      */
     const reducer = (isObject(actionOptions) && actionOptions.reducer) || effectiveReducers[key];
 
-    if (!reducer) {
+    if (reducer) {
 
-      if (resourceOptions.localOnly && STANDARD_REDUCERS[key]) {
-        warn(`Action '${key}' is not compatible with the localOnly option.`);
-      } else {
-        const standardReducersList = Object.keys(STANDARD_REDUCERS).join(', ');
-
-        warn(`Action '${key}' must match the collection of standard reducers (${standardReducersList}) or define a 'reducer' option.`);
-      }
-    } else {
       /**
        * Construct the correct reducer options, merging the those specified (in order of precedence):
        * - In the individual action definitions passed to the resource function ("Action options")
@@ -140,14 +134,16 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
        * These options can still be overridden by options passed to the action creator each time it's called
        */
       const reducerOptions = resolveOptions(
+
         /**
          * List of objects to source options from
          */
-        { beforeReducers: [], afterReducers: [], }, configuration, resourceOptions, actionOptions,
+        DefaultConfigurationOptions, configuration, resourceOptions, actionOptions,
+
         /**
          * List of options to pluck
          */
-        ['progress', 'beforeReducers', 'afterReducers',]
+        ['progress', 'beforeReducers', 'afterReducers']
       );
 
       /**
@@ -161,7 +157,8 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
         ];
       }
 
-      const _reducer = function(){
+      const _reducer = function () {
+
         /**
          * If there are additional transform functions to be run before or after the primary reducer
          * enqueue them to run in sequence, passing the result of each to the next
@@ -191,6 +188,14 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
         options: reducerOptions,
         reducer: _reducer
       };
+    } else {
+      if (resourceOptions.localOnly && STANDARD_REDUCERS[key]) {
+        warn(`Action '${key}' is not compatible with the localOnly option.`);
+      } else {
+        const standardReducersList = Object.keys(STANDARD_REDUCERS).join(', ');
+
+        warn(`Action '${key}' must match the collection of standard reducers (${standardReducersList}) or define a 'reducer' option.`);
+      }
     }
 
     return memo;

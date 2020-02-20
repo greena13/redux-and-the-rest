@@ -6,6 +6,10 @@ import objectFrom from './utils/object/objectFrom';
 import getItem from './utils/getItem';
 import getNewItem from './utils/getNewItem';
 import getCollection from './utils/getCollection';
+import { getConfiguration } from './configuration';
+import InitialResourceStateBuilder from './initialisation/InitialResourceStateBuilder';
+import DefaultConfigurationOptions from './constants/DefaultConfigurationOptions';
+import resolveOptions from './action-creators/helpers/resolveOptions';
 
 /**
  * @callback GetItemFunction Returns an item of a particular resource from a Redux store, removing any
@@ -171,6 +175,16 @@ function resources(resourceOptions, actionOptions = {}) {
 
     getCollection: (resource, params) => getCollection(resourceOptions, resource, params),
 
+    buildInitialState: (items = []) => {
+      const options = resolveOptions(
+        DefaultConfigurationOptions,
+        getConfiguration(),
+        resourceOptions,
+        ['keyBy']
+      );
+
+      return new InitialResourceStateBuilder(options, items);
+    },
     __isResource: true
   };
 }

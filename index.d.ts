@@ -97,12 +97,17 @@ export interface ErrorStatus extends ErrorStatusRequired {
     [extraValues: string]: any
 }
 
+export interface ResourceStatusRequired {
+    /**
+     * The type of status of the resource item or collection
+     */
+    type: StatusType | null;
+}
+
 /**
  * An object containing the status information of a particular resource item or resource collection.
  */
-export interface ResourceStatus {
-    type: StatusType | null;
-
+export interface ResourceStatus extends ResourceStatusRequired {
     /**
      * The HTTP status code when an error occurs
      */
@@ -165,12 +170,18 @@ export interface ResourceCollection<T> {
      */
     status: ResourceStatus,
 
+    /**
+     * The projection information of the resource collection
+     */
     projection: Projection,
 
+    /**
+     * The list of items in the collection, in the order that they appear
+     */
     items: Array<ResourceItem<T>>
 }
 
-export interface ResourceReduxState<T> {
+export interface ResourcesReduxState<T> {
     /**
      * The set of items of a particular resource type
      */
@@ -196,13 +207,13 @@ export interface ResourceReduxState<T> {
 /**
  * Returns an item of a particular resource from a Redux store, removing any structure used implicitly.
  */
-export interface GetItemFunction<T> { (currentState: ResourceReduxState<T>, params: object | string): ResourceItem<T> }
+export interface GetItemFunction<T> { (currentState: ResourcesReduxState<T>, params: object | string): ResourceItem<T> }
 
 /**
  * Returns a collection of a particular resource from a Redux store, populating it with the correct items, in
  * the right order.
  */
-export interface GetCollectionFunction<T> { (currentState: ResourceReduxState<T>, params?: object | string): ResourceCollection<T> }
+export interface GetCollectionFunction<T> { (currentState: ResourcesReduxState<T>, params?: object | string): ResourceCollection<T> }
 
 /**
  * The type of Redux action that is emitted when that action occurs
@@ -223,6 +234,102 @@ export interface ActionCreatorFunction { (...args: any[]): ThunkAction<void, any
  * A dictionary of ActionCreatorFunctions indexed by their ActionCreatorName
  */
 export interface ActionCreatorDictionary { [key: string]: ActionCreatorFunction }
+
+/**
+ * Common interface between state builder classes
+ */
+export interface InitialStateBuilder {
+    /**
+     * Sets the status of the initial state
+     * @param ResourceStatusRequired The status type to set as the initial state
+     * @returns itself to allow for chaining method calls
+     */
+    setStatusType: (ResourceStatusRequired) => InitialStateBuilder;
+
+    /**
+     * Sets the projection of the initial state
+     * @param ResourceStatusRequired The projection object to set as the initial state
+     * @returns itself to allow for chaining method calls
+     */
+    setProjection: (ProjectionRequired) => InitialStateBuilder;
+}
+
+/**
+ * Object for building and then returning an initial resource collection state that can be passed to a Redux store
+ * and work with the reducers returned by the resources() function
+ */
+export interface InitialCollectionStateBuilder<T> extends InitialStateBuilder {
+    /**
+     * Adds a new item to the collection's initial state builder
+     * @param valuesOrParams Either the values of a new item to add to the initial state, outside of any
+     *        collection, or the params of the item to use to index it.
+     * @param optionalValues The values of the item, if the first argument was used to specify params
+     * @returns a new initial state builder scoped to the new item
+     */
+    addItem: (valuesOrParams: object | T, optionalValues?: T) => InitialItemStateBuilder<T>;
+
+    /**
+     * Generates the initial collection state the builder has been configured for, in the format suitable to
+     * pass to the Redux store.
+     * @param ResourceStatus The status to use for the collection and all of its items if the collection hasn't
+     *        set its own.
+     * @param ResourceProjection The projection to use for the collection and all of its items if the
+     *        collection hasn't set its own.
+     */
+    build: ({status: ResourceStatus, projection: ResourceProjection}) => ResourceCollection<T>;
+
+    /**
+     * Generates a map of items indexed by their correct key
+     * @param ResourceStatus The status to use for the items if the collection or item hasn't set its own.
+     * @param ResourceProjection The projection for the items if the collection or item hasn't set its own.
+     */
+    buildItems: ({status: ResourceStatus, projection: ResourceProjection}) => { [key: string]: ResourceItem<T>; }
+}
+
+/**
+ * Object for building and then returning an initial resource item state that can be passed to a Redux store
+ * and work with the reducers returned by the resources() function
+ */
+export interface InitialItemStateBuilder<T> extends InitialStateBuilder {
+    /**
+     * Generates the initial item state the builder has been configured for, in the format suitable to pass to
+     * the Redux store.
+     * @param ResourceStatus The status to use for the item if it hasn't set its own.
+     * @param ResourceProjection The projection for the item if it hasn't set its own.
+     */
+    build: ({status: ResourceStatus, projection: ResourceProjection}) => ResourceItem<T>
+}
+
+/**
+ * Object for building and then returning an initial state that can be passed to a Redux store and work
+ * with the reducers returned by the resources() function
+ */
+export interface InitialResourceStateBuilder<T> extends InitialStateBuilder {
+    /**
+     * Adds a new collection to the initial state builder
+     * @param itemsOrParams Either the params to use to index the collection or the list of items that
+     *        make up the collection. If no params are specified, the default unscoped collection is used.
+     * @param optionalItems The list of items in the collection, if they were not specified as the first
+     *        argument
+     * @returns a new initial state builder scoped to the new collection
+     */
+    addCollection: (itemsOrParams: object | Array<T>, optionalItems?: Array<T>) => InitialCollectionStateBuilder<T>;
+
+    /**
+     * Adds a new item to the initial state builder
+     * @param paramsOrValues Either the values of a new item to add to the initial state, outside of any
+     *        collection, or the params of the item to use to index it.
+     * @param optionalValues The values of the item, if the first argument was used to specify params
+     * @returns a new initial state builder scoped to the new item
+     */
+    addItem: (paramsOrValues: object | T, optionalValues?: T) => InitialItemStateBuilder<T>;
+
+    /**
+     * Generates the initial state the builder has been configured for, in the format suitable to pass to
+     * the Redux store.
+     */
+    build: () => ResourcesReduxState<T>
+}
 
 export interface ResourcesDefinition<T> {
     /**
@@ -254,7 +361,12 @@ export interface ResourcesDefinition<T> {
     /**
      * Function that returns a particular collection of resources
      */
-    getCollection: GetCollectionFunction<T>
+    getCollection: GetCollectionFunction<T>,
+
+    /**
+     * Function to build the initial resource state:
+     */
+    buildInitialState: (items: Array<T>) => InitialResourceStateBuilder<T>,
 }
 
 /**
