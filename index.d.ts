@@ -122,13 +122,25 @@ export interface ResourceStatus extends ResourceStatusRequired {
      * When a request to fetch, create or update the resource item or collection was last made to an external
      * API
      */
-    requestedAt: number,
+    requestedAt?: number,
 
     /**
      * When a response to fetch, create or update the resource item or collection was last received from an
      * external API
      */
-    syncedAt: number
+    syncedAt?: number,
+}
+
+export interface ResourceItemStatus<T> extends ResourceStatus {
+    /**
+     * Whether the resource item has been edited since it was last retrieved from an external API
+     */
+    dirty?: boolean,
+
+    /**
+     * The original values before any local edits were done
+     */
+    originalVales: T
 }
 
 interface ProjectionRequired {
@@ -147,7 +159,7 @@ export interface Projection extends ProjectionRequired {
  */
 export interface ResourceItem<T> {
     values: T,
-    status: ResourceStatus,
+    status: ResourceItemStatus<T>,
     projection: Projection
 }
 

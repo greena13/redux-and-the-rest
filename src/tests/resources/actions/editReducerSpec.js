@@ -92,7 +92,11 @@ describe('Edit reducer:', function () {
             });
 
             it('then changes the item\'s status to EDITING', function() {
-              expect(this.users.items[1].status).toEqual({ type: EDITING });
+              expect(this.users.items[1].status).toEqual({
+                type: EDITING,
+                dirty: true,
+                originalValues: { username: 'Robert' }
+              });
             });
           });
         });

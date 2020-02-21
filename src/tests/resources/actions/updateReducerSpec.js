@@ -1,6 +1,6 @@
 import fetchMock from 'fetch-mock';
 import buildStore from '../../helpers/buildStore';
-import { resources, ERROR, SUCCESS, UPDATING, RESOURCES } from '../../../index';
+import { resources, ERROR, SUCCESS, UPDATING, RESOURCES, EDITING } from '../../../index';
 
 describe('Update reducer:', function () {
   beforeAll(function() {
@@ -208,6 +208,155 @@ describe('Update reducer:', function () {
             afterAll(function() {
               fetchMock.restore();
               this.store = null;
+            });
+
+            it('then changes the items\'s status type to ERROR', function() {
+              expect(this.store.getState().users.items[1].status.type).toEqual(ERROR);
+            });
+
+            it('then updates the item\'s status httpCode', function() {
+              expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
+            });
+
+            it('then does not update the values from the response', function() {
+              expect(this.store.getState().users.items[1].values).toEqual({ id: 1, username: 'Robert' });
+            });
+
+            it('then does sets the status error from the response', function() {
+              expect(this.store.getState().users.items[1].status.error.message).toEqual('Not Found');
+            });
+          });
+        });
+      });
+    });
+
+    describe('Given the resource item has been edited previously', () => {
+      describe('when the resource item is updated', () => {
+        beforeAll(function () {
+          this.resourceBefore = {
+            ...RESOURCES,
+            items: {
+              1: {
+                values: { username: 'Bob', id: 1 },
+                status: { type: EDITING, dirty: true }
+              }
+            },
+          };
+        });
+
+        describe('and the API request succeeds', function() {
+          describe('before the request has completed', function () {
+            beforeAll(function () {
+              fetchMock.put('http://test.com/users/1', new Promise(resolve => {}));
+
+              this.store = buildStore({ users: this.resourceBefore }, { users: this.reducers } );
+
+              this.store.dispatch(this.updateUser(idArgs, {
+                username: 'Robert'
+              }));
+            });
+
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then sets the item\'s status type to UPDATING', function() {
+              expect(this.store.getState().users.items[1].status.type).toEqual(UPDATING);
+            });
+
+            it('then does NOT unset the dirty bit', function() {
+              expect(this.store.getState().users.items[1].status.dirty).toEqual(true);
+            });
+
+            it('then merges in the new values with the item\'s old ones', function() {
+              expect(this.store.getState().users.items[1].values).toEqual({ username: 'Robert', id: 1 });
+            });
+          });
+
+          describe('when the request has completed', function () {
+            beforeAll(function () {
+              fetchMock.put('http://test.com/users/1', {
+                body: { id: 1, username: 'Robert', approved: false },
+              });
+
+              this.store = buildStore({ users: this.resourceBefore }, { users: this.reducers } );
+
+              this.store.dispatch(this.updateUser(idArgs, {
+                username: 'Robert'
+              }));
+            });
+
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then changes the items\'s status type to SUCCESS', function() {
+              expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+            });
+
+            it('then removes the dirty bit', function() {
+              expect(this.store.getState().users.items[1].status.dirty).toEqual(undefined);
+            });
+
+            it('then sets the item\'s values from the response', function() {
+              expect(this.store.getState().users.items[1].values).toEqual({ id: 1, username: 'Robert', approved: false });
+            });
+          });
+        });
+
+        describe('and the API request errors', function() {
+          describe('before the request has completed', function () {
+            beforeAll(function () {
+              fetchMock.put('http://test.com/users/1', new Promise(resolve => {}));
+
+              this.store = buildStore({ users: this.resourceBefore }, { users: this.reducers } );
+
+              this.store.dispatch(this.updateUser(idArgs, {
+                username: 'Robert'
+              }));
+            });
+
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then sets the item\'s status type to UPDATING', function() {
+              expect(this.store.getState().users.items[1].status.type).toEqual(UPDATING);
+            });
+
+            it('then does NOT unset the dirty bit', function() {
+              expect(this.store.getState().users.items[1].status.dirty).toEqual(true);
+            });
+
+            it('then merges in the new values with the item\'s old ones', function() {
+              expect(this.store.getState().users.items[1].values).toEqual({ username: 'Robert', id: 1 });
+            });
+          });
+
+          describe('when the request has completed', function () {
+            beforeAll(function () {
+              fetchMock.put('http://test.com/users/1', {
+                body: { error: 'Not Found' },
+                status: 404
+              });
+
+              this.store = buildStore({ users: this.resourceBefore }, { users: this.reducers } );
+
+              this.store.dispatch(this.updateUser(idArgs, {
+                username: 'Robert'
+              }));
+            });
+
+            afterAll(function() {
+              fetchMock.restore();
+              this.store = null;
+            });
+
+            it('then does NOT unset the dirty bit', function() {
+              expect(this.store.getState().users.items[1].status.dirty).toEqual(true);
             });
 
             it('then changes the items\'s status type to ERROR', function() {

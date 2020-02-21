@@ -94,6 +94,30 @@ function reducer(resources, { type, key, item }) {
       ...item.values
     };
 
+    const newStatus = function(){
+      if (currentItem.status.dirty) {
+        /**
+         * If dirty already exists, this is not the first call to edit the resource item, so we leave the
+         * original values
+         */
+        return item.status;
+      } else {
+        /**
+         * If this is the first edit then we save a reference to the original values (those last retrieved
+         * from an external API) for comparision.
+         *
+         * Note: If it's a subsequent edit, we don't want to override them with the results of the last edit.
+         */
+        return {
+          ...item.status,
+          dirty: true,
+          originalValues: {
+            ...currentItem.values
+          }
+        };
+      }
+    }();
+
     return {
       ...resources,
       items: {
@@ -101,6 +125,7 @@ function reducer(resources, { type, key, item }) {
         [key]: {
           ...item,
           values: newValues,
+          status: newStatus
         }
       }
     };

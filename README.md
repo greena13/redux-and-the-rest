@@ -1034,6 +1034,8 @@ This is useful when you want to edit a particular resource item over several pag
 
 It should not be used for editing a new resource item - user the editNew action creator instead.
 
+Editing a resource item for the first time sets the `status.dirty` bit to `true` and populates `status.originalValues` with a copy of the values before any editing started.
+
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `edit` |

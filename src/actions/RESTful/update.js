@@ -9,6 +9,7 @@ import { ITEM } from '../../constants/DataStructures';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
+import without from '../../utils/collection/without';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -208,7 +209,7 @@ function reducer(resources, { type, key, status, item, httpCode, error }) {
          * We persist the syncedAt attribute of the item if it's been fetched in the past, in case
          * the request fails, we know the last time it was successfully retrieved.
          */
-        state: mergeStatus(currentItem.status, item.status, { onlyPersist: ['syncedAt'] })
+        status: mergeStatus(currentItem.status, item.status, { onlyPersist: ['syncedAt', 'dirty', 'originalVales'] })
       }
     };
 
@@ -236,7 +237,7 @@ function reducer(resources, { type, key, status, item, httpCode, error }) {
          * We add all status attributes that were added since the request was started (currently only the
          * syncedAt value).
          */
-        status: mergeStatus(currentItem.status, item.status),
+        status: mergeStatus(without(currentItem.status, ['dirty', 'originalVales']), item.status),
       }
     };
 
