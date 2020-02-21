@@ -15,6 +15,7 @@ import clearNewAction from '../actions/RESTful/clearNew';
 import editNewAction from '../actions/RESTful/editNew';
 import createAction from '../actions/RESTful/create';
 import editAction from '../actions/RESTful/edit';
+import clearEditAction from '../actions/RESTful/clearEdit';
 import updateAction from '../actions/RESTful/update';
 import destroyAction from '../actions/RESTful/destroy';
 import selectAction from '../actions/selection/select';
@@ -40,6 +41,7 @@ const STANDARD_REDUCERS = {
   editNew: editNewAction.reducer,
   create: createAction.reducer,
   edit: editAction.reducer,
+  clearEdit: clearEditAction.reducer,
   update: updateAction.reducer,
   destroy: destroyAction.reducer,
 

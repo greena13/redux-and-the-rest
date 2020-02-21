@@ -12,6 +12,7 @@ import clearNewAction from '../actions/RESTful/clearNew';
 import editNewAction from '../actions/RESTful/editNew';
 import createAction from '../actions/RESTful/create';
 import editAction from '../actions/RESTful/edit';
+import clearEditAction from '../actions/RESTful/clearEdit';
 import updateAction from '../actions/RESTful/update';
 import destroyAction from '../actions/RESTful/destroy';
 import selectAction from '../actions/selection/select';
@@ -20,7 +21,6 @@ import deselectAction from '../actions/selection/deselect';
 import clearSelectedAction from '../actions/selection/clearSelected';
 import without from '../utils/collection/without';
 import getActionCreatorNameFrom from './helpers/getActionCreatorNameFrom';
-import DefaultKey from '../constants/DefaultKey';
 import DefaultConfigurationOptions from '../constants/DefaultConfigurationOptions';
 
 /**
@@ -35,6 +35,7 @@ const STANDARD_ACTION_CREATORS = {
   editNew: editNewAction.actionCreator,
   create: createAction.actionCreator,
   edit: editAction.actionCreator,
+  clearEdit: clearEditAction.actionCreator,
   update: updateAction.actionCreator,
   destroy: destroyAction.actionCreator,
 

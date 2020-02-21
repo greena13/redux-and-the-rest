@@ -1044,6 +1044,20 @@ Editing a resource item for the first time sets the `status.dirty` bit to `true`
 | Second action creator argument | Resource item's attributes - An object of attributes to save as the resource item's new values in the store. |
 | `status.type` lifecycle |  `EDITING` |
 
+### Clear local edits
+
+The clearEdit action creator reverts any local edits (those that haven't been sent to an external API) and resets a resource item back to its original values (as they existed when the resource was last synced).
+
+This is useful when a user wants to cancel or clear their editing of a particular resource item.
+
+It can also be used to clear an edit after an UPDATE request has failed to be submitted to the server to reset the resource item back to its last known valid state, without having to make a separate request to the external API.
+
+| Property | Value |
+| :--- | :--- |
+| Action name for defining with `actionOptions` | `clearEdit` |
+| Action creator name | `clear<SingularizedResourceName>Edit()` |
+| First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
+| `status.type` lifecycle |  `EDITING` -> `SUCCESS` |
 
 ### Select a resource item in the store
 

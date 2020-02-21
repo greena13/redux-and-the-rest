@@ -140,7 +140,7 @@ export interface ResourceItemStatus<T> extends ResourceStatus {
     /**
      * The original values before any local edits were done
      */
-    originalVales: T
+    originalValues?: T
 }
 
 interface ProjectionRequired {

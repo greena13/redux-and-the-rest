@@ -209,7 +209,7 @@ function reducer(resources, { type, key, status, item, httpCode, error }) {
          * We persist the syncedAt attribute of the item if it's been fetched in the past, in case
          * the request fails, we know the last time it was successfully retrieved.
          */
-        status: mergeStatus(currentItem.status, item.status, { onlyPersist: ['syncedAt', 'dirty', 'originalVales'] })
+        status: mergeStatus(currentItem.status, item.status, { onlyPersist: ['syncedAt', 'dirty', 'originalValues'] })
       }
     };
 
@@ -237,7 +237,7 @@ function reducer(resources, { type, key, status, item, httpCode, error }) {
          * We add all status attributes that were added since the request was started (currently only the
          * syncedAt value).
          */
-        status: mergeStatus(without(currentItem.status, ['dirty', 'originalVales']), item.status),
+        status: mergeStatus(without(currentItem.status, ['dirty', 'originalValues']), item.status),
       }
     };
 

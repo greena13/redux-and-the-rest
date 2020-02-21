@@ -238,7 +238,11 @@ describe('Update reducer:', function () {
             items: {
               1: {
                 values: { username: 'Bob', id: 1 },
-                status: { type: EDITING, dirty: true }
+                status: {
+                  type: EDITING,
+                  dirty: true,
+                  originalValues: { username: 'Bobert', id: 1 }
+                }
               }
             },
           };
@@ -267,6 +271,10 @@ describe('Update reducer:', function () {
 
             it('then does NOT unset the dirty bit', function() {
               expect(this.store.getState().users.items[1].status.dirty).toEqual(true);
+            });
+
+            it('then does NOT clear the originalValues', function() {
+              expect(this.store.getState().users.items[1].status.originalValues).toEqual({ username: 'Bobert', id: 1 });
             });
 
             it('then merges in the new values with the item\'s old ones', function() {
@@ -298,6 +306,10 @@ describe('Update reducer:', function () {
 
             it('then removes the dirty bit', function() {
               expect(this.store.getState().users.items[1].status.dirty).toEqual(undefined);
+            });
+
+            it('then clears the original values', function() {
+              expect(this.store.getState().users.items[1].status.originalValues).toEqual(undefined);
             });
 
             it('then sets the item\'s values from the response', function() {
@@ -357,6 +369,10 @@ describe('Update reducer:', function () {
 
             it('then does NOT unset the dirty bit', function() {
               expect(this.store.getState().users.items[1].status.dirty).toEqual(true);
+            });
+
+            it('then does NOT clear the originalValues', function() {
+              expect(this.store.getState().users.items[1].status.originalValues).toEqual({ username: 'Bobert', id: 1 });
             });
 
             it('then changes the items\'s status type to ERROR', function() {
