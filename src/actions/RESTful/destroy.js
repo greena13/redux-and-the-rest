@@ -27,7 +27,6 @@ import mergeStatus from '../../reducers/helpers/mergeStatus';
 function actionCreator(options, params, actionCreatorOptions = {}) {
   const {
     action,
-    name,
     keyBy,
     url: urlTemplate,
     progress
@@ -36,7 +35,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
   const normalizedParams = wrapInObject(params, keyBy);
 
   const key = getItemKey(normalizedParams, { keyBy });
-  const url = generateUrl({ url: urlTemplate, name }, normalizedParams);
+  const url = generateUrl({ urlTemplate }, normalizedParams);
 
   return (dispatch) => {
     dispatch(deleteResourceUpdate({ action, key }, actionCreatorOptions));

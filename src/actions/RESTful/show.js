@@ -22,12 +22,12 @@ import mergeStatus from '../../reducers/helpers/mergeStatus';
  */
 function actionCreator(options, params, actionCreatorOptions = { }) {
   const {
-    action, transforms, url: urlTemplate, name, keyBy, progress, projection
+    action, transforms, url: urlTemplate, keyBy, progress, projection
   } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
   const key = getItemKey(normalizedParams, { keyBy });
-  const url = generateUrl({ url: urlTemplate, name }, normalizedParams);
+  const url = generateUrl({ urlTemplate }, normalizedParams);
 
   return (dispatch) => {
     /**

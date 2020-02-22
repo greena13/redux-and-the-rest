@@ -25,11 +25,11 @@ import mergeStatus from '../../reducers/helpers/mergeStatus';
  */
 function actionCreator(options, params, actionCreatorOptions = { }) {
   const {
-    action, url: urlTemplate, name, keyBy, urlOnlyParams, progress, projection
+    action, url: urlTemplate, keyBy, urlOnlyParams, progress, projection
   } = options;
 
   const key = getCollectionKey(params, { urlOnlyParams });
-  const url = generateUrl({ url: urlTemplate, name }, params);
+  const url = generateUrl({ urlTemplate }, params);
 
   return (dispatch) => {
     /**

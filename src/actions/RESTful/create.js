@@ -66,7 +66,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     }
   }();
 
-  const url = generateUrl({ url: urlTemplate, keyBy, ignoreOptionalParams: true }, normalizedParams);
+  const url = generateUrl({ urlTemplate, keyBy, ignoreOptionalParams: true }, normalizedParams);
 
   return (dispatch) => {
     const collectionOperations = extractCollectionOperations(actionCreatorOptions, urlOnlyParams);

@@ -26,12 +26,12 @@ import without from '../../utils/collection/without';
  */
 function actionCreator(options, params, values, actionCreatorOptions = {}) {
   const {
-    action, transforms, url: urlTemplate, name, progress, keyBy, projection, requestAdaptor
+    action, transforms, url: urlTemplate, progress, keyBy, projection, requestAdaptor
   } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
   const key = getItemKey(normalizedParams, { keyBy });
-  const url = generateUrl({ url: urlTemplate, name }, wrapInObject(normalizedParams, keyBy));
+  const url = generateUrl({ urlTemplate }, wrapInObject(normalizedParams, keyBy));
 
   return (dispatch) => {
     dispatch(
