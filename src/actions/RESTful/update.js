@@ -10,6 +10,10 @@ import applyTransforms from '../../reducers/helpers/applyTransforms';
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
 import without from '../../utils/collection/without';
+import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
+import nop from '../../utils/function/nop';
+
+const HTTP_REQUEST_TYPE = 'PUT';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -30,8 +34,15 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
   } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
-  const key = getItemKey(normalizedParams, { keyBy });
   const url = generateUrl({ urlTemplate }, wrapInObject(normalizedParams, keyBy));
+
+  if (actionCreatorOptions.force || isRequestInProgress(HTTP_REQUEST_TYPE, url)) {
+    return nop;
+  } else {
+    registerRequestStart(HTTP_REQUEST_TYPE, url);
+  }
+
+  const key = getItemKey(normalizedParams, { keyBy });
 
   return (dispatch) => {
     dispatch(
@@ -52,7 +63,7 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
       params: normalizedParams,
       dispatch,
       request: {
-        method: 'PUT',
+        method: HTTP_REQUEST_TYPE,
         body: JSON.stringify(requestAdaptor ? requestAdaptor(values) : values),
       },
       onSuccess: receiveUpdatedResource,

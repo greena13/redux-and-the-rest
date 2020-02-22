@@ -11,6 +11,10 @@ import isEmpty from '../../utils/collection/isEmpty';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
+import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
+import nop from '../../utils/function/nop';
+
+const HTTP_REQUEST_TYPE = 'DELETE';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -33,9 +37,15 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
   } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
+  const url = generateUrl({ urlTemplate }, normalizedParams);
+
+  if (actionCreatorOptions.force || isRequestInProgress(HTTP_REQUEST_TYPE, url)) {
+    return nop;
+  } else {
+    registerRequestStart(HTTP_REQUEST_TYPE, url);
+  }
 
   const key = getItemKey(normalizedParams, { keyBy });
-  const url = generateUrl({ urlTemplate }, normalizedParams);
 
   return (dispatch) => {
     dispatch(deleteResourceUpdate({ action, key }, actionCreatorOptions));
@@ -47,7 +57,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
       previousValues: actionCreatorOptions.previous,
       dispatch,
       request: {
-        method: 'delete',
+        method: HTTP_REQUEST_TYPE,
       },
       onSuccess: removeResource,
       onError: handleDestroyResourceError,

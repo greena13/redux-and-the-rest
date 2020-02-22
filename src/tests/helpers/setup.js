@@ -1,6 +1,7 @@
 import 'source-map-support/register';
 
 import { Response } from 'node-fetch';
+import { clearRegisteredRequests } from '../../utils/RequestManager';
 
 /**
  * Following hack is necessary to polyfill Response and Blob constructors
@@ -17,4 +18,8 @@ beforeAll(function() {
   return new Response().blob().then((blob) => {
     global.Blob = blob.constructor;
   });
+});
+
+beforeEach(function () {
+  clearRegisteredRequests();
 });

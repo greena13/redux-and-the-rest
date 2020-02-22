@@ -7,6 +7,10 @@ import { ITEM } from '../../constants/DataStructures'
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import wrapInObject from '../../utils/object/wrapInObject';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
+import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
+import nop from '../../utils/function/nop';
+
+const HTTP_REQUEST_TYPE = 'GET';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -26,8 +30,15 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
   } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
-  const key = getItemKey(normalizedParams, { keyBy });
   const url = generateUrl({ urlTemplate }, normalizedParams);
+
+  if (actionCreatorOptions.force || isRequestInProgress(HTTP_REQUEST_TYPE, url)) {
+    return nop;
+  } else {
+    registerRequestStart(HTTP_REQUEST_TYPE, url);
+  }
+
+  const key = getItemKey(normalizedParams, { keyBy });
 
   return (dispatch) => {
     /**
@@ -44,6 +55,9 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
       ...options,
       key, keyBy, params,
       url,
+      request: {
+        method: HTTP_REQUEST_TYPE
+      },
       dispatch,
       onSuccess: receiveResource,
       onError: handleResourceError,

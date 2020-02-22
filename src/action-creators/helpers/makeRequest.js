@@ -3,6 +3,7 @@ import requestProgress from '../requestProgress';
 import { DOWN, UP } from '../../constants/ProgressDirections';
 import without from '../../utils/collection/without';
 import { CLIENT_ERROR } from '../../constants/NetworkStatuses';
+import { registerRequestEnd } from '../../utils/RequestManager';
 
 /**
  * Performs a HTTP request to an external API endpoint, based on the configuration options provided
@@ -41,7 +42,7 @@ import { CLIENT_ERROR } from '../../constants/NetworkStatuses';
  * @param {Object} actionCreatorOptions={} The options passed to the action creator that is making the request,
  *        primarily to be passed to the success and error handlers to further configure their behaviour.
  *
- * @returns {Promise<Response>} A promise that is resolved once the request has finished and the success or
+ * @returns {Promise<void>} A promise that is resolved once the request has finished and the success or
  *          error handler have been called.
  */
 function makeRequest(options, actionCreatorOptions = {}) {
@@ -328,7 +329,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
       xhRequest.send(requestOptions.body);
     }).catch((error) => {
       throw error;
-    });
+    }).finally(() => registerRequestEnd(request.method, url));
 
   } else {
     /**
@@ -354,7 +355,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
                   }
                 )
               )
-            });
+            }).finally(() => registerRequestEnd(request.method, url));
   }
 }
 

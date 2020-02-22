@@ -104,6 +104,7 @@ users = getCollection(store.getState().users);
 * [Setting initial state](#setting-initial-state)
 * [RESTful (asynchronous) actions](#restful-asynchronous-actions)
    * [RESTful behaviour overview](#restful-behaviour-overview)
+      * [Preventing duplicate requests](#preventing-duplicate-requests)
    * [Fetch a resource collection from the server](#fetch-a-resource-collection-from-the-server)
       * [Index action creator options](#index-action-creator-options)
    * [Fetch an individual resource item from the server](#fetch-an-individual-resource-item-from-the-server)
@@ -120,6 +121,7 @@ users = getCollection(store.getState().users);
    * [Clear the new resource item from the store](#clear-the-new-resource-item-from-the-store)
    * [Edit the new resource item in the store](#edit-the-new-resource-item-in-the-store)
    * [Edit a resource item in the store](#edit-a-resource-item-in-the-store)
+   * [Clear local edits](#clear-local-edits)
    * [Select a resource item in the store](#select-a-resource-item-in-the-store)
    * [Select another resource item in the store](#select-another-resource-item-in-the-store)
    * [Deselect a resource item in the store](#deselect-a-resource-item-in-the-store)
@@ -856,6 +858,14 @@ const { reducers, actionCreators: { fetchUsers } } = resources(
 | `createUser('tempId', {name: 'foo'})` | #create | `POST http://test.com/users` |
 | `updateUser(1, {name: 'foo'})` | #update | `PUT http://test.com/users/1` |
 | `destroyUser(1)` | #destroy | `DELETE http://test.com/users/1` |
+
+#### Preventing duplicate requests
+
+Asynchronous action creators are throttled so if you call one multiple times before the first call has had a chance to receive the response, the subsequent calls have no effect on the store (no actions are dispatched) and do not make any requests.
+
+This is to allow mounting multiple React components on the same page that both require the same data - they can each call (for example) `fetchUser(1)` and only the first call will update the store and perform the request (but both will have access to the data once it arrives from the eternal API). Once the request has resolved, the action creator can be called again and will have the expected effect.
+
+This behaviour can be overridden by passing a `force` value of `true` to the `actionCreatorOptions` of any action creator function.
 
 ### Fetch a resource collection from the server
 

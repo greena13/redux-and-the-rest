@@ -4,7 +4,7 @@ import wrapInObject from '../../utils/object/wrapInObject';
 import extractCollectionOperations from '../../action-creators/helpers/extractCollectionOperations';
 import makeRequest from '../../action-creators/helpers/makeRequest';
 import { COLLECTION, ITEM } from '../../constants/DataStructures';
-import { CREATING, ERROR, FETCHING, NEW, SUCCESS } from '../../constants/Statuses';
+import { CREATING, ERROR, NEW, SUCCESS } from '../../constants/Statuses';
 import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
 import applyCollectionOperators from '../../reducers/helpers/applyCollectionOperators';
@@ -16,6 +16,10 @@ import internalGetItem from '../../utils/internalGetItem';
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import isUndefined from '../../utils/isUndefined';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
+import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
+import nop from '../../utils/function/nop';
+
+const HTTP_REQUEST_TYPE = 'POST';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -53,6 +57,14 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
 
   const normalizedParams = wrapInObject(params, keyBy);
 
+  const url = generateUrl({ urlTemplate, keyBy, ignoreOptionalParams: true }, normalizedParams);
+
+  if (actionCreatorOptions.force || isRequestInProgress(HTTP_REQUEST_TYPE, url)) {
+    return nop;
+  } else {
+    registerRequestStart(HTTP_REQUEST_TYPE, url);
+  }
+
   const key = function(){
     const specifiedKey = getItemKey([normalizedParams, values], { keyBy });
 
@@ -65,8 +77,6 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
       return Date.now().toString();
     }
   }();
-
-  const url = generateUrl({ urlTemplate, keyBy, ignoreOptionalParams: true }, normalizedParams);
 
   return (dispatch) => {
     const collectionOperations = extractCollectionOperations(actionCreatorOptions, urlOnlyParams);
@@ -83,7 +93,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
       url,
       dispatch,
       request: {
-        method: 'POST',
+        method: HTTP_REQUEST_TYPE,
         body: JSON.stringify(requestAdaptor ? requestAdaptor(values) : values),
       },
       onSuccess: receiveCreatedResource,

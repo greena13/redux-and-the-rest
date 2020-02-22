@@ -10,6 +10,11 @@ import applyTransforms from '../../reducers/helpers/applyTransforms';
 import projectionTransform from '../../action-creators/helpers/transforms/projectionTransform';
 import wrapInObject from '../../utils/object/wrapInObject';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
+import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
+import nop from '../../utils/function/nop';
+
+
+const HTTP_REQUEST_TYPE = 'GET';
 
 /**************************************************************************************************************
  * Action creator thunk
@@ -31,6 +36,12 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
   const key = getCollectionKey(params, { urlOnlyParams });
   const url = generateUrl({ urlTemplate }, params);
 
+  if (actionCreatorOptions.force || isRequestInProgress(HTTP_REQUEST_TYPE, url)) {
+    return nop;
+  } else {
+    registerRequestStart(HTTP_REQUEST_TYPE, url);
+  }
+
   return (dispatch) => {
     /**
      * Immediately dispatch an action to change the state of the collection to be FETCHING
@@ -47,6 +58,9 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
       key, keyBy, params,
       url,
       dispatch,
+      request: {
+        method: HTTP_REQUEST_TYPE,
+      },
       onSuccess: receiveCollection,
       onError: handleCollectionError,
       progress
