@@ -662,7 +662,7 @@ export function getConfiguration(): GlobalConfigurationOptions;
  * @param item The item to evaluate
  * @returns True if the resource item can be rolled back
  */
-export function hasBeenModified(item: GenericAttributes): boolean;
+export function isModifies(item: GenericAttributes): boolean;
 
 /**
  * Whether the last request for an item or collection errored, but there is still old values in the store that
