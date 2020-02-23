@@ -5,6 +5,7 @@ export { default as hasBeenModified } from './public-helpers/hasBeenModified';
 export { default as canFallbackToOldValues } from './public-helpers/canFallbackToOldValues';
 export { default as getTimeSinceFetchStarted } from './public-helpers/getTimeSinceFetchStarted';
 export { default as getTimeSinceLastSync } from './public-helpers/getTimeSinceLastSync';
+export { default as getValuesBeforeEditing } from './public-helpers/getValuesBeforeEditing';
 
 export { RESOURCE, RESOURCES, COLLECTION, ITEM } from './constants/DataStructures';
 export { COMPLETE, PREVIEW } from './constants/ProjectionTypes';

@@ -685,3 +685,10 @@ export function getTimeSinceFetchStarted(itemOrCollection: GenericAttributes): n
  * @returns Number of milliseconds since the item or collection was last synced with the external API
  */
 export function getTimeSinceLastSync(itemOrCollection: GenericAttributes): number;
+
+/**
+ * The original item values before an edits were performed.
+ * @param item The item to return the previous values for
+ * @returns The previous values
+ */
+export function getValuesBeforeEditing<T>(item: ResourceItem<T>): number;

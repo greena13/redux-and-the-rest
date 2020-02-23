@@ -127,6 +127,7 @@ users = getCollection(store.getState().users);
    * [Edit the new resource item in the store](#edit-the-new-resource-item-in-the-store)
    * [Edit an existing resource item in the store](#edit-an-existing-resource-item-in-the-store)
    * [Detecting if a resource item has been edited](#detecting-if-a-resource-item-has-been-edited)
+   * [Accessing values before they were edited](#accessing-values-before-they-were-edited)
    * [Clear local edits](#clear-local-edits)
    * [Select a resource item in the store](#select-a-resource-item-in-the-store)
    * [Select another resource item in the store](#select-another-resource-item-in-the-store)
@@ -1157,8 +1158,6 @@ This is useful when you want to edit a particular resource item over several pag
 
 It should not be used for editing a new resource item - user the editNew action creator instead.
 
-Editing a resource item for the first time sets the `status.dirty` bit to `true` and populates `status.originalValues` with a copy of the values before any editing started.
-
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `edit` |
@@ -1177,6 +1176,16 @@ import { hasBeenModified } from 'redux-and-the-rest';
 if (hasBeenModified(item)) {
   // ...
 }
+```
+
+### Accessing values before they were edited
+
+You can use the `getValuesBeforeEditing()` function to get an item's values before any local edits were performed.
+
+```javascript
+import { getValuesBeforeEditing } from 'redux-and-the-rest';
+
+const originalValues = getValuesBeforeEditing(item);
 ```
 
 ### Clear local edits
