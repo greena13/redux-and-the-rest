@@ -1,24 +1,22 @@
-import extractVariableArguments from './extractVariableArguments';
 import { getConfiguration } from '../configuration';
 import assertInDevMode from './assertInDevMode';
 import warn from './dev/warn';
-import hasKey from './object/hasKey';
 import getActionCreatorNameFrom from '../action-creators/helpers/getActionCreatorNameFrom';
+import without from './collection/without';
+import isFunction from './object/isFunction';
 
-function getOrFetch(options, storeLocationOrParams, optionalParams, optionalActionCreatorOptions) {
+function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions = {}) {
   const {
 
     /**
      * Options that change between items and collections
      */
-
     typeKey, fallbackActionName, keyFunction, getFunction,
 
     /**
      * Options from resources definition
      */
-
-    actions, actionCreators, resourceName, actionOptions
+    actions, actionCreators
   } = options;
 
   /**
@@ -31,10 +29,6 @@ function getOrFetch(options, storeLocationOrParams, optionalParams, optionalActi
    * @example Specifying only an item id
    *  getOrFetchItem(1);
    */
-  const { storeLocation = resourceName, params, actionCreatorOptions = {} } = extractVariableArguments(
-    ['storeLocation', 'params', 'actionCreatorOptions'],
-    [storeLocationOrParams, optionalParams, optionalActionCreatorOptions]
-  );
 
   /**
    * Retrieve the direct connection to the Redux store the user is expected to set using the configure() function
@@ -49,42 +43,28 @@ function getOrFetch(options, storeLocationOrParams, optionalParams, optionalActi
   });
 
   /**
-   * Get the current resources state, in the Redux store
-   */
-
-  const state = store.getState();
-  const resources = state[storeLocation];
-
-  assertInDevMode(() => {
-    if (!resources) {
-      warn(`Could not find resources '${storeLocation}' in the Redux store. Pass the location of the resource as the first argument to getOrFetchItem() or change the 'name' attribute in your resources() definition.`);
-    }
-
-    if (!hasKey(actionOptions, fallbackActionName) || !store) {
-      warn(`Cannot use getOrFetchItem() without defining a ${fallbackActionName} action for ${resourceName}.`);
-    }
-  });
-
-  /**
    * Attempt to retrieve the item or collection from the current resources state
    */
 
   const key = keyFunction(params);
 
-  const itemOrCollection = resources[typeKey][key];
+  const itemOrCollection = resourcesState[typeKey][key];
 
-  if (!itemOrCollection) {
+  if (!itemOrCollection || evaluateForceCondition(actionCreatorOptions.forceFetch, itemOrCollection)) {
 
     /**
-     * If the item is not already in the store, we call the fetch action creator to retrieve it in the
-     * background and return an empty item or collection in the meantime.
+     * If the item is not already in the store (or we're forcing the fetch operation), we call the fetch action
+     * creator to retrieve it in the background and return an empty item or collection in the meantime.
      */
-
     const actionCreator = actionCreators[getActionCreatorNameFrom(actions.get(fallbackActionName))];
-    store.dispatch(actionCreator(params, actionCreatorOptions));
+    store.dispatch(actionCreator(params, without(actionCreatorOptions, ['forceFetch'])));
   }
 
-  return getFunction(resources, key);
+  return getFunction(resourcesState, key);
+}
+
+function evaluateForceCondition(forceFetch, itemOrCollection) {
+  return isFunction(forceFetch) ? forceFetch(itemOrCollection) : Boolean(forceFetch);
 }
 
 export default getOrFetch;

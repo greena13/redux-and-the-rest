@@ -583,33 +583,33 @@ const { reducers: usersReducers, actionCreators: { fetchUsers }, getOrFetchItem 
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
-        keyBy: 'id'
+        keyBy: 'id',
     },
     {
-        show: true
+        show: true,
     }
 );
 ```
 
-You can then use `getOrFetchItem()` in one of a few ways. If you pass one argument, it will assume that argument is the values to use to generate the key for the item you want to retrieve, and it will assume the resources are located in your redux store under the same `name` you passed to `resources()`
+`getOrFetchItem()` expects the current resources state (the part of the Redux store that contains your resources data) as its first argument. The second argument is the params object will be serialized to generate the item or collection's key. The third (optional) argument are options to pass to the action creator if it's called.
 
 ```javascript
 function mapStateToProps({ users }, { params: { id } }) {
   // Looks for the user item in store.getState().users.items[<id>]
-  return getOrFetchItem({ id }); 
+  return getOrFetchItem(users, { id }); 
 }
 ```
 
-If you use it with two arguments, it will assume the first is the location of the resources in the redux store:
+The actionCreatorOptions accepts the option `forceFetch`, which accepts a boolean or a function that is passed the current item or collection and is expected to return a boolean value. This provides a way to conditionally ignore the version of the item or collection in the store and make fetch request anyway:
 
 ```javascript
 function mapStateToProps({ users }, { params: { id } }) {
-  // Looks for the user item in store.getState().customers.items[<id>]
-  return getOrFetchItem('customers', { id }); 
+  // Looks for the user item in store.getState().users.items[<id>]
+  return getOrFetchItem(users, { id }, {
+    forceFetch: ({ status: { type } }) => type === 'BOOTSTRAPPED',
+  }); 
 }
 ```
-
-If you use 3 arguments, the third is assumed an actionCreatorOptions hash that should be passed to the `fetch*()` action creator, if it needs to be called because the item is not in the store.
 
 #### Getting collections from the store
 

@@ -213,31 +213,22 @@ function resources(resourceOptions, actionOptions = {}) {
      * Returns an item of a particular resource from a Redux store. If the item is not available in the store,
      * an empty item is returned immediately and the fetch action creator is called to update the store and
      * request the resource item from an external API.
-     * @param {string | Object} storeAttributeNameOrParams Either the root location of where the resources
-     *        are being stored in the Redux store, or the parameters to serialize to find the item in the
-     *        store. When the location of the resources is not set, the value of the 'name' option passed to
-     *        resources() is used.
-     * @param {Object} [paramsOrActionCreatorOptions={}] When the first argument is used to specify the resources'
-     *        location in the store, this argument is the params to serialize to use as the key to find the
-     *        resource item. If the first argument is skipped, this one is the options to pass to the fetch
-     *        action creator if it's called.
-     * @param {Object} [optionalActionCreatorOptions={}] When the first argument is used to specify the resources'
-     *        location in the store, this argument the options to pass to the fetch action creator if it's
+     * @param {ResourcesReduxState} resourcesState The current resource Redux store state
+     * @param {Object} [params={}] The params to serialize to use as the key to find the resource collection.
+     * @param {Object} [actionCreatorOptions={}] The options to pass to the fetch action creator if it's
      *        called.
-     * @return {ResourceItem} The resource item if it's in the store, or an empty item.
+     * @returns {ResourceItem} The resource item if it's in the store, or an empty item.
      */
-    getOrFetchItem(storeAttributeNameOrParams, paramsOrActionCreatorOptions, optionalActionCreatorOptions) {
+    getOrFetchItem(resourcesState, params, actionCreatorOptions) {
       getOrFetch({
           typeKey: 'items',
           fallbackActionName: 'show',
           getFunction: getItem,
-          keyFunction: (params) => getItemKey(params, { keyBy: resourceOptions.keyBy }),
+          keyFunction: (_params) => getItemKey(_params, { keyBy: resourceOptions.keyBy }),
 
           actions, actionCreators,
-          resourceName: name,
-          actionOptions: _actionOptions
         },
-        storeAttributeNameOrParams, paramsOrActionCreatorOptions, optionalActionCreatorOptions
+        resourcesState, params, actionCreatorOptions
       );
     },
 
@@ -247,31 +238,22 @@ function resources(resourceOptions, actionOptions = {}) {
      * Returns an collection of a particular resource from a Redux store. If the collection is not available in the store,
      * an empty collection is returned immediately and the fetch action creator is called to update the store and
      * request the resource collection from an external API.
-     * @param {string | Object} storeAttributeNameOrParams Either the root location of where the resources
-     *        are being stored in the Redux store, or the parameters to serialize to find the collection in the
-     *        store. When the location of the resources is not set, the value of the 'name' option passed to
-     *        resources() is used.
-     * @param {Object} [paramsOrActionCreatorOptions={}] When the first argument is used to specify the resources'
-     *        location in the store, this argument is the params to serialize to use as the key to find the
-     *        resource collection. If the first argument is skipped, this one is the options to pass to the fetch
-     *        action creator if it's called.
-     * @param {Object} [optionalActionCreatorOptions={}] When the first argument is used to specify the resources'
-     *        location in the store, this argument the options to pass to the fetch action creator if it's
+     * @param {ResourcesReduxState} resourcesState The current resource Redux store state
+     * @param {Object} [params={}] The params to serialize to use as the key to find the resource collection.
+     * @param {Object} [actionCreatorOptions={}] The options to pass to the fetch action creator if it's
      *        called.
-     * @return {ResourceCollectionWithItems} The resource collection if it's in the store, or an empty collection.
+     * @returns {ResourceCollectionWithItems} The resource collection if it's in the store, or an empty collection.
      */
-    getOrFetchCollection(storeAttributeNameOrParams, paramsOrActionCreatorOptions, optionalActionCreatorOptions) {
+    getOrFetchCollection(resourcesState, params, actionCreatorOptions) {
       return getOrFetch({
           typeKey: 'collections',
           fallbackActionName: 'index',
           getFunction: getCollection,
-          keyFunction: (params) => getCollectionKey(params, { urlOnlyParams: resourceOptions.urlOnlyParams }),
+          keyFunction: (_params) => getCollectionKey(_params, { urlOnlyParams: resourceOptions.urlOnlyParams }),
 
           actions, actionCreators,
-          resourceName: name,
-          actionOptions: _actionOptions
         },
-        storeAttributeNameOrParams, paramsOrActionCreatorOptions, optionalActionCreatorOptions
+        resourcesState, params, actionCreatorOptions
       );
     },
 
