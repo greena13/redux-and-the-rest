@@ -6,8 +6,8 @@ import { ERROR } from '../constants/Statuses';
  * @params {ResourceItem|ResourceCollection} itemOrCollection The item or collection to test for old values
  * @returns {boolean} True if the item or collection has errored but has old values that can be displayed
  */
-function canFallbackToOldValues({ status: { syncedAt, requestAt, type } }) {
-  return requestAt > syncedAt && type === ERROR;
+function canFallbackToOldValues({ status: { syncedAt, requestedAt, type } }) {
+  return requestedAt > syncedAt && type === ERROR;
 }
 
 export default canFallbackToOldValues;

@@ -757,15 +757,15 @@ To check an item or collection's state, you only have to inspect it's `status.ty
 
 ```javascript
 import React from 'react';
-import { ERROR, SUCCESS } from 'redux-and-the-rest';
+import { isInAnErrorState, isSuccessfullyFetched } from 'redux-and-the-rest';
 
 class MyComponent extends Component {
     render() {
-        const { status: { type } } = this.props;
+        const { item } = this.props;
 
-        if (status === SUCCESS) {
+        if (isSuccessfullyFetched(item)) {
             // item is loaded and ready to display
-        } else if (status === ERROR) {
+        } else if (isInAnErrorState(item)) {
            // display error message
         } else {
            // display preloader
@@ -889,7 +889,7 @@ const stateBuilder = buildInitialState();
 stateBuilder.addItem({ id: 1, username: 'John'});
 ```
 
-All builders allow you to set the state type of its contents using the `setStateType()` and the projection values using `setProjection()`. These methods return the state builder you call them on, so you can chain them together
+All builders allow you to set the state type of its contents using the `setStateType()`, `setSyncedAt()` and the projection values using `setProjection()`. These methods return the state builder you call them on, so you can chain them together
 
 ```javascript
 const itemStateBuilder = stateBuilder.addItem({ id: 1, username: 'John'});
@@ -898,6 +898,8 @@ itemStateBuilder.setStatusType(customStatusType).setProjection({ type: 'CUSTOM' 
 ```
 
 Items inherit the state and projection of their collection, unless explicitly set. Similarly, collections inherit these values from their resource unless explicitly set.
+
+**Note** It is strongly recommended that you set the syncedAt value for your initial state, to allow the `canFallbackToOldValues()` helper to function correctly.
 
 
 ## RESTful (asynchronous) actions

@@ -294,29 +294,10 @@ export interface ActionCreatorFunction { (...args: any[]): ThunkAction<void, any
 export interface ActionCreatorDictionary { [key: string]: ActionCreatorFunction }
 
 /**
- * Common interface between state builder classes
- */
-export interface InitialStateBuilder {
-    /**
-     * Sets the status of the initial state
-     * @param ResourceStatusRequired The status type to set as the initial state
-     * @returns itself to allow for chaining method calls
-     */
-    setStatusType: (ResourceStatusRequired) => InitialStateBuilder;
-
-    /**
-     * Sets the projection of the initial state
-     * @param ResourceStatusRequired The projection object to set as the initial state
-     * @returns itself to allow for chaining method calls
-     */
-    setProjection: (ProjectionRequired) => InitialStateBuilder;
-}
-
-/**
  * Object for building and then returning an initial resource collection state that can be passed to a Redux store
  * and work with the reducers returned by the resources() function
  */
-export interface InitialCollectionStateBuilder<T> extends InitialStateBuilder {
+export interface InitialCollectionStateBuilder<T> {
     /**
      * Adds a new item to the collection's initial state builder
      * @param valuesOrParams Either the values of a new item to add to the initial state, outside of any
@@ -342,27 +323,69 @@ export interface InitialCollectionStateBuilder<T> extends InitialStateBuilder {
      * @param ResourceProjection The projection for the items if the collection or item hasn't set its own.
      */
     buildItems: ({status: ResourceStatus, projection: ResourceProjection}) => { [key: string]: ResourceItem<T>; }
+
+    /**
+     * Sets the status of the initial state
+     * @param ResourceStatusRequired The status type to set as the initial state
+     * @returns itself to allow for chaining method calls
+     */
+    setStatusType: (ResourceStatusRequired) => InitialCollectionStateBuilder<T>;
+
+    /**
+     * Sets the date the data was synced at
+     * @param date The date the data was last synced
+     * @returns itself to allow for chaining method calls
+     */
+    setSyncedAt: (date) => InitialCollectionStateBuilder<T>;
+
+    /**
+     * Sets the projection of the initial state
+     * @param ResourceStatusRequired The projection object to set as the initial state
+     * @returns itself to allow for chaining method calls
+     */
+    setProjection: (ProjectionRequired) => InitialCollectionStateBuilder<T>;
 }
 
 /**
  * Object for building and then returning an initial resource item state that can be passed to a Redux store
  * and work with the reducers returned by the resources() function
  */
-export interface InitialItemStateBuilder<T> extends InitialStateBuilder {
+export interface InitialItemStateBuilder<T> {
     /**
      * Generates the initial item state the builder has been configured for, in the format suitable to pass to
      * the Redux store.
      * @param ResourceStatus The status to use for the item if it hasn't set its own.
      * @param ResourceProjection The projection for the item if it hasn't set its own.
      */
-    build: ({status: ResourceStatus, projection: ResourceProjection}) => ResourceItem<T>
+    build: ({status: ResourceStatus, projection: ResourceProjection}) => ResourceItem<T>;
+
+    /**
+     * Sets the status of the initial state
+     * @param ResourceStatusRequired The status type to set as the initial state
+     * @returns itself to allow for chaining method calls
+     */
+    setStatusType: (ResourceStatusRequired) => InitialItemStateBuilder<T>;
+
+    /**
+     * Sets the date the data was synced at
+     * @param date The date the data was last synced
+     * @returns itself to allow for chaining method calls
+     */
+    setSyncedAt: (date) => InitialItemStateBuilder<T>;
+
+    /**
+     * Sets the projection of the initial state
+     * @param ResourceStatusRequired The projection object to set as the initial state
+     * @returns itself to allow for chaining method calls
+     */
+    setProjection: (ProjectionRequired) => InitialItemStateBuilder<T>;
 }
 
 /**
  * Object for building and then returning an initial state that can be passed to a Redux store and work
  * with the reducers returned by the resources() function
  */
-export interface InitialResourceStateBuilder<T> extends InitialStateBuilder {
+export interface InitialResourceStateBuilder<T> {
     /**
      * Adds a new collection to the initial state builder
      * @param itemsOrParams Either the params to use to index the collection or the list of items that
@@ -386,7 +409,29 @@ export interface InitialResourceStateBuilder<T> extends InitialStateBuilder {
      * Generates the initial state the builder has been configured for, in the format suitable to pass to
      * the Redux store.
      */
-    build: () => ResourcesReduxState<T>
+    build: () => ResourcesReduxState<T>;
+
+    /**
+     * Sets the status of the initial state
+     * @param ResourceStatusRequired The status type to set as the initial state
+     * @returns itself to allow for chaining method calls
+     */
+    setStatusType: (ResourceStatusRequired) => InitialResourceStateBuilder<T>;
+
+    /**
+     * Sets the date the data was synced at
+     * @param date The date the data was last synced
+     * @returns itself to allow for chaining method calls
+     */
+    setSyncedAt: (date) => InitialResourceStateBuilder<T>;
+
+    /**
+     * Sets the projection of the initial state
+     * @param ResourceStatusRequired The projection object to set as the initial state
+     * @returns itself to allow for chaining method calls
+     */
+    setProjection: (ProjectionRequired) => InitialResourceStateBuilder<T>;
+
 }
 
 export interface ResourcesDefinition<T> {
@@ -692,3 +737,24 @@ export function getTimeSinceLastSync(itemOrCollection: GenericAttributes): numbe
  * @returns The previous values
  */
 export function getValuesBeforeEditing<T>(item: ResourceItem<T>): number;
+
+/**
+ * Whether the item or collection has finished being fetched
+ * @param itemOrCollection The item or collection to consider
+ * @returns True if the item or collection has finished fetching
+ */
+export function isFinishedFetching(itemOrCollection: GenericAttributes): boolean;
+
+/**
+ * Whether the item or collection has finished being successfully fetched
+ * @param itemOrCollection The item or collection to consider
+ * @returns True if the item or collection was successfully fetched
+ */
+export function isSuccessfullyFetched(itemOrCollection: GenericAttributes): boolean;
+
+/**
+ * Whether the item or collection is in an errored state - usually because the last request failed
+ * @param itemOrCollection The item or collection to consider
+ * @returns True if the item or collection is in an errored state
+ */
+export function isInAnErrorState(itemOrCollection: GenericAttributes): boolean;
