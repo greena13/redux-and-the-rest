@@ -1168,12 +1168,12 @@ It should not be used for editing a new resource item - user the editNew action 
 
 ### Detecting if a resource item has been edited
 
-You can use the `hasBeenModified()` helper function to determine if a resource item has been edited (but not saved to the server) since it was last synchronised.
+You can use the `hasBeenEdited()` helper function to determine if a resource item has been edited (but not saved to the server) since it was last synchronised.
 
 ```javascript
-import { hasBeenModified } from 'redux-and-the-rest';
+import { hasBeenEdited } from 'redux-and-the-rest';
 
-if (hasBeenModified(item)) {
+if (hasBeenEdited(item)) {
   // ...
 }
 ```
