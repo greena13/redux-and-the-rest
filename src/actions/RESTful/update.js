@@ -45,9 +45,11 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
   const key = getItemKey(normalizedParams, { keyBy });
 
   return (dispatch) => {
+    const requestedAt = Date.now();
+
     dispatch(
       submitUpdateResource(
-        { transforms, action, key, projection },
+        { transforms, action, key, projection, requestedAt },
         actionCreatorOptions,
         values,
         actionCreatorOptions
@@ -61,6 +63,7 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
       url,
       key, keyBy,
       params: normalizedParams,
+      requestedAt,
       dispatch,
       request: {
         method: HTTP_REQUEST_TYPE,
@@ -85,14 +88,14 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
  * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
  */
 function submitUpdateResource(options, actionCreatorOptions, values) {
-  const { transforms, action, key } = options;
+  const { transforms, action, key, requestedAt } = options;
 
   return {
     type: action,
     status: UPDATING, key,
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       values,
-      status: { type: UPDATING, requestedAt: Date.now() }
+      status: { type: UPDATING, requestedAt }
     }),
     previousValues: actionCreatorOptions.previousValues
   };

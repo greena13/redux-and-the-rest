@@ -48,13 +48,16 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
   const key = getItemKey(normalizedParams, { keyBy });
 
   return (dispatch) => {
-    dispatch(deleteResourceUpdate({ action, key }, actionCreatorOptions));
+    const requestedAt = Date.now();
+
+    dispatch(deleteResourceUpdate({ action, key, requestedAt }, actionCreatorOptions));
 
     return makeRequest({
       ...options,
 
       url, key,
       previousValues: actionCreatorOptions.previous,
+      requestedAt,
       dispatch,
       request: {
         method: HTTP_REQUEST_TYPE,
@@ -79,12 +82,12 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function deleteResourceUpdate(options, values) {
-  const { action, key } = options;
+  const { action, key, requestedAt } = options;
 
   return {
     type: action,
     status: DESTROYING, key,
-    requestedAt: Date.now(),
+    requestedAt,
     previousValues: isEmpty(values) ? null : values
   };
 }

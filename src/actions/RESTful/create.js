@@ -80,9 +80,10 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
 
   return (dispatch) => {
     const collectionOperations = extractCollectionOperations(actionCreatorOptions, urlOnlyParams);
+    const requestedAt = Date.now();
 
     dispatch(
-      submitCreateResource({ action, transforms, key, projection }, actionCreatorOptions, values, collectionOperations)
+      submitCreateResource({ action, transforms, key, projection, requestedAt }, actionCreatorOptions, values, collectionOperations)
     );
 
     return makeRequest({
@@ -91,6 +92,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
       params: normalizedParams,
       collectionOperations,
       url,
+      requestedAt,
       dispatch,
       request: {
         method: HTTP_REQUEST_TYPE,
@@ -117,7 +119,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
  * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
  */
 function submitCreateResource(options, actionCreatorOptions, values, collectionOperations) {
-  const { transforms, action, key } = options;
+  const { transforms, action, key, requestedAt } = options;
 
   return {
     type: action,
@@ -127,7 +129,7 @@ function submitCreateResource(options, actionCreatorOptions, values, collectionO
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
       values,
-      status: { type: CREATING, requestedAt: Date.now() }
+      status: { type: CREATING, requestedAt }
     })
   };
 }

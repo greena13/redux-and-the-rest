@@ -43,10 +43,12 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
   }
 
   return (dispatch) => {
+    const requestedAt = Date.now();
+
     /**
      * Immediately dispatch an action to change the state of the collection to be FETCHING
      */
-    dispatch(requestCollection({ action, projection: actionCreatorOptions.projection || projection }, key));
+    dispatch(requestCollection({ action, projection: actionCreatorOptions.projection || projection, requestedAt }, key));
 
     /**
      * Make a request to the external API and dispatch another action when the response is received, populating
@@ -57,6 +59,7 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
       ...options,
       key, keyBy, params,
       url,
+      requestedAt,
       dispatch,
       request: {
         method: HTTP_REQUEST_TYPE,
@@ -79,14 +82,14 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function requestCollection(options, key) {
-  const { action, projection = { type: COMPLETE } } = options;
+  const { action, projection = { type: COMPLETE }, requestedAt } = options;
 
   return {
     type: action,
     status: FETCHING,
     collection: {
       ...COLLECTION,
-      status: { type: FETCHING, requestedAt: Date.now() },
+      status: { type: FETCHING, requestedAt },
       projection: projection
     },
     key,
@@ -102,7 +105,7 @@ function requestCollection(options, key) {
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function receiveCollection(options, actionCreatorOptions, collection) {
-  const { transforms, key, keyBy, action, params } = options;
+  const { transforms, key, keyBy, action, params, requestedAt } = options;
 
   const positions = [];
 
@@ -125,7 +128,7 @@ function receiveCollection(options, actionCreatorOptions, collection) {
     memo[itemKey] = applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
       values,
-      status: { type: SUCCESS, syncedAt },
+      status: { type: SUCCESS, requestedAt, syncedAt },
     });
 
     return memo;

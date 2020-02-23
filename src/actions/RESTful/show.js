@@ -41,10 +41,12 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
   const key = getItemKey(normalizedParams, { keyBy });
 
   return (dispatch) => {
+    const requestedAt = Date.now();
+
     /**
      * Immediately dispatch an action to change the state of the resource item to be FETCHING
      */
-    dispatch(requestResource({ action, transforms, key, projection  }, actionCreatorOptions));
+    dispatch(requestResource({ action, transforms, key, projection, requestedAt }, actionCreatorOptions));
 
     /**
      * Make a request to the external API and dispatch another action when the response is received, populating
@@ -58,6 +60,7 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
       request: {
         method: HTTP_REQUEST_TYPE
       },
+      requestedAt,
       dispatch,
       onSuccess: receiveResource,
       onError: handleResourceError,
@@ -77,7 +80,7 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function requestResource(options, actionCreatorOptions) {
-  const { transforms, action, key } = options;
+  const { transforms, action, key, requestedAt } = options;
 
   return {
     type: action,
@@ -86,7 +89,7 @@ function requestResource(options, actionCreatorOptions) {
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
       values: { },
-      status: { type: FETCHING, requestedAt: Date.now() }
+      status: { type: FETCHING, requestedAt }
     })
   };
 }
