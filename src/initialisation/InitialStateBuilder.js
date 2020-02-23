@@ -21,6 +21,17 @@ class InitialStateBuilder {
   }
 
   /**
+   * Sets the date the data was synced at
+   * @param {number} date The date the data was last synced
+   * @returns {InitialStateBuilder} itself to allow for chaining method calls
+   */
+  setSyncedAt(date) {
+    this.status.syncedAt = date;
+
+    return this;
+  }
+
+  /**
    * Sets the projection of the initial state
    * @param {ResourceProjection} projectionType The projection object to set as the initial state
    * @returns {InitialStateBuilder} itself to allow for chaining method calls
