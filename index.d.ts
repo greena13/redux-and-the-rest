@@ -157,7 +157,7 @@ export interface Projection extends ProjectionRequired {
 /**
  * The generic structure items and collections
  */
-export interface GenericAttributes {
+export interface GenericItemOrCollection {
     /**
      * The status information of the item or collection
      */
@@ -172,7 +172,7 @@ export interface GenericAttributes {
 /**
  * The state and values of a single item of a particular resource
  */
-export interface ResourceItem<T> extends GenericAttributes {
+export interface ResourceItem<T> extends GenericItemOrCollection {
     values: T,
 
     /**
@@ -189,7 +189,7 @@ export type ResourceCollectionId = string;
 /**
  * A collection of a particular resource
  */
-export interface ResourceCollection<T> extends GenericAttributes {
+export interface ResourceCollection<T> extends GenericItemOrCollection {
     /**
      * A list of ids of resources in the order they appear in that collection.
      */
@@ -691,7 +691,7 @@ export function getConfiguration(): GlobalConfigurationOptions;
  * @param item The item to evaluate
  * @returns True if the resource item can be rolled back
  */
-export function hasBeenEdited(item: GenericAttributes): boolean;
+export function hasBeenEdited(item: GenericItemOrCollection): boolean;
 
 /**
  * Whether the last request for an item or collection errored, but there is still old values in the store that
@@ -699,21 +699,21 @@ export function hasBeenEdited(item: GenericAttributes): boolean;
  * @params itemOrCollection The item or collection to test for old values
  * @returns True if the item or collection has errored but has old values that can be displayed
  */
-export function canFallbackToOldValues(itemOrCollection: GenericAttributes): boolean;
+export function canFallbackToOldValues(itemOrCollection: GenericItemOrCollection): boolean;
 
 /**
  * The time in milliseconds since the item or collection was last requested
  * @param itemOrCollection The item or collection to consider
  * @returns Number of milliseconds since the item or collection was requested
  */
-export function getTimeSinceFetchStarted(itemOrCollection: GenericAttributes): number;
+export function getTimeSinceFetchStarted(itemOrCollection: GenericItemOrCollection): number;
 
 /**
  * The time in milliseconds since the item or collection was last synchronised with the external API
  * @param itemOrCollection The item or collection to consider
  * @returns Number of milliseconds since the item or collection was last synced with the external API
  */
-export function getTimeSinceLastSync(itemOrCollection: GenericAttributes): number;
+export function getTimeSinceLastSync(itemOrCollection: GenericItemOrCollection): number;
 
 /**
  * The original item values before an edits were performed.
@@ -727,18 +727,18 @@ export function getValuesBeforeEditing<T>(item: ResourceItem<T>): number;
  * @param itemOrCollection The item or collection to consider
  * @returns True if the item or collection has finished fetching
  */
-export function isFinishedFetching(itemOrCollection: GenericAttributes): boolean;
+export function isFinishedFetching(itemOrCollection: GenericItemOrCollection): boolean;
 
 /**
  * Whether the item or collection has finished being successfully fetched
  * @param itemOrCollection The item or collection to consider
  * @returns True if the item or collection was successfully fetched
  */
-export function isSuccessfullyFetched(itemOrCollection: GenericAttributes): boolean;
+export function isSuccessfullyFetched(itemOrCollection: GenericItemOrCollection): boolean;
 
 /**
  * Whether the item or collection is in an errored state - usually because the last request failed
  * @param itemOrCollection The item or collection to consider
  * @returns True if the item or collection is in an errored state
  */
-export function isInAnErrorState(itemOrCollection: GenericAttributes): boolean;
+export function isInAnErrorState(itemOrCollection: GenericItemOrCollection): boolean;
