@@ -155,12 +155,30 @@ export interface Projection extends ProjectionRequired {
 }
 
 /**
+ * The generic structure items and collections
+ */
+export interface GenericAttributes {
+    /**
+     * The status information of the item or collection
+     */
+    status: ResourceStatus,
+
+    /**
+     * The projection information of the item or collection
+     */
+    projection: Projection
+}
+
+/**
  * The state and values of a single item of a particular resource
  */
-export interface ResourceItem<T> {
+export interface ResourceItem<T> extends GenericAttributes {
     values: T,
+
+    /**
+     * The status information of the resource
+     */
     status: ResourceItemStatus<T>,
-    projection: Projection
 }
 
 /**
@@ -171,21 +189,11 @@ export type ResourceCollectionId = string;
 /**
  * A collection of a particular resource
  */
-export interface ResourceCollection<T> {
+export interface ResourceCollection<T> extends GenericAttributes {
     /**
      * A list of ids of resources in the order they appear in that collection.
      */
     positions: string[],
-
-    /**
-     * The status information of the resource collection
-     */
-    status: ResourceStatus,
-
-    /**
-     * The projection information of the resource collection
-     */
-    projection: Projection,
 
     /**
      * The list of items in the collection, in the order that they appear
@@ -648,3 +656,32 @@ export function configure(config: GlobalConfigurationOptions): void;
  * Returns the current global configuration options
  */
 export function getConfiguration(): GlobalConfigurationOptions;
+
+/**
+ * Whether the resource item has been modified since it was last synced with the server
+ * @param item The item to evaluate
+ * @returns True if the resource item can be rolled back
+ */
+export function hasBeenModified(item: GenericAttributes): boolean;
+
+/**
+ * Whether the last request for an item or collection errored, but there is still old values in the store that
+ * can be displayed instead.
+ * @params itemOrCollection The item or collection to test for old values
+ * @returns True if the item or collection has errored but has old values that can be displayed
+ */
+export function canFallbackToOldValues(itemOrCollection: GenericAttributes): boolean;
+
+/**
+ * The time in milliseconds since the item or collection was last requested
+ * @param itemOrCollection The item or collection to consider
+ * @returns Number of milliseconds since the item or collection was requested
+ */
+export function getTimeSinceFetchStarted(itemOrCollection: GenericAttributes): number;
+
+/**
+ * The time in milliseconds since the item or collection was last synchronised with the external API
+ * @param itemOrCollection The item or collection to consider
+ * @returns Number of milliseconds since the item or collection was last synced with the external API
+ */
+export function getTimeSinceLastSync(itemOrCollection: GenericAttributes): number;

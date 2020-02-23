@@ -107,6 +107,9 @@ users = getCollection(store.getState().users);
 * [RESTful (asynchronous) actions](#restful-asynchronous-actions)
    * [RESTful behaviour overview](#restful-behaviour-overview)
       * [Preventing duplicate requests](#preventing-duplicate-requests)
+      * [Dealing with failed requests](#dealing-with-failed-requests)
+      * [Dealing with slow requests](#dealing-with-slow-requests)
+      * [Detecting old data](#detecting-old-data)
    * [Fetch a resource collection from the server](#fetch-a-resource-collection-from-the-server)
       * [Index action creator options](#index-action-creator-options)
    * [Fetch an individual resource item from the server](#fetch-an-individual-resource-item-from-the-server)
@@ -122,7 +125,8 @@ users = getCollection(store.getState().users);
       * [New action creator options](#new-action-creator-options)
    * [Clear the new resource item from the store](#clear-the-new-resource-item-from-the-store)
    * [Edit the new resource item in the store](#edit-the-new-resource-item-in-the-store)
-   * [Edit a resource item in the store](#edit-a-resource-item-in-the-store)
+   * [Edit an existing resource item in the store](#edit-an-existing-resource-item-in-the-store)
+   * [Detecting if a resource item has been edited](#detecting-if-a-resource-item-has-been-edited)
    * [Clear local edits](#clear-local-edits)
    * [Select a resource item in the store](#select-a-resource-item-in-the-store)
    * [Select another resource item in the store](#select-another-resource-item-in-the-store)
@@ -934,6 +938,48 @@ This is to allow mounting multiple React components on the same page that both r
 
 This behaviour can be overridden by passing a `force` value of `true` to the `actionCreatorOptions` of any action creator function.
 
+#### Dealing with failed requests
+
+When an error occurs with fetching a collection or resource, you can use the `canFallbackToOldValues()` helper method to determine if there are old versions of the request resource already in the store that can be displayed until a connection is re-established.
+
+It accepts an item or a collection.
+
+```javascript
+import { canFallbackToOldValues } from 'redux-and-the-rest';
+
+if (canFallbackToOldValues(item)) {
+  
+}
+```
+
+#### Dealing with slow requests
+
+You can identify slow requests with the `getTimeSinceFetchStarted()` helper method.
+
+It accepts an item or a collection and returns the time duration in milliseconds.
+
+```javascript
+import { getTimeSinceFetchStarted } from 'redux-and-the-rest';
+
+if (getTimeSinceFetchStarted(item) > 3000) {
+  
+}
+```
+
+#### Detecting old data
+
+You can use the `getTimeSinceLastSync()` helper method to identify an item or collections age and establish whether it should be re-requested.
+
+It accepts an item or a collection and returns the time duration in milliseconds.
+
+```javascript
+import { getTimeSinceLastSync } from 'redux-and-the-rest';
+
+if (getTimeSinceLastSync(item) > 3600000) {
+  
+}
+```
+
 ### Fetch a resource collection from the server
 
 The index action fetches a list or collection of resources from a particular URL. It does not require a primary identifier and instead accepts parameters that may scope, filter or order the collection.
@@ -1103,7 +1149,7 @@ This is different from the edit action creator in that it only allows editing th
 | Second action creator argument | Resource item's attributes - An object of attributes to save as the resource item's new values in the store. |
 | `status.type` lifecycle |  `NEW` |
 
-### Edit a resource item in the store
+### Edit an existing resource item in the store
 
 The edit action creator updates a resource item in the store with new values, without sending any requests to the server.
 
@@ -1120,6 +1166,18 @@ Editing a resource item for the first time sets the `status.dirty` bit to `true`
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 | Second action creator argument | Resource item's attributes - An object of attributes to save as the resource item's new values in the store. |
 | `status.type` lifecycle |  `EDITING` |
+
+### Detecting if a resource item has been edited
+
+You can use the `hasBeenModified()` helper function to determine if a resource item has been edited (but not saved to the server) since it was last synchronised.
+
+```javascript
+import { hasBeenModified } from 'redux-and-the-rest';
+
+if (hasBeenModified(item)) {
+  // ...
+}
+```
 
 ### Clear local edits
 
