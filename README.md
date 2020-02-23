@@ -89,7 +89,9 @@ users = getCollection(store.getState().users);
 * [Store data](#store-data)
    * [Getting resources from the store](#getting-resources-from-the-store)
       * [Getting items from the store](#getting-items-from-the-store)
+      * [Automatically fetching items that are not in the store](#automatically-fetching-items-that-are-not-in-the-store)
       * [Getting collections from the store](#getting-collections-from-the-store)
+      * [Automatically fetching collections that are not in the store](#automatically-fetching-collections-that-are-not-in-the-store)
    * [Store data schemas](#store-data-schemas)
       * [Nomenclature](#nomenclature)
       * [Resource schema](#resource-schema)
@@ -545,6 +547,65 @@ function mapStateToProps({ users }, { params: { id } }) {
 }
 ```
 
+#### Automatically fetching items that are not in the store
+
+To get an item from a resource or request it if it's not in the store, you use the `getOrFetchItem()` function returned by `resources()`.
+
+If the item is in the store, it will return it. However, if it is not there, it will return an [empty item](#item-schema) (instead of `undefined`) and trigger the action(s) to fetch the resource in the background.
+
+You can use this method call multiple times, across renders and components mounted at the same time, as duplicate actions and requests are ignored, so no unnecessary updates to the store or HTTP request will be made.
+
+In order for you to use this, a few pre-requisites must be met:
+
+You must use the `configure()` function to pass `redux-and-the-rest` the instance of the store after you define it:
+
+```javascript
+import { configure } from 'redux-and-the-rest';
+import { createStore } from 'redux';
+
+const store = createStore(reducers, {});
+
+configure({ store });
+```
+
+And you must define a `show` action when defining your resource:
+
+```javascript
+import { serializeKey, ITEM } from `redux-and-the-rest`;
+import { connect } from 'react-redux';
+
+const { reducers: usersReducers, actionCreators: { fetchUsers }, getOrFetchItem } = resources(
+    {
+        name: 'users',
+        url: 'http://test.com/users/:id?'.
+        keyBy: 'id'
+    },
+    {
+        show: true
+    }
+);
+```
+
+You can then use `getOrFetchItem()` in one of a few ways. If you pass one argument, it will assume that argument is the values to use to generate the key for the item you want to retrieve, and it will assume the resources are located in your redux store under the same `name` you passed to `resources()`
+
+```javascript
+function mapStateToProps({ users }, { params: { id } }) {
+  // Looks for the user item in store.getState().users.items[<id>]
+  return getOrFetchItem({ id }); 
+}
+```
+
+If you use it with two arguments, it will assume the first is the location of the resources in the redux store:
+
+```javascript
+function mapStateToProps({ users }, { params: { id } }) {
+  // Looks for the user item in store.getState().customers.items[<id>]
+  return getOrFetchItem('customers', { id }); 
+}
+```
+
+If you use 3 arguments, the third is assumed an actionCreatorOptions hash that should be passed to the `fetch*()` action creator, if it needs to be called because the item is not in the store.
+
 #### Getting collections from the store
 
 To get a collection from a resource, you use the `getCollection()` function returned by `resources()`.
@@ -570,6 +631,12 @@ function mapStateToProps({ users: usersResource }, { params: { order } }) {
   return getCollection(usersResource, { order });
 }
 ```
+
+#### Automatically fetching collections that are not in the store
+
+Similar to `getOrFetchItem()`, the `resources()` function returns a `getOrFetchCollection()` that accepts the same arguments and performs in the same manner.
+
+To use it, you will also need to have configured `redux-and-the-rest` to use your store instance and you'll need to have defined an `index` action when defining your `resources()`.
 
 ### Store data schemas
 
