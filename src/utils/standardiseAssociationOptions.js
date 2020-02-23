@@ -15,7 +15,7 @@
  * @returns AssociationOptions
  */
 function standardiseAssociationOptions(options) {
-  if (options.__isResource) {
+  if (options.__isResourcesDefinition) {
     return options;
   } else {
     const { resource, ..._options} = options;

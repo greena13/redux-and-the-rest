@@ -1,5 +1,5 @@
 import { RequestInit, RequestCredentials } from 'whatwg-fetch';
-import { AnyAction, Reducer, ReducersMapObject } from 'redux';
+import { AnyAction, Reducer, ReducersMapObject, Store } from 'redux';
 import { ThunkAction } from 'redux-thunk'
 
 /**
@@ -217,15 +217,53 @@ export interface ResourcesReduxState<T> {
 }
 
 /**
- * Returns an item of a particular resource from a Redux store, removing any structure used implicitly.
+ * Returns an item of a particular resource item from a Redux store, removing any structure used implicitly.
  */
 export interface GetItemFunction<T> { (currentState: ResourcesReduxState<T>, params: object | string): ResourceItem<T> }
+
+/**
+ * Returns an item of a particular resource from a Redux store. If the item is not available in the store,
+ * an empty item is returned immediately and the fetch action creator is called to update the store and
+ * request the resource item from an external API.
+ * @param {string | Object} storeAttributeNameOrParams Either the root location of where the resources
+ *        are being stored in the Redux store, or the parameters to serialize to find the item in the
+ *        store. When the location of the resources is not set, the value of the 'name' option passed to
+ *        resources() is used.
+ * @param {Object} [paramsOrActionCreatorOptions={}] When the first argument is used to specify the resources'
+ *        location in the store, this argument is the params to serialize to use as the key to find the
+ *        resource item. If the first argument is skipped, this one is the options to pass to the fetch
+ *        action creator if it's called.
+ * @param {Object} [optionalActionCreatorOptions={}] When the first argument is used to specify the resources'
+ *        location in the store, this argument the options to pass to the fetch action creator if it's
+ *        called.
+ * @return {ResourceItem} The resource item if it's in the store, or an empty item.
+ */
+export interface GetOrFetchItemFunction<T> { (storeAttributeNameOrParams: object | string, paramsOrActionCreatorOptions?: object, optionalActionCreatorOptions?: object): ResourceItem<T> }
 
 /**
  * Returns a collection of a particular resource from a Redux store, populating it with the correct items, in
  * the right order.
  */
 export interface GetCollectionFunction<T> { (currentState: ResourcesReduxState<T>, params?: object | string): ResourceCollection<T> }
+
+/**
+ * Returns an collection of a particular resource from a Redux store. If the collection is not available in the store,
+ * an empty collection is returned immediately and the fetch action creator is called to update the store and
+ * request the resource collection from an external API.
+ * @param {string | Object} storeAttributeNameOrParams Either the root location of where the resources
+ *        are being stored in the Redux store, or the parameters to serialize to find the collection in the
+ *        store. When the location of the resources is not set, the value of the 'name' option passed to
+ *        resources() is used.
+ * @param {Object} [paramsOrActionCreatorOptions={}] When the first argument is used to specify the resources'
+ *        location in the store, this argument is the params to serialize to use as the key to find the
+ *        resource collection. If the first argument is skipped, this one is the options to pass to the fetch
+ *        action creator if it's called.
+ * @param {Object} [optionalActionCreatorOptions={}] When the first argument is used to specify the resources'
+ *        location in the store, this argument the options to pass to the fetch action creator if it's
+ *        called.
+ * @return {ResourceCollection} The resource collection if it's in the store, or an empty collection.
+ */
+export interface GetOrFetchCollectionFunction<T> { (storeAttributeNameOrParams?: object | string, paramsOrActionCreatorOptions?: object, optionalActionCreatorOptions?: object): ResourceCollection<T> }
 
 /**
  * The type of Redux action that is emitted when that action occurs
@@ -366,6 +404,12 @@ export interface ResourcesDefinition<T> {
     getItem: GetItemFunction<T>,
 
     /**
+     * Function that returns a particular item of a resource type or calls the fetch action creator if it's
+     * not available in the store
+     */
+    getOrFetchItem: GetOrFetchItemFunction<T>,
+
+    /**
      * Function that returns the new item of a resource type
      */
     getNewItem: GetItemFunction<T>,
@@ -376,7 +420,13 @@ export interface ResourcesDefinition<T> {
     getCollection: GetCollectionFunction<T>,
 
     /**
-     * Function to build the initial resource state:
+     * Function that returns a particular collection of a resource type or calls the fetch action creator if it's
+     * not available in the store
+     */
+    getOrFetchCollection: GetOrFetchCollectionFunction<T>,
+
+    /**
+     * Function to build the initial resource state
      */
     buildInitialState: (items: Array<T>) => InitialResourceStateBuilder<T>,
 }
@@ -443,6 +493,12 @@ export interface GlobalConfigurationOptions {
      * is added to the store.
      */
     afterReducers?: Array<Reducer>,
+
+    /**
+     * The Redux store, used to directly invoke dispatch and get state for the getOrFetchItem() and
+     * getOrFetchCollection() functions
+     */
+    store?: Store,
 }
 
 /**

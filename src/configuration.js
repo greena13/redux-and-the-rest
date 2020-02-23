@@ -33,6 +33,8 @@ let configuration = {};
  * @property {Array.<ReducerFunction>} afterReducers A list of functions to call after passing the resource to
  *           the reducer. This is useful if you want to use the default reducer, but provide some additional
  *           post-processing to standardise the resource before it is added to the store.
+ *
+ * @property {Store} store The Redux store, used to directly invoke dispatch and get state.
  */
 
 /**

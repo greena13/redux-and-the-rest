@@ -34,17 +34,6 @@ describe('buildInitialState:', function() {
                 type: COMPLETE
               }
             }
-          },
-          collections: {
-            [EmptyKey]: {
-              positions: [1],
-              status: {
-                type: SUCCESS
-              },
-              projection: {
-                type: COMPLETE
-              }
-            }
           }
         });
       });
@@ -113,7 +102,9 @@ describe('buildInitialState:', function() {
 
     describe('when the status type is set only on the resource', () => {
       it('then correctly inherits that status type for all items and collections', function() {
-        const stateBuilder = this.buildInitialState([{ id: 1, username: 'John'}]);
+        const stateBuilder = this.buildInitialState();
+        stateBuilder.addCollection([{ id: 1, username: 'John'}]);
+
         const customStatusType = 'CUSTOM';
 
         stateBuilder.setStatusType(customStatusType);

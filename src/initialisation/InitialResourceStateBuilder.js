@@ -20,7 +20,7 @@ class InitialResourceStateBuilder extends InitialStateBuilder {
     this.items = {};
 
     if (!isEmpty(items)) {
-      this.addCollection(EmptyKey, items);
+      items.forEach((item) => this.addItem(item));
     }
   }
 

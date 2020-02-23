@@ -12,7 +12,7 @@ import without from '../../utils/collection/without';
 import replace from '../../utils/collection/replace';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import processActionCreatorOptions from '../../action-creators/helpers/processActionCreatorOptions';
-import internalGetItem from '../../utils/internalGetItem';
+import getItem from '../../utils/getItem';
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import isUndefined from '../../utils/isUndefined';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
@@ -262,7 +262,7 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
      * would be removed from the store when the second was created.
      */
     const itemsToPersist = function(){
-      if (internalGetItem(resources, resources.newItemKey).status.type === NEW) {
+      if (getItem(resources, resources.newItemKey).status.type === NEW) {
         return without(items, resources.newItemKey);
       } else {
         return items;
@@ -300,7 +300,7 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
 
   } else if (status === SUCCESS) {
     const itemsToPersist = function(){
-      if (localOnly && internalGetItem(resources, resources.newItemKey).status.type === NEW) {
+      if (localOnly && getItem(resources, resources.newItemKey).status.type === NEW) {
         /**
          * When in localOnly mode, there is no remote API call, so the CREATING step is skipped and the SUCCESS
          * is the first to happen. If so, we check if there is an existing resource item in the NEW status, and

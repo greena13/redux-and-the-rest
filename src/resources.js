@@ -3,31 +3,17 @@ import ActionsDictionary from './action-objects/ActionsDictionary';
 import buildReducers from './reducers/buildReducers';
 import buildActionCreators from './action-creators/buildActionCreators';
 import objectFrom from './utils/object/objectFrom';
-import getItem from './utils/getItem';
 import getNewItem from './public-helpers/getNewItem';
-import getCollection from './utils/getCollection';
+import getCollectionWithEmptyFallback from './utils/getCollection';
 import { getConfiguration } from './configuration';
 import InitialResourceStateBuilder from './initialisation/InitialResourceStateBuilder';
 import DefaultConfigurationOptions from './constants/DefaultConfigurationOptions';
 import resolveOptions from './action-creators/helpers/resolveOptions';
-
-/**
- * @callback GetItemFunction Returns an item of a particular resource from a Redux store, removing any
- *          structure used implicitly.
- * @param {ResourcesReduxState} resource The current resource Redux store state
- * @param {Object|string} params The parameters used to calculate the index of the resource to return
- * @return {ResourceItem} The resource item
- *
- */
-
-/**
- * @callback GetCollectionFunction Returns a collection of a particular resource from a Redux store, populating
- *           it with the correct items, in the right order.
- * @param {ResourcesReduxState} resource The current resource Redux store state
- * @param {Object|string} params The parameters used to calculate the index of the collection to return
- * @return {ResourceCollectionWithItems} The resource collection
- *
- */
+import getItemWithEmptyFallback from './utils/getItem';
+import getItemKey from './action-creators/helpers/getItemKey';
+import { COLLECTION, ITEM } from './constants/DataStructures';
+import getOrFetch from './utils/getOrFetch';
+import getCollectionKey from './action-creators/helpers/getCollectionKey';
 
 /**
  * @typedef {Object<string, ResourcesDefinition>} AssociationOptionsMap A Mapping between the name of an
@@ -128,11 +114,22 @@ import resolveOptions from './action-creators/helpers/resolveOptions';
  * @property {ActionDictionary} actions Mapping between RESTful action names and constant Redux Action names
  * @property {ActionCreatorDictionary} actionCreators Dictionary of available action creators
  * @property {ReducerFunction} reducers Reducer function that will accept the resource's current state and an
- *          action and return the new resource state
- * @property {function(ResourcesReduxState): ResourceItem} getNewItem Function that returns the new item in the
- *           collection
- * @property {GetItemFunction} getItem Function that returns a particular item of a resource type
- * @property {GetCollectionFunction} getCollection Function that returns a particular collection of resources
+ *           action and return the new resource state
+ * @property {function(ResourcesReduxState): ResourceItem} getNewItem Function that returns the new item of
+ *           this resource type
+ * @property {function(ResourcesReduxState, Object|string): ResourceItem} getItem Function that returns a
+ *           particular item of a resource type
+ * @property {function(string | ?Object, ?Object): ResourceItem} getOrFetchItem Function that returns
+ *           a particular item of a resource type, or calls the fetch action creator to retrieve it in the
+ *           background.
+ * @property {function(ResourcesReduxState, Object|string): ResourceCollectionWithItems} getCollection Function that
+ *          returns a particular collection of resources
+ * @property {function(string | ?Object, ?Object): ResourceCollectionWithItems} getOrFetchCollection Function that
+ *           returns a particular collection of a resource type, or calls the fetch action creator to
+ *           retrieve it in the background.
+ * @property {function(Object[]): InitialResourceStateBuilder} buildInitialState Creates a new initial
+ *           state builder for the resources of this type
+ * @property {boolean} __isResourcesDefinition An internal flag to indicate an object is a resources definition
  */
 
 /**
@@ -164,18 +161,129 @@ function resources(resourceOptions, actionOptions = {}) {
   const reducers = buildReducers(resourceOptions, actions, _actionOptions);
   const actionCreators = buildActionCreators(resourceOptions, actions, _actionOptions);
 
+  /**
+   * Returns an item of a particular resource from a Redux store, removing any structure used implicitly.
+   * If the item is not available in the store, an empty item is returned.
+   * @param {ResourcesReduxState} resourcesState The current resource Redux store state
+   * @param {Object|string} params The parameters used to calculate the index of the resource to return
+   * @return {ResourceItem} The resource item
+   */
+  function getItem(resourcesState, params) {
+    return getItemWithEmptyFallback(resourcesState, getItemKey(params, resourceOptions));
+  }
+
+  /**
+   * Returns a collection of a particular resource from a Redux store, populating it with the correct items,
+   * in the right order.
+   * @param {ResourcesReduxState} resourcesState The current resource Redux store state
+   * @param {Object|string} params The parameters used to calculate the index of the collection to return
+   * @return {ResourceCollectionWithItems} The resource collection
+   */
+  function getCollection(resourcesState, params) {
+    return getCollectionWithEmptyFallback(resourceOptions, resourcesState, params);
+  }
+
   return {
+
+    /**
+     * @type {ActionDictionary} Mapping between RESTful action names and constant Redux Action names
+     */
     actions: actions.toHash(),
+
+    /**
+     * @type {ActionCreatorDictionary} Dictionary of available action creators
+     */
     actionCreators,
+
+    /**
+     * @type {ReducerFunction} Reducer function that will accept the resource's current state and an
+     *       action and return the new resource state
+     */
     reducers,
 
-    getItem: (resource, params) => getItem(resourceOptions, resource, params),
-
+    /**
+     * @type {function(ResourcesReduxState): ResourceItem} Function that returns the new item of this resource
+     *       type
+     */
     getNewItem,
 
-    getCollection: (resource, params) => getCollection(resourceOptions, resource, params),
+    getItem,
 
-    buildInitialState: (items = []) => {
+    /**
+     * Returns an item of a particular resource from a Redux store. If the item is not available in the store,
+     * an empty item is returned immediately and the fetch action creator is called to update the store and
+     * request the resource item from an external API.
+     * @param {string | Object} storeAttributeNameOrParams Either the root location of where the resources
+     *        are being stored in the Redux store, or the parameters to serialize to find the item in the
+     *        store. When the location of the resources is not set, the value of the 'name' option passed to
+     *        resources() is used.
+     * @param {Object} [paramsOrActionCreatorOptions={}] When the first argument is used to specify the resources'
+     *        location in the store, this argument is the params to serialize to use as the key to find the
+     *        resource item. If the first argument is skipped, this one is the options to pass to the fetch
+     *        action creator if it's called.
+     * @param {Object} [optionalActionCreatorOptions={}] When the first argument is used to specify the resources'
+     *        location in the store, this argument the options to pass to the fetch action creator if it's
+     *        called.
+     * @return {ResourceItem} The resource item if it's in the store, or an empty item.
+     */
+    getOrFetchItem(storeAttributeNameOrParams, paramsOrActionCreatorOptions, optionalActionCreatorOptions) {
+      getOrFetch({
+          typeKey: 'items',
+          fallbackActionName: 'show',
+          getFunction: getItem,
+          keyFunction: (params) => getItemKey(params, { keyBy: resourceOptions.keyBy }),
+
+          actions, actionCreators,
+          resourceName: name,
+          actionOptions: _actionOptions
+        },
+        storeAttributeNameOrParams, paramsOrActionCreatorOptions, optionalActionCreatorOptions
+      );
+    },
+
+    getCollection,
+
+    /**
+     * Returns an collection of a particular resource from a Redux store. If the collection is not available in the store,
+     * an empty collection is returned immediately and the fetch action creator is called to update the store and
+     * request the resource collection from an external API.
+     * @param {string | Object} storeAttributeNameOrParams Either the root location of where the resources
+     *        are being stored in the Redux store, or the parameters to serialize to find the collection in the
+     *        store. When the location of the resources is not set, the value of the 'name' option passed to
+     *        resources() is used.
+     * @param {Object} [paramsOrActionCreatorOptions={}] When the first argument is used to specify the resources'
+     *        location in the store, this argument is the params to serialize to use as the key to find the
+     *        resource collection. If the first argument is skipped, this one is the options to pass to the fetch
+     *        action creator if it's called.
+     * @param {Object} [optionalActionCreatorOptions={}] When the first argument is used to specify the resources'
+     *        location in the store, this argument the options to pass to the fetch action creator if it's
+     *        called.
+     * @return {ResourceCollectionWithItems} The resource collection if it's in the store, or an empty collection.
+     */
+    getOrFetchCollection(storeAttributeNameOrParams, paramsOrActionCreatorOptions, optionalActionCreatorOptions) {
+      return getOrFetch({
+          typeKey: 'collections',
+          fallbackActionName: 'index',
+          getFunction: getCollection,
+          keyFunction: (params) => getCollectionKey(params, { urlOnlyParams: resourceOptions.urlOnlyParams }),
+
+          actions, actionCreators,
+          resourceName: name,
+          actionOptions: _actionOptions
+        },
+        storeAttributeNameOrParams, paramsOrActionCreatorOptions, optionalActionCreatorOptions
+      );
+    },
+
+    /**
+     * Creates a new initial state builder for the resources of this type, which can be used to build an initial
+     * state that is the correct format to work with its reducers and can be passed to the Redux store when it's
+     * created.
+     *
+     * @param {Object[]} [items=[]] List of resource item values to be built into the initial resources state.
+     * @returns {InitialResourceStateBuilder} Builder that can be used to create the resources' initial state.
+     */
+    buildInitialState(items = []) {
       const options = resolveOptions(
         DefaultConfigurationOptions,
         getConfiguration(),
@@ -185,7 +293,11 @@ function resources(resourceOptions, actionOptions = {}) {
 
       return new InitialResourceStateBuilder(options, items);
     },
-    __isResource: true
+
+    /**
+     * @type {boolean} An internal flag to indicate an object is a resources definition
+     */
+    __isResourcesDefinition: true
   };
 }
 
