@@ -47,7 +47,7 @@ class InitialCollectionStateBuilder extends InitialStateBuilder {
    *        the collection hasn't set its own.
    * @param {ResourceProjection} options.projection The projection to use for the collection and all of its
    *        items if the collection hasn't set its own.
-   * @returns {ResourceCollection}
+   * @returns {ResourcesCollection}
    */
   build({ status = {}, projection = {} }) {
     return {

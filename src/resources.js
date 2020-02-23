@@ -115,11 +115,11 @@ import getCollectionKey from './action-creators/helpers/getCollectionKey';
  * @property {ActionCreatorDictionary} actionCreators Dictionary of available action creators
  * @property {ReducerFunction} reducers Reducer function that will accept the resource's current state and an
  *           action and return the new resource state
- * @property {function(ResourcesReduxState): ResourceItem} getNewItem Function that returns the new item of
+ * @property {function(ResourcesReduxState): ResourcesItem} getNewItem Function that returns the new item of
  *           this resource type
- * @property {function(ResourcesReduxState, Object|string): ResourceItem} getItem Function that returns a
+ * @property {function(ResourcesReduxState, Object|string): ResourcesItem} getItem Function that returns a
  *           particular item of a resource type
- * @property {function(string | ?Object, ?Object): ResourceItem} getOrFetchItem Function that returns
+ * @property {function(string | ?Object, ?Object): ResourcesItem} getOrFetchItem Function that returns
  *           a particular item of a resource type, or calls the fetch action creator to retrieve it in the
  *           background.
  * @property {function(ResourcesReduxState, Object|string): ResourceCollectionWithItems} getCollection Function that
@@ -166,7 +166,7 @@ function resources(resourceOptions, actionOptions = {}) {
    * If the item is not available in the store, an empty item is returned.
    * @param {ResourcesReduxState} resourcesState The current resource Redux store state
    * @param {Object|string} params The parameters used to calculate the index of the resource to return
-   * @return {ResourceItem} The resource item
+   * @return {ResourcesItem} The resource item
    */
   function getItem(resourcesState, params) {
     return getItemWithEmptyFallback(resourcesState, getItemKey(params, resourceOptions));
@@ -202,7 +202,7 @@ function resources(resourceOptions, actionOptions = {}) {
     reducers,
 
     /**
-     * @type {function(ResourcesReduxState): ResourceItem} Function that returns the new item of this resource
+     * @type {function(ResourcesReduxState): ResourcesItem} Function that returns the new item of this resource
      *       type
      */
     getNewItem,
@@ -217,7 +217,7 @@ function resources(resourceOptions, actionOptions = {}) {
      * @param {Object} [params={}] The params to serialize to use as the key to find the resource collection.
      * @param {Object} [actionCreatorOptions={}] The options to pass to the fetch action creator if it's
      *        called.
-     * @returns {ResourceItem} The resource item if it's in the store, or an empty item.
+     * @returns {ResourcesItem} The resource item if it's in the store, or an empty item.
      */
     getOrFetchItem(resourcesState, params, actionCreatorOptions) {
       getOrFetch({

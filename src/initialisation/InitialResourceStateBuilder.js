@@ -92,7 +92,7 @@ class InitialResourceStateBuilder extends InitialStateBuilder {
 
       /**
        * We merge the dictionary of items that are in collections with those that are not
-       * @type {Object<ResourceItemId, ResourceItem>}
+       * @type {Object<ResourceItemId, ResourcesItem>}
        */
       items: { ...itemsOutsideOfCollections, ...itemsFromCollections },
 

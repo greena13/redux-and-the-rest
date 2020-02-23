@@ -26,7 +26,7 @@ const SHARED_ATTRIBUTES = {
  */
 
 /**
- * @typedef {Object} ResourceItem The state and values of a single item of a particular resource
+ * @typedef {Object} ResourcesItem The state and values of a single item of a particular resource
  * @property {ResourceValues} values The attribute values of the resource item
  * @property {ResourceStatus} status The status information of the resource item
  * @property {ResourceProjection} projection The projection information of the resource item
@@ -38,7 +38,7 @@ const ITEM = {
 };
 
 /**
- * @type {ResourceItem} An empty resource
+ * @type {ResourcesItem} An empty resource
  */
 const RESOURCE = {
   ...ITEM
@@ -50,14 +50,14 @@ const RESOURCE = {
  */
 
 /**
- * @typedef {Object} ResourceCollection A collection of a particular resource
+ * @typedef {Object} ResourcesCollection A collection of a particular resource
  * @property {Array.<ResourceItemId>} positions A list of ids of resources in the order they appear in that
  *          collection.
  * @property {ResourceStatus} status The status information of the resource collection
  */
 
 /**
- * @type {ResourceCollection} An empty resource collection
+ * @type {ResourcesCollection} An empty resource collection
  */
 const COLLECTION = {
   positions: [],
@@ -67,8 +67,8 @@ const COLLECTION = {
 /**
  * @typedef {Object} ResourcesReduxState The state of the structure in the Redux store that keeps track of all
  *          instances of the same resource type.
- * @property {Object<ResourceItemId, ResourceItem>} items The set of items of a particular resource type
- * @property {Object<CollectionKey, ResourceCollection>} collections The set of collections of a particular
+ * @property {Object<ResourceItemId, ResourcesItem>} items The set of items of a particular resource type
+ * @property {Object<CollectionKey, ResourcesCollection>} collections The set of collections of a particular
  *           resource type
  * @property {Object<ResourceItemId, boolean>} selectionMap A dictionary of the resources that are currently
  *           selected.

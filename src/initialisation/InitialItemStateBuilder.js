@@ -20,7 +20,7 @@ class InitialItemStateBuilder extends InitialStateBuilder {
    * @param {Object} options
    * @param {ResourceStatus} options.status The status to use for the item if it hasn't set its own.
    * @param {ResourceProjection} options.projection The projection for the item if it hasn't set its own.
-   * @return {ResourceItem}
+   * @return {ResourcesItem}
    */
   build({status = {}, projection = {}}) {
     return {

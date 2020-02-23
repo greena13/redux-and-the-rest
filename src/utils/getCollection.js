@@ -3,7 +3,7 @@ import serializeKey from '../public-helpers/serializeKey';
 
 /**
  * @typedef {Object} ResourceCollectionWithItems Collection of resources, with its items in an array
- * @extends ResourceCollection
+ * @extends ResourcesCollection
  */
 
 /**

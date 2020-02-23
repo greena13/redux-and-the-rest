@@ -172,7 +172,7 @@ export interface GenericItemOrCollection {
 /**
  * The state and values of a single item of a particular resource
  */
-export interface ResourceItem<T> extends GenericItemOrCollection {
+export interface ResourcesItem<T> extends GenericItemOrCollection {
     values: T,
 
     /**
@@ -189,7 +189,7 @@ export type ResourceCollectionId = string;
 /**
  * A collection of a particular resource
  */
-export interface ResourceCollection<T> extends GenericItemOrCollection {
+export interface ResourcesCollection<T> extends GenericItemOrCollection {
     /**
      * A list of ids of resources in the order they appear in that collection.
      */
@@ -198,19 +198,19 @@ export interface ResourceCollection<T> extends GenericItemOrCollection {
     /**
      * The list of items in the collection, in the order that they appear
      */
-    items: Array<ResourceItem<T>>
+    items: Array<ResourcesItem<T>>
 }
 
 export interface ResourcesReduxState<T> {
     /**
      * The set of items of a particular resource type
      */
-    items: { [key: string]: ResourceItem<T>; },
+    items: { [key: string]: ResourcesItem<T>; },
 
     /**
      * The set of collections of a particular resource type
      */
-    collections: { [key: string]: ResourceCollection<T>; },
+    collections: { [key: string]: ResourcesCollection<T>; },
 
     /**
      * A dictionary of the resources that are currently selected.
@@ -227,7 +227,7 @@ export interface ResourcesReduxState<T> {
 /**
  * Returns an item of a particular resource item from a Redux store, removing any structure used implicitly.
  */
-export interface GetItemFunction<T> { (currentState: ResourcesReduxState<T>, params: object | string): ResourceItem<T> }
+export interface GetItemFunction<T> { (currentState: ResourcesReduxState<T>, params: object | string): ResourcesItem<T> }
 
 /**
  * Returns an item of a particular resource from a Redux store. If the item is not available in the store,
@@ -238,13 +238,13 @@ export interface GetItemFunction<T> { (currentState: ResourcesReduxState<T>, par
  * @param actionCreatorOptions The options to pass to the fetch action creator if it's called.
  * @returns The resource item if it's in the store, or an empty item.
  */
-export interface GetOrFetchItemFunction<T> { (currentState: ResourcesReduxState<T>, params: object | string, actionCreatorOptions?: object): ResourceItem<T> }
+export interface GetOrFetchItemFunction<T> { (currentState: ResourcesReduxState<T>, params: object | string, actionCreatorOptions?: object): ResourcesItem<T> }
 
 /**
  * Returns a collection of a particular resource from a Redux store, populating it with the correct items, in
  * the right order.
  */
-export interface GetCollectionFunction<T> { (currentState: ResourcesReduxState<T>, params?: object | string): ResourceCollection<T> }
+export interface GetCollectionFunction<T> { (currentState: ResourcesReduxState<T>, params?: object | string): ResourcesCollection<T> }
 
 /**
  * Returns an collection of a particular resource from a Redux store. If the collection is not available in the store,
@@ -255,7 +255,7 @@ export interface GetCollectionFunction<T> { (currentState: ResourcesReduxState<T
  * @param actionCreatorOptions The options to pass to the fetch action creator if it's called.
  * @returns The resource collection if it's in the store, or an empty collection.
  */
-export interface GetOrFetchCollectionFunction<T> { (currentState: ResourcesReduxState<T>, params?: object | string, actionCreatorOptions?: object): ResourceCollection<T> }
+export interface GetOrFetchCollectionFunction<T> { (currentState: ResourcesReduxState<T>, params?: object | string, actionCreatorOptions?: object): ResourcesCollection<T> }
 
 /**
  * The type of Redux action that is emitted when that action occurs
@@ -299,14 +299,14 @@ export interface InitialCollectionStateBuilder<T> {
      * @param ResourceProjection The projection to use for the collection and all of its items if the
      *        collection hasn't set its own.
      */
-    build: ({status: ResourceStatus, projection: ResourceProjection}) => ResourceCollection<T>;
+    build: ({status: ResourceStatus, projection: ResourceProjection}) => ResourcesCollection<T>;
 
     /**
      * Generates a map of items indexed by their correct key
      * @param ResourceStatus The status to use for the items if the collection or item hasn't set its own.
      * @param ResourceProjection The projection for the items if the collection or item hasn't set its own.
      */
-    buildItems: ({status: ResourceStatus, projection: ResourceProjection}) => { [key: string]: ResourceItem<T>; }
+    buildItems: ({status: ResourceStatus, projection: ResourceProjection}) => { [key: string]: ResourcesItem<T>; }
 
     /**
      * Sets the status of the initial state
@@ -341,7 +341,7 @@ export interface InitialItemStateBuilder<T> {
      * @param ResourceStatus The status to use for the item if it hasn't set its own.
      * @param ResourceProjection The projection for the item if it hasn't set its own.
      */
-    build: ({status: ResourceStatus, projection: ResourceProjection}) => ResourceItem<T>;
+    build: ({status: ResourceStatus, projection: ResourceProjection}) => ResourcesItem<T>;
 
     /**
      * Sets the status of the initial state
@@ -720,7 +720,7 @@ export function getTimeSinceLastSync(itemOrCollection: GenericItemOrCollection):
  * @param item The item to return the previous values for
  * @returns The previous values
  */
-export function getValuesBeforeEditing<T>(item: ResourceItem<T>): number;
+export function getValuesBeforeEditing<T>(item: ResourcesItem<T>): number;
 
 /**
  * Whether the item or collection has finished being fetched

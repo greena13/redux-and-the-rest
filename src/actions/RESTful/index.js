@@ -114,7 +114,7 @@ function receiveCollection(options, actionCreatorOptions, collection) {
   /**
    * Build a dictionary or resource items, correctly indexed by their keys and populate a flat list of
    * what position each item in that collection occupies in the list of resources.
-   * @type {Object<CollectionKey, ResourceCollection>}
+   * @type {Object<CollectionKey, ResourcesCollection>}
    */
   const items = collection.reduce((memo, values) => {
     const normalizedParams = wrapInObject(params, keyBy);
