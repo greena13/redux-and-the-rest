@@ -5,8 +5,8 @@ import { EDITING } from '../constants/Statuses';
  * @param {ResourceItem} item The item to evaluate
  * @returns {boolean} True if the resource item can be rolled back
  */
-function isModified({ status: { type, dirty } }) {
+function hasBeenModified({ status: { type, dirty } }) {
   return type === EDITING && dirty;
 }
 
-export default isModified;
+export default hasBeenModified;

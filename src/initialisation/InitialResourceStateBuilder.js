@@ -2,7 +2,7 @@ import InitialCollectionStateBuilder from './InitialCollectionStateBuilder';
 import EmptyKey from '../constants/EmptyKey';
 import InitialStateBuilder from './InitialStateBuilder';
 import isEmpty from '../utils/collection/isEmpty';
-import { RESOURCES } from '../constants/DataStructures';
+import { RESOURCES } from '..';
 import extractVariableArguments from '../utils/extractVariableArguments';
 import getItemKey from '../action-creators/helpers/getItemKey';
 import getCollectionKey from '../action-creators/helpers/getCollectionKey';

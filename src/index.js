@@ -1,7 +1,7 @@
 export { default as serializeKey } from './public-helpers/serializeKey';
 export { setConfiguration as configure, getConfiguration } from './configuration';
 
-export { default as isModifies } from './public-helpers/isModified';
+export { default as hasBeenModified } from './public-helpers/hasBeenModified';
 export { default as canFallbackToOldValues } from './public-helpers/canFallbackToOldValues';
 export { default as getTimeSinceFetchStarted } from './public-helpers/getTimeSinceFetchStarted';
 export { default as getTimeSinceLastSync } from './public-helpers/getTimeSinceLastSync';
