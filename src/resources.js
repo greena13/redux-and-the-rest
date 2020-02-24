@@ -11,7 +11,6 @@ import DefaultConfigurationOptions from './constants/DefaultConfigurationOptions
 import resolveOptions from './action-creators/helpers/resolveOptions';
 import getItemWithEmptyFallback from './utils/getItem';
 import getItemKey from './action-creators/helpers/getItemKey';
-import { COLLECTION, ITEM } from './constants/DataStructures';
 import getOrFetch from './utils/getOrFetch';
 import getCollectionKey from './action-creators/helpers/getCollectionKey';
 
@@ -220,7 +219,7 @@ function resources(resourceOptions, actionOptions = {}) {
      * @returns {ResourcesItem} The resource item if it's in the store, or an empty item.
      */
     getOrFetchItem(resourcesState, params, actionCreatorOptions) {
-      getOrFetch({
+      return getOrFetch({
           typeKey: 'items',
           fallbackActionName: 'show',
           getFunction: getItem,

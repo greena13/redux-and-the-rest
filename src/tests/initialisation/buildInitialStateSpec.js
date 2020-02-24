@@ -34,6 +34,17 @@ describe('buildInitialState:', function() {
                 type: COMPLETE
               }
             }
+          },
+          collections: {
+            [EmptyKey]: {
+              positions: [1],
+              status: {
+                type: SUCCESS
+              },
+              projection: {
+                type: COMPLETE
+              }
+            }
           }
         });
       });
