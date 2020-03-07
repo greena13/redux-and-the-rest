@@ -37,7 +37,6 @@
   },
   "homepage": "https://github.com/greena13/redux-and-the-rest#readme",
   "peerDependencies": {
-    "isomorphic-fetch": "^2.2.1",
     "redux": ">= 1.0.0",
     "redux-thunk": ">= 1.0.0"
   },
