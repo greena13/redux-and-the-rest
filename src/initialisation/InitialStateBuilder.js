@@ -33,11 +33,11 @@ class InitialStateBuilder {
 
   /**
    * Sets the projection of the initial state
-   * @param {ResourceProjection} projectionType The projection object to set as the initial state
+   * @param {ResourceProjection} projection The projection object to set as the initial state
    * @returns {InitialStateBuilder} itself to allow for chaining method calls
    */
-  setProjection(projectionType) {
-    this.projection.type = projectionType;
+  setProjection(projection) {
+    this.projection = projection;
 
     return this;
   }
