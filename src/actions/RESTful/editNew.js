@@ -56,7 +56,8 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { type, key, item }) {
+function reducer(resources, action) {
+  const { type, key, item } = action;
   const { items } = resources;
 
   const _key = key || resources.newItemKey;

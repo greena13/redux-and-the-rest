@@ -178,7 +178,8 @@ function handleUpdateResourceError(options, actionCreatorOptions, httpCode, erro
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { type, key, status, item, httpCode, error, errorOccurredAt }) {
+function reducer(resources, action) {
+  const { type, key, status, item, httpCode, error, errorOccurredAt } = action;
   const { items } = resources;
 
   assertInDevMode(() => {

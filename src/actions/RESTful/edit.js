@@ -51,7 +51,8 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { type, key, item }) {
+function reducer(resources, action) {
+  const { type, key, item } = action;
   const { items } = resources;
 
   /**
@@ -95,7 +96,7 @@ function reducer(resources, { type, key, item }) {
       ...item.values
     };
 
-    const newStatus = function(){
+    const newStatus = function () {
       if (currentItem.status.dirty) {
 
         /**

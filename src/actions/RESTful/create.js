@@ -65,7 +65,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     registerRequestStart(HTTP_REQUEST_TYPE, url);
   }
 
-  const key = function(){
+  const key = function () {
     const specifiedKey = getItemKey([normalizedParams, values], { keyBy });
 
     if (specifiedKey) {
@@ -169,7 +169,7 @@ function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOption
 function receiveCreatedResource(options, actionCreatorOptions, values) {
   const { action, keyBy, transforms, params, collectionOperations, localOnly } = options;
 
-  const key = function(){
+  const key = function () {
     const normalizedParams = wrapInObject(params, keyBy);
 
     const specifiedKey = getItemKey([values, normalizedParams], { keyBy });
@@ -242,7 +242,8 @@ function handleCreateResourceError(options, actionCreatorOptions, httpCode, erro
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { localOnly, type, temporaryKey, key, collectionOperations = {}, status, item, httpCode, error, errorOccurredAt }) {
+function reducer(resources, action) {
+  const { localOnly, type, temporaryKey, key, collectionOperations = {}, status, item, httpCode, error, errorOccurredAt } = action;
   const { items } = resources;
   const currentItem = items[temporaryKey] || ITEM;
 
@@ -265,7 +266,7 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
      * resource items after they have been created. So if if we created two items one after another, the first
      * would be removed from the store when the second was created.
      */
-    const itemsToPersist = function(){
+    const itemsToPersist = function () {
       if (getItem(resources, resources.newItemKey).status.type === NEW) {
         return without(items, resources.newItemKey);
       } else {
@@ -305,7 +306,7 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
     };
 
   } else if (status === SUCCESS) {
-    const itemsToPersist = function(){
+    const itemsToPersist = function () {
       if (localOnly && getItem(resources, resources.newItemKey).status.type === NEW) {
 
         /**

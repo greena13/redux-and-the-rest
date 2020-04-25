@@ -101,7 +101,7 @@ function deleteResourceUpdate(options, values) {
  * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function localActionCreator(options, params, actionCreatorOptions = {}){
+function localActionCreator(options, params, actionCreatorOptions = {}) {
   const { keyBy } = options;
   const normalizedParams = wrapInObject(params, keyBy);
 
@@ -166,7 +166,8 @@ function handleDestroyResourceError(options, actionCreatorOptions, httpCode, err
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { type, status, requestedAt, key, item }) {
+function reducer(resources, action) {
+  const { type, status, requestedAt, key, item } = action;
   assertInDevMode(() => {
 
     /**

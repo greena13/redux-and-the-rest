@@ -24,7 +24,7 @@ const HTTP_REQUEST_TYPE = 'GET';
  * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
  * @returns {Thunk} Function to call to dispatch an action
  */
-function actionCreator(options, params, actionCreatorOptions = { }) {
+function actionCreator(options, params, actionCreatorOptions = {}) {
   const {
     action, transforms, url: urlTemplate, keyBy, progress, projection
   } = options;
@@ -88,7 +88,7 @@ function requestResource(options, actionCreatorOptions) {
     key,
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
-      values: { },
+      values: {},
       status: { type: FETCHING, requestedAt }
     })
   };
@@ -157,7 +157,8 @@ function handleResourceError(options, actionCreatorOptions, httpCode, error) {
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { status, key, error, httpCode, item, errorOccurredAt }) {
+function reducer(resources, action) {
+  const { status, key, error, httpCode, item, errorOccurredAt } = action;
 
   /**
    * Fetch the current values for the resource if they are already in the store, otherwise fallback to an

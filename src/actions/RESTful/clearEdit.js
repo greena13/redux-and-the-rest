@@ -37,7 +37,8 @@ function actionCreator(options, params) {
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { key }) {
+function reducer(resources, action) {
+  const { key } = action;
   const { items } = resources;
 
   const currentItem = items[key];
@@ -47,7 +48,7 @@ function reducer(resources, { key }) {
    * failed to update with an external API
    */
   if (currentItem && (currentItem.status.type === EDITING || (currentItem.status.type === ERROR && currentItem.status.originalValues))) {
-    const newValues = function(){
+    const newValues = function () {
       if (currentItem.status.dirty) {
 
         /**

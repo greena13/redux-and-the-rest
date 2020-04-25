@@ -28,7 +28,7 @@ const HTTP_REQUEST_TYPE = 'GET';
  * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
  * @returns {Thunk} Function to call to dispatch an action
  */
-function actionCreator(options, params, actionCreatorOptions = { }) {
+function actionCreator(options, params, actionCreatorOptions = {}) {
   const {
     action, url: urlTemplate, keyBy, urlOnlyParams, progress, projection
   } = options;
@@ -118,7 +118,7 @@ function receiveCollection(options, actionCreatorOptions, collection) {
    */
   const items = collection.reduce((memo, values) => {
     const normalizedParams = wrapInObject(params, keyBy);
-    const itemKey = getItemKey([ values, normalizedParams ], { keyBy });
+    const itemKey = getItemKey([values, normalizedParams], { keyBy });
 
     /**
      * Push the item's key to the positions list to record where in the list the item is located
@@ -179,7 +179,8 @@ function handleCollectionError(options, actionCreatorOptions, httpCode, error) {
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { status, items, key, httpCode, collection, error, errorOccurredAt }) {
+function reducer(resources, action) {
+  const { status, items, key, httpCode, collection, error, errorOccurredAt } = action;
   const currentList = resources.collections[key] || COLLECTION;
 
   /**
@@ -211,7 +212,7 @@ function reducer(resources, { status, items, key, httpCode, collection, error, e
         }
       }
     };
-  } else if(status === SUCCESS) {
+  } else if (status === SUCCESS) {
 
     /**
      * When a collection has been successfully fetched, we merge the items contained in the API's response

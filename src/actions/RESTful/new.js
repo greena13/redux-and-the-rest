@@ -68,7 +68,8 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
  * @param {ActionObject} action The action containing the data to use to create or refine the new resource item
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { type, temporaryKey, item, collectionOperations }) {
+function reducer(resources, action) {
+  const { type, temporaryKey, item, collectionOperations } = action;
   assertInDevMode(() => {
     const existingItem = resources.items[temporaryKey];
 

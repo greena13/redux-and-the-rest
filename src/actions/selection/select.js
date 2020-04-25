@@ -35,7 +35,8 @@ function actionCreator({ action, keyBy }, params, actionCreatorOptions = {}) {
  * @param {ActionObject} action Action object to merge into resources state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { type, key, value }) {
+function reducer(resources, action) {
+  const { type, key, value } = action;
   if (resources.items[key]) {
     return {
       ...resources,

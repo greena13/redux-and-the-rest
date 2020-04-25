@@ -37,7 +37,7 @@ function reducer(resources) {
         memo[key] = { ...collection, positions: without(collection.positions, newItemKey) };
 
         return memo;
-      }, {} ),
+      }, {}),
       selectionMap: without(selectionMap, newItemKey),
       newItemKey: null,
     };
