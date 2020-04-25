@@ -39,7 +39,9 @@ let configuration = {};
 
 /**
  * Updates or sets the global configuration options
- * @param {GlobalConfigurationOptions} customConfiguration
+ * @param {GlobalConfigurationOptions} customConfiguration Configuration options to merge with the default
+ *        configuration values
+ * @returns {void}
  */
 export function setConfiguration(customConfiguration) {
   configuration = {
@@ -50,7 +52,7 @@ export function setConfiguration(customConfiguration) {
 
 /**
  * Returns the current global configuration options
- * @returns {GlobalConfigurationOptions}
+ * @returns {GlobalConfigurationOptions} The current global configuration options
  */
 export function getConfiguration() {
   return configuration;

@@ -62,11 +62,11 @@ describe('Clear edit reducer:', function () {
     });
 
     it('then does NOT change the status', function() {
-      expect(this.store.getState().users.items[2].status).toEqual({ type: SUCCESS, syncedAt: 2, requestedAt: 1 });
+      expect(this.store.getState().users.items['2'].status).toEqual({ type: SUCCESS, syncedAt: 2, requestedAt: 1 });
     });
 
     it('then does NOT change the values', function() {
-      expect(this.store.getState().users.items[2].values).toEqual({ id: 2, username: 'Bob', });
+      expect(this.store.getState().users.items['2'].values).toEqual({ id: 2, username: 'Bob', });
     });
   });
 
@@ -77,27 +77,27 @@ describe('Clear edit reducer:', function () {
     });
 
     it('then changes the status type to SUCCESS', function() {
-      expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+      expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
     });
 
     it('then does NOT change the syncedAt value in the status', function() {
-      expect(this.store.getState().users.items[1].status.syncedAt).toEqual(2);
+      expect(this.store.getState().users.items['1'].status.syncedAt).toEqual(2);
     });
 
     it('then does NOT change the requestedAt value in the status', function() {
-      expect(this.store.getState().users.items[1].status.requestedAt).toEqual(1);
+      expect(this.store.getState().users.items['1'].status.requestedAt).toEqual(1);
     });
 
     it('then clears the original values', function() {
-      expect(this.store.getState().users.items[1].status.originalValues).toEqual(undefined);
+      expect(this.store.getState().users.items['1'].status.originalValues).toEqual(undefined);
     });
 
     it('then clears the dirty bit', function() {
-      expect(this.store.getState().users.items[1].status.dirty).toEqual(undefined);
+      expect(this.store.getState().users.items['1'].status.dirty).toEqual(undefined);
     });
 
     it('then changes the values back to originalValues', function() {
-      expect(this.store.getState().users.items[1].values).toEqual({ id: 1, username: 'Jillian', });
+      expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Jillian', });
     });
   });
 
@@ -109,25 +109,25 @@ describe('Clear edit reducer:', function () {
             items: {
               1: {
                 values: {
-                  username: "Robert",
+                  username: 'Robert',
                   id: 1
                 },
                 status: {
                   dirty: true,
                   originalValues: {
-                    username: "Bobert",
+                    username: 'Bobert',
                     id: 1
                   },
-                  type: "ERROR",
+                  type: 'ERROR',
                   requestedAt: 2,
                   syncedAt: 1,
                   httpCode: 404,
                   error: {
-                    message: "Not Found",
+                    message: 'Not Found',
                   }
                 },
                 projection: {
-                  type: "COMPLETE"
+                  type: 'COMPLETE'
                 }
               }
             },
@@ -143,35 +143,35 @@ describe('Clear edit reducer:', function () {
     });
 
     it('then changes the status type to SUCCESS', function() {
-      expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+      expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
     });
 
     it('then does NOT change the syncedAt value in the status', function() {
-      expect(this.store.getState().users.items[1].status.syncedAt).toEqual(1);
+      expect(this.store.getState().users.items['1'].status.syncedAt).toEqual(1);
     });
 
     it('then does NOT change the requestedAt value in the status', function() {
-      expect(this.store.getState().users.items[1].status.requestedAt).toEqual(2);
+      expect(this.store.getState().users.items['1'].status.requestedAt).toEqual(2);
     });
 
     it('then clears the original values', function() {
-      expect(this.store.getState().users.items[1].status.originalValues).toEqual(undefined);
+      expect(this.store.getState().users.items['1'].status.originalValues).toEqual(undefined);
     });
 
     it('then clears the dirty bit', function() {
-      expect(this.store.getState().users.items[1].status.dirty).toEqual(undefined);
+      expect(this.store.getState().users.items['1'].status.dirty).toEqual(undefined);
     });
 
     it('then clears the error details', function() {
-      const status = this.store.getState().users.items[1].status;
+      const { status } = this.store.getState().users.items['1'];
 
       expect(status.error).toEqual(undefined);
       expect(status.httpCode).toEqual(undefined);
     });
 
     it('then changes the values back to originalValues', function() {
-      expect(this.store.getState().users.items[1].values).toEqual({
-        username: "Bobert",
+      expect(this.store.getState().users.items['1'].values).toEqual({
+        username: 'Bobert',
         id: 1
       });
     });

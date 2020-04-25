@@ -5,6 +5,7 @@ import {
   resources,
   CREATING, DESTROY_ERROR, DESTROYING, EDITING, ERROR, NEW, SUCCESS, UPDATING
 } from '../../../index';
+import nop from '../../../utils/function/nop';
 
 describe('Destroy reducer:', function () {
   beforeAll(function() {
@@ -35,7 +36,7 @@ describe('Destroy reducer:', function () {
     describe('and the API request succeeds', function () {
       describe('before the request has completed', function () {
         beforeAll(function () {
-          fetchMock.delete('http://test.com/users/1', new Promise(resolve => {}));
+          fetchMock.delete('http://test.com/users/1', new Promise(nop));
 
           spyOn(console, 'warn');
 
@@ -58,7 +59,7 @@ describe('Destroy reducer:', function () {
         });
 
         it('then creates a new item and sets its status to DESTROYING', function() {
-          expect(this.users.items[1].status.type).toEqual(DESTROYING);
+          expect(this.users.items['1'].status.type).toEqual(DESTROYING);
         });
       });
 
@@ -88,7 +89,7 @@ describe('Destroy reducer:', function () {
     describe('and the API request errors', function () {
       describe('before the request has completed', function () {
         beforeAll(function () {
-          fetchMock.delete('http://test.com/users/1', new Promise(resolve => {}));
+          fetchMock.delete('http://test.com/users/1', new Promise(nop));
 
           spyOn(console, 'warn');
 
@@ -111,7 +112,7 @@ describe('Destroy reducer:', function () {
         });
 
         it('then creates a new item and sets its status to DESTROYING', function() {
-          expect(this.users.items[1].status.type).toEqual(DESTROYING);
+          expect(this.users.items['1'].status.type).toEqual(DESTROYING);
         });
       });
 
@@ -134,15 +135,15 @@ describe('Destroy reducer:', function () {
         });
 
         it('then updates the items\'s status to DESTROY_ERROR', function() {
-          expect(this.store.getState().users.items[1].status.type).toEqual(DESTROY_ERROR);
+          expect(this.store.getState().users.items['1'].status.type).toEqual(DESTROY_ERROR);
         });
 
         it('then sets the syncedAt attribute', function() {
-          expect(this.store.getState().users.items[1].status.errorOccurredAt).not.toBeUndefined();
+          expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
         });
 
         it('then updates the item\'s status httpCode', function() {
-          expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
+          expect(this.store.getState().users.items['1'].status.httpCode).toEqual(404);
         });
       });
     });
@@ -190,7 +191,7 @@ describe('Destroy reducer:', function () {
 
               describe('before the request has completed', function () {
                 beforeAll(function () {
-                  fetchMock.delete('http://test.com/users/1', new Promise(resolve => {}));
+                  fetchMock.delete('http://test.com/users/1', new Promise(nop));
 
                   spyOn(console, 'warn');
 
@@ -212,7 +213,7 @@ describe('Destroy reducer:', function () {
                 });
 
                 it('then sets the item\'s status type to DESTROYING', function() {
-                  expect(this.users.items[1].status.type).toEqual(DESTROYING);
+                  expect(this.users.items['1'].status.type).toEqual(DESTROYING);
                 });
               });
 
@@ -243,7 +244,7 @@ describe('Destroy reducer:', function () {
             describe('and the API request errors', function () {
               describe('before the request has completed', function () {
                 beforeAll(function () {
-                  fetchMock.delete('http://test.com/users/1', new Promise(resolve => {}));
+                  fetchMock.delete('http://test.com/users/1', new Promise(nop));
 
                   spyOn(console, 'warn');
 
@@ -267,7 +268,7 @@ describe('Destroy reducer:', function () {
                 });
 
                 it('then creates a new item and sets its status to DESTROYING', function() {
-                  expect(this.users.items[1].status.type).toEqual(DESTROYING);
+                  expect(this.users.items['1'].status.type).toEqual(DESTROYING);
                 });
               });
 
@@ -291,15 +292,15 @@ describe('Destroy reducer:', function () {
                 });
 
                 it('then updates the items\'s status to DESTROY_ERROR', function() {
-                  expect(this.store.getState().users.items[1].status.type).toEqual(DESTROY_ERROR);
+                  expect(this.store.getState().users.items['1'].status.type).toEqual(DESTROY_ERROR);
                 });
 
                 it('then sets the syncedAt attribute', function() {
-                  expect(this.store.getState().users.items[1].status.errorOccurredAt).not.toBeUndefined();
+                  expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
                 });
 
                 it('then updates the item\'s status httpCode', function() {
-                  expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
+                  expect(this.store.getState().users.items['1'].status.httpCode).toEqual(404);
                 });
               });
             });
@@ -347,7 +348,7 @@ describe('Destroy reducer:', function () {
             describe('and the API request succeeds', function () {
               describe('before the request has completed', function () {
                 beforeAll(function () {
-                  fetchMock.delete('http://test.com/users/1', new Promise(resolve => {}));
+                  fetchMock.delete('http://test.com/users/1', new Promise(nop));
 
                   this.store = buildStore(this.initialState, { users: this.reducers } );
 
@@ -362,7 +363,7 @@ describe('Destroy reducer:', function () {
                 });
 
                 it('then sets the item\'s status to DESTROYING', function() {
-                  expect(this.users.items[1].status.type).toEqual(DESTROYING);
+                  expect(this.users.items['1'].status.type).toEqual(DESTROYING);
                 });
 
                 it('then does NOT remove the item from the selectionMap', function() {
@@ -407,7 +408,7 @@ describe('Destroy reducer:', function () {
             describe('and the API request errors', function () {
               describe('before the request has completed', function () {
                 beforeAll(function () {
-                  fetchMock.delete('http://test.com/users/1', new Promise(resolve => {}));
+                  fetchMock.delete('http://test.com/users/1', new Promise(nop));
 
                   this.store = buildStore(this.initialState, { users: this.reducers } );
 
@@ -422,7 +423,7 @@ describe('Destroy reducer:', function () {
                 });
 
                 it('then sets the item\'s status to DESTROYING', function() {
-                  expect(this.users.items[1].status.type).toEqual(DESTROYING);
+                  expect(this.users.items['1'].status.type).toEqual(DESTROYING);
                 });
 
                 it('then does NOT remove the item from the selectionMap', function() {
@@ -452,11 +453,11 @@ describe('Destroy reducer:', function () {
                 });
 
                 it('then updates the items\'s status to DESTROY_ERROR', function() {
-                  expect(this.store.getState().users.items[1].status.type).toEqual(DESTROY_ERROR);
+                  expect(this.store.getState().users.items['1'].status.type).toEqual(DESTROY_ERROR);
                 });
 
                 it('then sets the syncedAt attribute', function() {
-                  expect(this.store.getState().users.items[1].status.errorOccurredAt).not.toBeUndefined();
+                  expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
                 });
 
                 it('then does NOT remove the item from the selectionMap', function() {
@@ -468,7 +469,7 @@ describe('Destroy reducer:', function () {
                 });
 
                 it('then updates the item\'s status httpCode', function() {
-                  expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
+                  expect(this.store.getState().users.items['1'].status.httpCode).toEqual(404);
                 });
               });
             });

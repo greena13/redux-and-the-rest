@@ -29,17 +29,17 @@ import { registerRequestEnd } from '../../utils/RequestManager';
  *
  *  PUT/PATCH request options
  *
- * @param {Object} options.previousValues={} The previous values of the resource item that an PUT or PATCH
+ * @param {Object} [options.previousValues={}] The previous values of the resource item that an PUT or PATCH
  *        request is being made for. These values are passed to the success handler after the request succeeds
  *        to aid in more efficiently updating associated resource items that may contain references to resource
  *        item.
  *
  *  CREATE/DELETE request options
  *
- * @param {string||Array<string>} options.collectionKeys=[] The keys of the collections that should have the
+ * @param {string|Array<string>} [options.collectionKeys=[]] The keys of the collections that should have the
  *        resource item added or removed when the item is successfully created or destroyed.
  *
- * @param {Object} actionCreatorOptions={} The options passed to the action creator that is making the request,
+ * @param {Object} [actionCreatorOptions={}] The options passed to the action creator that is making the request,
  *        primarily to be passed to the success and error handlers to further configure their behaviour.
  *
  * @returns {Promise<void>} A promise that is resolved once the request has finished and the success or
@@ -47,6 +47,7 @@ import { registerRequestEnd } from '../../utils/RequestManager';
  */
 function makeRequest(options, actionCreatorOptions = {}) {
   const {
+
     /**
      * Request options
      */
@@ -71,7 +72,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
     ..._options
   } = options;
 
-  /********************************************************************************************************
+  /** ******************************************************************************************************
    * Compile the request options
    *********************************************************************************************************/
 
@@ -92,11 +93,13 @@ function makeRequest(options, actionCreatorOptions = {}) {
 
   const requestOptions = function(){
     const common = {
+
       /**
        * Extract options that will be handled separately below
        */
       ...without(_request, [ 'errorHandler', 'cookie', 'credentials' ]),
       headers: {
+
         /**
          * Set default Accept and Content-Type headers, but allow overriding them with options (along with
          * any other headers)
@@ -109,6 +112,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
     };
 
     if (_request.cookie) {
+
       /**
        * Support specifying cookies directly, without having to nest them in a headers parent object
        */
@@ -120,7 +124,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
     return common;
   }();
 
-  /********************************************************************************************************
+  /** ******************************************************************************************************
    * Define the request success and failure handlers
    *********************************************************************************************************/
 
@@ -128,6 +132,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
     const { status } = response;
 
     if (status < 400) {
+
       /**
        * We assume a HTTP request status below 400 is a HTTP success, but not necessarily an application-level
        * success - the presence of a top-level error object indicates an application-level error.
@@ -137,11 +142,13 @@ function makeRequest(options, actionCreatorOptions = {}) {
       return response.json().then((json) => {
         const _json = function () {
           if (responseAdaptor) {
+
             /**
              * We run the response through the responseAdaptor function, if one has been specified
              */
             return responseAdaptor(json, response);
           } else {
+
             /**
              * If a responseAdaptor hasn't been specified, we fallback to the default behaviour of looking for
              * an error on the top level of the response and separating it out for the rest of the response.
@@ -157,6 +164,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
         }();
 
         if (_json.error) {
+
           /**
            * If there was an error object on the top level of the response, we call the error handler
            */
@@ -169,6 +177,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
             )
           );
         } else {
+
           /**
            * If the response had a HTTP status code below 400 and no error at its root, we call the success
            * handler.
@@ -185,6 +194,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
       });
     } else {
       if (_request.errorHandler) {
+
         /**
          * If a separate error handler function has been specified on the request options, we hand it over
          * to that function to resolve HTTP error codes of 400 and above.
@@ -203,10 +213,12 @@ function makeRequest(options, actionCreatorOptions = {}) {
           );
         });
       } else {
+
         /**
          * If no explicit error handler function has been provided, we fallback to the default error handler.
          */
         if (response.headers.get('Content-Type').startsWith('application/json')) {
+
           /**
            * We first attempt to parse the response as valid JSON, again looking for a error attribute at the
            * top level. If one if found, it's used to create an error object that can be stored in the Redux
@@ -225,35 +237,36 @@ function makeRequest(options, actionCreatorOptions = {}) {
             );
           });
         } else {
+
           /**
            * If the response's headers do not indicate the response is valid json, we parse it instead as text
            * and insert the entire response body's content as an error message into the Redux store
            */
-          return response.text().then((message) => {
-            return dispatch(
+          return response.text().then((message) => dispatch(
               onError(
                 _options,
                 actionCreatorOptions,
                 status,
                 { message }
               )
-            )
-          });
+            ));
         }
       }
     }
   };
 
-  /********************************************************************************************************
+  /** ******************************************************************************************************
    * Make the request
    *********************************************************************************************************/
 
   if (progress) {
+
     /**
      * If the progress option has been used, we cannot use the simpler fetch API and must instead manually
      * create a XMLHttpRequest to get access to the progress events.
      */
     return new Promise((resolve, reject)=>{
+
       /**
        * We instantiate the XMLHttpRequest and set its header values
        */
@@ -303,6 +316,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
       };
 
       xhRequest.onerror = (error) => {
+
         /**
          * We handle network level errors such as timeouts or broken network connections here
          */
@@ -325,19 +339,22 @@ function makeRequest(options, actionCreatorOptions = {}) {
       xhRequest.send(requestOptions.body);
     }).catch((error) => {
       throw error;
-    }).finally(() => registerRequestEnd(request.method, url));
+    }).
+finally(() => registerRequestEnd(request.method, url));
 
   } else {
+
     /**
      * If we don't need progress events, we use the simpler fetch API
      */
-    return fetch(url, requestOptions)
-            .then(processResponse)
-            .catch((error) => {
+    return fetch(url, requestOptions).
+            then(processResponse).
+            catch((error) =>
+
               /**
                * We handle network level errors such as timeouts or broken network connections here
                */
-              return dispatch(
+               dispatch(
                 onError(
                   _options,
                   actionCreatorOptions,
@@ -350,7 +367,8 @@ function makeRequest(options, actionCreatorOptions = {}) {
                   }
                 )
               )
-            }).finally(() => registerRequestEnd(request.method, url));
+            ).
+finally(() => registerRequestEnd(request.method, url));
   }
 }
 

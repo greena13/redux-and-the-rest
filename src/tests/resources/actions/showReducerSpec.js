@@ -1,6 +1,7 @@
 import fetchMock from 'fetch-mock';
 import buildStore from '../../helpers/buildStore';
 import { resources, ERROR, FETCHING, SUCCESS, RESOURCES } from '../../../index';
+import nop from '../../../utils/function/nop';
 
 describe('Show reducers:', function () {
   describe('when the keyBy option is a string', function () {
@@ -32,7 +33,7 @@ describe('Show reducers:', function () {
           describe('and the API request succeeds', function() {
             describe('before the request has completed', function () {
               beforeAll(function () {
-                fetchMock.get('http://test.com/users/1', new Promise(resolve => {}));
+                fetchMock.get('http://test.com/users/1', new Promise(nop));
 
                 this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
                 this.store.dispatch(this.fetchUser(idArgs));
@@ -44,11 +45,11 @@ describe('Show reducers:', function () {
               });
 
               it('then adds a new item with a status of FETCHING', function() {
-                expect(this.store.getState().users.items[1].status.type).toEqual(FETCHING);
+                expect(this.store.getState().users.items['1'].status.type).toEqual(FETCHING);
               });
 
               it('then adds a new item with empty values', function() {
-                expect(this.store.getState().users.items[1].values).toEqual({});
+                expect(this.store.getState().users.items['1'].values).toEqual({});
               });
 
               it('then does NOT add the item to the default collection', function() {
@@ -72,11 +73,11 @@ describe('Show reducers:', function () {
               });
 
               it('then changes the items\'s status type to SUCCESS', function() {
-                expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+                expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
               });
 
               it('then sets the item\'s values from the response', function() {
-                expect(this.store.getState().users.items[1].values).toEqual({ id: 1, username: 'Bob' });
+                expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Bob' });
               });
             });
           });
@@ -84,7 +85,7 @@ describe('Show reducers:', function () {
           describe('when the API request errors', function() {
             describe('before the request has completed', function () {
               beforeAll(function () {
-                fetchMock.get('http://test.com/users/1', new Promise(resolve => {}));
+                fetchMock.get('http://test.com/users/1', new Promise(nop));
 
                 this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
                 this.store.dispatch(this.fetchUser(idArgs));
@@ -96,11 +97,11 @@ describe('Show reducers:', function () {
               });
 
               it('then adds a new item with a status of FETCHING', function() {
-                expect(this.store.getState().users.items[1].status.type).toEqual(FETCHING);
+                expect(this.store.getState().users.items['1'].status.type).toEqual(FETCHING);
               });
 
               it('then adds a new item with empty values', function() {
-                expect(this.store.getState().users.items[1].values).toEqual({});
+                expect(this.store.getState().users.items['1'].values).toEqual({});
               });
 
               it('then does NOT add the item to the default collection', function() {
@@ -125,23 +126,23 @@ describe('Show reducers:', function () {
               });
 
               it('then changes the items\'s status type to ERROR', function() {
-                expect(this.store.getState().users.items[1].status.type).toEqual(ERROR);
+                expect(this.store.getState().users.items['1'].status.type).toEqual(ERROR);
               });
 
               it('then sets the syncedAt attribute', function() {
-                expect(this.store.getState().users.items[1].status.errorOccurredAt).not.toBeUndefined();
+                expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
               });
 
               it('then updates the item\'s status httpCode', function() {
-                expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
+                expect(this.store.getState().users.items['1'].status.httpCode).toEqual(404);
               });
 
               it('then sets the item\'s status error from the response', function() {
-                expect(this.store.getState().users.items[1].status.error.message).toEqual('Not Found');
+                expect(this.store.getState().users.items['1'].status.error.message).toEqual('Not Found');
               });
 
               it('then does NOT set the item\'s values from the response', function() {
-                expect(this.store.getState().users.items[1].values).toEqual({ });
+                expect(this.store.getState().users.items['1'].values).toEqual({ });
               });
             });
           });
@@ -168,7 +169,7 @@ describe('Show reducers:', function () {
       describe('and the API request succeeds', () => {
         describe('before the request has completed', function () {
           beforeAll(function () {
-            fetchMock.get('http://test.com/users/1', new Promise(resolve => {}));
+            fetchMock.get('http://test.com/users/1', new Promise(nop));
 
             this.store = buildStore({
               users: this.resourceBefore
@@ -183,11 +184,11 @@ describe('Show reducers:', function () {
           });
 
           it('then sets the status of the item to FETCHING', function() {
-            expect(this.store.getState().users.items[1].status.type).toEqual(FETCHING);
+            expect(this.store.getState().users.items['1'].status.type).toEqual(FETCHING);
           });
 
           it('then does NOT clear the item\'s values', function() {
-            expect(this.store.getState().users.items[1].values).toEqual({ id: 1, username: 'Bob' });
+            expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Bob' });
           });
 
           it('then does NOT add the item to the default collection', function() {
@@ -214,11 +215,11 @@ describe('Show reducers:', function () {
           });
 
           it('then changes the items\'s status type to SUCCESS', function() {
-            expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+            expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
           });
 
           it('then sets the item\'s values from the response', function() {
-            expect(this.store.getState().users.items[1].values).toEqual({ id: 1, username: 'Robert' });
+            expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Robert' });
           });
         });
       });
@@ -226,7 +227,7 @@ describe('Show reducers:', function () {
       describe('when the API request errors', function() {
         describe('before the request has completed', function () {
           beforeAll(function () {
-            fetchMock.get('http://test.com/users/1', new Promise(resolve => {}));
+            fetchMock.get('http://test.com/users/1', new Promise(nop));
 
             this.store = buildStore({
               users: this.resourceBefore
@@ -241,11 +242,11 @@ describe('Show reducers:', function () {
           });
 
           it('then sets the status of the item to FETCHING', function() {
-            expect(this.store.getState().users.items[1].status.type).toEqual(FETCHING);
+            expect(this.store.getState().users.items['1'].status.type).toEqual(FETCHING);
           });
 
           it('then does NOT clear the item\'s values', function() {
-            expect(this.store.getState().users.items[1].values).toEqual({ id: 1, username: 'Bob' });
+            expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Bob' });
           });
 
           it('then does NOT add the item to the default collection', function() {
@@ -273,23 +274,23 @@ describe('Show reducers:', function () {
           });
 
           it('then changes the items\'s status type to ERROR', function() {
-            expect(this.store.getState().users.items[1].status.type).toEqual(ERROR);
+            expect(this.store.getState().users.items['1'].status.type).toEqual(ERROR);
           });
 
           it('then updates the item\'s status httpCode', function() {
-            expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
+            expect(this.store.getState().users.items['1'].status.httpCode).toEqual(404);
           });
 
           it('then sets the syncedAt attribute', function() {
-            expect(this.store.getState().users.items[1].status.errorOccurredAt).not.toBeUndefined();
+            expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
           });
 
           it('then sets the item\'s status error from the response', function() {
-            expect(this.store.getState().users.items[1].status.error.message).toEqual('Not Found');
+            expect(this.store.getState().users.items['1'].status.error.message).toEqual('Not Found');
           });
 
           it('then does NOT set the item\'s values from the response', function() {
-            expect(this.store.getState().users.items[1].values).toEqual({ id: 1, username: 'Bob' });
+            expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Bob' });
           });
         });
       });
@@ -313,7 +314,7 @@ describe('Show reducers:', function () {
     describe('and the API request succeeds', function() {
       describe('before the request has completed', function () {
         beforeAll(function () {
-          fetchMock.get('http://test.com/groups/1/users/1', new Promise(resolve => {}));
+          fetchMock.get('http://test.com/groups/1/users/1', new Promise(nop));
 
           this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
           this.store.dispatch(this.fetchUser({ id: 1, groupId: 1 }));
@@ -365,7 +366,7 @@ describe('Show reducers:', function () {
     describe('and the API request errors', function() {
       describe('before the request has completed', function () {
         beforeAll(function () {
-          fetchMock.get('http://test.com/groups/1/users/1', new Promise(resolve => {}));
+          fetchMock.get('http://test.com/groups/1/users/1', new Promise(nop));
 
           this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
           this.store.dispatch(this.fetchUser({ id: 1, groupId: 1 }));

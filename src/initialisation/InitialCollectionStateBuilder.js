@@ -47,7 +47,7 @@ class InitialCollectionStateBuilder extends InitialStateBuilder {
    *        the collection hasn't set its own.
    * @param {ResourceProjection} options.projection The projection to use for the collection and all of its
    *        items if the collection hasn't set its own.
-   * @returns {ResourcesCollection}
+   * @returns {ResourcesCollection} The initial collection state
    */
   build({ status = {}, projection = {} }) {
     return {
@@ -65,6 +65,7 @@ class InitialCollectionStateBuilder extends InitialStateBuilder {
    *        set its own.
    * @param {ResourceProjection} options.projection The projection for the items if the collection or item
    *        hasn't set its own.
+   * @returns {Object<ResourceItemId, ResourcesItem>} Map of items by their key
    */
   buildItems({ status = {}, projection }) {
     return Object.keys(this.items).reduce((memo, key) => {

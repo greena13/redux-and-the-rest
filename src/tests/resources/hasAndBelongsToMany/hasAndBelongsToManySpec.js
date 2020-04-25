@@ -2,6 +2,7 @@ import fetchMock from 'fetch-mock';
 
 import { resources, NEW, SUCCESS, RESOURCES } from '../../../index';
 import buildStore from '../../helpers/buildStore';
+import nop from '../../../utils/function/nop';
 
 describe('hasAndBelongsToMany:', function () {
   describe('when the association is many-to-one', function () {
@@ -90,7 +91,7 @@ describe('hasAndBelongsToMany:', function () {
         beforeAll(function () {
           this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-          fetchMock.post('http://test.com/posts', new Promise(resolve => {}));
+          fetchMock.post('http://test.com/posts', new Promise(nop));
 
           this.store.dispatch(this.posts.actionCreators.createPost('temp', { userId: 1, title: 'New Post 3' }));
         });
@@ -101,7 +102,7 @@ describe('hasAndBelongsToMany:', function () {
         });
 
         it('then adds the new association to the default attribute', function() {
-          expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1, 'temp' ]);
+          expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1, 'temp' ]);
         });
       });
 
@@ -122,7 +123,7 @@ describe('hasAndBelongsToMany:', function () {
         });
 
         it('then updates the key of the association', function() {
-          expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1, 3 ]);
+          expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1, 3 ]);
         });
       });
     });
@@ -133,7 +134,7 @@ describe('hasAndBelongsToMany:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            fetchMock.put('http://test.com/posts/1', new Promise(resolve => {}));
+            fetchMock.put('http://test.com/posts/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -153,8 +154,8 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
-            expect(this.store.getState().users.items[2].values.postIds).toEqual(undefined);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items['2'].values.postIds).toEqual(undefined);
           });
         });
 
@@ -192,11 +193,11 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.store.getState().users.items[2].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items['2'].values.postIds).toEqual([ 1 ]);
           });
         });
       });
@@ -206,7 +207,7 @@ describe('hasAndBelongsToMany:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            fetchMock.put('http://test.com/posts/1', new Promise(resolve => {}));
+            fetchMock.put('http://test.com/posts/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -222,7 +223,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
           });
         });
 
@@ -258,11 +259,11 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.store.getState().users.items[2].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items['2'].values.postIds).toEqual([ 1 ]);
           });
         });
       });
@@ -274,7 +275,7 @@ describe('hasAndBelongsToMany:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            fetchMock.delete('http://test.com/posts/1', new Promise(resolve => {}));
+            fetchMock.delete('http://test.com/posts/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -290,7 +291,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
           });
         });
 
@@ -321,7 +322,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
           });
         });
       });
@@ -331,7 +332,7 @@ describe('hasAndBelongsToMany:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            fetchMock.delete('http://test.com/posts/1', new Promise(resolve => {}));
+            fetchMock.delete('http://test.com/posts/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -344,7 +345,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
           });
         });
 
@@ -374,7 +375,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
           });
         });
       });
@@ -474,7 +475,7 @@ describe('hasAndBelongsToMany:', function () {
         beforeAll(function () {
           this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-          fetchMock.post('http://test.com/posts', new Promise(resolve => {}));
+          fetchMock.post('http://test.com/posts', new Promise(nop));
 
           this.store.dispatch(this.posts.actionCreators.createPost('temp', { userIds: [ 1 ], title: 'New Post 3' }));
         });
@@ -485,7 +486,7 @@ describe('hasAndBelongsToMany:', function () {
         });
 
         it('then adds the new association to the default attribute', function() {
-          expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1, 'temp' ]);
+          expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1, 'temp' ]);
         });
       });
 
@@ -506,7 +507,7 @@ describe('hasAndBelongsToMany:', function () {
         });
 
         it('then updates the key of the association', function() {
-          expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1, 3 ]);
+          expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1, 3 ]);
         });
       });
     });
@@ -517,7 +518,7 @@ describe('hasAndBelongsToMany:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            fetchMock.put('http://test.com/posts/1', new Promise(resolve => {}));
+            fetchMock.put('http://test.com/posts/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -537,8 +538,8 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
-            expect(this.store.getState().users.items[2].values.postIds).toEqual(undefined);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items['2'].values.postIds).toEqual(undefined);
           });
         });
 
@@ -576,11 +577,11 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.store.getState().users.items[2].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items['2'].values.postIds).toEqual([ 1 ]);
           });
         });
       });
@@ -590,7 +591,7 @@ describe('hasAndBelongsToMany:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            fetchMock.put('http://test.com/posts/1', new Promise(resolve => {}));
+            fetchMock.put('http://test.com/posts/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -606,7 +607,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
           });
         });
 
@@ -642,11 +643,11 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.store.getState().users.items[2].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items['2'].values.postIds).toEqual([ 1 ]);
           });
         });
       });
@@ -659,7 +660,7 @@ describe('hasAndBelongsToMany:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            fetchMock.delete('http://test.com/posts/1', new Promise(resolve => {}));
+            fetchMock.delete('http://test.com/posts/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -675,7 +676,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
           });
         });
 
@@ -706,7 +707,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
           });
         });
       });
@@ -716,7 +717,7 @@ describe('hasAndBelongsToMany:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-            fetchMock.delete('http://test.com/posts/1', new Promise(resolve => {}));
+            fetchMock.delete('http://test.com/posts/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -729,7 +730,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1 ]);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
           });
         });
 
@@ -759,7 +760,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item', function() {
-            expect(this.store.getState().users.items[1].values.postIds).toEqual([ ]);
+            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
           });
         });
       });

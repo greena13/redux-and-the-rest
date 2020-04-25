@@ -158,7 +158,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
         };
 
         return standardActionCreator(reloadedOptions, arg1, arg2, arg3);
-      }
+      };
 
     } else {
       warn(`'${key}' must match the collection of standard action creators (${Object.keys(STANDARD_ACTION_CREATORS).join(', ')}) or define an 'actionCreator' option. Check the options for ${name}`);

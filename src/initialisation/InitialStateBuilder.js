@@ -12,7 +12,7 @@ class InitialStateBuilder {
   /**
    * Sets the status of the initial state
    * @param {ResourceStatus} statusType The status type to set as the initial state
-   * @returns {InitialStateBuilder} itself to allow for chaining method calls
+   * @returns {InitialStateBuilder} Itself, to allow for chaining method calls
    */
   setStatusType(statusType) {
     this.status.type = statusType;

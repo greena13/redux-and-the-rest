@@ -72,7 +72,7 @@ describe('Clear selected reducer:', function () {
     });
 
     it('then DOES NOT remove the selected resources', function() {
-      expect(this.users.items[1]).toEqual({
+      expect(this.users.items['1']).toEqual({
         values: {
           id: 1,
           username: 'Bob',

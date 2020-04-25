@@ -1,6 +1,7 @@
 import fetchMock from 'fetch-mock';
 import buildStore from '../../helpers/buildStore';
 import { resources, ERROR, SUCCESS, UPDATING, RESOURCES, EDITING } from '../../../index';
+import nop from '../../../utils/function/nop';
 
 describe('Update reducer:', function () {
   beforeAll(function() {
@@ -26,7 +27,7 @@ describe('Update reducer:', function () {
     describe('and the API request succeeds', function() {
       describe('before the request has completed', function () {
         beforeAll(function () {
-          fetchMock.put('http://test.com/users/1', new Promise(resolve => {}));
+          fetchMock.put('http://test.com/users/1', new Promise(nop));
 
           this.store = buildStore({ users: this.resourceBefore }, { users: this.reducers } );
 
@@ -48,11 +49,11 @@ describe('Update reducer:', function () {
         });
 
         it('then adds a new item with a status of UPDATING', function() {
-          expect(this.store.getState().users.items[1].status.type).toEqual(UPDATING);
+          expect(this.store.getState().users.items['1'].status.type).toEqual(UPDATING);
         });
 
         it('then adds a new item with values specified', function() {
-          expect(this.store.getState().users.items[1].values).toEqual({ username: 'Robert' });
+          expect(this.store.getState().users.items['1'].values).toEqual({ username: 'Robert' });
         });
       });
 
@@ -77,11 +78,11 @@ describe('Update reducer:', function () {
         });
 
         it('then changes the items\'s status type to SUCCESS', function() {
-          expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+          expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
         });
 
         it('then sets the item\'s values from the response', function() {
-          expect(this.store.getState().users.items[1].values).toEqual({ id: 1, username: 'Robert', approved: false });
+          expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Robert', approved: false });
         });
       });
     });
@@ -114,7 +115,7 @@ describe('Update reducer:', function () {
         describe('and the API request succeeds', function() {
           describe('before the request has completed', function () {
             beforeAll(function () {
-              fetchMock.put('http://test.com/users/1', new Promise(resolve => {}));
+              fetchMock.put('http://test.com/users/1', new Promise(nop));
 
               this.store = buildStore({ users: this.resourceBefore }, { users: this.reducers } );
 
@@ -129,11 +130,11 @@ describe('Update reducer:', function () {
             });
 
             it('then sets the item\'s status type to UPDATING', function() {
-              expect(this.store.getState().users.items[1].status.type).toEqual(UPDATING);
+              expect(this.store.getState().users.items['1'].status.type).toEqual(UPDATING);
             });
 
             it('then merges in the new values with the item\'s old ones', function() {
-              expect(this.store.getState().users.items[1].values).toEqual({ username: 'Robert', id: 1 });
+              expect(this.store.getState().users.items['1'].values).toEqual({ username: 'Robert', id: 1 });
             });
           });
 
@@ -156,11 +157,11 @@ describe('Update reducer:', function () {
             });
 
             it('then changes the items\'s status type to SUCCESS', function() {
-              expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+              expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
             });
 
             it('then sets the item\'s values from the response', function() {
-              expect(this.store.getState().users.items[1].values).toEqual({ id: 1, username: 'Robert', approved: false });
+              expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Robert', approved: false });
             });
           });
         });
@@ -168,7 +169,7 @@ describe('Update reducer:', function () {
         describe('and the API request errors', function() {
           describe('before the request has completed', function () {
             beforeAll(function () {
-              fetchMock.put('http://test.com/users/1', new Promise(resolve => {}));
+              fetchMock.put('http://test.com/users/1', new Promise(nop));
 
               this.store = buildStore({ users: this.resourceBefore }, { users: this.reducers } );
 
@@ -183,11 +184,11 @@ describe('Update reducer:', function () {
             });
 
             it('then sets the item\'s status type to UPDATING', function() {
-              expect(this.store.getState().users.items[1].status.type).toEqual(UPDATING);
+              expect(this.store.getState().users.items['1'].status.type).toEqual(UPDATING);
             });
 
             it('then merges in the new values with the item\'s old ones', function() {
-              expect(this.store.getState().users.items[1].values).toEqual({ username: 'Robert', id: 1 });
+              expect(this.store.getState().users.items['1'].values).toEqual({ username: 'Robert', id: 1 });
             });
           });
 
@@ -211,23 +212,23 @@ describe('Update reducer:', function () {
             });
 
             it('then changes the items\'s status type to ERROR', function() {
-              expect(this.store.getState().users.items[1].status.type).toEqual(ERROR);
+              expect(this.store.getState().users.items['1'].status.type).toEqual(ERROR);
             });
 
             it('then sets the syncedAt attribute', function() {
-              expect(this.store.getState().users.items[1].status.errorOccurredAt).not.toBeUndefined();
+              expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
             });
 
             it('then updates the item\'s status httpCode', function() {
-              expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
+              expect(this.store.getState().users.items['1'].status.httpCode).toEqual(404);
             });
 
             it('then does not update the values from the response', function() {
-              expect(this.store.getState().users.items[1].values).toEqual({ id: 1, username: 'Robert' });
+              expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Robert' });
             });
 
             it('then does sets the status error from the response', function() {
-              expect(this.store.getState().users.items[1].status.error.message).toEqual('Not Found');
+              expect(this.store.getState().users.items['1'].status.error.message).toEqual('Not Found');
             });
           });
         });
@@ -255,7 +256,7 @@ describe('Update reducer:', function () {
         describe('and the API request succeeds', function() {
           describe('before the request has completed', function () {
             beforeAll(function () {
-              fetchMock.put('http://test.com/users/1', new Promise(resolve => {}));
+              fetchMock.put('http://test.com/users/1', new Promise(nop));
 
               this.store = buildStore({ users: this.resourceBefore }, { users: this.reducers } );
 
@@ -270,19 +271,19 @@ describe('Update reducer:', function () {
             });
 
             it('then sets the item\'s status type to UPDATING', function() {
-              expect(this.store.getState().users.items[1].status.type).toEqual(UPDATING);
+              expect(this.store.getState().users.items['1'].status.type).toEqual(UPDATING);
             });
 
             it('then does NOT unset the dirty bit', function() {
-              expect(this.store.getState().users.items[1].status.dirty).toEqual(true);
+              expect(this.store.getState().users.items['1'].status.dirty).toEqual(true);
             });
 
             it('then does NOT clear the originalValues', function() {
-              expect(this.store.getState().users.items[1].status.originalValues).toEqual({ username: 'Bobert', id: 1 });
+              expect(this.store.getState().users.items['1'].status.originalValues).toEqual({ username: 'Bobert', id: 1 });
             });
 
             it('then merges in the new values with the item\'s old ones', function() {
-              expect(this.store.getState().users.items[1].values).toEqual({ username: 'Robert', id: 1 });
+              expect(this.store.getState().users.items['1'].values).toEqual({ username: 'Robert', id: 1 });
             });
           });
 
@@ -305,19 +306,19 @@ describe('Update reducer:', function () {
             });
 
             it('then changes the items\'s status type to SUCCESS', function() {
-              expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+              expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
             });
 
             it('then removes the dirty bit', function() {
-              expect(this.store.getState().users.items[1].status.dirty).toEqual(undefined);
+              expect(this.store.getState().users.items['1'].status.dirty).toEqual(undefined);
             });
 
             it('then clears the original values', function() {
-              expect(this.store.getState().users.items[1].status.originalValues).toEqual(undefined);
+              expect(this.store.getState().users.items['1'].status.originalValues).toEqual(undefined);
             });
 
             it('then sets the item\'s values from the response', function() {
-              expect(this.store.getState().users.items[1].values).toEqual({ id: 1, username: 'Robert', approved: false });
+              expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Robert', approved: false });
             });
           });
         });
@@ -325,7 +326,7 @@ describe('Update reducer:', function () {
         describe('and the API request errors', function() {
           describe('before the request has completed', function () {
             beforeAll(function () {
-              fetchMock.put('http://test.com/users/1', new Promise(resolve => {}));
+              fetchMock.put('http://test.com/users/1', new Promise(nop));
 
               this.store = buildStore({ users: this.resourceBefore }, { users: this.reducers } );
 
@@ -340,15 +341,15 @@ describe('Update reducer:', function () {
             });
 
             it('then sets the item\'s status type to UPDATING', function() {
-              expect(this.store.getState().users.items[1].status.type).toEqual(UPDATING);
+              expect(this.store.getState().users.items['1'].status.type).toEqual(UPDATING);
             });
 
             it('then does NOT unset the dirty bit', function() {
-              expect(this.store.getState().users.items[1].status.dirty).toEqual(true);
+              expect(this.store.getState().users.items['1'].status.dirty).toEqual(true);
             });
 
             it('then merges in the new values with the item\'s old ones', function() {
-              expect(this.store.getState().users.items[1].values).toEqual({ username: 'Robert', id: 1 });
+              expect(this.store.getState().users.items['1'].values).toEqual({ username: 'Robert', id: 1 });
             });
           });
 
@@ -372,31 +373,31 @@ describe('Update reducer:', function () {
             });
 
             it('then does NOT unset the dirty bit', function() {
-              expect(this.store.getState().users.items[1].status.dirty).toEqual(true);
+              expect(this.store.getState().users.items['1'].status.dirty).toEqual(true);
             });
 
             it('then does NOT clear the originalValues', function() {
-              expect(this.store.getState().users.items[1].status.originalValues).toEqual({ username: 'Bobert', id: 1 });
+              expect(this.store.getState().users.items['1'].status.originalValues).toEqual({ username: 'Bobert', id: 1 });
             });
 
             it('then changes the items\'s status type to ERROR', function() {
-              expect(this.store.getState().users.items[1].status.type).toEqual(ERROR);
+              expect(this.store.getState().users.items['1'].status.type).toEqual(ERROR);
             });
 
             it('then sets the syncedAt attribute', function() {
-              expect(this.store.getState().users.items[1].status.errorOccurredAt).not.toBeUndefined();
+              expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
             });
 
             it('then updates the item\'s status httpCode', function() {
-              expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
+              expect(this.store.getState().users.items['1'].status.httpCode).toEqual(404);
             });
 
             it('then does not update the values from the response', function() {
-              expect(this.store.getState().users.items[1].values).toEqual({ id: 1, username: 'Robert' });
+              expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Robert' });
             });
 
             it('then does sets the status error from the response', function() {
-              expect(this.store.getState().users.items[1].status.error.message).toEqual('Not Found');
+              expect(this.store.getState().users.items['1'].status.error.message).toEqual('Not Found');
             });
           });
         });

@@ -4,7 +4,7 @@ import buildReducers from './reducers/buildReducers';
 import buildActionCreators from './action-creators/buildActionCreators';
 import objectFrom from './utils/object/objectFrom';
 import getNewItem from './public-helpers/getNewItem';
-import getCollectionWithEmptyFallback from './utils/getCollection';
+import getCollection from './utils/getCollection';
 import { getConfiguration } from './configuration';
 import InitialResourceStateBuilder from './initialisation/InitialResourceStateBuilder';
 import DefaultConfigurationOptions from './constants/DefaultConfigurationOptions';
@@ -169,17 +169,6 @@ function resources(resourceOptions, actionOptions = {}) {
    */
   function getItem(resourcesState, params) {
     return getItemWithEmptyFallback(resourcesState, getItemKey(params, resourceOptions));
-  }
-
-  /**
-   * Returns a collection of a particular resource from a Redux store, populating it with the correct items,
-   * in the right order.
-   * @param {ResourcesReduxState} resourcesState The current resource Redux store state
-   * @param {Object|string} params The parameters used to calculate the index of the collection to return
-   * @return {ResourceCollectionWithItems} The resource collection
-   */
-  function getCollection(resourcesState, params) {
-    return getCollectionWithEmptyFallback(resourceOptions, resourcesState, params);
   }
 
   return {

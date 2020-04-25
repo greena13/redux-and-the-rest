@@ -21,7 +21,7 @@ import nop from '../../utils/function/nop';
 
 const HTTP_REQUEST_TYPE = 'POST';
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Action creator thunk
  ***************************************************************************************************************/
 
@@ -33,8 +33,8 @@ const HTTP_REQUEST_TYPE = 'POST';
  *        use to create the resource.
  * @param {Object} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
  *        options passed to the action creator when it is called.
- * @param {Object} optionalActionCreatorOptions=undefined The optional additional options passed to the action controller.
- * @returns {Thunk}
+ * @param {Object} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
+ * @returns {Thunk} Function to call to dispatch an action
  */
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
   const { params, values, actionCreatorOptions } = processActionCreatorOptions(
@@ -71,6 +71,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     if (specifiedKey) {
       return specifiedKey;
     } else {
+
       /**
        * We automatically generate a new temporary Id if one is not specified
        */
@@ -105,16 +106,16 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
   };
 }
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Action creators
  ***************************************************************************************************************/
 
 /**
  * Creates an action object to update the Redux store to list a new resource item as being created on a remote API
  * @param {Object} options Options specified when defining the resource and action
- * @param {Object} actionCreatorOptions={} The options passed to the create* action creator function
+ * @param {Object} [actionCreatorOptions={}] The options passed to the create* action creator function
  * @param {Object} values The attributes of the resource currently being created
- * @param {Object} collectionOperations={} Options for how the newly created resource should be added to an
+ * @param {Object} [collectionOperations={}] Options for how the newly created resource should be added to an
  *        existing collections - if any.
  * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
  */
@@ -143,7 +144,7 @@ function submitCreateResource(options, actionCreatorOptions, values, collectionO
  *        use to create the resource.
  * @param {Object} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
  *        options passed to the action creator when it is called.
- * @param {Object} optionalActionCreatorOptions=undefined The optional additional options passed to the
+ * @param {Object} [optionalActionCreatorOptions=undefined] The optional additional options passed to the
  *        action controller.
  * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
  */
@@ -230,7 +231,7 @@ function handleCreateResourceError(options, actionCreatorOptions, httpCode, erro
   };
 }
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Reducer
  ***************************************************************************************************************/
 
@@ -282,6 +283,7 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
       [temporaryKey]: {
         ...currentItem,
         ...item,
+
         /**
          * We persist the syncedAt attribute of the collection if it's been fetched in the past, in case
          * the request fails, we know the last time it was successfully synced
@@ -293,6 +295,7 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
     return {
       ...resources,
       items: newItems,
+
       /**
        * We add the new item (using its temporary id) to any collections that already exist in the store,
        * that the new item should be a part of - according to the collectionOperations specified.
@@ -304,6 +307,7 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
   } else if (status === SUCCESS) {
     const itemsToPersist = function(){
       if (localOnly && getItem(resources, resources.newItemKey).status.type === NEW) {
+
         /**
          * When in localOnly mode, there is no remote API call, so the CREATING step is skipped and the SUCCESS
          * is the first to happen. If so, we check if there is an existing resource item in the NEW status, and
@@ -313,6 +317,7 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
          */
         return without(items, resources.newItemKey);
       } else {
+
         /**
          * Once the remote API has confirmed the creation of the new resource item (and assigned it a permanent id),
          * we replace the one in the local Redux store with the values the remote API sends back in the response,
@@ -326,6 +331,7 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
       ...itemsToPersist,
       [key]: {
         ...item,
+
         /**
          * We add all status attributes that were added since the request was started (currently only the
          * syncedAt value).
@@ -339,6 +345,7 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
       items: newItems,
       collections: {
         ...resources.collections,
+
         /**
          * We update an usage of the temporary id in any of the collections the item appeared in, replacing
          * them with the new permanent id
@@ -359,6 +366,7 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
       newItemKey: key,
     };
   } else if (status === ERROR) {
+
     /**
      * If the resource item fails to create with the remote API, we leave the resource item where it is, change
      * it's status to ERROR, and merge in any error details
@@ -369,6 +377,7 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
         ...items,
         [temporaryKey]: {
           ...currentItem,
+
           /**
            * We merge in new status attributes about the details of the error.
            */

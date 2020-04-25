@@ -2,6 +2,7 @@ import { resources, RESOURCES } from '../../index';
 import buildStore from '../helpers/buildStore';
 import fetchMock from 'fetch-mock';
 import { COMPLETE, PREVIEW } from '../../../index';
+import nop from '../../utils/function/nop';
 
 describe('projection:', function () {
   describe('when configuring the INDEX action', function() {
@@ -29,7 +30,7 @@ describe('projection:', function () {
                 }
               }, { users: this.reducers } );
 
-              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+              fetchMock.get('http://test.com/users', new Promise(nop));
 
               this.store.dispatch(this.fetchUsers());
             });
@@ -65,7 +66,7 @@ describe('projection:', function () {
             });
 
             it('then the item and collection\'s projection type is COMPLETE', function() {
-              expect(this.store.getState().users.items[1].projection.type).toEqual(COMPLETE);
+              expect(this.store.getState().users.items['1'].projection.type).toEqual(COMPLETE);
               expect(this.store.getState().users.collections[''].projection.type).toEqual(COMPLETE);
             });
           });
@@ -80,7 +81,7 @@ describe('projection:', function () {
                 }
               }, { users: this.reducers } );
 
-              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+              fetchMock.get('http://test.com/users', new Promise(nop));
 
               this.store.dispatch(this.fetchUsers());
             });
@@ -133,9 +134,9 @@ describe('projection:', function () {
                 }
               }, { users: this.reducers } );
 
-              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+              fetchMock.get('http://test.com/users', new Promise(nop));
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW }}));
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW } }));
             });
 
             afterAll(function() {
@@ -160,7 +161,7 @@ describe('projection:', function () {
                     body: [{ id: 1, username: 'Robert' }],
               });
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW }}));
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW } }));
             });
 
             afterAll(function() {
@@ -169,7 +170,7 @@ describe('projection:', function () {
             });
 
             it('then uses the value passed to the action creator for the item\'s projection type', function() {
-              expect(this.store.getState().users.items[1].projection.type).toEqual(PREVIEW);
+              expect(this.store.getState().users.items['1'].projection.type).toEqual(PREVIEW);
               expect(this.store.getState().users.collections[''].projection.type).toEqual(PREVIEW);
             });
           });
@@ -184,9 +185,9 @@ describe('projection:', function () {
                 }
               }, { users: this.reducers } );
 
-              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+              fetchMock.get('http://test.com/users', new Promise(nop));
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW }}));
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW } }));
             });
 
             afterAll(function() {
@@ -212,7 +213,7 @@ describe('projection:', function () {
                 status: 404
               });
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW }}));
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW } }));
             });
 
             afterAll(function() {
@@ -253,7 +254,7 @@ describe('projection:', function () {
                 }
               }, { users: this.reducers } );
 
-              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+              fetchMock.get('http://test.com/users', new Promise(nop));
 
               this.store.dispatch(this.fetchUsers());
             });
@@ -289,7 +290,7 @@ describe('projection:', function () {
             });
 
             it('then the item and collection\'s projection type is the value specified when defining the resource', function() {
-              expect(this.store.getState().users.items[1].projection.type).toEqual('RESOURCE_PROJECTION');
+              expect(this.store.getState().users.items['1'].projection.type).toEqual('RESOURCE_PROJECTION');
               expect(this.store.getState().users.collections[''].projection.type).toEqual('RESOURCE_PROJECTION');
             });
           });
@@ -304,7 +305,7 @@ describe('projection:', function () {
                 }
               }, { users: this.reducers } );
 
-              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+              fetchMock.get('http://test.com/users', new Promise(nop));
 
               this.store.dispatch(this.fetchUsers());
             });
@@ -357,9 +358,9 @@ describe('projection:', function () {
                 }
               }, { users: this.reducers } );
 
-              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+              fetchMock.get('http://test.com/users', new Promise(nop));
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' }}));
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' } }));
             });
 
             afterAll(function() {
@@ -384,7 +385,7 @@ describe('projection:', function () {
                 body: [{ id: 1, username: 'Robert' }],
               });
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' }}));
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' } }));
             });
 
             afterAll(function() {
@@ -393,7 +394,7 @@ describe('projection:', function () {
             });
 
             it('then uses the value passed to the action creator for the item and collection\'s projection type', function() {
-              expect(this.store.getState().users.items[1].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+              expect(this.store.getState().users.items['1'].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
               expect(this.store.getState().users.collections[''].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
             });
           });
@@ -408,9 +409,9 @@ describe('projection:', function () {
                 }
               }, { users: this.reducers } );
 
-              fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+              fetchMock.get('http://test.com/users', new Promise(nop));
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' }}));
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' } }));
             });
 
             afterAll(function() {
@@ -436,7 +437,7 @@ describe('projection:', function () {
                 status: 404
               });
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' }}));
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' } }));
             });
 
             afterAll(function() {
@@ -471,7 +472,7 @@ describe('projection:', function () {
       describe('and the projection type is NOT set when calling the action creator', function() {
         describe('before the request has completed', function () {
           beforeAll(function () {
-            fetchMock.get('http://test.com/users/1', new Promise(resolve => {}));
+            fetchMock.get('http://test.com/users/1', new Promise(nop));
 
             this.store = buildStore({
               users: {
@@ -481,7 +482,7 @@ describe('projection:', function () {
 
             this.store.dispatch(this.fetchUser(1));
 
-            this.user = this.store.getState().users.items[1];
+            this.user = this.store.getState().users.items['1'];
           });
 
           afterAll(function() {
@@ -508,7 +509,7 @@ describe('projection:', function () {
 
             this.store.dispatch(this.fetchUser(1));
 
-            this.user = this.store.getState().users.items[1];
+            this.user = this.store.getState().users.items['1'];
           });
 
           afterAll(function() {
@@ -525,7 +526,7 @@ describe('projection:', function () {
       describe('and the projection type is set when calling the action creator', function() {
         describe('before the request has completed', function () {
           beforeAll(function () {
-            fetchMock.get('http://test.com/users/1', new Promise(resolve => {}));
+            fetchMock.get('http://test.com/users/1', new Promise(nop));
 
             this.store = buildStore({
               users: {
@@ -533,9 +534,9 @@ describe('projection:', function () {
               }
             }, { users: this.reducers } );
 
-            this.store.dispatch(this.fetchUser(1, { projection: { type: PREVIEW }}));
+            this.store.dispatch(this.fetchUser(1, { projection: { type: PREVIEW } }));
 
-            this.user = this.store.getState().users.items[1];
+            this.user = this.store.getState().users.items['1'];
           });
 
           afterAll(function() {
@@ -560,9 +561,9 @@ describe('projection:', function () {
               }
             }, { users: this.reducers } );
 
-            this.store.dispatch(this.fetchUser(1, { projection: { type: PREVIEW }}));
+            this.store.dispatch(this.fetchUser(1, { projection: { type: PREVIEW } }));
 
-            this.user = this.store.getState().users.items[1];
+            this.user = this.store.getState().users.items['1'];
           });
 
           afterAll(function() {
@@ -595,7 +596,7 @@ describe('projection:', function () {
       describe('and the projection type is NOT set when calling the action creator', function() {
         describe('before the request has completed', function () {
           beforeAll(function () {
-            fetchMock.get('http://test.com/users/1', new Promise(resolve => {}));
+            fetchMock.get('http://test.com/users/1', new Promise(nop));
 
             this.store = buildStore({
               users: {
@@ -605,7 +606,7 @@ describe('projection:', function () {
 
             this.store.dispatch(this.fetchUser(1));
 
-            this.user = this.store.getState().users.items[1];
+            this.user = this.store.getState().users.items['1'];
           });
 
           afterAll(function() {
@@ -632,7 +633,7 @@ describe('projection:', function () {
 
             this.store.dispatch(this.fetchUser(1));
 
-            this.user = this.store.getState().users.items[1];
+            this.user = this.store.getState().users.items['1'];
           });
 
           afterAll(function() {
@@ -649,7 +650,7 @@ describe('projection:', function () {
       describe('and the projection type is set when calling the action creator', function() {
         describe('before the request has completed', function () {
           beforeAll(function () {
-            fetchMock.get('http://test.com/users/1', new Promise(resolve => {}));
+            fetchMock.get('http://test.com/users/1', new Promise(nop));
 
             this.store = buildStore({
               users: {
@@ -657,9 +658,9 @@ describe('projection:', function () {
               }
             }, { users: this.reducers } );
 
-            this.store.dispatch(this.fetchUser(1, { projection: { type: 'ACTION_CREATOR_PROJECTION' }}));
+            this.store.dispatch(this.fetchUser(1, { projection: { type: 'ACTION_CREATOR_PROJECTION' } }));
 
-            this.user = this.store.getState().users.items[1];
+            this.user = this.store.getState().users.items['1'];
           });
 
           afterAll(function() {
@@ -684,9 +685,9 @@ describe('projection:', function () {
               }
             }, { users: this.reducers } );
 
-            this.store.dispatch(this.fetchUser(1, { projection: { type: 'ACTION_CREATOR_PROJECTION' }}));
+            this.store.dispatch(this.fetchUser(1, { projection: { type: 'ACTION_CREATOR_PROJECTION' } }));
 
-            this.user = this.store.getState().users.items[1];
+            this.user = this.store.getState().users.items['1'];
           });
 
           afterAll(function() {

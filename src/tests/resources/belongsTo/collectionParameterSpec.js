@@ -1,6 +1,7 @@
 import fetchMock from 'fetch-mock';
 import { resources, RESOURCES, SUCCESS } from '../../../index';
 import buildStore from '../../helpers/buildStore';
+import nop from '../../../utils/function/nop';
 
 describe('belongsTo:', function () {
   beforeAll(function () {
@@ -116,7 +117,7 @@ describe('belongsTo:', function () {
           describe('and the previous values are included in the destroy action', function () {
             describe('before a request to destroy an associated resource item has completed', function () {
               beforeAll(function () {
-                fetchMock.delete('http://test.com/addresses/1', new Promise(resolve => {}));
+                fetchMock.delete('http://test.com/addresses/1', new Promise(nop));
 
                 this.store = buildStore({ ...this.initialState }, {
                   users: this.reducers,
@@ -179,7 +180,7 @@ describe('belongsTo:', function () {
           describe('and the previous values are NOT included in the destroy action', function () {
             describe('before a request to destroy an associated resource item has completed', function () {
               beforeAll(function () {
-                fetchMock.delete('http://test.com/addresses/1', new Promise(resolve => {}));
+                fetchMock.delete('http://test.com/addresses/1', new Promise(nop));
 
                 this.store = buildStore({ ...this.initialState }, {
                   users: this.reducers,

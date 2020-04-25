@@ -1,6 +1,7 @@
 import fetchMock from 'fetch-mock';
 import buildStore from '../../helpers/buildStore';
 import { resources, RESOURCES, CREATING, ERROR, NEW, SUCCESS } from '../../../index';
+import nop from '../../../utils/function/nop';
 
 describe('Create reducer:', function () {
   beforeAll(function() {
@@ -52,7 +53,7 @@ describe('Create reducer:', function () {
           describe('and the API request succeeds,', function () {
             describe('before the request has completed,', function () {
               beforeAll(function () {
-                fetchMock.post('http://test.com/users', new Promise(resolve => {}));
+                fetchMock.post('http://test.com/users', new Promise(nop));
 
                 this.store = buildStore(initialState, { users: this.reducers } );
 
@@ -102,14 +103,14 @@ describe('Create reducer:', function () {
               });
 
               it('then moves the item to the new ID and merges in values from the server', function() {
-                expect(this.store.getState().users.items[1].values).toEqual({
+                expect(this.store.getState().users.items['1'].values).toEqual({
                   id: 1,
                   username: 'Bob',
                 });
               });
 
               it('then sets the items status type to SUCCESS', function() {
-                expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+                expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
               });
 
               it('then updates the newItemKey ', function() {
@@ -121,7 +122,7 @@ describe('Create reducer:', function () {
           describe('and the API request errors', function () {
             describe('before the request has completed', function () {
               beforeAll(function () {
-                fetchMock.post('http://test.com/users', new Promise(resolve => {}));
+                fetchMock.post('http://test.com/users', new Promise(nop));
 
                 this.store = buildStore(initialState, { users: this.reducers } );
 
@@ -207,7 +208,7 @@ describe('Create reducer:', function () {
   describe('when there is already an item in the store with the same key', function () {
     describe('before the request has completed', function () {
       beforeAll(function(){
-        fetchMock.post('http://test.com/users', new Promise(resolve => {}));
+        fetchMock.post('http://test.com/users', new Promise(nop));
 
         spyOn(console, 'warn');
 
@@ -245,11 +246,11 @@ describe('Create reducer:', function () {
       });
 
       it('then adds replaces the existing item\'s values', function() {
-        expect(this.store.getState().users.items[1].values).toEqual({ username: 'Bob' });
+        expect(this.store.getState().users.items['1'].values).toEqual({ username: 'Bob' });
       });
 
       it('then sets the status of the existing item to CREATING', function() {
-        expect(this.store.getState().users.items[1].status.type).toEqual(CREATING);
+        expect(this.store.getState().users.items['1'].status.type).toEqual(CREATING);
       });
 
       it('then sets the newItemKey to the temporary key', function() {
@@ -297,14 +298,14 @@ describe('Create reducer:', function () {
       });
 
       it('then moves the item to the new ID and merges in values from the server', function() {
-        expect(this.store.getState().users.items[2].values).toEqual({
+        expect(this.store.getState().users.items['2'].values).toEqual({
           id: 2,
           username: 'Bob',
         });
       });
 
       it('then sets the items status type to SUCCESS', function() {
-        expect(this.store.getState().users.items[2].status.type).toEqual(SUCCESS);
+        expect(this.store.getState().users.items['2'].status.type).toEqual(SUCCESS);
       });
 
       it('then updates the newItemKey ', function() {
@@ -340,7 +341,7 @@ describe('Create reducer:', function () {
       describe('and there are NO collections', function () {
         describe('before the request has completed', function () {
           beforeAll(function () {
-            fetchMock.post('http://test.com/users', new Promise(resolve => {}));
+            fetchMock.post('http://test.com/users', new Promise(nop));
 
             this.store = buildStore({
               users: {
@@ -410,7 +411,7 @@ describe('Create reducer:', function () {
       describe('and there are NO MATCHING collections', function () {
         describe('before the request has completed', function () {
           beforeAll(function () {
-            fetchMock.post('http://test.com/users', new Promise(resolve => {}));
+            fetchMock.post('http://test.com/users', new Promise(nop));
 
             this.store = buildStore({
               users: {
@@ -481,7 +482,7 @@ describe('Create reducer:', function () {
       describe('and there are collections with keys that exactly match', function () {
         describe('before the request has completed', function () {
           beforeAll(function () {
-            fetchMock.post('http://test.com/users', new Promise(resolve => {}));
+            fetchMock.post('http://test.com/users', new Promise(nop));
 
             this.store = buildStore({
               users: {
@@ -513,7 +514,7 @@ describe('Create reducer:', function () {
           });
 
           it('then adds the new item\'s temp key to the matching collections', function() {
-            const users = this.store.getState().users;
+            const { users } = this.store.getState();
 
             expect(users.collections['active=true'].positions).toEqual([]);
             expect(users.collections['order=newest'].positions).toEqual(expectedCumulativeStateBefore);

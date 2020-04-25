@@ -16,7 +16,7 @@ import nop from '../../utils/function/nop';
 
 const HTTP_REQUEST_TYPE = 'DELETE';
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Action creator thunk
  ***************************************************************************************************************/
 
@@ -25,8 +25,8 @@ const HTTP_REQUEST_TYPE = 'DELETE';
  * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
- * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
- * @returns {Thunk}
+ * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+ * @returns {Thunk} Function to call to dispatch an action
  */
 function actionCreator(options, params, actionCreatorOptions = {}) {
   const {
@@ -69,7 +69,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
   };
 }
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Action creators
  ***************************************************************************************************************/
 
@@ -98,7 +98,7 @@ function deleteResourceUpdate(options, values) {
  * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
- * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
+ * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function localActionCreator(options, params, actionCreatorOptions = {}){
@@ -109,6 +109,7 @@ function localActionCreator(options, params, actionCreatorOptions = {}){
 
   return removeResource({ ...options, key }, actionCreatorOptions);
 }
+
 /**
  * Creates an action object to update the Redux store remove a resource item after it has been confirmed as
  * deleted by a remote API
@@ -154,7 +155,7 @@ function handleDestroyResourceError(options, actionCreatorOptions, httpCode, err
   };
 }
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Reducer
  ***************************************************************************************************************/
 
@@ -167,6 +168,7 @@ function handleDestroyResourceError(options, actionCreatorOptions, httpCode, err
  */
 function reducer(resources, { type, status, requestedAt, key, item }) {
   assertInDevMode(() => {
+
     /**
      * Destroying a resource item that is not in the store is still allowed to be sent to the remote API
      * but there is nothing to remove from the local store - we still create a record of this request by adding
@@ -181,6 +183,7 @@ function reducer(resources, { type, status, requestedAt, key, item }) {
 
   if (status === DESTROYING) {
     assertInDevMode(() => {
+
       /**
        * We warn of trying to destroy a resource item that hasn't actually been confirmed as existing on the
        * remote API yet
@@ -209,6 +212,7 @@ function reducer(resources, { type, status, requestedAt, key, item }) {
         ...resources.items,
         [key]: {
           ...currentItem,
+
           /**
            * We persist the syncedAt attribute of the item if it's been fetched in the past, in case
            * the request fails, we know the last time it was successfully retrieved.
@@ -218,6 +222,7 @@ function reducer(resources, { type, status, requestedAt, key, item }) {
       }
     };
   } else if (status === SUCCESS) {
+
     /**
      * Upon the successful deletion of the resource (as confirmed by the external API) we remove it from the
      * Redux store, and any collections or associated resources that it may have appeared in.

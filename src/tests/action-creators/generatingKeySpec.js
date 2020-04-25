@@ -171,18 +171,18 @@ describe('Generating key:', function () {
       });
 
       it('then overrides the results for the index action', function() {
-        return this.store.dispatch(this.fetchUsers({ order: 'newest', page: 1 })).then(() => {
-          return this.store.dispatch(this.fetchUsers({ order: 'newest', page: 2 })).then(() => {
-            this.users = this.store.getState().users;
+        return this.store.dispatch(this.fetchUsers({ order: 'newest', page: 1 })).
+                  then(() => this.store.dispatch(this.fetchUsers({ order: 'newest', page: 2 })).
+                  then(() => {
+                    this.users = this.store.getState().users;
 
-            expect(this.users.items[1].values).toEqual({ id: 1, username: 'Bob' });
-            expect(this.users.items[1].status.type).toEqual(SUCCESS);
-            expect(this.users.items[2].values).toEqual({ id: 2, username: 'Jane' });
-            expect(this.users.items[2].status.type).toEqual(SUCCESS);
+                    expect(this.users.items['1'].values).toEqual({ id: 1, username: 'Bob' });
+                    expect(this.users.items['1'].status.type).toEqual(SUCCESS);
+                    expect(this.users.items['2'].values).toEqual({ id: 2, username: 'Jane' });
+                    expect(this.users.items['2'].status.type).toEqual(SUCCESS);
 
-            expect(this.users.collections['order=newest'].positions).toEqual([ 2 ]);
-          });
-        });
+                    expect(this.users.collections['order=newest'].positions).toEqual([ 2 ]);
+                  }));
       });
     });
   });

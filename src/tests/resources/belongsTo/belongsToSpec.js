@@ -2,6 +2,7 @@ import fetchMock from 'fetch-mock';
 
 import { resources, NEW, SUCCESS, RESOURCES } from '../../../index';
 import buildStore from '../../helpers/buildStore';
+import nop from '../../../utils/function/nop';
 
 describe('belongsTo:', function () {
   describe('when the association is one-to-one', function () {
@@ -94,7 +95,7 @@ describe('belongsTo:', function () {
         beforeAll(function () {
           this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
-          fetchMock.post('http://test.com/addresses', new Promise(resolve => {}));
+          fetchMock.post('http://test.com/addresses', new Promise(nop));
 
           this.store.dispatch(this.addresses.actionCreators.createAddress('temp', { userId: 1, city: 'New City 3' }));
         });
@@ -105,7 +106,7 @@ describe('belongsTo:', function () {
         });
 
         it('then sets the new association to the default attribute', function() {
-          expect(this.store.getState().users.items[1].values.addressId).toEqual('temp');
+          expect(this.store.getState().users.items['1'].values.addressId).toEqual('temp');
         });
       });
 
@@ -126,7 +127,7 @@ describe('belongsTo:', function () {
         });
 
         it('then updates the key of the association', function() {
-          expect(this.store.getState().users.items[1].values.addressId).toEqual(3);
+          expect(this.store.getState().users.items['1'].values.addressId).toEqual(3);
         });
       });
     });
@@ -137,7 +138,7 @@ describe('belongsTo:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
-            fetchMock.put('http://test.com/addresses/1', new Promise(resolve => {}));
+            fetchMock.put('http://test.com/addresses/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -157,8 +158,8 @@ describe('belongsTo:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(1);
-            expect(this.store.getState().users.items[2].values.addressId).toEqual(undefined);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(1);
+            expect(this.store.getState().users.items['2'].values.addressId).toEqual(undefined);
           });
         });
 
@@ -196,11 +197,11 @@ describe('belongsTo:', function () {
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(undefined);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(undefined);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.store.getState().users.items[2].values.addressId).toEqual(1);
+            expect(this.store.getState().users.items['2'].values.addressId).toEqual(1);
           });
         });
       });
@@ -210,7 +211,7 @@ describe('belongsTo:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
-            fetchMock.put('http://test.com/addresses/1', new Promise(resolve => {}));
+            fetchMock.put('http://test.com/addresses/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -226,7 +227,7 @@ describe('belongsTo:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(1);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(1);
           });
         });
 
@@ -262,11 +263,11 @@ describe('belongsTo:', function () {
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(undefined);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(undefined);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.store.getState().users.items[2].values.addressId).toEqual(1);
+            expect(this.store.getState().users.items['2'].values.addressId).toEqual(1);
           });
         });
       });
@@ -279,7 +280,7 @@ describe('belongsTo:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
-            fetchMock.delete('http://test.com/addresses/1', new Promise(resolve => {}));
+            fetchMock.delete('http://test.com/addresses/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -295,7 +296,7 @@ describe('belongsTo:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(1);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(1);
           });
         });
 
@@ -326,7 +327,7 @@ describe('belongsTo:', function () {
           });
 
           it('then removes the associated item', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(undefined);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(undefined);
           });
         });
       });
@@ -336,7 +337,7 @@ describe('belongsTo:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
-            fetchMock.delete('http://test.com/addresses/1', new Promise(resolve => {}));
+            fetchMock.delete('http://test.com/addresses/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -349,7 +350,7 @@ describe('belongsTo:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(1);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(1);
           });
         });
 
@@ -379,7 +380,7 @@ describe('belongsTo:', function () {
           });
 
           it('then removes the associated item', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(undefined);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(undefined);
           });
         });
       });
@@ -476,7 +477,7 @@ describe('belongsTo:', function () {
         beforeAll(function () {
           this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
-          fetchMock.post('http://test.com/addresses', new Promise(resolve => {}));
+          fetchMock.post('http://test.com/addresses', new Promise(nop));
 
           this.store.dispatch(this.addresses.actionCreators.createAddress('temp', { userIds: [ 1 ], city: 'New City 3' }));
         });
@@ -487,7 +488,7 @@ describe('belongsTo:', function () {
         });
 
         it('then adds the new association to the default attribute', function() {
-          expect(this.store.getState().users.items[1].values.addressId).toEqual('temp');
+          expect(this.store.getState().users.items['1'].values.addressId).toEqual('temp');
         });
       });
 
@@ -508,7 +509,7 @@ describe('belongsTo:', function () {
         });
 
         it('then updates the key of the association', function() {
-          expect(this.store.getState().users.items[1].values.addressId).toEqual(3);
+          expect(this.store.getState().users.items['1'].values.addressId).toEqual(3);
         });
       });
     });
@@ -519,7 +520,7 @@ describe('belongsTo:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
-            fetchMock.put('http://test.com/addresses/1', new Promise(resolve => {}));
+            fetchMock.put('http://test.com/addresses/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -539,8 +540,8 @@ describe('belongsTo:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(1);
-            expect(this.store.getState().users.items[2].values.addressId).toEqual(undefined);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(1);
+            expect(this.store.getState().users.items['2'].values.addressId).toEqual(undefined);
           });
         });
 
@@ -578,11 +579,11 @@ describe('belongsTo:', function () {
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(undefined);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(undefined);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.store.getState().users.items[2].values.addressId).toEqual(1);
+            expect(this.store.getState().users.items['2'].values.addressId).toEqual(1);
           });
         });
       });
@@ -592,7 +593,7 @@ describe('belongsTo:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
-            fetchMock.put('http://test.com/addresses/1', new Promise(resolve => {}));
+            fetchMock.put('http://test.com/addresses/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -608,7 +609,7 @@ describe('belongsTo:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(1);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(1);
           });
         });
 
@@ -644,11 +645,11 @@ describe('belongsTo:', function () {
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(undefined);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(undefined);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.store.getState().users.items[2].values.addressId).toEqual(1);
+            expect(this.store.getState().users.items['2'].values.addressId).toEqual(1);
           });
         });
       });
@@ -661,7 +662,7 @@ describe('belongsTo:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
-            fetchMock.delete('http://test.com/addresses/1', new Promise(resolve => {}));
+            fetchMock.delete('http://test.com/addresses/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -677,7 +678,7 @@ describe('belongsTo:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(1);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(1);
           });
         });
 
@@ -708,7 +709,7 @@ describe('belongsTo:', function () {
           });
 
           it('then removes the associated item', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(undefined);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(undefined);
           });
         });
       });
@@ -718,7 +719,7 @@ describe('belongsTo:', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
-            fetchMock.delete('http://test.com/addresses/1', new Promise(resolve => {}));
+            fetchMock.delete('http://test.com/addresses/1', new Promise(nop));
 
             spyOn(console, 'warn');
 
@@ -731,7 +732,7 @@ describe('belongsTo:', function () {
           });
 
           it('then does NOT remove the associated item', function () {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(1);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(1);
           });
         });
 
@@ -761,7 +762,7 @@ describe('belongsTo:', function () {
           });
 
           it('then removes the associated item', function() {
-            expect(this.store.getState().users.items[1].values.addressId).toEqual(undefined);
+            expect(this.store.getState().users.items['1'].values.addressId).toEqual(undefined);
           });
         });
       });

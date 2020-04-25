@@ -1,4 +1,3 @@
-import { ITEM } from '../../constants/DataStructures';
 import { EDITING, NEW } from '../../constants/Statuses';
 import processActionCreatorOptions from '../../action-creators/helpers/processActionCreatorOptions';
 import getItemKey from '../../action-creators/helpers/getItemKey';
@@ -7,7 +6,7 @@ import assertInDevMode from '../../utils/assertInDevMode';
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import warn from '../../utils/dev/warn';
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Action creators
  ***************************************************************************************************************/
 
@@ -21,7 +20,7 @@ import warn from '../../utils/dev/warn';
  *        to merge into the exist ones of the new resource item.
  * @param {Object} valuesOrActionCreatorOptions Either the new attribute values to merge into the exist ones
  *        of the new resource item, or addition options passed to the action creator when it is called.
- * @param {Object} optionalActionCreatorOptions=undefined The optional additional options passed to the action controller.
+ * @param {Object} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
@@ -46,7 +45,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
 }
 
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Reducer
  ***************************************************************************************************************/
 
@@ -66,6 +65,7 @@ function reducer(resources, { type, key, item }) {
 
   if (!currentItem) {
     assertInDevMode(() => {
+
       /**
        * We warn about editing a resource that doesn't actually exist in the redux store
        */
@@ -80,21 +80,8 @@ function reducer(resources, { type, key, item }) {
 
     return resources;
 
-  } else if (currentItem.status.type !== NEW) {
-    assertInDevMode(() => {
-      /**
-       * We warn about editing a resource that isn't new
-       */
-      const editActionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'edit', verb: 'EDIT_NEW' });
+  } else if (currentItem.status.type === NEW) {
 
-      warn(
-        `${type}'s key '${key}' matches a resource that is NOT new. Use a ${editActionCreatorName}() to edit ` +
-        `existing items. Update ignored.`
-      );
-    });
-
-    return resources;
-  } else {
     /**
      * We do a shallow merge of the values that already exist in the redux store for the resource item
      * with the new values being supplied as part of the edit.
@@ -116,6 +103,21 @@ function reducer(resources, { type, key, item }) {
         }
       }
     };
+  } else {
+    assertInDevMode(() => {
+
+      /**
+       * We warn about editing a resource that isn't new
+       */
+      const editActionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'edit', verb: 'EDIT_NEW' });
+
+      warn(
+        `${type}'s key '${key}' matches a resource that is NOT new. Use a ${editActionCreatorName}() to edit ` +
+        'existing items. Update ignored.'
+      );
+    });
+
+    return resources;
   }
 }
 

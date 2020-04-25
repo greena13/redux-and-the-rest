@@ -1,6 +1,7 @@
 import fetchMock from 'fetch-mock';
 import { resources, RESOURCES, SUCCESS } from '../../../index';
 import buildStore from '../../helpers/buildStore';
+import nop from '../../../utils/function/nop';
 
 describe('hasAndBelongsToMany:', function () {
   beforeAll(function () {
@@ -74,7 +75,7 @@ describe('hasAndBelongsToMany:', function () {
     describe('and the previous values are included in the destroy action', function () {
       describe('before a request to destroy an associated resource item has completed', function () {
         beforeAll(function () {
-          fetchMock.delete('http://test.com/addresses/1', new Promise(resolve => {}));
+          fetchMock.delete('http://test.com/addresses/1', new Promise(nop));
 
           this.store = buildStore({ ...this.initialState }, {
             users: this.reducers,
@@ -90,7 +91,7 @@ describe('hasAndBelongsToMany:', function () {
         });
 
         it('then does NOT remove the item', function() {
-          expect(this.store.getState().users.items[1]).toEqual(this.initialState.users.items[1]);
+          expect(this.store.getState().users.items['1']).toEqual(this.initialState.users.items['1']);
         });
       });
 
@@ -114,7 +115,7 @@ describe('hasAndBelongsToMany:', function () {
         });
 
         it('then removes the item', function() {
-          expect(this.store.getState().users.items[1]).toEqual(undefined);
+          expect(this.store.getState().users.items['1']).toEqual(undefined);
         });
       });
     });
@@ -122,7 +123,7 @@ describe('hasAndBelongsToMany:', function () {
     describe('and the previous values are NOT included in the destroy action', function () {
       describe('before a request to destroy an associated resource item has completed', function () {
         beforeAll(function () {
-          fetchMock.delete('http://test.com/addresses/1', new Promise(resolve => {}));
+          fetchMock.delete('http://test.com/addresses/1', new Promise(nop));
 
           this.store = buildStore({ ...this.initialState }, {
             users: this.reducers,
@@ -138,7 +139,7 @@ describe('hasAndBelongsToMany:', function () {
         });
 
         it('then does NOT remove the item', function() {
-          expect(this.store.getState().users.items[1]).toEqual(this.initialState.users.items[1]);
+          expect(this.store.getState().users.items['1']).toEqual(this.initialState.users.items['1']);
         });
       });
 
@@ -164,7 +165,7 @@ describe('hasAndBelongsToMany:', function () {
         });
 
         it('then removes the item', function() {
-          expect(this.store.getState().users.items[1]).toEqual(undefined);
+          expect(this.store.getState().users.items['1']).toEqual(undefined);
         });
 
         it('then displays a warning', function() {

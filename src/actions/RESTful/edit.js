@@ -7,7 +7,7 @@ import warn from '../../utils/dev/warn';
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import wrapInObject from '../../utils/object/wrapInObject';
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Action creators
  ***************************************************************************************************************/
 
@@ -19,7 +19,7 @@ import wrapInObject from '../../utils/object/wrapInObject';
  * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
  * @param {Object} values The new attribute values to merge into the exist ones of the resource item.
- * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
+ * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator(options, params, values, actionCreatorOptions = {}) {
@@ -40,7 +40,7 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
   };
 }
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Reducer
  ***************************************************************************************************************/
 
@@ -83,6 +83,7 @@ function reducer(resources, { type, key, item }) {
 
     return resources;
   } else {
+
     /**
      * We do a shallow merge of the values that already exist in the redux store for the resource item
      * with the new values being supplied as part of the edit.
@@ -96,12 +97,14 @@ function reducer(resources, { type, key, item }) {
 
     const newStatus = function(){
       if (currentItem.status.dirty) {
+
         /**
          * If dirty already exists, this is not the first call to edit the resource item, so we leave the
          * original values
          */
         return item.status;
       } else {
+
         /**
          * If this is the first edit then we save a reference to the original values (those last retrieved
          * from an external API) for comparision.

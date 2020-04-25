@@ -1,7 +1,7 @@
 function valuesAdded(newValues, previousValues) {
   return newValues.reduce((memo, value) => {
     if (previousValues.indexOf(value) === -1) {
-      memo.push(value)
+      memo.push(value);
     }
 
     return memo;

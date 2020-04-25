@@ -3,7 +3,6 @@ import {
   resources,
   CREATING, DESTROY_ERROR, DESTROYING, EDITING, ERROR, NEW, SUCCESS, UPDATING
 } from '../../../index';
-import { COMPLETE } from '../../../constants/ProjectionTypes';
 
 describe('New reducer:', () => {
   beforeAll(function () {
@@ -270,11 +269,11 @@ describe('New reducer:', () => {
         });
 
         it('then changes the values of then existing item', function() {
-          expect(this.users.items[1].values).toEqual({ username: 'Jill' });
+          expect(this.users.items['1'].values).toEqual({ username: 'Jill' });
         });
 
         it('then sets the item\'s status type to NEW', function() {
-          expect(this.users.items[1].status.type).toEqual(NEW);
+          expect(this.users.items['1'].status.type).toEqual(NEW);
         });
 
         it('then sets the newItemKey to point to the new item', function() {

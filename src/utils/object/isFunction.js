@@ -4,7 +4,7 @@
  * @returns {boolean} True if the value is a function
  */
 function isFunction(value) {
-  return value && (Object.prototype.toString.call(value) === '[object Function]' || typeof value === 'function' || value instanceof Function);
+  return value && (Reflect.apply(Object.prototype.toString, value, []) === '[object Function]' || typeof value === 'function' || value instanceof Function);
 }
 
 export default isFunction;

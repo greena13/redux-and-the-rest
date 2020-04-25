@@ -19,9 +19,7 @@ describe('Specifying a response adaptor:', function () {
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
-        responseAdaptor: (body) => {
-          return { values: body.response, error: body.error };
-        }
+        responseAdaptor: (body) => ({ values: body.response, error: body.error })
       }, {
         index: true,
         show: true,
@@ -143,7 +141,7 @@ describe('Specifying a response adaptor:', function () {
 
         it('then uses the response adaptor', function() {
           return this.store.dispatch(this.fetchUser(1)).then(() => {
-            const item = this.store.getState().users.items[1];
+            const item = this.store.getState().users.items['1'];
 
             expect(item.status.type).toEqual(SUCCESS);
             expect(item.values).toEqual({ id: 1, username: 'Bob' });
@@ -169,7 +167,7 @@ describe('Specifying a response adaptor:', function () {
 
           it('then uses the response adaptor', function() {
             return this.store.dispatch(this.fetchUser(1)).then(() => {
-              const item = this.store.getState().users.items[1];
+              const item = this.store.getState().users.items['1'];
 
               expect(item.status.type).toEqual(ERROR);
               expect(item.status.error.message).toEqual('NOT_FOUND');
@@ -198,7 +196,7 @@ describe('Specifying a response adaptor:', function () {
 
           it('then does not use the response adaptor', function() {
             return this.store.dispatch(this.fetchUser(1)).then(() => {
-              const collection = this.store.getState().users.items[1];
+              const collection = this.store.getState().users.items['1'];
 
               expect(collection.status.type).toEqual(ERROR);
               expect(collection.status.error.message).toEqual('Long error stack trace');
@@ -230,7 +228,7 @@ describe('Specifying a response adaptor:', function () {
 
         it('then uses the response adaptor', function() {
           return this.store.dispatch(this.createUser('temp', { username: 'Bob' })).then(() => {
-            const item = this.store.getState().users.items[1];
+            const item = this.store.getState().users.items['1'];
 
             expect(item.status.type).toEqual(SUCCESS);
             expect(item.values).toEqual({ id: 1, username: 'Bob' });
@@ -329,7 +327,7 @@ describe('Specifying a response adaptor:', function () {
 
         it('then uses the response adaptor', function() {
           return this.store.dispatch(this.updateUser(1, { username: 'Robert' })).then(() => {
-            const item = this.store.getState().users.items[1];
+            const item = this.store.getState().users.items['1'];
 
             expect(item.status.type).toEqual(SUCCESS);
             expect(item.values).toEqual({ id: 1, username: 'Robert' });
@@ -369,7 +367,7 @@ describe('Specifying a response adaptor:', function () {
           it('then uses the response adaptor', function() {
             return this.store.dispatch(this.updateUser(1, { username: 'Robert' })).then(() => {
 
-              const item = this.store.getState().users.items[1];
+              const item = this.store.getState().users.items['1'];
 
               expect(item.status.type).toEqual(ERROR);
               expect(item.status.error.message).toEqual('NOT_FOUND');
@@ -410,7 +408,7 @@ describe('Specifying a response adaptor:', function () {
 
           it('then does not use the response adaptor', function() {
             return this.store.dispatch(this.updateUser(1, { username: 'Robert' })).then(() => {
-              const item = this.store.getState().users.items[1];
+              const item = this.store.getState().users.items['1'];
 
               expect(item.status.type).toEqual(ERROR);
               expect(item.status.error.message).toEqual('Long error stack trace');
@@ -454,7 +452,7 @@ describe('Specifying a response adaptor:', function () {
 
         it('then uses the response adaptor', function() {
           return this.store.dispatch(this.destroyUser(1)).then(() => {
-            const item = this.store.getState().users.items[1];
+            const item = this.store.getState().users.items['1'];
 
             expect(item).toEqual(undefined);
           });
@@ -493,7 +491,7 @@ describe('Specifying a response adaptor:', function () {
           it('then uses the response adaptor', function() {
             return this.store.dispatch(this.destroyUser(1)).then(() => {
 
-              const item = this.store.getState().users.items[1];
+              const item = this.store.getState().users.items['1'];
 
               expect(item.status.type).toEqual(DESTROY_ERROR);
               expect(item.status.error.message).toEqual('NOT_FOUND');
@@ -534,7 +532,7 @@ describe('Specifying a response adaptor:', function () {
 
           it('then does not use the response adaptor', function() {
             return this.store.dispatch(this.destroyUser(1)).then(() => {
-              const item = this.store.getState().users.items[1];
+              const item = this.store.getState().users.items['1'];
 
               expect(item.status.type).toEqual(DESTROY_ERROR);
               expect(item.status.error.message).toEqual('Long error stack trace');
@@ -557,14 +555,10 @@ describe('Specifying a response adaptor:', function () {
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
-        responseAdaptor: (body) => {
-          return { values: body.response, error: body.error };
-        }
+        responseAdaptor: (body) => ({ values: body.response, error: body.error })
       }, {
         index: {
-          responseAdaptor: (body) => {
-            return { values: body.items, error: body.error };
-          }
+          responseAdaptor: (body) => ({ values: body.items, error: body.error })
         },
         show: true,
       });

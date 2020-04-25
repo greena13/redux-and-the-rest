@@ -3,6 +3,7 @@ import XHRMock from '../helpers/XHRMock';
 
 import { resources, RESOURCES, CREATING, FETCHING, SUCCESS, UPDATING } from '../../index';
 import buildStore from '../helpers/buildStore';
+import nop from '../../utils/function/nop';
 
 describe('progress option', function () {
   describe('for the create action:', function () {
@@ -23,7 +24,7 @@ describe('progress option', function () {
       describe('and the API request succeeds', function () {
         describe('before the request has completed', function () {
           beforeAll(function() {
-            fetchMock.post('http://test.com/users', new Promise(resolve => {}));
+            fetchMock.post('http://test.com/users', new Promise(nop));
 
             this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
 
@@ -68,11 +69,11 @@ describe('progress option', function () {
           });
 
           it('then the item\'s status is SUCCESS', function() {
-            expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+            expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
           });
 
           it('then does not set the item\'s progress status attributes', function() {
-            const userStatus = this.store.getState().users.items[1].status;
+            const userStatus = this.store.getState().users.items['1'].status;
 
             expect(userStatus.progressUp).toEqual(undefined);
             expect(userStatus.progressDown).toEqual(undefined);
@@ -229,23 +230,23 @@ describe('progress option', function () {
           describe('and the response has finished downloading', () => {
             beforeAll(function () {
               return this.xhrMock.completeDownload().then(() => {
-                this.userStatus = this.store.getState().users.items[1].status;
+                this.userStatus = this.store.getState().users.items['1'].status;
               });
             });
 
             it('then the item\'s status type is set to SUCCESS', function() {
-              expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+              expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
             });
 
             it('then the item\'s progressUp status is updated with the current values', function() {
-              expect(this.store.getState().users.items[1].status.progressUp).toEqual({
+              expect(this.store.getState().users.items['1'].status.progressUp).toEqual({
                 percent: 100,
                 loaded: 24,
                 total: 24,
                 lengthComputable: true,
               });
 
-              expect(this.store.getState().users.items[1].status.progressDown).toEqual({
+              expect(this.store.getState().users.items['1'].status.progressDown).toEqual({
                 percent: 100,
                 loaded: 25,
                 total: 25,
@@ -276,7 +277,7 @@ describe('progress option', function () {
       describe('and the API request succeeds', function () {
         describe('before the request has completed', function () {
           beforeAll(function() {
-            fetchMock.put('http://test.com/users/1', new Promise(resolve => {}));
+            fetchMock.put('http://test.com/users/1', new Promise(nop));
 
             this.store = buildStore({
               users: {
@@ -307,11 +308,11 @@ describe('progress option', function () {
           });
 
           it('then the item\'s status is UPDATING', function() {
-            expect(this.store.getState().users.items[1].status.type).toEqual(UPDATING);
+            expect(this.store.getState().users.items['1'].status.type).toEqual(UPDATING);
           });
 
           it('then there are no progress attributes on the item\'s status object', function() {
-            const userStatus = this.store.getState().users.items[1].status;
+            const userStatus = this.store.getState().users.items['1'].status;
 
             expect(userStatus.progressUp).toEqual(undefined);
             expect(userStatus.progressDown).toEqual(undefined);
@@ -353,11 +354,11 @@ describe('progress option', function () {
           });
 
           it('then the item\'s status is SUCCESS', function() {
-            expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+            expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
           });
 
           it('then does not set the item\'s progress status attributes', function() {
-            const userStatus = this.store.getState().users.items[1].status;
+            const userStatus = this.store.getState().users.items['1'].status;
 
             expect(userStatus.progressUp).toEqual(undefined);
             expect(userStatus.progressDown).toEqual(undefined);
@@ -416,7 +417,7 @@ describe('progress option', function () {
             username: 'Robert',
           }));
 
-          this.userStatus = this.store.getState().users.items[1].status;
+          this.userStatus = this.store.getState().users.items['1'].status;
         });
 
         afterAll(function() {
@@ -443,7 +444,7 @@ describe('progress option', function () {
               total: 24
             });
 
-            this.userStatus = this.store.getState().users.items[1].status;
+            this.userStatus = this.store.getState().users.items['1'].status;
           });
 
           it('then the item\'s status is still UPDATING', function() {
@@ -470,7 +471,7 @@ describe('progress option', function () {
         describe('and the upload has finished', () => {
           beforeAll(function () {
             this.xhrMock.completeUpload({ status: 200 });
-            this.userStatus = this.store.getState().users.items[1].status;
+            this.userStatus = this.store.getState().users.items['1'].status;
           });
 
           it('then the item\'s status is still UPDATING', function() {
@@ -502,7 +503,7 @@ describe('progress option', function () {
                 total: 25
               });
 
-              this.userStatus = this.store.getState().users.items[1].status;
+              this.userStatus = this.store.getState().users.items['1'].status;
             });
 
             it('then the item\'s status is still UPDATING', function() {
@@ -529,7 +530,7 @@ describe('progress option', function () {
             describe('and downloading the response is complete', () => {
               beforeAll(function () {
                 return this.xhrMock.completeDownload().then(() => {
-                  this.userStatus = this.store.getState().users.items[1].status;
+                  this.userStatus = this.store.getState().users.items['1'].status;
                 });
               });
 
@@ -577,7 +578,7 @@ describe('progress option', function () {
       describe('and the API request succeeds', function () {
         describe('before the request has completed', function () {
           beforeAll(function() {
-            fetchMock.get('http://test.com/users/1', new Promise(resolve => {}));
+            fetchMock.get('http://test.com/users/1', new Promise(nop));
 
             this.store = buildStore({
               users: {
@@ -594,11 +595,11 @@ describe('progress option', function () {
           });
 
           it('then the item\'s status is FETCHING', function() {
-            expect(this.store.getState().users.items[1].status.type).toEqual(FETCHING);
+            expect(this.store.getState().users.items['1'].status.type).toEqual(FETCHING);
           });
 
           it('then there are no progress attributes on the item\'s status object', function() {
-            const userStatus = this.store.getState().users.items[1].status;
+            const userStatus = this.store.getState().users.items['1'].status;
 
             expect(userStatus.progressUp).toEqual(undefined);
             expect(userStatus.progressDown).toEqual(undefined);
@@ -626,11 +627,11 @@ describe('progress option', function () {
           });
 
           it('then the item\'s status is SUCCESS', function() {
-            expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+            expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
           });
 
           it('then does not set the item\'s progress status attributes', function() {
-            const userStatus = this.store.getState().users.items[1].status;
+            const userStatus = this.store.getState().users.items['1'].status;
 
             expect(userStatus.progressUp).toEqual(undefined);
             expect(userStatus.progressDown).toEqual(undefined);
@@ -675,7 +676,7 @@ describe('progress option', function () {
 
           this.store.dispatch(this.fetchUser(1));
 
-          this.userStatus = this.store.getState().users.items[1].status;
+          this.userStatus = this.store.getState().users.items['1'].status;
         });
 
         afterAll(function() {
@@ -701,7 +702,7 @@ describe('progress option', function () {
               total: 24
             });
 
-            this.userStatus = this.store.getState().users.items[1].status;
+            this.userStatus = this.store.getState().users.items['1'].status;
           });
 
           it('then the item\'s status is still FETCHING', function() {
@@ -729,7 +730,7 @@ describe('progress option', function () {
         describe('and the upload has finished', () => {
           beforeAll(function () {
             this.xhrMock.completeUpload({ status: 200 });
-            this.userStatus = this.store.getState().users.items[1].status;
+            this.userStatus = this.store.getState().users.items['1'].status;
           });
 
           it('then the item\'s status is still FETCHING', function() {
@@ -761,7 +762,7 @@ describe('progress option', function () {
                 total: 25
               });
 
-              this.userStatus = this.store.getState().users.items[1].status;
+              this.userStatus = this.store.getState().users.items['1'].status;
             });
 
             it('then the item\'s status is still FETCHING', function() {
@@ -787,7 +788,7 @@ describe('progress option', function () {
             describe('and downloading the response is complete', () => {
               beforeAll(function () {
                 return this.xhrMock.completeDownload().then(() => {
-                  this.userStatus = this.store.getState().users.items[1].status;
+                  this.userStatus = this.store.getState().users.items['1'].status;
                 });
               });
 
@@ -835,7 +836,7 @@ describe('progress option', function () {
       describe('and the API request succeeds', function () {
         describe('before the request has completed', function () {
           beforeAll(function() {
-            fetchMock.get('http://test.com/users', new Promise(resolve => {}));
+            fetchMock.get('http://test.com/users', new Promise(nop));
 
             this.store = buildStore({
               users: {
@@ -888,7 +889,7 @@ describe('progress option', function () {
           });
 
           it('then the collection\'s items\' status is SUCCESS', function() {
-            expect(this.store.getState().users.items[1].status.type).toEqual(SUCCESS);
+            expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
           });
 
           it('then does not set the collection\'s progress status attributes', function() {
@@ -899,7 +900,7 @@ describe('progress option', function () {
           });
 
           it('then does not set then the collection\'s items\' progress status attributes', function() {
-            const userStatus = this.store.getState().users.items[1].status;
+            const userStatus = this.store.getState().users.items['1'].status;
 
             expect(userStatus.progressUp).toEqual(undefined);
             expect(userStatus.progressDown).toEqual(undefined);
@@ -1058,7 +1059,7 @@ describe('progress option', function () {
                 return this.xhrMock.completeDownload().then(() => {
                   this.userCollectionStatus = this.store.getState().users.collections[''].status;
 
-                  this.userStatus = this.store.getState().users.items[1].status;
+                  this.userStatus = this.store.getState().users.items['1'].status;
                 });
               });
 

@@ -103,10 +103,10 @@ describe('reducesOn:', function () {
   });
 
   it('calls the specified reducer when the specified action occurs', function() {
-    expect(this.store.getState().users.items[1].values.signedIn).toEqual(true);
+    expect(this.store.getState().users.items['1'].values.signedIn).toEqual(true);
 
     return this.store.dispatch(this.destroySession(1)).then(() => {
-      expect(this.store.getState().users.items[1].values.signedIn).toEqual(false);
+      expect(this.store.getState().users.items['1'].values.signedIn).toEqual(false);
     });
   });
 

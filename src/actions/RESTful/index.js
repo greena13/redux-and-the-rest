@@ -16,7 +16,7 @@ import nop from '../../utils/function/nop';
 
 const HTTP_REQUEST_TYPE = 'GET';
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Action creator thunk
  ***************************************************************************************************************/
 
@@ -25,8 +25,8 @@ const HTTP_REQUEST_TYPE = 'GET';
  * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
- * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
- * @returns {Thunk}
+ * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+ * @returns {Thunk} Function to call to dispatch an action
  */
 function actionCreator(options, params, actionCreatorOptions = { }) {
   const {
@@ -71,7 +71,7 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
   };
 }
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Action creators
  ***************************************************************************************************************/
 
@@ -90,7 +90,7 @@ function requestCollection(options, key) {
     collection: {
       ...COLLECTION,
       status: { type: FETCHING, requestedAt },
-      projection: projection
+      projection
     },
     key,
   };
@@ -168,7 +168,7 @@ function handleCollectionError(options, actionCreatorOptions, httpCode, error) {
   };
 }
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Reducer
  ***************************************************************************************************************/
 
@@ -188,6 +188,7 @@ function reducer(resources, { status, items, key, httpCode, collection, error, e
    */
 
   if (status === FETCHING) {
+
     /**
      * When a collection is being fetched, we simply update the collection's status and projection values,
      * leaving any items in the collection that are already there untouched.
@@ -200,6 +201,7 @@ function reducer(resources, { status, items, key, httpCode, collection, error, e
         ...resources.collections,
         [key]: {
           ...currentList,
+
           /**
            * We persist the syncedAt attribute of the collection if it's been fetched in the past, in case
            * the request fails, we know the last time it was successfully retrieved
@@ -210,6 +212,7 @@ function reducer(resources, { status, items, key, httpCode, collection, error, e
       }
     };
   } else if(status === SUCCESS) {
+
     /**
      * When a collection has been successfully fetched, we merge the items contained in the API's response
      * body with those already in the store. This allows us to work with pagination and fetch more items on
@@ -225,6 +228,7 @@ function reducer(resources, { status, items, key, httpCode, collection, error, e
       ...resources.collections,
       [key]: {
         ...collection,
+
         /**
          * We add all status attributes that were added since the request was started (currently only the
          * syncedAt value).
@@ -240,6 +244,7 @@ function reducer(resources, { status, items, key, httpCode, collection, error, e
     };
 
   } else if (status === ERROR) {
+
     /**
      * When the attempt to fetch a collection from the API results in an error, we leave the current contents
      * of the collection and update its state and projection to reflect the details of the error.
@@ -248,6 +253,7 @@ function reducer(resources, { status, items, key, httpCode, collection, error, e
       ...resources.collections,
       [key]: {
         ...currentList,
+
         /**
          * We merge in new status attributes about the details of the error.
          */

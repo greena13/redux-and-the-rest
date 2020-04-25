@@ -1,6 +1,7 @@
 import fetchMock from 'fetch-mock';
 import { resources, RESOURCES, SUCCESS } from '../../../index';
 import buildStore from '../../helpers/buildStore';
+import nop from '../../../utils/function/nop';
 
 describe('belongsTo:', function () {
   describe('when the \'as\' option is used', function () {
@@ -61,7 +62,7 @@ describe('belongsTo:', function () {
 
     describe('before the request has completed', function () {
       beforeAll(function () {
-        fetchMock.post('http://test.com/addresses', new Promise(resolve => {}));
+        fetchMock.post('http://test.com/addresses', new Promise(nop));
 
         this.store = buildStore({ ...this.initialState }, {
           users: this.reducers,
@@ -79,7 +80,7 @@ describe('belongsTo:', function () {
       });
 
       it('then uses the value of the \'as\' option to find the foreign key on the associated resource', function() {
-        expect(this.store.getState().users.items[1].values.addressId).toEqual('temp');
+        expect(this.store.getState().users.items['1'].values.addressId).toEqual('temp');
       });
     });
 
@@ -105,7 +106,7 @@ describe('belongsTo:', function () {
       });
 
       it('then uses the value of the \'as\' option to find the foreign key on the associated resource', function() {
-        expect(this.store.getState().users.items[1].values.addressId).toEqual(3);
+        expect(this.store.getState().users.items['1'].values.addressId).toEqual(3);
       });
     });
   });

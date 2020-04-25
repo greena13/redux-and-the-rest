@@ -2,7 +2,7 @@ import getItemKey from '../../action-creators/helpers/getItemKey';
 import without from '../../utils/collection/without';
 import wrapInObject from '../../utils/object/wrapInObject';
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Action creators
  ***************************************************************************************************************/
 
@@ -23,7 +23,7 @@ function actionCreator({ action, keyBy }, params) {
   };
 }
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Reducer
  ***************************************************************************************************************/
 
@@ -31,7 +31,7 @@ function actionCreator({ action, keyBy }, params) {
  * Handles removing a selected resource item
  * @param {ResourcesReduxState} resources The current state of part of the Redux store that contains
  *        the resources
- * @param action
+ * @param {ActionObject} action Action object to merge into resources state
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources, { key }) {

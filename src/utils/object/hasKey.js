@@ -1,5 +1,5 @@
 function hasKey(object, key) {
-  return object.hasOwnProperty(key);
+  return Reflect.apply(Object.prototype.hasOwnProperty, object, [key]);
 }
 
 export default hasKey;

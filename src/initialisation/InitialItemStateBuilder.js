@@ -17,12 +17,12 @@ class InitialItemStateBuilder extends InitialStateBuilder {
   /**
    * Generates the initial item state the builder has been configured for, in the format suitable to pass to
    * the Redux store.
-   * @param {Object} options
+   * @param {Object} options An object of configuration options
    * @param {ResourceStatus} options.status The status to use for the item if it hasn't set its own.
    * @param {ResourceProjection} options.projection The projection for the item if it hasn't set its own.
-   * @return {ResourcesItem}
+   * @return {ResourcesItem} The initial item state
    */
-  build({status = {}, projection = {}}) {
+  build({ status = {}, projection = {} }) {
     return {
       ...ITEM,
       values: this.values,

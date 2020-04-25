@@ -49,11 +49,11 @@ describe('Edit reducer:', function () {
         });
 
         it('then adds an item with the correct values', function() {
-          expect(this.users.items[1].values).toEqual({ username: 'Bob' });
+          expect(this.users.items['1'].values).toEqual({ username: 'Bob' });
         });
 
         it('then adds an item with a status of EDITING', function() {
-          expect(this.users.items[1].status.type).toEqual(EDITING);
+          expect(this.users.items['1'].status.type).toEqual(EDITING);
         });
       });
 
@@ -88,11 +88,11 @@ describe('Edit reducer:', function () {
             });
 
             it('then updates the item\'s values', function() {
-              expect(this.users.items[1].values).toEqual({ username: 'Bob' });
+              expect(this.users.items['1'].values).toEqual({ username: 'Bob' });
             });
 
             it('then changes the item\'s status to EDITING', function() {
-              expect(this.users.items[1].status).toEqual({
+              expect(this.users.items['1'].status).toEqual({
                 type: EDITING,
                 dirty: true,
                 originalValues: { username: 'Robert' }

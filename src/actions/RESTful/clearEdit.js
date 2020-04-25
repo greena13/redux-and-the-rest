@@ -3,7 +3,7 @@ import getItemKey from '../../action-creators/helpers/getItemKey';
 import wrapInObject from '../../utils/object/wrapInObject';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Action creators
  ***************************************************************************************************************/
 
@@ -26,7 +26,7 @@ function actionCreator(options, params) {
   };
 }
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Reducer
  ***************************************************************************************************************/
 
@@ -49,12 +49,14 @@ function reducer(resources, { key }) {
   if (currentItem && (currentItem.status.type === EDITING || (currentItem.status.type === ERROR && currentItem.status.originalValues))) {
     const newValues = function(){
       if (currentItem.status.dirty) {
+
         /**
          * When the resource item has been edited (indicated by the dirty bit), we roll back to the original
          * values store on the first edit
          */
         return currentItem.status.originalValues;
       } else {
+
         /**
          * When the dirty bit is not set, there is no need to roll back and we return the current resource item
          * values
@@ -69,6 +71,7 @@ function reducer(resources, { key }) {
         ...items,
         [key]: {
           ...currentItem,
+
           /**
            * We reset the status type back to
            */

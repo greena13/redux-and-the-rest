@@ -15,9 +15,10 @@ import { clearRegisteredRequests } from '../../utils/RequestManager';
 global.Response = Response;
 
 beforeAll(function() {
-  return new Response().blob().then((blob) => {
-    global.Blob = blob.constructor;
-  });
+  return new Response().blob().
+          then((blob) => {
+            global.Blob = blob.constructor;
+          });
 });
 
 beforeEach(function () {

@@ -65,7 +65,7 @@ class InitialResourceStateBuilder extends InitialStateBuilder {
   /**
    * Generates the initial state the builder has been configured for, in the format suitable to pass to
    * the Redux store.
-   * @returns {ResourcesReduxState}
+   * @returns {ResourcesReduxState} The resources' initial state
    */
   build() {
     const itemsOutsideOfCollections = Object.keys(this.items).reduce((memo, key) => {
@@ -76,14 +76,13 @@ class InitialResourceStateBuilder extends InitialStateBuilder {
       return memo;
     }, {});
 
-    const itemsFromCollections = Object.values(this.collections).reduce((memo, collection) => {
-      return {
+    const itemsFromCollections = Object.values(this.collections).reduce((memo, collection) => ({
         ...memo,
         ...collection.buildItems({ status: this.status, projection: this.projection })
-      }
-    }, {});
+      }), {});
 
     return {
+
       /**
        * Inherit the generic properties of a resource object that should not be available for
        * customisation when specifying initial state
@@ -99,13 +98,13 @@ class InitialResourceStateBuilder extends InitialStateBuilder {
       /**
        * We build the dictionary of collections
        */
-      collections:  Object.keys(this.collections).reduce((memo, key) => {
+      collections: Object.keys(this.collections).reduce((memo, key) => {
         const collection = this.collections[key];
         memo[key] = collection.build({ status: this.status, projection: this.projection });
 
         return memo;
       }, {})
-    }
+    };
   }
 }
 

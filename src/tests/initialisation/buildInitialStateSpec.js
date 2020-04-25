@@ -89,7 +89,7 @@ describe('buildInitialState:', function() {
     describe('when the initial state builder is instantiated and then passed an item', () => {
       it('then correctly builds those items as outside any collection', function() {
         const stateBuilder = this.buildInitialState();
-        stateBuilder.addItem({ id: 1, username: 'John'});
+        stateBuilder.addItem({ id: 1, username: 'John' });
 
         expect(stateBuilder.build()).toEqual({
           ...RESOURCES,
@@ -114,7 +114,7 @@ describe('buildInitialState:', function() {
     describe('when the status type is set only on the resource', () => {
       it('then correctly inherits that status type for all items and collections', function() {
         const stateBuilder = this.buildInitialState();
-        stateBuilder.addCollection([{ id: 1, username: 'John'}]);
+        stateBuilder.addCollection([{ id: 1, username: 'John' }]);
 
         const customStatusType = 'CUSTOM';
 
@@ -122,7 +122,7 @@ describe('buildInitialState:', function() {
         const results = stateBuilder.build();
 
         expect(results.collections[EmptyKey].status.type).toEqual(customStatusType);
-        expect(results.items[1].status.type).toEqual(customStatusType);
+        expect(results.items['1'].status.type).toEqual(customStatusType);
       });
     });
 
@@ -131,12 +131,12 @@ describe('buildInitialState:', function() {
         const stateBuilder = this.buildInitialState();
         const customStatusType = 'CUSTOM';
 
-        stateBuilder.addCollection([{ id: 1, username: 'John'}]).setStatusType(customStatusType);
+        stateBuilder.addCollection([{ id: 1, username: 'John' }]).setStatusType(customStatusType);
 
         const results = stateBuilder.build();
 
         expect(results.collections[EmptyKey].status.type).toEqual(customStatusType);
-        expect(results.items[1].status.type).toEqual(customStatusType);
+        expect(results.items['1'].status.type).toEqual(customStatusType);
       });
     });
 
@@ -146,12 +146,12 @@ describe('buildInitialState:', function() {
         const customStatusType = 'CUSTOM';
 
         stateBuilder.addCollection([]);
-        stateBuilder.addItem({ id: 1, username: 'John'}).setStatusType(customStatusType);
+        stateBuilder.addItem({ id: 1, username: 'John' }).setStatusType(customStatusType);
 
         const results = stateBuilder.build();
 
         expect(results.collections[EmptyKey].status.type).toEqual(SUCCESS);
-        expect(results.items[1].status.type).toEqual(customStatusType);
+        expect(results.items['1'].status.type).toEqual(customStatusType);
       });
     });
 
@@ -161,12 +161,12 @@ describe('buildInitialState:', function() {
         const resourceStatusType = 'RESOURCE_STATUS';
 
         const stateBuilder = this.buildInitialState().setStatusType(resourceStatusType);
-        stateBuilder.addCollection([{ id: 1, username: 'John'}]).setStatusType(collectionStatus);
+        stateBuilder.addCollection([{ id: 1, username: 'John' }]).setStatusType(collectionStatus);
 
         const results = stateBuilder.build();
 
         expect(results.collections[EmptyKey].status.type).toEqual(collectionStatus);
-        expect(results.items[1].status.type).toEqual(collectionStatus);
+        expect(results.items['1'].status.type).toEqual(collectionStatus);
       });
     });
 
@@ -176,15 +176,15 @@ describe('buildInitialState:', function() {
         const itemStatus = 'ITEM_STATUS';
 
         const stateBuilder = this.buildInitialState();
-        const collectionBuilder = stateBuilder.addCollection([{ id: 1, username: 'John'}]).setStatusType(collectionStatus);
-        collectionBuilder.addItem({id: 2, username: 'Bob' }).setStatusType(itemStatus);
+        const collectionBuilder = stateBuilder.addCollection([{ id: 1, username: 'John' }]).setStatusType(collectionStatus);
+        collectionBuilder.addItem({ id: 2, username: 'Bob' }).setStatusType(itemStatus);
 
         const results = stateBuilder.build();
 
         expect(results.collections[EmptyKey].status.type).toEqual(collectionStatus);
-        expect(results.items[1].status.type).toEqual(collectionStatus);
+        expect(results.items['1'].status.type).toEqual(collectionStatus);
 
-        expect(results.items[2].status.type).toEqual(itemStatus);
+        expect(results.items['2'].status.type).toEqual(itemStatus);
       });
     });
   });

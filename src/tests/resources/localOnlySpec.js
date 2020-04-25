@@ -1,4 +1,4 @@
-import { resources, SUCCESS, RESOURCES } from '../../index';
+import { resources, SUCCESS } from '../../index';
 import buildStore from '../helpers/buildStore';
 
 describe('localOnly:', function () {
@@ -128,8 +128,8 @@ describe('localOnly:', function () {
       });
 
       it('then immediately updates the resource', function() {
-        expect(this.users.items[1].values).toEqual({ ...this.initialState.users.items[1].values, ...this.newValues });
-        expect(this.users.items[1].status.type).toEqual(SUCCESS);
+        expect(this.users.items['1'].values).toEqual({ ...this.initialState.users.items['1'].values, ...this.newValues });
+        expect(this.users.items['1'].status.type).toEqual(SUCCESS);
       });
     });
 
@@ -144,8 +144,8 @@ describe('localOnly:', function () {
       });
 
       it('then immediately updates the resource', function() {
-        expect(this.users.items[1].values).toEqual({ ...this.initialState.users.items[1].values, ...this.newValues });
-        expect(this.users.items[1].status.type).toEqual(SUCCESS);
+        expect(this.users.items['1'].values).toEqual({ ...this.initialState.users.items['1'].values, ...this.newValues });
+        expect(this.users.items['1'].status.type).toEqual(SUCCESS);
       });
     });
 
@@ -157,7 +157,7 @@ describe('localOnly:', function () {
       });
 
       it('then immediately updates the resource', function() {
-        expect(this.users.items[1]).not.toBeDefined();
+        expect(this.users.items['1']).not.toBeDefined();
       });
     });
   });

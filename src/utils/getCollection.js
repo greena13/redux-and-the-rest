@@ -8,15 +8,14 @@ import serializeKey from '../public-helpers/serializeKey';
 
 /**
  * Returns a resource collection
- * @param {ResourceOptions} resourceOptions
- * @param {ResourcesReduxState} resource
- * @param {Object|any} parameters
- * @returns {ResourceCollectionWithItems}
+ * @param {ResourcesReduxState} resources The resources redux state
+ * @param {Object|any} [parameters={}] The parameters to use to generate a key to use to retrieve the collection
+ * @returns {ResourceCollectionWithItems} the resource collection with items
  */
-function getCollection({ name }, resource, parameters = {}) {
-  const collection = resource.collections[serializeKey(parameters)] || COLLECTION;
+function getCollection(resources, parameters = {}) {
+  const collection = resources.collections[serializeKey(parameters)] || COLLECTION;
 
-  const items = collection.positions.map((key) => resource.items[key]);
+  const items = collection.positions.map((key) => resources.items[key]);
 
   return {
     items,

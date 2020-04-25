@@ -1,6 +1,6 @@
 import getItemKey from '../../action-creators/helpers/getItemKey';
 import { ITEM } from '../../constants/DataStructures';
-import { EDITING, NEW } from '../../constants/Statuses';
+import { NEW } from '../../constants/Statuses';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import extractCollectionOperations from '../../action-creators/helpers/extractCollectionOperations';
 import assertInDevMode from '../../utils/assertInDevMode';
@@ -10,7 +10,7 @@ import processActionCreatorOptions from '../../action-creators/helpers/processAc
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import wrapInObject from '../../utils/object/wrapInObject';
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Action creators
  ***************************************************************************************************************/
 
@@ -25,7 +25,7 @@ import wrapInObject from '../../utils/object/wrapInObject';
  *        first time.
  * @param {Object} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
  *        options passed to the action creator when it is called.
- * @param {Object} optionalActionCreatorOptions=undefined The optional additional options passed to the action controller.
+ * @param {Object} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
@@ -38,6 +38,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
   const { action, transforms, keyBy, urlOnlyParams } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
+
   /**
    * We automatically generate a new temporary Id if one is not specified
    */
@@ -56,7 +57,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
   };
 }
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Reducer
  ***************************************************************************************************************/
 

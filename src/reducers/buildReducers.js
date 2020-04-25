@@ -165,6 +165,7 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
          * If there are additional transform functions to be run before or after the primary reducer
          * enqueue them to run in sequence, passing the result of each to the next
          */
+
         if (reducerOptions.beforeReducers.length > 0 || reducerOptions.afterReducers.length > 0) {
           return (resources, action) => {
             let _resources = resources;

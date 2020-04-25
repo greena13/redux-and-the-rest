@@ -1,10 +1,10 @@
 function arrayFrom(target) {
   if (Array.isArray(target)) {
     return target;
-  } else if (!target) {
-    return [];
+  } else if (target) {
+    return [target];
   } else {
-    return [ target ];
+    return [];
   }
 }
 

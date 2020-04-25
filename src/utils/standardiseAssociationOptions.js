@@ -11,15 +11,16 @@
  *      resource: usersResource
  *    }
  *  }
- *
- * @returns AssociationOptions
+ * @param {Object} options Association options in one of few succinct formats
+ * @returns {AssociationOptions} The standardised association options
  */
 function standardiseAssociationOptions(options) {
   if (options.__isResourcesDefinition) {
     return options;
   } else {
-    const { resource, ..._options} = options;
-    return { ...resource, ..._options};
+    const { resource, ..._options } = options;
+
+return { ...resource, ..._options };
   }
 }
 

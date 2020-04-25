@@ -2,7 +2,7 @@ import getItemKey from '../../action-creators/helpers/getItemKey';
 import generateUrl from '../../action-creators/helpers/generateUrl';
 import makeRequest from '../../action-creators/helpers/makeRequest';
 import { ERROR, FETCHING, SUCCESS } from '../../constants/Statuses';
-import { ITEM } from '../../constants/DataStructures'
+import { ITEM } from '../../constants/DataStructures';
 
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import wrapInObject from '../../utils/object/wrapInObject';
@@ -12,7 +12,7 @@ import nop from '../../utils/function/nop';
 
 const HTTP_REQUEST_TYPE = 'GET';
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Action creator thunk
  ***************************************************************************************************************/
 
@@ -21,8 +21,8 @@ const HTTP_REQUEST_TYPE = 'GET';
  * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
- * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
- * @returns {Thunk}
+ * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+ * @returns {Thunk} Function to call to dispatch an action
  */
 function actionCreator(options, params, actionCreatorOptions = { }) {
   const {
@@ -69,7 +69,7 @@ function actionCreator(options, params, actionCreatorOptions = { }) {
   };
 }
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Action creators
  ***************************************************************************************************************/
 
@@ -145,7 +145,7 @@ function handleResourceError(options, actionCreatorOptions, httpCode, error) {
   };
 }
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Reducer
  ***************************************************************************************************************/
 
@@ -166,6 +166,7 @@ function reducer(resources, { status, key, error, httpCode, item, errorOccurredA
   const currentItem = resources.items[key] || ITEM;
 
   if (status === FETCHING) {
+
     /**
      * We persist the syncedAt attribute of the item if it's been fetched in the past, in case
      * the request fails, we know the last time it was successfully retrieved.
@@ -173,6 +174,7 @@ function reducer(resources, { status, key, error, httpCode, item, errorOccurredA
     const newStatus = mergeStatus(currentItem.status, item.status, { onlyPersist: ['syncedAt'] });
 
     if (currentItem.status.type === SUCCESS) {
+
       /**
        * When a resource item is being fetched and that resource already exists in the store - i.e. we are
        * re-retrieving it from the external APi - then we persist the values already in the store and update the
@@ -199,6 +201,7 @@ function reducer(resources, { status, key, error, httpCode, item, errorOccurredA
       };
 
     } else {
+
       /**
        * When a resource item is being fetched and it does NOT already exist in the store, we simply take the
        * entire set of attributes of the item (including its values, state and projection) and add them to the
@@ -218,6 +221,7 @@ function reducer(resources, { status, key, error, httpCode, item, errorOccurredA
     }
 
   } else if (status === SUCCESS) {
+
     /**
      * When a resource item has been successfully fetched, we merge the item's current status information with
      * the action's new status information and then allow the new item values to override whatever is already
@@ -230,6 +234,7 @@ function reducer(resources, { status, key, error, httpCode, item, errorOccurredA
         ...resources.items,
         [key]: {
           ...item,
+
           /**
            * We add all status attributes that were added since the request was started (currently only the
            * syncedAt value).
@@ -247,6 +252,7 @@ function reducer(resources, { status, key, error, httpCode, item, errorOccurredA
         ...resources.items,
         [key]: {
           ...currentItem,
+
           /**
            * We merge in new status attributes about the details of the error.
            */

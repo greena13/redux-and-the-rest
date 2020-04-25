@@ -3,10 +3,10 @@
  * @param {Object|string} paramsOrValues The first argument which can either a string or object that is serialized
  *        and used to fill in the dynamic parameters of the resource's URL (params) or the values used by the
  *        action creator.
- * @param {Object} valuesOrActionCreatorOptions The second argument, which can either be the values used by the
+ * @param {Object} [valuesOrActionCreatorOptions=undefined] The second argument, which can either be the values used by the
  *        action creator, or addition options passed to the action creator when it is called.
- * @param {Object} actionCreatorOptions=undefined The optional additional options passed to the action controller.
- * @returns {{actionCreatorOptions: Object, values: Object, params: Object|string}}
+ * @param {Object} [actionCreatorOptions=undefined] The optional additional options passed to the action controller.
+ * @returns {{actionCreatorOptions: Object, values: Object, params: (Object|string)}} Action creator options
  */
 function processActionCreatorOptions(paramsOrValues, valuesOrActionCreatorOptions = undefined, actionCreatorOptions = undefined) {
   if (actionCreatorOptions === undefined) {

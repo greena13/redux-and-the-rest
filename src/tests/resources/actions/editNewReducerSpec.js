@@ -1,5 +1,5 @@
 import buildStore from '../../helpers/buildStore';
-import { resources, EDITING, ERROR, NEW, SUCCESS } from '../../../index';
+import { resources, NEW, SUCCESS } from '../../../index';
 
 describe('Edit new reducer:', function () {
   beforeAll(function () {
@@ -95,7 +95,7 @@ describe('Edit new reducer:', function () {
       });
 
       it('then doesn\'t update the item', function() {
-        expect(this.store.getState().users.items[1]).toEqual({
+        expect(this.store.getState().users.items['1']).toEqual({
           values: {
             username: 'Jane'
           },

@@ -2,6 +2,7 @@ import fetchMock from 'fetch-mock';
 
 import { resources, RESOURCES, SUCCESS } from '../../../index';
 import buildStore from '../../helpers/buildStore';
+import nop from '../../../utils/function/nop';
 
 describe('hasAndBelongsToMany:', function () {
   describe('when the \'foreignKey\' option is used', function () {
@@ -71,7 +72,7 @@ describe('hasAndBelongsToMany:', function () {
       beforeAll(function () {
         this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-        fetchMock.post('http://test.com/posts', new Promise(resolve => {}));
+        fetchMock.post('http://test.com/posts', new Promise(nop));
 
         this.store.dispatch(this.posts.actionCreators.createPost('temp', {
           authorIdentity: 1,
@@ -85,7 +86,7 @@ describe('hasAndBelongsToMany:', function () {
       });
 
       it('then uses the value of the \'foreignKey\' as the foreign key on the associated resource', function() {
-        expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1, 'temp' ]);
+        expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1, 'temp' ]);
       });
     });
 
@@ -109,8 +110,8 @@ describe('hasAndBelongsToMany:', function () {
       });
 
       it('then uses the value of the \'foreignKey\' as the foreign key on the associated resource', function() {
-        expect(this.store.getState().users.items[1].values.postIds).toEqual([ 1, 3 ]);
+        expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1, 3 ]);
       });
     });
-  })
+  });
 });

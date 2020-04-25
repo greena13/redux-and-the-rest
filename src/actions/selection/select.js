@@ -3,7 +3,7 @@ import warn from '../../utils/dev/warn';
 import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import wrapInObject from '../../utils/object/wrapInObject';
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Action creators
  ***************************************************************************************************************/
 
@@ -12,7 +12,7 @@ import wrapInObject from '../../utils/object/wrapInObject';
  * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
- * @param {Object} actionCreatorOptions={} The options passed to the action creator when it is called.
+ * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator({ action, keyBy }, params, actionCreatorOptions = {}) {
@@ -24,7 +24,7 @@ function actionCreator({ action, keyBy }, params, actionCreatorOptions = {}) {
   };
 }
 
-/**************************************************************************************************************
+/** ************************************************************************************************************
  * Reducer
  ***************************************************************************************************************/
 
@@ -32,7 +32,7 @@ function actionCreator({ action, keyBy }, params, actionCreatorOptions = {}) {
  * Handles selecting a resource item and replacing any selected items
  * @param {ResourcesReduxState} resources The current state of part of the Redux store that contains
  *        the resources
- * @param action
+ * @param {ActionObject} action Action object to merge into resources state
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources, { type, key, value }) {
