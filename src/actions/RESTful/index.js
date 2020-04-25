@@ -164,6 +164,7 @@ function handleCollectionError(options, actionCreatorOptions, httpCode, error) {
     key,
     error,
     httpCode,
+    errorOccurredAt: Date.now()
   };
 }
 
@@ -178,7 +179,7 @@ function handleCollectionError(options, actionCreatorOptions, httpCode, error) {
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { status, items, key, httpCode, collection, error }) {
+function reducer(resources, { status, items, key, httpCode, collection, error, errorOccurredAt }) {
   const currentList = resources.collections[key] || COLLECTION;
 
   /**
@@ -254,6 +255,7 @@ function reducer(resources, { status, items, key, httpCode, collection, error })
           type: status,
           httpCode,
           error,
+          errorOccurredAt
         }),
       }
     };

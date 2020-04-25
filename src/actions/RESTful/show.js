@@ -140,7 +140,8 @@ function handleResourceError(options, actionCreatorOptions, httpCode, error) {
     projection,
     httpCode,
     key,
-    error
+    error,
+    errorOccurredAt: Date.now()
   };
 }
 
@@ -156,7 +157,7 @@ function handleResourceError(options, actionCreatorOptions, httpCode, error) {
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { status, key, error, httpCode, item }) {
+function reducer(resources, { status, key, error, httpCode, item, errorOccurredAt }) {
 
   /**
    * Fetch the current values for the resource if they are already in the store, otherwise fallback to an
@@ -252,7 +253,8 @@ function reducer(resources, { status, key, error, httpCode, item }) {
           status: mergeStatus(currentItem.status, {
             type: status,
             httpCode,
-            error
+            error,
+            errorOccurredAt
           }),
         }
       }

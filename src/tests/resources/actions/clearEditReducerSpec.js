@@ -124,7 +124,6 @@ describe('Clear edit reducer:', function () {
                   httpCode: 404,
                   error: {
                     message: "Not Found",
-                    occurredAt: 1582270603575
                   }
                 },
                 projection: {

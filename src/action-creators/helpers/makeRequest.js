@@ -129,7 +129,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
 
     if (status < 400) {
       /**
-       * We assume a HTTP request status below 400 is a HTTP success, but not necessarily and application-level
+       * We assume a HTTP request status below 400 is a HTTP success, but not necessarily an application-level
        * success - the presence of a top-level error object indicates an application-level error.
        *
        * In any case, we go ahead an attempt to parse it as a JSON object.
@@ -220,10 +220,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
                 _options,
                 actionCreatorOptions,
                 status,
-                {
-                  ...errorNormalized,
-                  occurredAt: Date.now()
-                }
+                errorNormalized,
               )
             );
           });
@@ -238,7 +235,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
                 _options,
                 actionCreatorOptions,
                 status,
-                { message, occurredAt: Date.now() }
+                { message }
               )
             )
           });
@@ -317,7 +314,6 @@ function makeRequest(options, actionCreatorOptions = {}) {
             0,
             {
               type: CLIENT_ERROR,
-              occurredAt: Date.now(),
               name: error.name,
               message: error.message,
               raw: error
@@ -348,7 +344,6 @@ function makeRequest(options, actionCreatorOptions = {}) {
                   0,
                   {
                     type: CLIENT_ERROR,
-                    occurredAt: Date.now(),
                     name: error.name,
                     message: error.message,
                     raw: error

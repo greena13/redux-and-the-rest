@@ -147,7 +147,8 @@ function handleDestroyResourceError(options, actionCreatorOptions, httpCode, err
       status: {
         type: DESTROY_ERROR,
         httpCode,
-        error
+        error,
+        errorOccurredAt: Date.now()
       },
     })
   };

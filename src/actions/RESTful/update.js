@@ -162,7 +162,8 @@ function handleUpdateResourceError(options, actionCreatorOptions, httpCode, erro
     type: action,
     status: ERROR, key,
     httpCode,
-    error
+    error,
+    errorOccurredAt: Date.now()
   };
 }
 
@@ -177,7 +178,7 @@ function handleUpdateResourceError(options, actionCreatorOptions, httpCode, erro
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { type, key, status, item, httpCode, error }) {
+function reducer(resources, { type, key, status, item, httpCode, error, errorOccurredAt }) {
   const { items } = resources;
 
   assertInDevMode(() => {
@@ -276,7 +277,8 @@ function reducer(resources, { type, key, status, item, httpCode, error }) {
         status: mergeStatus(currentItem.status, {
           type: status,
           httpCode,
-          error
+          error,
+          errorOccurredAt
         }),
       }
     };

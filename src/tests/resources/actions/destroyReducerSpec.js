@@ -137,6 +137,10 @@ describe('Destroy reducer:', function () {
           expect(this.store.getState().users.items[1].status.type).toEqual(DESTROY_ERROR);
         });
 
+        it('then sets the syncedAt attribute', function() {
+          expect(this.store.getState().users.items[1].status.errorOccurredAt).not.toBeUndefined();
+        });
+
         it('then updates the item\'s status httpCode', function() {
           expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
         });
@@ -288,6 +292,10 @@ describe('Destroy reducer:', function () {
 
                 it('then updates the items\'s status to DESTROY_ERROR', function() {
                   expect(this.store.getState().users.items[1].status.type).toEqual(DESTROY_ERROR);
+                });
+
+                it('then sets the syncedAt attribute', function() {
+                  expect(this.store.getState().users.items[1].status.errorOccurredAt).not.toBeUndefined();
                 });
 
                 it('then updates the item\'s status httpCode', function() {
@@ -445,6 +453,10 @@ describe('Destroy reducer:', function () {
 
                 it('then updates the items\'s status to DESTROY_ERROR', function() {
                   expect(this.store.getState().users.items[1].status.type).toEqual(DESTROY_ERROR);
+                });
+
+                it('then sets the syncedAt attribute', function() {
+                  expect(this.store.getState().users.items[1].status.errorOccurredAt).not.toBeUndefined();
                 });
 
                 it('then does NOT remove the item from the selectionMap', function() {

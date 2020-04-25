@@ -146,6 +146,10 @@ describe('Index reducers:', function () {
               expect(this.store.getState().users.collections[collectionId].status.error.message).toEqual('Not Found');
             });
 
+            it('then sets the syncedAt attribute', function() {
+              expect(this.store.getState().users.collections[collectionId].status.errorOccurredAt).not.toBeUndefined();
+            });
+
             it('then does not change the positions', function() {
               expect(this.store.getState().users.collections[collectionId].positions).toEqual([ ]);
             });
@@ -309,6 +313,10 @@ describe('Index reducers:', function () {
           expect(this.store.getState().users.collections[''].status.type).toEqual(ERROR);
           expect(this.store.getState().users.collections[''].status.httpCode).toEqual(404);
           expect(this.store.getState().users.collections[''].status.error.message).toEqual('Not Found');
+        });
+
+        it('then sets the syncedAt attribute', function() {
+          expect(this.store.getState().users.collections[''].status.errorOccurredAt).not.toBeUndefined();
         });
 
         it('then does NOT change the collection\'s positions', function() {

@@ -214,6 +214,10 @@ describe('Update reducer:', function () {
               expect(this.store.getState().users.items[1].status.type).toEqual(ERROR);
             });
 
+            it('then sets the syncedAt attribute', function() {
+              expect(this.store.getState().users.items[1].status.errorOccurredAt).not.toBeUndefined();
+            });
+
             it('then updates the item\'s status httpCode', function() {
               expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
             });
@@ -377,6 +381,10 @@ describe('Update reducer:', function () {
 
             it('then changes the items\'s status type to ERROR', function() {
               expect(this.store.getState().users.items[1].status.type).toEqual(ERROR);
+            });
+
+            it('then sets the syncedAt attribute', function() {
+              expect(this.store.getState().users.items[1].status.errorOccurredAt).not.toBeUndefined();
             });
 
             it('then updates the item\'s status httpCode', function() {

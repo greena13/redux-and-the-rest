@@ -225,7 +225,8 @@ function handleCreateResourceError(options, actionCreatorOptions, httpCode, erro
     status: ERROR,
     temporaryKey: key,
     httpCode,
-    error
+    error,
+    errorOccurredAt: Date.now()
   };
 }
 
@@ -240,7 +241,7 @@ function handleCreateResourceError(options, actionCreatorOptions, httpCode, erro
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
-function reducer(resources, { localOnly, type, temporaryKey, key, collectionOperations = {}, status, item, httpCode, error }) {
+function reducer(resources, { localOnly, type, temporaryKey, key, collectionOperations = {}, status, item, httpCode, error, errorOccurredAt }) {
   const { items } = resources;
   const currentItem = items[temporaryKey] || ITEM;
 
@@ -375,6 +376,7 @@ function reducer(resources, { localOnly, type, temporaryKey, key, collectionOper
             type: status,
             httpCode,
             error,
+            errorOccurredAt
           }),
         }
       }

@@ -185,6 +185,10 @@ describe('Create reducer:', function () {
                 expect(this.store.getState().users.items.temp.status.httpCode).toEqual(404);
               });
 
+              it('then sets the syncedAt attribute', function() {
+                expect(this.store.getState().users.items.temp.status.errorOccurredAt).not.toBeUndefined();
+              });
+
               it('then merges in the server\'s response into the status', function() {
                 expect(this.store.getState().users.items.temp.status.error.message).toEqual('Not Found');
               });
@@ -192,6 +196,7 @@ describe('Create reducer:', function () {
               it('then DOES NOT update the newItemKey', function() {
                 expect(this.store.getState().users.newItemKey).toEqual('temp');
               });
+
             });
           });
         });

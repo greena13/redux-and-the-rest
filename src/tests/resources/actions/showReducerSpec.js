@@ -128,6 +128,10 @@ describe('Show reducers:', function () {
                 expect(this.store.getState().users.items[1].status.type).toEqual(ERROR);
               });
 
+              it('then sets the syncedAt attribute', function() {
+                expect(this.store.getState().users.items[1].status.errorOccurredAt).not.toBeUndefined();
+              });
+
               it('then updates the item\'s status httpCode', function() {
                 expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
               });
@@ -276,6 +280,10 @@ describe('Show reducers:', function () {
             expect(this.store.getState().users.items[1].status.httpCode).toEqual(404);
           });
 
+          it('then sets the syncedAt attribute', function() {
+            expect(this.store.getState().users.items[1].status.errorOccurredAt).not.toBeUndefined();
+          });
+
           it('then sets the item\'s status error from the response', function() {
             expect(this.store.getState().users.items[1].status.error.message).toEqual('Not Found');
           });
@@ -399,6 +407,10 @@ describe('Show reducers:', function () {
 
         it('then changes the items\'s status type to ERROR', function() {
           expect(this.store.getState().users.items['groupId=1.id=1'].status.type).toEqual(ERROR);
+        });
+
+        it('then sets the syncedAt attribute', function() {
+          expect(this.store.getState().users.items['groupId=1.id=1'].status.errorOccurredAt).not.toBeUndefined();
         });
 
         it('then updates the item\'s status httpCode', function() {
