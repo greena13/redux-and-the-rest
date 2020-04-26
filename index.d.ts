@@ -109,7 +109,12 @@ export interface ResourceStatus extends ResourceStatusRequired {
     httpCode?: number,
 
     /**
-     * Details of the error, if status type is ERROR
+     * Details of the errors, if status type is ERROR
+     */
+    errors?: Array<ErrorStatus>,
+
+    /**
+     * The first error in errors, if status type is ERROR
      */
     error?: ErrorStatus,
 
@@ -497,7 +502,7 @@ export interface GlobalConfigurationOptions {
      * Function used to adapt the responses for requests before it is handed over to the reducers. The function
      * must return the results as an object with properties values and (optionally) error.
      */
-    responseAdaptor?: (responseBody: Object, response: Response) => { values: Object, error?: Object | string },
+    responseAdaptor?: (responseBody: Object, response: Response) => { values: Object, error?: Object | string, errors?: Array<Object | string> },
 
     /**
      * Function used to adapt the JavaScript object before it is handed over to become the body of the request
@@ -619,7 +624,7 @@ export interface ActionOptions<T> {
      * Function used to adapt the responses for requests before it is handed over to the reducers. The function
      * must return the results as an object with properties values and (optionally) error.
      */
-    responseAdaptor?: (responseBody: Object, response: Response) => { values: T, error?: Object | string },
+    responseAdaptor?: (responseBody: Object, response: Response) => { values: T, error?: Object | string, errors?: Array<Object | string> },
 
     /**
      * Function used to adapt the JavaScript object before it is handed over to become the body of the request

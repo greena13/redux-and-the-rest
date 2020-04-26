@@ -135,10 +135,10 @@ function removeResource(options, previousValues) {
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} actionCreatorOptions Options passed to the action creator
  * @param {number} httpCode The HTTP status code of the error response
- * @param {object} error An object containing the details of the error
+ * @param {object} errorEnvelope An object containing the details of the error
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function handleDestroyResourceError(options, actionCreatorOptions, httpCode, error) {
+function handleDestroyResourceError(options, actionCreatorOptions, httpCode, errorEnvelope) {
   const { transforms, action, key } = options;
 
   return {
@@ -148,7 +148,7 @@ function handleDestroyResourceError(options, actionCreatorOptions, httpCode, err
       status: {
         type: DESTROY_ERROR,
         httpCode,
-        error,
+        ...errorEnvelope,
         errorOccurredAt: Date.now()
       },
     })

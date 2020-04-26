@@ -152,17 +152,17 @@ function receiveCollection(options, actionCreatorOptions, collection) {
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} actionCreatorOptions Options passed to the action creator
  * @param {number} httpCode The HTTP status code of the error response
- * @param {object} error An object containing the details of the error
+ * @param {object} errorEnvelope An object containing the details of the error
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function handleCollectionError(options, actionCreatorOptions, httpCode, error) {
+function handleCollectionError(options, actionCreatorOptions, httpCode, errorEnvelope) {
   const { action, key } = options;
 
   return {
     type: action,
     status: ERROR,
     key,
-    error,
+    ...errorEnvelope,
     httpCode,
     errorOccurredAt: Date.now()
   };
@@ -180,7 +180,7 @@ function handleCollectionError(options, actionCreatorOptions, httpCode, error) {
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources, action) {
-  const { status, items, key, httpCode, collection, error, errorOccurredAt } = action;
+  const { status, items, key, httpCode, collection, error, errors, errorOccurredAt } = action;
   const currentList = resources.collections[key] || COLLECTION;
 
   /**
@@ -261,8 +261,7 @@ function reducer(resources, action) {
         status: mergeStatus(currentList.status, {
           type: status,
           httpCode,
-          error,
-          errorOccurredAt
+          error, errors, errorOccurredAt
         }),
       }
     };

@@ -563,4 +563,102 @@ describe('Create reducer:', function () {
       });
     });
   });
+
+  describe('Given a create action that will succeed with a response that specifies \'errors\' at the top level', () => {
+    describe('when the request has completed', () => {
+      beforeAll(function () {
+        fetchMock.post('http://test.com/users', {
+          body: { errors: [{ message: 'Not Found' }] },
+          status: 200
+        });
+
+        this.store = buildStore({ users: { ...RESOURCES } }, { users: this.reducers } );
+
+        this.store.dispatch(this.createUser('temp', {
+          username: 'Bob'
+        }));
+      });
+
+      afterAll(function() {
+        fetchMock.restore();
+        this.store = null;
+      });
+
+      it('then DOES NOT move the item from its temporary key', function() {
+        expect(this.store.getState().users.items.temp.values).toEqual({
+          username: 'Bob',
+        });
+      });
+
+      it('then sets the items status type to ERROR', function() {
+        expect(this.store.getState().users.items.temp.status.type).toEqual(ERROR);
+      });
+
+      it('then sets the items status httpCode', function() {
+        expect(this.store.getState().users.items.temp.status.httpCode).toEqual(200);
+      });
+
+      it('then does NOT set the syncedAt attribute', function() {
+        expect(this.store.getState().users.items.temp.status.errorOccurredAt).not.toBeUndefined();
+      });
+
+      it('then merges in the server\'s response into the status', function() {
+        expect(this.store.getState().users.items.temp.status.error.message).toEqual('Not Found');
+        expect(this.store.getState().users.items.temp.status.errors[0].message).toEqual('Not Found');
+      });
+
+      it('then DOES NOT update the newItemKey', function() {
+        expect(this.store.getState().users.newItemKey).toEqual('temp');
+      });
+    });
+  });
+
+  describe('Given a create action that will fail with a response that specifies \'errors\' at the top level', () => {
+    describe('when the request has completed', () => {
+      beforeAll(function () {
+        fetchMock.post('http://test.com/users', {
+          body: { errors: [{ message: 'Not Found' }] },
+          status: 404
+        });
+
+        this.store = buildStore({ users: { ...RESOURCES } }, { users: this.reducers } );
+
+        this.store.dispatch(this.createUser('temp', {
+          username: 'Bob'
+        }));
+      });
+
+      afterAll(function() {
+        fetchMock.restore();
+        this.store = null;
+      });
+
+      it('then DOES NOT move the item from its temporary key', function() {
+        expect(this.store.getState().users.items.temp.values).toEqual({
+          username: 'Bob',
+        });
+      });
+
+      it('then sets the items status type to ERROR', function() {
+        expect(this.store.getState().users.items.temp.status.type).toEqual(ERROR);
+      });
+
+      it('then sets the items status httpCode', function() {
+        expect(this.store.getState().users.items.temp.status.httpCode).toEqual(404);
+      });
+
+      it('then does NOT set the syncedAt attribute', function() {
+        expect(this.store.getState().users.items.temp.status.errorOccurredAt).not.toBeUndefined();
+      });
+
+      it('then merges in the server\'s response into the status', function() {
+        expect(this.store.getState().users.items.temp.status.error.message).toEqual('Not Found');
+        expect(this.store.getState().users.items.temp.status.errors[0].message).toEqual('Not Found');
+      });
+
+      it('then DOES NOT update the newItemKey', function() {
+        expect(this.store.getState().users.newItemKey).toEqual('temp');
+      });
+    });
+  });
 });

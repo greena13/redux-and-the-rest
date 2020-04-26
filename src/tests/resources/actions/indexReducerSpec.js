@@ -468,4 +468,54 @@ describe('Index reducers:', function () {
       });
     });
   });
+
+  describe('Given an index action that will succeed with a response that specifies \'errors\' at the top level', () => {
+    describe('when the request has completed', () => {
+      beforeAll(function () {
+        this.store = buildStore({ users: this.resourceBefore }, { users: this.reducers } );
+
+        fetchMock.get('http://test.com/users', {
+          body: { errors: ['Not Found'] },
+          status: 200
+        });
+
+        this.store.dispatch(this.fetchUsers());
+      });
+
+      afterAll(function() {
+        fetchMock.restore();
+        this.store = null;
+      });
+
+      it('then sets the errors of the collection', function() {
+        expect(this.store.getState().users.collections[''].status.error).toEqual('Not Found');
+        expect(this.store.getState().users.collections[''].status.errors[0]).toEqual('Not Found');
+      });
+    });
+  });
+
+  describe('Given an index action that will fail with a response that specifies \'errors\' at the top level', () => {
+    describe('when the request has completed', () => {
+      beforeAll(function () {
+        this.store = buildStore({ users: this.resourceBefore }, { users: this.reducers } );
+
+        fetchMock.get('http://test.com/users', {
+          body: { errors: ['Not Found'] },
+          status: 404
+        });
+
+        this.store.dispatch(this.fetchUsers());
+      });
+
+      afterAll(function() {
+        fetchMock.restore();
+        this.store = null;
+      });
+
+      it('then sets the errors of the collection', function() {
+        expect(this.store.getState().users.collections[''].status.error).toEqual('Not Found');
+        expect(this.store.getState().users.collections[''].status.errors[0]).toEqual('Not Found');
+      });
+    });
+  });
 });

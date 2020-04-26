@@ -152,17 +152,17 @@ function receiveUpdatedResource(options, actionCreatorOptions, values, previousV
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} actionCreatorOptions Options passed to the action creator
  * @param {number} httpCode The HTTP status code of the error response
- * @param {object} error An object containing the details of the error
+ * @param {object} errorEnvelope An object containing the details of the error
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function handleUpdateResourceError(options, actionCreatorOptions, httpCode, error) {
+function handleUpdateResourceError(options, actionCreatorOptions, httpCode, errorEnvelope) {
   const { action, key } = options;
 
   return {
     type: action,
     status: ERROR, key,
     httpCode,
-    error,
+    ...errorEnvelope,
     errorOccurredAt: Date.now()
   };
 }
@@ -179,7 +179,7 @@ function handleUpdateResourceError(options, actionCreatorOptions, httpCode, erro
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources, action) {
-  const { type, key, status, item, httpCode, error, errorOccurredAt } = action;
+  const { type, key, status, item, httpCode, error, errors, errorOccurredAt } = action;
   const { items } = resources;
 
   assertInDevMode(() => {
@@ -285,8 +285,7 @@ function reducer(resources, action) {
         status: mergeStatus(currentItem.status, {
           type: status,
           httpCode,
-          error,
-          errorOccurredAt
+          error, errors, errorOccurredAt
         }),
       }
     };

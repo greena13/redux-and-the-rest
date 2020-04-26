@@ -428,4 +428,98 @@ describe('Show reducers:', function () {
       });
     });
   });
+
+  describe('Given a show action that will succeed with a response that specifies \'errors\' at the top level', () => {
+    describe('when the request has completed', function () {
+      beforeAll(function () {
+        const { reducers, actionCreators: { fetchUser } } = resources({
+          name: 'users',
+          url: 'http://test.com/users/:id?',
+          keyBy: 'id',
+        }, {
+          show: true
+        });
+
+        this.fetchUser = fetchUser;
+        this.reducers = reducers;
+
+        fetchMock.get('http://test.com/users/1', {
+          body: { errors: ['Not Found'] },
+          status: 200
+        });
+
+        this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
+        this.store.dispatch(this.fetchUser(1));
+      });
+
+      afterAll(function() {
+        fetchMock.restore();
+        this.store = null;
+      });
+
+      it('then changes the items\'s status type to ERROR', function() {
+        expect(this.store.getState().users.items['1'].status.type).toEqual(ERROR);
+      });
+
+      it('then sets the syncedAt attribute', function() {
+        expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
+      });
+
+      it('then updates the item\'s status httpCode', function() {
+        expect(this.store.getState().users.items['1'].status.httpCode).toEqual(200);
+      });
+
+      it('then sets the item\'s status error from the response', function() {
+        expect(this.store.getState().users.items['1'].status.error).toEqual('Not Found');
+        expect(this.store.getState().users.items['1'].status.errors[0]).toEqual('Not Found');
+      });
+    });
+  });
+
+  describe('Given a show action that will fail with a response that specifies \'errors\' at the top level', () => {
+    describe('when the request has completed', function () {
+      beforeAll(function () {
+        const { reducers, actionCreators: { fetchUser } } = resources({
+          name: 'users',
+          url: 'http://test.com/users/:id?',
+          keyBy: 'id',
+        }, {
+          show: true
+        });
+
+        this.fetchUser = fetchUser;
+        this.reducers = reducers;
+
+        fetchMock.get('http://test.com/users/1', {
+          body: { errors: ['Not Found'] },
+          status: 404
+        });
+
+        this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
+        this.store.dispatch(this.fetchUser(1));
+      });
+
+      afterAll(function() {
+        fetchMock.restore();
+        this.store = null;
+      });
+
+      it('then changes the items\'s status type to ERROR', function() {
+        expect(this.store.getState().users.items['1'].status.type).toEqual(ERROR);
+      });
+
+      it('then sets the syncedAt attribute', function() {
+        expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
+      });
+
+      it('then updates the item\'s status httpCode', function() {
+        expect(this.store.getState().users.items['1'].status.httpCode).toEqual(404);
+      });
+
+      it('then sets the item\'s status error from the response', function() {
+        expect(this.store.getState().users.items['1'].status.error).toEqual('Not Found');
+        expect(this.store.getState().users.items['1'].status.errors[0]).toEqual('Not Found');
+      });
+    });
+  });
 });

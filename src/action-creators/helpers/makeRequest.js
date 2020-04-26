@@ -4,6 +4,9 @@ import { DOWN, UP } from '../../constants/ProgressDirections';
 import without from '../../utils/collection/without';
 import { CLIENT_ERROR } from '../../constants/NetworkStatuses';
 import { registerRequestEnd } from '../../utils/RequestManager';
+import pluck from '../../utils/collection/pluck';
+import normalizeErrors from './normalizeErrors';
+import isString from '../../utils/string/isString';
 
 /**
  * Performs a HTTP request to an external API endpoint, based on the configuration options provided
@@ -146,7 +149,9 @@ function makeRequest(options, actionCreatorOptions = {}) {
             /**
              * We run the response through the responseAdaptor function, if one has been specified
              */
-            return responseAdaptor(json, response);
+            const { values, error, errors } = responseAdaptor(json, response);
+
+            return { values, ...normalizeErrors(error, errors) };
           } else {
 
             /**
@@ -154,16 +159,16 @@ function makeRequest(options, actionCreatorOptions = {}) {
              * an error on the top level of the response and separating it out for the rest of the response.
              */
             if (isObject(json)) {
-              const { error, ...values } = json;
+              const { error, errors, ...values } = json;
 
-              return { values, error };
+              return { values, ...normalizeErrors(error, errors) };
             } else {
               return { values: json };
             }
           }
         }();
 
-        if (_json.error) {
+        if (_json.error || _json.errors) {
 
           /**
            * If there was an error object on the top level of the response, we call the error handler
@@ -173,7 +178,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
               _options,
               actionCreatorOptions,
               status,
-              _json.error
+              pluck(_json, ['error', 'errors'])
             )
           );
         } else {
@@ -202,13 +207,13 @@ function makeRequest(options, actionCreatorOptions = {}) {
          * We pass that error handler a callback that it is expected to call with an error object that is
          * safe to place in the Redux store.
          */
-        _request.errorHandler(response, (error) => {
+        _request.errorHandler(response, (errorOrErrors) => {
           dispatch(
             onError(
               _options,
               actionCreatorOptions,
               status,
-              error
+              normalizeErrors(errorOrErrors)
             )
           );
         });
@@ -225,14 +230,14 @@ function makeRequest(options, actionCreatorOptions = {}) {
            * store.
            */
           return response.json().then((json) => {
-            const errorNormalized = isObject(json.error) ? json.error : { message: json.error };
+            const normalizedError = isString(json.error) ? { message: json.error } : json.error;
 
             return dispatch(
               onError(
                 _options,
                 actionCreatorOptions,
                 status,
-                errorNormalized,
+                normalizeErrors(normalizedError, json.errors),
               )
             );
           });
@@ -247,7 +252,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
                 _options,
                 actionCreatorOptions,
                 status,
-                { message }
+                normalizeErrors({ message })
               )
             ));
         }
@@ -326,12 +331,12 @@ function makeRequest(options, actionCreatorOptions = {}) {
             _options,
             actionCreatorOptions,
             0,
-            {
+            normalizeErrors({
               type: CLIENT_ERROR,
               name: error.name,
               message: error.message,
               raw: error
-            }
+            })
           )
         ).then(reject);
       };
@@ -359,12 +364,12 @@ function makeRequest(options, actionCreatorOptions = {}) {
                   _options,
                   actionCreatorOptions,
                   0,
-                  {
+                  normalizeErrors({
                     type: CLIENT_ERROR,
                     name: error.name,
                     message: error.message,
                     raw: error
-                  }
+                  })
                 )
               )
             ).

@@ -392,7 +392,7 @@ const { actionCreators: { fetchUsers } } = resources(
 | `localOnly` | boolean | false | Set to true for resources that should be edited locally, only. The `show` and `index` actions are disabled (the `fetch*` action creators are not exported) and the `create`, `update` and `destroy` only update the store locally, without making any HTTP requests. |
 | `url` | string |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
 | `urlOnlyParams` | string[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
-| `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error`. |
+| `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error` or `errors`. |
 | `credentials` | string | undefined | Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the request only if it's on the same origin. |
 | `requestAdaptor` | Function | Identity function | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
 
@@ -445,7 +445,7 @@ const { actionCreators: { fetchUsers } } = resources(
 | --------------------------------------- | :----: | :----: | :-- |
 | `url` |  string |`resourceOptions.url` | The URL template to use for this particular action. |
 | `urlOnlyParams` | string[] | `resourceOptions.urlOnlyParams` | The attributes passed to the action creator that should be used to create the request URL, and ignored when storing the result in the store. |
-| `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error`. |
+| `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error` or `errors`. |
 | `requestAdaptor` | Function | Identity function | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
 | `credentials` | string | undefined | Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the request only if it's on the same origin. |
 | `progress` | boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `index`, `show`, `create`, `update` and any custom actions. |
@@ -796,8 +796,8 @@ Checking for these statuses is generally useful for displaying loaders or progre
 Checking for these statuses is useful for displaying success or error messages:
 
 * `SUCCESS`: When the response to the a request to fetch collection or an item has arrived and it was a success. You can now use the contents of the collection or item.
-* `ERROR`: When the response to the a request to fetch collection or an item has arrived and it was an error. You should now check the `status.error` attribute for details.
-* `DESTROY_ERROR`: When the response to the request to destroy an existing item has arrived, and it's an error. You should now check the `status.error` attribute for details.
+* `ERROR`: When the response to the a request to fetch collection or an item has arrived and it was an error. You should now check the `status.errors` attribute for details.
+* `DESTROY_ERROR`: When the response to the request to destroy an existing item has arrived, and it's an error. You should now check the `status.errors` attribute for details.
 
 #### Knowing when to call your action creators
 
@@ -1004,7 +1004,7 @@ The index action creator supports the following options as its second argument:
 | :--- | :---: | :---: | :--- |
 | `request` | Object | { } | An object that [configures the HTTP request](#configuring-other-request-properties) made to fetch the collection. |
 
-When the collection is successfully fetched, the default index reducer expects the server to respond with a JSON object containing an array of resource items' attributes. If the request rails, it expects the server to respond with a JSON object containing an error.
+When the collection is successfully fetched, the default index reducer expects the server to respond with a JSON object containing an array of resource items' attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
 ### Fetch an individual resource item from the server
 
@@ -1026,7 +1026,7 @@ The show action creator supports the following options as its second argument:
 | :--- | :---: | :---: | :--- |
 | `request` | Object | { } | An object that [configures the HTTP request](#configuring-other-request-properties) made to fetch the item. |
 
-When the resource item is successfully fetched, the default show reducer expects the server to respond with a JSON object containing resource's attributes. If the request rails, it expects the server to respond with a JSON object containing an error.
+When the resource item is successfully fetched, the default show reducer expects the server to respond with a JSON object containing resource's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
 ### Create a new resource item on the server
 
@@ -1051,7 +1051,7 @@ The create action creator supports the following options as its third argument:
 | `unshift` | Array | [ ] | An array of collection keys to add the new resource item to the beginning of. |
 | `invalidate` | Array | [ ] | An array of collection keys for which to clear (invalidate). This is useful for when you know the resource item that was just created is likely to appear in a collection, but you don't know where so you need to re-retrieve the whole collection from the server. |
 
-When the resource item is successfully created, the default create reducer expects the server to respond with a JSON object containing resource's attributes. If the request rails, it expects the server to respond with a JSON object containing an error.
+When the resource item is successfully created, the default create reducer expects the server to respond with a JSON object containing resource's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
 ### Update a resource item on the server
 
@@ -1074,7 +1074,7 @@ The update action creator supports the following options as its third argument:
 | :--- | :---: | :---: | :--- |
 | `previous` | Object | undefined | The previous values, before the update. This is used to more efficiently update associations defined with `belongsTo` or `hasAndBelongsToMany`, but otherwise is generally not used. |
 
-When the resource item is successfully updated, the default update reducer expects the server to respond with a JSON object containing resource's attributes. If the request rails, it expects the server to respond with a JSON object containing an error.
+When the resource item is successfully updated, the default update reducer expects the server to respond with a JSON object containing resource's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
 ### Destroy a resource item on the server
 
@@ -1096,7 +1096,7 @@ The destroy action creator supports the following options as its second argument
 | :--- | :---: | :---: | :--- |
 | `previous` | Object | undefined | The previous values, before it was destroyed. This is used to more efficiently update associations defined with `belongsTo` or `hasAndBelongsToMany`, but otherwise is generally not used. |
 
-When the resource item is successfully destroyed, the default destroy reducer expects the server to respond a with a success response. If the request rails, it expects the server to respond with a JSON object containing an error.
+When the resource item is successfully destroyed, the default destroy reducer expects the server to respond a with a success response. If the request fails, it expects the server to respond with a JSON object containing an error.
 
 ## Local (synchronous) actions
 
@@ -1357,4 +1357,4 @@ There are also a few additional options used directly by `redux-and-the-rest` it
 | :--- | :---: | :---: | :---- |
 | `cookie` | string | '' | The value to set as the request's `Cookie` header. This is useful for performing requests to authenticated endpoints as part of initial render for server-side rendering. |
 | `credentials` | string | undefined | Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the request only if it's on the same origin. |
-| `errorHandler` | Function | `undefined` | A function to call if the request returns an error response (HTTP status > 400). This function must accept two arguments: the `Response` object and a callback that the `errorHandler` will call once it has finished executing, with a value representing the error that will be placed in the store. This option is useful to "unwrap" error objects from error responses, or to standardise how errors are represented in Redux that come from different endpoints or servers. |
+| `errorHandler` | Function | `undefined` | A function to call if the request returns an error response (HTTP status > 400). This function must accept two arguments: the `Response` object and a callback that the `errorHandler` will call once it has finished executing, with a value representing the error(s) that will be placed in the store. This option is useful to "unwrap" error objects from error responses, or to standardise how errors are represented in Redux that come from different endpoints or servers. |

@@ -478,4 +478,100 @@ describe('Destroy reducer:', function () {
       });
     });
   });
+
+  describe('Given a destroy action that will succeed with a response that specifies \'errors\' at the top level', () => {
+    describe('when the request has completed', function() {
+      beforeAll(function () {
+        this.initialState = { users: {
+            ...this.resourceBefore,
+            items: {
+              1: {
+                values: { username: 'Bob' },
+                status: { type: SUCCESS }
+              }
+            }
+          }
+        };
+
+        fetchMock.delete('http://test.com/users/1', {
+          body: { errors: [{ message: 'Not Found' }] },
+          status: 200
+        });
+
+        this.store = buildStore(this.initialState, { users: this.reducers } );
+
+        this.store.dispatch(this.destroyUser(1));
+      });
+
+      afterAll(function() {
+        fetchMock.restore();
+        this.store = null;
+      });
+
+      it('then updates the items\'s status to DESTROY_ERROR', function() {
+        expect(this.store.getState().users.items['1'].status.type).toEqual(DESTROY_ERROR);
+      });
+
+      it('then sets the syncedAt attribute', function() {
+        expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
+      });
+
+      it('then updates the item\'s status httpCode', function() {
+        expect(this.store.getState().users.items['1'].status.httpCode).toEqual(200);
+      });
+
+      it('then sets the item\'s errors', function() {
+        expect(this.store.getState().users.items['1'].status.error.message).toEqual('Not Found');
+        expect(this.store.getState().users.items['1'].status.errors[0].message).toEqual('Not Found');
+      });
+    });
+  });
+
+  describe('Given a destroy action that will fail with a response that specifies \'errors\' at the top level', () => {
+    describe('when the request has completed', function() {
+      beforeAll(function () {
+        this.initialState = { users: {
+            ...this.resourceBefore,
+            items: {
+              1: {
+                values: { username: 'Bob' },
+                status: { type: SUCCESS }
+              }
+            }
+          }
+        };
+
+        fetchMock.delete('http://test.com/users/1', {
+          body: { errors: [{ message: 'Not Found' }] },
+          status: 404
+        });
+
+        this.store = buildStore(this.initialState, { users: this.reducers } );
+
+        this.store.dispatch(this.destroyUser(1));
+      });
+
+      afterAll(function() {
+        fetchMock.restore();
+        this.store = null;
+      });
+
+      it('then updates the items\'s status to DESTROY_ERROR', function() {
+        expect(this.store.getState().users.items['1'].status.type).toEqual(DESTROY_ERROR);
+      });
+
+      it('then sets the syncedAt attribute', function() {
+        expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
+      });
+
+      it('then updates the item\'s status httpCode', function() {
+        expect(this.store.getState().users.items['1'].status.httpCode).toEqual(404);
+      });
+
+      it('then sets the item\'s errors', function() {
+        expect(this.store.getState().users.items['1'].status.error.message).toEqual('Not Found');
+        expect(this.store.getState().users.items['1'].status.errors[0].message).toEqual('Not Found');
+      });
+    });
+  });
 });
