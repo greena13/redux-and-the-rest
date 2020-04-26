@@ -80,11 +80,6 @@ interface ErrorStatusRequired {
     type: string,
 
     /**
-     * When the error occurred
-     */
-    occurredAt: number,
-
-    /**
      * The raw Error class when a client-side error occurs
      */
     raw?: Error
@@ -117,6 +112,11 @@ export interface ResourceStatus extends ResourceStatusRequired {
      * Details of the error, if status type is ERROR
      */
     error?: ErrorStatus,
+
+    /**
+     * When the error occurred
+     */
+    errorOccurredAt: number,
 
     /**
      * When a request to fetch, create or update the resource item or collection was last made to an external

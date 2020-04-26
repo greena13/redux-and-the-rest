@@ -19,6 +19,12 @@ const DefaultConfigurationOptions = {
    * Don't call any functions after passing response objects back to the reducers, by default
    */
   afterReducers: [],
+
+  /**
+   * The attributes present at the root of responses that indicate an error and/or contain information
+   * about that error
+   */
+  errorAttributes: ['error'],
 };
 
 export default DefaultConfigurationOptions;

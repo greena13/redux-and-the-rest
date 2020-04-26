@@ -340,7 +340,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
     }).catch((error) => {
       throw error;
     }).
-finally(() => registerRequestEnd(request.method, url));
+    finally(() => registerRequestEnd(request.method, url));
 
   } else {
 
@@ -368,7 +368,7 @@ finally(() => registerRequestEnd(request.method, url));
                 )
               )
             ).
-finally(() => registerRequestEnd(request.method, url));
+            finally(() => registerRequestEnd(request.method, url));
   }
 }
 
