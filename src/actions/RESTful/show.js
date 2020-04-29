@@ -26,7 +26,7 @@ const HTTP_REQUEST_TYPE = 'GET';
  */
 function actionCreator(options, params, actionCreatorOptions = {}) {
   const {
-    action, transforms, url: urlTemplate, keyBy, progress, projection
+    action, transforms, url: urlTemplate, keyBy, progress, projection, request = {}
   } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
@@ -58,7 +58,8 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
       key, keyBy, params,
       url,
       request: {
-        method: HTTP_REQUEST_TYPE
+        method: HTTP_REQUEST_TYPE,
+        ...request
       },
       requestedAt,
       dispatch,

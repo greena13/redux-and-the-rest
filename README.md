@@ -289,9 +289,9 @@ Please see [Action Options API](#action-options-api) for a full list of supporte
 
 ### Levels of configuration
 
-It's important to have a basic understanding of `redux-and-the-rest` achieves its flexibility using its four levels of configuration; each have different scopes and are specified at different times.
+It's important to have a basic understanding of how `redux-and-the-rest` achieves its flexibility using its four levels of configuration; each one has a different scope and is specified at different times.
 
-You need to select where you place your configuration depending on how wide you want particular options to apply.
+You need to select where you place your configuration depending on how wide you want particular options to apply, and when the desired values are available.
 
 The options are set out in a hierarchy, so as their scope becomes increasingly specific, their priority increases and they override any corresponding action that may have been provided to a lower priority set of options.
 
@@ -300,7 +300,7 @@ For example, `actionCreatorOptions` take precedence over `actionOptions` (which 
 
 | Options | Priority | Defined | Scope | Required |
 | ---- | :---- | :---- | :-- | :--: |
-| `globalOptions` | Lowest | Before defining any resources, using `configure()` | All resources and their actions | No |
+| `globalOptions` | Lowest | Before calling your action creators, using `configure()`. | All resources and their actions | No |
 | `resourceOptions` |  | When defining resources, using `resources()` | All of a single resource's actions | Yes |
 | `actionOptions` |  | When defining resources, using `resources()` | A single resource action | No |
 | `actionCreatorOptions` | Highest | When calling an action creator, as the last argument | A single store operation | No |
@@ -901,6 +901,48 @@ Items inherit the state and projection of their collection, unless explicitly se
 
 **Note** It is strongly recommended that you set the syncedAt value for your initial state, to allow the `canFallbackToOldValues()` helper to function correctly.
 
+
+## Working with Authenticated APIs
+
+### Auth tokens as headers
+
+If you're working with an API that uses authentication tokens transmitted as headers, you need to authenticate the user to get access to the token (possibly even through redux-and-the-rest itself) and then use the `request` options for global configuration when the token is available. 
+
+```javascript
+import { configure } from 'redux-and-the-rest';
+
+// Once you have your token
+
+configure({
+  request: {
+    headers: {
+      'Authorization': `Token token="${token}"`
+    }
+  }
+});
+```      
+
+You may need to merge with any existing request options you have already configured.
+
+### Auth tokens as query parameters
+
+APIs that use query parameters to communicate authentication tokens are not explicitly supported (there is no global configuration option you can specify that will apply to all subsequent requests).
+
+However, you can define a global constant in your own code and pass it to each action creator that needs to be authenticated (all non-key values passed to the first argument of an action creator are converted to query parameters).
+
+```javascript 
+const AUTHENTICATION_PARAMS = {
+  auth: 'MY-TOKEN'
+}
+
+fetchUser({ id: 1, ...AUTHENTICATION_PARAMS }) 
+```
+
+### Session cookies
+
+If you're working with an API that uses session cookies, you simply need to have the user sign in so their cookie is correctly populated before calling any of the action creators that make requests of authenticated endpoints, and use the `credentials` option to global configuration, resource options or action options depending on the scope of requests you need to send the cookie with. 
+
+Accepted values are 'include', 'omit' or 'same-origin' - [see for more details](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#Sending_a_request_with_credentials_included). 
 
 ## RESTful (asynchronous) actions
 

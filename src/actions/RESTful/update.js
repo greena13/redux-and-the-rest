@@ -30,7 +30,7 @@ const HTTP_REQUEST_TYPE = 'PUT';
  */
 function actionCreator(options, params, values, actionCreatorOptions = {}) {
   const {
-    action, transforms, url: urlTemplate, progress, keyBy, projection, requestAdaptor
+    action, transforms, url: urlTemplate, progress, keyBy, projection, requestAdaptor, request = {}
   } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
@@ -68,6 +68,7 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
       request: {
         method: HTTP_REQUEST_TYPE,
         body: JSON.stringify(requestAdaptor ? requestAdaptor(values) : values),
+        ...request
       },
       onSuccess: receiveUpdatedResource,
       onError: handleUpdateResourceError,

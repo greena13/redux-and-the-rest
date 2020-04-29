@@ -30,7 +30,7 @@ const HTTP_REQUEST_TYPE = 'GET';
  */
 function actionCreator(options, params, actionCreatorOptions = {}) {
   const {
-    action, url: urlTemplate, keyBy, urlOnlyParams, progress, projection
+    action, url: urlTemplate, keyBy, urlOnlyParams, progress, projection, request = {}
   } = options;
 
   const key = getCollectionKey(params, { urlOnlyParams });
@@ -63,6 +63,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
       dispatch,
       request: {
         method: HTTP_REQUEST_TYPE,
+        ...request,
       },
       onSuccess: receiveCollection,
       onError: handleCollectionError,

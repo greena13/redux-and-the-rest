@@ -51,7 +51,8 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     keyBy,
     progress,
     projection,
-    requestAdaptor
+    requestAdaptor,
+    request = {}
   } = options;
 
 
@@ -89,7 +90,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
 
     return makeRequest({
       ...options,
-      key, keyBy,
+      key,
       params: normalizedParams,
       collectionOperations,
       url,
@@ -98,6 +99,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
       request: {
         method: HTTP_REQUEST_TYPE,
         body: JSON.stringify(requestAdaptor ? requestAdaptor(values) : values),
+        ...request,
       },
       onSuccess: receiveCreatedResource,
       onError: handleCreateResourceError,

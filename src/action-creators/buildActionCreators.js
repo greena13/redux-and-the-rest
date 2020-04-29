@@ -135,26 +135,38 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
           'requestAdaptor',
           'progress',
           'requestErrorHandler',
-          'request',
           'projection',
           'localOnly'
         ]
       );
+
+      /**
+       * We process request options separately as they should be recursively merged
+       */
+      const requestOptions = {
+          ...(DefaultConfigurationOptions.request || {}),
+          ...(resourceOptions.request || {}),
+          ...(actionOptions.request || {})
+      };
 
       const actionCreatorConfig = {
         action: actions.get(key),
         transforms: [],
         name,
         urlOnlyParams: [],
-        ..._options
+        ..._options,
+        request: requestOptions
       };
 
       actionCreatorConfig.transforms.push(projectionTransform);
 
       memo[actionCreatorName] = (arg1, arg2, arg3) => {
+        const config = getConfiguration();
+
         const reloadedOptions = {
-          ...getConfiguration(),
-          ...actionCreatorConfig
+          ...config,
+          ...actionCreatorConfig,
+          request: { ...config.request, ...(actionCreatorConfig.request || {}) }
         };
 
         return standardActionCreator(reloadedOptions, arg1, arg2, arg3);

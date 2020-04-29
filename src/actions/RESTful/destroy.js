@@ -33,7 +33,8 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
     action,
     keyBy,
     url: urlTemplate,
-    progress
+    progress,
+    request = {}
   } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
@@ -61,6 +62,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
       dispatch,
       request: {
         method: HTTP_REQUEST_TYPE,
+        ...request
       },
       onSuccess: removeResource,
       onError: handleDestroyResourceError,
