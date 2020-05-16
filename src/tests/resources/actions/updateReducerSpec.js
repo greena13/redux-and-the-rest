@@ -1,5 +1,4 @@
 import fetchMock from 'fetch-mock';
-import buildStore from '../../helpers/buildStore';
 import { resources, ERROR, SUCCESS, UPDATING, RESOURCES, EDITING } from '../../../index';
 import nop from '../../../utils/function/nop';
 import {

@@ -303,7 +303,7 @@ describe('Create reducer:', function () {
     setupState(context, initialState, initialValues, actionCreatorOptions);
   }
 
-  function setUpAfterRequestFailure(context, initialState, newValues, options = { body: { error: 'Not Found' }, status: 404}) {
+  function setUpAfterRequestFailure(context, initialState, newValues, options = { body: { error: 'Not Found' }, status: 404 }) {
     fetchMock.post('http://test.com/users', options);
 
     setupState(context, initialState, newValues);

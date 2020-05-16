@@ -6,7 +6,7 @@ import {
   expectToChangeResourceItemStatusTo,
   expectToClearResourceItemStatus,
   expectToChangeResourceItemValuesTo,
-  setupInitialState, resourceDefinition
+  setupInitialState,
 } from '../../helpers/resourceAssertions';
 import EmptyKey from '../../../constants/EmptyKey';
 import { RESOURCES } from '../../..';

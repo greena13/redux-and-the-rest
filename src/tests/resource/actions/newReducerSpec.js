@@ -5,9 +5,7 @@ import {
 import {
   expectToChangeNewItemKeyTo,
   expectToChangeResourceItemStatusTo,
-  expectToChangeResourceItemValuesTo, expectToNotChangeResourceCollectionPositions,
-  expectToNotChangeResourceItemStatus,
-  expectToNotChangeResourceItemValues,
+  expectToChangeResourceItemValuesTo,
   resourcesDefinition,
   setupInitialState
 } from '../../helpers/resourceAssertions';
@@ -86,52 +84,6 @@ describe('New reducer:', () => {
 
     it('then does NOT add the key of the new item to the default collection', function () {
       expect(resourcesDefinition(this, RESOURCE_NAME).collections).toEqual({});
-    });
-  }
-
-  function expectToChangeNewItem(status) {
-    beforeAll(function () {
-      this.previousItemId = 'previous';
-      this.newValues = { username: 'Jill', };
-
-      spyOn(console, 'warn');
-
-      setupState(this, {
-        ...RESOURCES,
-        items: {
-          [this.previousItemId]: {
-            values: { username: 'Bob' },
-            status: { type: status }
-          }
-        },
-        newItemKey: this.previousItemId,
-        collections: {
-          [EmptyKey]: {
-            positions: [ this.previousItemId ]
-          }
-        } }, this.newValues);
-    });
-
-    it('then DOES NOT warn about the existing new record', function() {
-      // eslint-disable-next-line no-console
-      expect(console.warn).not.toHaveBeenCalled();
-    });
-
-    it('then DOES NOT change the values of the previous item', function() {
-      expectToNotChangeResourceItemValues(this, RESOURCE_NAME);
-      expectToNotChangeResourceItemStatus(this, RESOURCE_NAME);
-    });
-
-    it('then adds the new item', function() {
-      expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, this.newValues);
-    });
-
-    it('then sets the new item\'s status type to NEW', function() {
-      expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'type', NEW);
-    });
-
-    it('then does NOT add the key of the new item to the default collection', function() {
-      expectToNotChangeResourceCollectionPositions(this, RESOURCE_NAME, EmptyKey);
     });
   }
 
