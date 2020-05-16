@@ -69,6 +69,11 @@ export const PREVIEW: string;
 export const CLIENT_ERROR: string;
 
 /**
+ * The key to use for items and collections when a one hasn't otherwise been specified or applies
+ */
+export const UNSPECIFIED_KEY: string;
+
+/**
  * One of the statuses a resource item or resource collection can be in
  */
 export type StatusType = string;
