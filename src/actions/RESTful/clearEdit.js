@@ -15,10 +15,10 @@ import mergeStatus from '../../reducers/helpers/mergeStatus';
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator(options, params) {
-  const { action, keyBy } = options;
+  const { action, keyBy, singular } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
-  const key = getItemKey(normalizedParams, { keyBy });
+  const key = getItemKey(normalizedParams, { keyBy, singular });
 
   return {
     type: action,

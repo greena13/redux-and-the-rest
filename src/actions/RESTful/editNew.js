@@ -30,14 +30,15 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     optionalActionCreatorOptions
   );
 
-  const { action, transforms, keyBy } = options;
+  const { action, transforms, keyBy, singular } = options;
 
-  const key = getItemKey(params, { keyBy });
+  const key = getItemKey(params, { keyBy, singular });
 
   return {
     type: action,
     status: EDITING,
     key,
+    singular,
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       values
     })
@@ -57,7 +58,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources, action) {
-  const { type, key, item } = action;
+  const { type, key, item, singular } = action;
   const { items } = resources;
 
   const _key = key || resources.newItemKey;
@@ -73,10 +74,16 @@ function reducer(resources, action) {
       const actionControllerName = getActionCreatorNameFrom(type);
       const newActionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'new', verb: 'EDIT_NEW' });
 
-      warn(
-        `${type}'s key '${_key}' does not match any new items in the store. Use ${newActionCreatorName}() ` +
-        `to create a new item first, or check the arguments passed to ${actionControllerName}(). Update ignored.`
-      );
+      if (singular) {
+        warn(
+          `Use ${newActionCreatorName}() to create a new item first, or check the arguments passed to ${actionControllerName}(). Update ignored.`
+        );
+      } else {
+        warn(
+          `${type}'s key '${_key}' does not match any new items in the store. Use ${newActionCreatorName}() ` +
+          `to create a new item first, or check the arguments passed to ${actionControllerName}(). Update ignored.`
+        );
+      }
     });
 
     return resources;

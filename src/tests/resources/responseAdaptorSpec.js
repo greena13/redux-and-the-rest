@@ -2,6 +2,7 @@ import fetchMock from 'fetch-mock';
 
 import { resources, RESOURCES, DESTROY_ERROR, ERROR, SUCCESS } from '../../index';
 import buildStore from '../helpers/buildStore';
+import EmptyKey from '../../constants/EmptyKey';
 
 describe('Specifying a response adaptor:', function () {
   describe('Specifying a response adaptor for all actions', function () {
@@ -80,7 +81,7 @@ describe('Specifying a response adaptor:', function () {
 
           it('then uses the response adaptor', function() {
             return this.store.dispatch(this.fetchUsers()).then(() => {
-              const collection = this.store.getState().users.collections[''];
+              const collection = this.store.getState().users.collections[EmptyKey];
 
               expect(collection.status.type).toEqual(ERROR);
               expect(collection.status.error.message).toEqual('NOT_FOUND');
@@ -109,7 +110,7 @@ describe('Specifying a response adaptor:', function () {
 
           it('then does not use the response adaptor', function() {
             return this.store.dispatch(this.fetchUsers()).then(() => {
-              const collection = this.store.getState().users.collections[''];
+              const collection = this.store.getState().users.collections[EmptyKey];
 
               expect(collection.status.type).toEqual(ERROR);
               expect(collection.status.error.message).toEqual('Long error stack trace');

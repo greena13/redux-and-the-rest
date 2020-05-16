@@ -35,7 +35,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
     url: urlTemplate,
     progress,
     request = {}
-  } = options;
+, singular } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
   const url = generateUrl({ urlTemplate }, normalizedParams);
@@ -46,7 +46,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
     registerRequestStart(HTTP_REQUEST_TYPE, url);
   }
 
-  const key = getItemKey(normalizedParams, { keyBy });
+  const key = getItemKey(normalizedParams, { keyBy, singular });
 
   return (dispatch) => {
     const requestedAt = Date.now();
@@ -104,10 +104,10 @@ function deleteResourceUpdate(options, values) {
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function localActionCreator(options, params, actionCreatorOptions = {}) {
-  const { keyBy } = options;
+  const { keyBy, singular } = options;
   const normalizedParams = wrapInObject(params, keyBy);
 
-  const key = getItemKey(normalizedParams, { keyBy });
+  const key = getItemKey(normalizedParams, { keyBy, singular });
 
   return removeResource({ ...options, key }, actionCreatorOptions);
 }
@@ -205,7 +205,7 @@ function reducer(resources, action) {
        * requests
        */
       if (currentItem.status.type === DESTROYING) {
-        warn(`${type}'s key '${key}' matched a new that has a pending DESTROY action. (Duplicate destroy request was still sent to the server.)`);
+        warn(`${type}'s key '${key}' matched a new item that has a pending DESTROY action. (Duplicate destroy request was still sent to the server.)`);
       }
     });
 

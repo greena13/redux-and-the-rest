@@ -13,9 +13,9 @@ import wrapInObject from '../../utils/object/wrapInObject';
  *        of the resource's URL
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function actionCreator({ action, keyBy }, params) {
+function actionCreator({ action, keyBy, singular }, params) {
   const normalizedParams = wrapInObject(params, keyBy);
-  const key = getItemKey(normalizedParams, { keyBy });
+  const key = getItemKey(normalizedParams, { keyBy, singular });
 
   return {
     type: action,

@@ -2,6 +2,7 @@ import fetchMock from 'fetch-mock';
 import { resources, RESOURCES, SUCCESS } from '../../../index';
 import buildStore from '../../helpers/buildStore';
 import nop from '../../../utils/function/nop';
+import EmptyKey from '../../../constants/EmptyKey';
 
 describe('belongsTo:', function () {
   beforeAll(function () {
@@ -18,7 +19,7 @@ describe('belongsTo:', function () {
           },
         },
         collections: {
-          '': {
+          [EmptyKey]: {
             positions: [ 1 ],
             status: { type: SUCCESS },
           },

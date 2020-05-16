@@ -2,6 +2,7 @@ import fetchMock from 'fetch-mock';
 
 import { resources, SUCCESS, RESOURCES } from '../../index';
 import buildStore from '../helpers/buildStore';
+import EmptyKey from '../../constants/EmptyKey';
 
 describe('reducesOn:', function () {
   beforeAll(function () {
@@ -18,7 +19,7 @@ describe('reducesOn:', function () {
           },
         },
         collections: {
-          '': {
+          [EmptyKey]: {
             positions: [ 1 ],
             status: { type: SUCCESS }
           }

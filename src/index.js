@@ -20,4 +20,5 @@ export { NEW, EDITING, FETCHING, CREATING, UPDATING, DESTROYING, DESTROY_ERROR, 
 export { CLIENT_ERROR } from './constants/NetworkStatuses';
 
 export { default as resources } from './resources';
+export { default as resource } from './resource';
 

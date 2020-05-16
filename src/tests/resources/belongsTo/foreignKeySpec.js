@@ -3,6 +3,7 @@ import fetchMock from 'fetch-mock';
 import { resources, SUCCESS, RESOURCES } from '../../../index';
 import buildStore from '../../helpers/buildStore';
 import nop from '../../../utils/function/nop';
+import EmptyKey from '../../../constants/EmptyKey';
 
 describe('belongsTo:', function () {
   describe('when the \'foreignKey\' option is used', function () {
@@ -20,7 +21,7 @@ describe('belongsTo:', function () {
             },
           },
           collections: {
-            '': {
+            [EmptyKey]: {
               positions: [ 1 ],
               status: { type: SUCCESS }
             }

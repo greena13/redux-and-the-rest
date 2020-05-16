@@ -35,14 +35,23 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     optionalActionCreatorOptions
   );
 
-  const { action, transforms, keyBy, urlOnlyParams } = options;
+  const { action, transforms, keyBy, urlOnlyParams, singular } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
 
   /**
-   * We automatically generate a new temporary Id if one is not specified
+   * We automatically generate a new temporary Id if one is not specified (resources only; a singular resource will
+   * use EmptyKey)
    */
-  const temporaryKey = getItemKey([normalizedParams, values], { keyBy }) || Date.now().toString();
+  const temporaryKey = function(){
+    const key = getItemKey([normalizedParams, values], { keyBy, singular });
+
+    if (key || singular) {
+      return key;
+    }
+
+    return Date.now().toString();
+  }();
 
   return {
     type: action,

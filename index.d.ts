@@ -423,7 +423,7 @@ export interface InitialResourceStateBuilder<T> {
 
 }
 
-export interface ResourcesDefinition<T> {
+interface ResourceDefinitionCommon<T> {
     /**
      * Mapping between RESTful action names and constant Redux Action names
      */
@@ -471,6 +471,14 @@ export interface ResourcesDefinition<T> {
      * Function to build the initial resource state
      */
     buildInitialState: (items: Array<T>) => InitialResourceStateBuilder<T>,
+}
+
+export interface ResourcesDefinition<T> extends ResourceDefinitionCommon<T>{
+
+}
+
+export interface SingularResourceDefinition<T> extends ResourceDefinitionCommon<T>{
+
 }
 
 /**
@@ -674,6 +682,11 @@ export type ActionOptionsMap<T> = { [key: string]: ActionOptions<T> | Boolean };
  * Defines a new resource, returning the actions, action creators, reducers and helpers to manage it
  */
 export function resources<T>(resourceOptions: ResourceOptions<T>, actionOptions: ActionOptionsMap<T> | string[]): ResourcesDefinition<T>;
+
+/**
+ * Defines a new singular resource, returning the actions, action creators, reducers and helpers to manage it
+ */
+export function resource<T>(resourceOptions: ResourceOptions<T>, actionOptions: ActionOptionsMap<T> | string[]): ResourceDefinition<T>;
 
 /**
  * Serializes an object to create a consistent key, no matter the ordering of the attributes, suitable to use

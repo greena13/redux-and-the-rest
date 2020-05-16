@@ -66,6 +66,7 @@ users = getCollection(store.getState().users);
 * [Install &amp; Setup](#install--setup)
    * [Peer Dependencies](#peer-dependencies)
 * [Defining resources](#defining-resources)
+   * [Defining singular resources](#defining-singular-resources)
    * [Configuring individual actions](#configuring-individual-actions)
       * [Using the default RESTful action configuration](#using-the-default-restful-action-configuration)
       * [Providing custom action configuration](#providing-custom-action-configuration)
@@ -104,6 +105,10 @@ users = getCollection(store.getState().users);
       * [Response statuses](#response-statuses)
       * [Knowing when to call your action creators](#knowing-when-to-call-your-action-creators)
 * [Setting initial state](#setting-initial-state)
+* [Working with Authenticated APIs](#working-with-authenticated-apis)
+   * [Auth tokens as headers](#auth-tokens-as-headers)
+   * [Auth tokens as query parameters](#auth-tokens-as-query-parameters)
+   * [Session cookies](#session-cookies)
 * [RESTful (asynchronous) actions](#restful-asynchronous-actions)
    * [RESTful behaviour overview](#restful-behaviour-overview)
       * [Preventing duplicate requests](#preventing-duplicate-requests)
@@ -231,7 +236,13 @@ const { reducers, actionCreators: { fetchUsers } } = resources(
         index: true
     }
 );
-```
+```     
+
+### Defining singular resources
+
+Sometimes you may need to define a singular resource, or a resource for which there is only every one singular item. A good example of such a resource is a user's current session or their profile. 
+
+You can define a singular resource using the `resource` function, which accepts the same arguments as the `resources` function (with a few exceptions largely concerned with defining actions that do not make sense for a singular resource).
 
 ### Configuring individual actions
 

@@ -13,6 +13,9 @@ import getItemWithEmptyFallback from './utils/getItem';
 import getItemKey from './action-creators/helpers/getItemKey';
 import getOrFetch from './utils/getOrFetch';
 import getCollectionKey from './action-creators/helpers/getCollectionKey';
+import warn from './utils/dev/warn';
+import without from './utils/collection/without';
+import EmptyKey from './constants/EmptyKey';
 
 /**
  * @typedef {Object<string, ResourcesDefinition>} AssociationOptionsMap A Mapping between the name of an
@@ -27,8 +30,8 @@ import getCollectionKey from './action-creators/helpers/getCollectionKey';
 /**
  * @typedef {Object} ResourceOptions Options used to configure the resource and apply to all actions, unless
  *          overridden by more specific configuration in ActionOptions.
- * @property {string} name The pluralized name of the resource you are defining.
- * @property {string} [keyBy] The resource attribute used to key/index all items of the current resource type.
+ * @property {string} [name] The pluralized name of the resource you are defining.
+ * @property {string|Array.<String>} [keyBy] The resource attribute used to key/index all items of the current resource type.
  *           This will be the value you pass to each action creator to identify the target of each action. By
  *           default, 'id' is used.
  *
@@ -41,14 +44,14 @@ import getCollectionKey from './action-creators/helpers/getCollectionKey';
  *           default url template, but individual actions may override it with their own.
  * @property {string[]} [urlOnlyParams] The attributes passed to action creators that should be used to create the request URL,
  *           but ignored when storing the request's response.
- * @property {ResponseAdaptorFunction} responseAdaptor Function used to adapt the response for a particular
+ * @property {ResponseAdaptorFunction} [responseAdaptor] Function used to adapt the response for a particular
  *           request before it is handed over to the reducers. The function must return the results as an object
  *           with properties: values and (optionally) error.
- * @property {Function} requestAdaptor Function used to adapt the JavaScript object before it is handed over to
+ * @property {Function} [requestAdaptor] Function used to adapt the JavaScript object before it is handed over to
  *           become the body of the request to be sent to an external API.
- * @property {RequestCredentials} credentials Whether to include, omit or send cookies that may be stored in
+ * @property {RequestCredentials} [credentials] Whether to include, omit or send cookies that may be stored in
  *           the user agent's cookie jar with the request only if it's on the same origin.
- * @property {Object} request The request configuration object to be passed to the fetch method, or the
+ * @property {Object} [request] The request configuration object to be passed to the fetch method, or the
  *           new XMLHttpRequest object, when the progress option is used.
  *
  * @property {Array.<ReducerFunction>} [beforeReducers] A list of functions to call before passing the resource to
@@ -139,7 +142,7 @@ import getCollectionKey from './action-creators/helpers/getCollectionKey';
  * @returns {ResourcesDefinition} The resources definition
  */
 function resources(resourceOptions, actionOptions = {}) {
-  const { name } = resourceOptions;
+  const { name, singular } = resourceOptions;
 
   /**
    * Standardise the shape of the action options to support all forms:
@@ -154,7 +157,12 @@ function resources(resourceOptions, actionOptions = {}) {
    *
    * @type {ActionOptionsMap}
    */
-  const _actionOptions = objectFrom(actionOptions, {});
+  let _actionOptions = objectFrom(actionOptions, {});
+
+  if (singular && _actionOptions.index) {
+    warn('resource does not support the index action. Ignoring.');
+    _actionOptions = without(actionOptions, 'index');
+  }
 
   const actions = new ActionsDictionary(name, resourceOptions, Object.keys(_actionOptions));
   const reducers = buildReducers(resourceOptions, actions, _actionOptions);
@@ -167,7 +175,7 @@ function resources(resourceOptions, actionOptions = {}) {
    * @param {Object|string} params The parameters used to calculate the index of the resource to return
    * @return {ResourcesItem} The resource item
    */
-  function getItem(resourcesState, params) {
+  function getItem(resourcesState, params = EmptyKey) {
     return getItemWithEmptyFallback(resourcesState, getItemKey(params, resourceOptions));
   }
 
@@ -193,7 +201,7 @@ function resources(resourceOptions, actionOptions = {}) {
      * @type {function(ResourcesReduxState): ResourcesItem} Function that returns the new item of this resource
      *       type
      */
-    getNewItem,
+    getNewItem: singular ? getItem : getNewItem,
 
     getItem,
 
@@ -212,7 +220,7 @@ function resources(resourceOptions, actionOptions = {}) {
           typeKey: 'items',
           fallbackActionName: 'show',
           getFunction: getItem,
-          keyFunction: (_params) => getItemKey(_params, { keyBy: resourceOptions.keyBy }),
+          keyFunction: (_params) => getItemKey(_params, { keyBy: resourceOptions.keyBy, singular }),
 
           actions, actionCreators,
         },

@@ -3,8 +3,13 @@ import isObject from '../../utils/object/isObject';
 import arrayFrom from '../../utils/array/arrayFrom';
 import hasKey from '../../utils/object/hasKey';
 import isUndefined from '../../utils/isUndefined';
+import EmptyKey from '../../constants/EmptyKey';
 
-function getItemKey(params, { keyBy }) {
+function getItemKey(params, { keyBy, singular }) {
+  if (singular) {
+    return EmptyKey;
+  }
+
   const _params = arrayFrom(params);
 
   if (Array.isArray(keyBy) && keyBy.length > 1) {

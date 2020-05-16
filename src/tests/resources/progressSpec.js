@@ -4,6 +4,7 @@ import XHRMock from '../helpers/XHRMock';
 import { resources, RESOURCES, CREATING, FETCHING, SUCCESS, UPDATING } from '../../index';
 import buildStore from '../helpers/buildStore';
 import nop from '../../utils/function/nop';
+import EmptyKey from '../../constants/EmptyKey';
 
 describe('progress option', function () {
   describe('for the create action:', function () {
@@ -853,11 +854,11 @@ describe('progress option', function () {
           });
 
           it('then the collection\'s status is FETCHING', function() {
-            expect(this.store.getState().users.collections[''].status.type).toEqual(FETCHING);
+            expect(this.store.getState().users.collections[EmptyKey].status.type).toEqual(FETCHING);
           });
 
           it('then there are no progress attributes on the collection\'s status object', function() {
-            const userStatus = this.store.getState().users.collections[''].status;
+            const userStatus = this.store.getState().users.collections[EmptyKey].status;
 
             expect(userStatus.progressUp).toEqual(undefined);
             expect(userStatus.progressDown).toEqual(undefined);
@@ -885,7 +886,7 @@ describe('progress option', function () {
           });
 
           it('then the collection\'s status is SUCCESS', function() {
-            expect(this.store.getState().users.collections[''].status.type).toEqual(SUCCESS);
+            expect(this.store.getState().users.collections[EmptyKey].status.type).toEqual(SUCCESS);
           });
 
           it('then the collection\'s items\' status is SUCCESS', function() {
@@ -893,7 +894,7 @@ describe('progress option', function () {
           });
 
           it('then does not set the collection\'s progress status attributes', function() {
-            const collectionStatus = this.store.getState().users.collections[''].status;
+            const collectionStatus = this.store.getState().users.collections[EmptyKey].status;
 
             expect(collectionStatus.progressUp).toEqual(undefined);
             expect(collectionStatus.progressDown).toEqual(undefined);
@@ -945,7 +946,7 @@ describe('progress option', function () {
 
           this.store.dispatch(this.fetchUsers());
 
-          this.userCollectionStatus = this.store.getState().users.collections[''].status;
+          this.userCollectionStatus = this.store.getState().users.collections[EmptyKey].status;
         });
 
         afterAll(function() {
@@ -971,7 +972,7 @@ describe('progress option', function () {
               total: 24
             });
 
-            this.userCollectionStatus = this.store.getState().users.collections[''].status;
+            this.userCollectionStatus = this.store.getState().users.collections[EmptyKey].status;
           });
 
           it('then the collection\'s status is still FETCHING', function() {
@@ -999,7 +1000,7 @@ describe('progress option', function () {
         describe('and the upload has finished', () => {
           beforeAll(function () {
             this.xhrMock.completeUpload({ status: 200 });
-            this.userCollectionStatus = this.store.getState().users.collections[''].status;
+            this.userCollectionStatus = this.store.getState().users.collections[EmptyKey].status;
           });
 
           it('then the collection\'s status is still FETCHING', function() {
@@ -1031,7 +1032,7 @@ describe('progress option', function () {
                 total: 25
               });
 
-              this.userCollectionStatus = this.store.getState().users.collections[''].status;
+              this.userCollectionStatus = this.store.getState().users.collections[EmptyKey].status;
             });
 
             it('then the collection\'s status is still FETCHING', function() {
@@ -1057,7 +1058,7 @@ describe('progress option', function () {
             describe('and downloading the response is complete', () => {
               beforeAll(function () {
                 return this.xhrMock.completeDownload().then(() => {
-                  this.userCollectionStatus = this.store.getState().users.collections[''].status;
+                  this.userCollectionStatus = this.store.getState().users.collections[EmptyKey].status;
 
                   this.userStatus = this.store.getState().users.items['1'].status;
                 });

@@ -2,6 +2,7 @@ import fetchMock from 'fetch-mock';
 
 import { resources, SUCCESS, RESOURCES } from '../../index';
 import buildStore from '../helpers/buildStore';
+import EmptyKey from '../../constants/EmptyKey';
 
 describe('Generating key:', function () {
   describe('when the urlOnlyParams option is not used', function () {
@@ -40,7 +41,7 @@ describe('Generating key:', function () {
 
       it('then uses an empty string as the key', function() {
         return this.store.dispatch(this.fetchUsers()).then(() => {
-          const collection = this.store.getState().users.collections[''];
+          const collection = this.store.getState().users.collections[EmptyKey];
 
           expect(collection.positions).toEqual([ 1 ]);
           expect(collection.status.type).toEqual(SUCCESS);

@@ -1,7 +1,18 @@
 import fetchMock from 'fetch-mock';
-import buildStore from '../../helpers/buildStore';
 import { resources, RESOURCES, CREATING, ERROR, NEW, SUCCESS } from '../../../index';
 import nop from '../../../utils/function/nop';
+import {
+  expectToNotChangeResourcesCollection,
+  expectToChangeNewItemKeyTo,
+  expectToChangeResourcesItemStatusErrorOccurredAtToBeSet,
+  expectToChangeResourcesItemStatusTo,
+  expectToChangeResourcesItemValuesTo,
+  setupInitialState, expectToChangeResourceCollectionPositionsTo
+} from '../../helpers/resourceAssertions';
+import EmptyKey from '../../../constants/EmptyKey';
+import getCollectionKey from '../../../action-creators/helpers/getCollectionKey';
+
+const RESOURCE_NAME = 'users';
 
 describe('Create reducer:', function () {
   beforeAll(function() {
@@ -15,229 +26,52 @@ describe('Create reducer:', function () {
 
     this.createUser = createUser;
     this.reducers = reducers;
+
+    this.newValues = { username: 'Bob' };
+    this.responseValues = { ...this.newValues, id: 1 };
   });
 
-  [
-    {
-      description: 'Given no actions have come before it',
-      initialState: { users: { ...RESOURCES } }
-    },
-    {
-      description: 'Given a NEW action has come before it',
-      initialState: {
-        users: {
-          items: {
-            temp: {
-              values: { username: 'Robert' },
-              status: { type: NEW }
-            }
-          },
-          collections: { },
-          newItemKey: 'temp'
-        }
-      }
-    }
-  ].forEach(({ description, initialState }) => {
-    describe(description, function () {
-      [
-        {
-          idArgsDescription: 'and only the item\'s id is passed to the action creator,',
-          idArgs: 'temp'
+  describe('Given no actions have come before it', () => {
+    describe('and only the item\'s id is passed to the action creator', () => {
+      expectToHandleSuccessAndFailedRequests({ ...RESOURCES }, 'temp');
+    });
+  });
+
+  describe('Given a NEW action has come before it', () => {
+    describe('and the item\'s id is passed as an object to the action creator', () => {
+      expectToHandleSuccessAndFailedRequests({
+        items: {
+          temp: {
+            values: { username: 'Robert' },
+            status: { type: NEW }
+          }
         },
-        {
-          idArgsDescription: 'and the item\'s id is passed as an object to the action creator,',
-          idArgs: { id: 'temp' }
-        }
-      ].forEach(({ idArgsDescription, idArgs }) => {
-        describe(idArgsDescription, function() {
-          describe('and the API request succeeds,', function () {
-            describe('before the request has completed,', function () {
-              beforeAll(function () {
-                fetchMock.post('http://test.com/users', new Promise(nop));
-
-                this.store = buildStore(initialState, { users: this.reducers } );
-
-                this.store.dispatch(this.createUser(idArgs, {
-                  username: 'Bob'
-                }));
-              });
-
-              afterAll(function() {
-                fetchMock.restore();
-                this.store = null;
-              });
-
-              it('then adds a new item with the correct values', function() {
-                expect(this.store.getState().users.items.temp.values).toEqual({ username: 'Bob' });
-              });
-
-              it('then adds a new item with a status type of CREATING', function() {
-                expect(this.store.getState().users.items.temp.status.type).toEqual(CREATING);
-              });
-
-              it('then does NOT add the temporary key to the default collection', function() {
-                expect(this.store.getState().users.collections).toEqual({});
-              });
-
-              it('then sets the newItemKey to the temporary key', function() {
-                expect(this.store.getState().users.newItemKey).toEqual('temp');
-              });
-            });
-
-            describe('when the request has completed,', () => {
-              beforeAll(function () {
-                fetchMock.post('http://test.com/users', {
-                  body: { id: 1, username: 'Bob' },
-                });
-
-                this.store = buildStore(initialState, { users: this.reducers } );
-
-                this.store.dispatch(this.createUser(idArgs, {
-                  username: 'Bob'
-                }));
-              });
-
-              afterAll(function() {
-                fetchMock.restore();
-                this.store = null;
-              });
-
-              it('then moves the item to the new ID and merges in values from the server', function() {
-                expect(this.store.getState().users.items['1'].values).toEqual({
-                  id: 1,
-                  username: 'Bob',
-                });
-              });
-
-              it('then sets the items status type to SUCCESS', function() {
-                expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
-              });
-
-              it('then updates the newItemKey ', function() {
-                expect(this.store.getState().users.newItemKey).toEqual(1);
-              });
-            });
-          });
-
-          describe('and the API request errors', function () {
-            describe('before the request has completed', function () {
-              beforeAll(function () {
-                fetchMock.post('http://test.com/users', new Promise(nop));
-
-                this.store = buildStore(initialState, { users: this.reducers } );
-
-                this.store.dispatch(this.createUser(idArgs, {
-                  username: 'Bob'
-                }));
-              });
-
-              afterAll(function() {
-                fetchMock.restore();
-                this.store = null;
-              });
-
-              it('then adds a new item with the correct values', function() {
-                expect(this.store.getState().users.items.temp.values).toEqual({ username: 'Bob' });
-              });
-
-              it('then adds a new item with a status type of CREATING', function() {
-                expect(this.store.getState().users.items.temp.status.type).toEqual(CREATING);
-              });
-
-              it('then does NOT add the temporary key to the default collection', function() {
-                expect(this.store.getState().users.collections).toEqual({});
-              });
-
-              it('then sets the newItemKey to the temporary key', function() {
-                expect(this.store.getState().users.newItemKey).toEqual('temp');
-              });
-            });
-
-            describe('when the request has completed', () => {
-              beforeAll(function () {
-                fetchMock.post('http://test.com/users', {
-                  body: { error: 'Not Found' },
-                  status: 404
-                });
-
-                this.store = buildStore(initialState, { users: this.reducers } );
-
-                this.store.dispatch(this.createUser(idArgs, {
-                  username: 'Bob'
-                }));
-              });
-
-              afterAll(function() {
-                fetchMock.restore();
-                this.store = null;
-              });
-
-              it('then DOES NOT move the item from its temporary key', function() {
-                expect(this.store.getState().users.items.temp.values).toEqual({
-                  username: 'Bob',
-                });
-              });
-
-              it('then sets the items status type to ERROR', function() {
-                expect(this.store.getState().users.items.temp.status.type).toEqual(ERROR);
-              });
-
-              it('then sets the items status httpCode', function() {
-                expect(this.store.getState().users.items.temp.status.httpCode).toEqual(404);
-              });
-
-              it('then sets the syncedAt attribute', function() {
-                expect(this.store.getState().users.items.temp.status.errorOccurredAt).not.toBeUndefined();
-              });
-
-              it('then merges in the server\'s response into the status', function() {
-                expect(this.store.getState().users.items.temp.status.error.message).toEqual('Not Found');
-              });
-
-              it('then DOES NOT update the newItemKey', function() {
-                expect(this.store.getState().users.newItemKey).toEqual('temp');
-              });
-
-            });
-          });
-        });
-      });
+        collections: { },
+        newItemKey: 'temp'
+      }, { id: 'temp' });
     });
   });
 
   describe('when there is already an item in the store with the same key', function () {
     describe('before the request has completed', function () {
       beforeAll(function(){
-        fetchMock.post('http://test.com/users', new Promise(nop));
-
         spyOn(console, 'warn');
 
-        this.store = buildStore({
-          users: {
-            items: {
-              1: {
-                values: { username: 'Robert' },
-                status: { type: SUCCESS }
-              }
-            },
-            collections: {
-              '': {
-                positions: [ 1 ],
-                status: { type: null }
-              }
-            },
-            newItemKey: null
-          }
-        }, { users: this.reducers } );
-
-        this.store.dispatch(this.createUser(1, {
-          username: 'Bob'
-        }));
-      });
-
-      afterAll(function() {
-        fetchMock.restore();
-        this.store = null;
+        setUpBeforeRequest(this, {
+          items: {
+            1: {
+              values: { username: 'Robert' },
+              status: { type: SUCCESS }
+            }
+          },
+          collections: {
+            [EmptyKey]: {
+              positions: [ 1 ],
+              status: { type: null }
+            }
+          },
+          newItemKey: null
+        }, 1, this.newValues);
       });
 
       it('then warns about the collision', function() {
@@ -245,31 +79,32 @@ describe('Create reducer:', function () {
         expect(console.warn).toHaveBeenCalledWith('Redux and the REST: CREATE_USER has the same key \'1\' as an existing item. Use updateUser() to update an existing item, or ensure the new item has a unique temporary key. (The create request was still sent to the server.)');
       });
 
-      it('then adds replaces the existing item\'s values', function() {
-        expect(this.store.getState().users.items['1'].values).toEqual({ username: 'Bob' });
+      it('then replaces the existing item\'s values', function() {
+        expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, 1, this.newValues);
       });
 
       it('then sets the status of the existing item to CREATING', function() {
-        expect(this.store.getState().users.items['1'].status.type).toEqual(CREATING);
+        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 1, 'type', CREATING);
       });
 
       it('then sets the newItemKey to the temporary key', function() {
-        expect(this.store.getState().users.newItemKey).toEqual(1);
+        expectToChangeNewItemKeyTo(this, RESOURCE_NAME, 1);
       });
+
+      afterAll(() => tearDown(this));
     });
 
     describe('when the request has completed', () => {
       beforeAll(function () {
-        fetchMock.post('http://test.com/users', {
-          body: { id: 2, username: 'Bob' },
-        });
 
         /**
          * Spy isn't actually used - just prevents warning from showing in test output
          */
         spyOn(console, 'warn');
 
-        this.store = buildStore({
+        this.responseValues = { id: 2, username: 'Bob' };
+
+        setUpAfterRequestSuccess(this, {
           users: {
             items: {
               1: {
@@ -278,387 +113,328 @@ describe('Create reducer:', function () {
               }
             },
             collections: {
-              '': {
+              [EmptyKey]: {
                 positions: [ 1 ],
                 status: { type: null }
               }
             },
             newItemKey: null
           }
-        }, { users: this.reducers } );
-
-        this.store.dispatch(this.createUser(1, {
-          username: 'Bob'
-        }));
+        }, 1, this.newValues, this.responseValues);
       });
 
-      afterAll(function() {
-        fetchMock.restore();
-        this.store = null;
-      });
+      afterAll(() => tearDown(this));
 
       it('then moves the item to the new ID and merges in values from the server', function() {
-        expect(this.store.getState().users.items['2'].values).toEqual({
-          id: 2,
-          username: 'Bob',
-        });
+        expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.responseValues.id, this.responseValues);
       });
 
       it('then sets the items status type to SUCCESS', function() {
-        expect(this.store.getState().users.items['2'].status.type).toEqual(SUCCESS);
+        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.responseValues.id, 'type', SUCCESS);
       });
 
       it('then updates the newItemKey ', function() {
-        expect(this.store.getState().users.newItemKey).toEqual(2);
+        expectToChangeNewItemKeyTo(this, RESOURCE_NAME, this.responseValues.id);
       });
     });
   });
 
-  [
-    {
-      operator: 'push',
-      expectedIsolatedStateBefore: ['temp'],
-      expectedIsolatedStateAfter: [2],
-      expectedCumulativeStateBefore: [1, 'temp'],
-      expectedCumulativeStateAfter: [1, 2]
-    },
-    {
-      operator: 'unshift',
-      expectedIsolatedStateBefore: ['temp'],
-      expectedIsolatedStateAfter: [2],
-      expectedCumulativeStateBefore: ['temp', 1],
-      expectedCumulativeStateAfter: [2, 1]
-    },
-    {
-      operator: 'invalidate',
-      expectedIsolatedStateBefore: [],
-      expectedIsolatedStateAfter: [],
-      expectedCumulativeStateBefore: [],
-      expectedCumulativeStateAfter: []
-    },
-  ].forEach(({ operator, expectedIsolatedStateBefore, expectedIsolatedStateAfter, expectedCumulativeStateBefore, expectedCumulativeStateAfter }) => {
-    describe(`when the ${operator} collections operator is used`, () => {
-      describe('and there are NO collections', function () {
-        describe('before the request has completed', function () {
-          beforeAll(function () {
-            fetchMock.post('http://test.com/users', new Promise(nop));
+  describe('when the push collections operator is used', () => {
+    expectToCorrectlyApplyOperator('push', ['temp'], [2], [1, 'temp'], [1, 2]);
+  });
 
-            this.store = buildStore({
-              users: {
-                items: {},
-                collections: {},
-                newItemKey: null
-              }
-            }, { users: this.reducers } );
+  describe('when the unshift collections operator is used', () => {
+    expectToCorrectlyApplyOperator('unshift', ['temp'], [2], ['temp', 1], [2, 1]);
+  });
 
-            this.store.dispatch(this.createUser('temp', {
-              username: 'Bob'
-            }, { [operator]: { order: 'newest' } }));
-          });
-
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
-
-          it('then creates a new collection with the specified temp key and places the item in it', function() {
-            expect(this.store.getState().users.collections).toEqual({
-              'order=newest': {
-                positions: expectedIsolatedStateBefore,
-                status: { type: null },
-                projection: { type: null }
-              }
-            });
-          });
-        });
-
-        describe('when the request has completed', () => {
-          beforeAll(function () {
-            fetchMock.post('http://test.com/users', {
-              body: { id: 2, username: 'Bob' },
-            });
-
-            this.store = buildStore({
-              users: {
-                items: {},
-                collections: {},
-                newItemKey: null
-              }
-            }, { users: this.reducers } );
-
-            this.store.dispatch(this.createUser('temp', {
-              username: 'Bob'
-            }, { [operator]: { order: 'newest' } }));
-          });
-
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
-
-          it('then replaces all references to the temporary key with the new item key', function() {
-            expect(this.store.getState().users.collections).toEqual({
-              'order=newest': {
-                positions: expectedIsolatedStateAfter,
-                status: { type: null },
-                projection: { type: null }
-              }
-            });
-          });
-        });
-      });
-
-      describe('and there are NO MATCHING collections', function () {
-        describe('before the request has completed', function () {
-          beforeAll(function () {
-            fetchMock.post('http://test.com/users', new Promise(nop));
-
-            this.store = buildStore({
-              users: {
-                items: {},
-                collections: {
-                  'active=true': {
-                    positions: [ ],
-                    status: { type: SUCCESS }
-                  }
-                },
-                newItemKey: null
-              }
-            }, { users: this.reducers } );
-
-            this.store.dispatch(this.createUser('temp', {
-              username: 'Bob'
-            }, { [operator]: { order: 'newest' } }));
-          });
-
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
-
-          it('then creates a new collection with the specified temp key and places the item in it', function() {
-            const userStatus = this.store.getState().users;
-
-            expect(userStatus.collections['order=newest'].positions).toEqual(expectedIsolatedStateBefore);
-            expect(userStatus.collections['active=true'].positions).toEqual([]);
-          });
-        });
-
-        describe('when the request has completed', () => {
-          beforeAll(function () {
-            fetchMock.post('http://test.com/users', {
-              body: { id: 2, username: 'Bob' },
-            });
-
-            this.store = buildStore({
-              users: {
-                items: {},
-                collections: {
-                  'active=true': {
-                    positions: [ ],
-                    status: { type: SUCCESS }
-                  }
-                },
-                newItemKey: null
-              }
-            }, { users: this.reducers } );
-
-            this.store.dispatch(this.createUser('temp', {
-              username: 'Bob'
-            }, { [operator]: { order: 'newest' } }));
-          });
-
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
-
-          it('then replaces all references to the temporary key with the new item key', function() {
-            expect(this.store.getState().users.collections['order=newest'].positions).toEqual(expectedIsolatedStateAfter);
-          });
-        });
-      });
-
-      describe('and there are collections with keys that exactly match', function () {
-        describe('before the request has completed', function () {
-          beforeAll(function () {
-            fetchMock.post('http://test.com/users', new Promise(nop));
-
-            this.store = buildStore({
-              users: {
-                items: {
-                  1: { id: 1, username: 'Jane' }
-                },
-                collections: {
-                  'active=true': {
-                    positions: [ ],
-                    status: { type: null }
-                  },
-                  'order=newest': {
-                    positions: [ 1 ],
-                    status: { type: null }
-                  },
-                },
-                newItemKey: null
-              }
-            }, { users: this.reducers } );
-
-            this.store.dispatch(this.createUser('temp', {
-              username: 'Bob'
-            }, { [operator]: { order: 'newest' } }));
-          });
-
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
-
-          it('then adds the new item\'s temp key to the matching collections', function() {
-            const { users } = this.store.getState();
-
-            expect(users.collections['active=true'].positions).toEqual([]);
-            expect(users.collections['order=newest'].positions).toEqual(expectedCumulativeStateBefore);
-          });
-        });
-
-        describe('when the request has completed', () => {
-          beforeAll(function () {
-            fetchMock.post('http://test.com/users', {
-              body: { id: 2, username: 'Bob' },
-            });
-
-            this.store = buildStore({
-              users: {
-                items: {
-                  1: { id: 1, username: 'Jane' }
-                },
-                collections: {
-                  'active=true': {
-                    positions: [ ],
-                    status: { type: null }
-                  },
-                  'order=newest': {
-                    positions: [ 1 ],
-                    status: { type: null }
-                  },
-                },
-                newItemKey: null
-              }
-            }, { users: this.reducers } );
-
-            this.store.dispatch(this.createUser('temp', {
-              username: 'Bob'
-            }, { [operator]: { order: 'newest' } }));
-          });
-
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
-
-          it('then replaces all references to the temporary key with the new item key', function() {
-            expect(this.store.getState().users.collections['order=newest'].positions).toEqual(expectedCumulativeStateAfter);
-          });
-        });
-      });
-    });
+  describe('when the invalidate collections operator is used', () => {
+    expectToCorrectlyApplyOperator('invalidate', [], [], [], []);
   });
 
   describe('Given a create action that will succeed with a response that specifies \'errors\' at the top level', () => {
     describe('when the request has completed', () => {
-      beforeAll(function () {
-        fetchMock.post('http://test.com/users', {
-          body: { errors: [{ message: 'Not Found' }] },
-          status: 200
-        });
-
-        this.store = buildStore({ users: { ...RESOURCES } }, { users: this.reducers } );
-
-        this.store.dispatch(this.createUser('temp', {
-          username: 'Bob'
-        }));
-      });
-
-      afterAll(function() {
-        fetchMock.restore();
-        this.store = null;
-      });
-
-      it('then DOES NOT move the item from its temporary key', function() {
-        expect(this.store.getState().users.items.temp.values).toEqual({
-          username: 'Bob',
-        });
-      });
-
-      it('then sets the items status type to ERROR', function() {
-        expect(this.store.getState().users.items.temp.status.type).toEqual(ERROR);
-      });
-
-      it('then sets the items status httpCode', function() {
-        expect(this.store.getState().users.items.temp.status.httpCode).toEqual(200);
-      });
-
-      it('then does NOT set the syncedAt attribute', function() {
-        expect(this.store.getState().users.items.temp.status.errorOccurredAt).not.toBeUndefined();
-      });
-
-      it('then merges in the server\'s response into the status', function() {
-        expect(this.store.getState().users.items.temp.status.error.message).toEqual('Not Found');
-        expect(this.store.getState().users.items.temp.status.errors[0].message).toEqual('Not Found');
-      });
-
-      it('then DOES NOT update the newItemKey', function() {
-        expect(this.store.getState().users.newItemKey).toEqual('temp');
-      });
+      expectToCorrectlySetErrors(404);
     });
   });
 
   describe('Given a create action that will fail with a response that specifies \'errors\' at the top level', () => {
     describe('when the request has completed', () => {
-      beforeAll(function () {
-        fetchMock.post('http://test.com/users', {
-          body: { errors: [{ message: 'Not Found' }] },
-          status: 404
-        });
-
-        this.store = buildStore({ users: { ...RESOURCES } }, { users: this.reducers } );
-
-        this.store.dispatch(this.createUser('temp', {
-          username: 'Bob'
-        }));
-      });
-
-      afterAll(function() {
-        fetchMock.restore();
-        this.store = null;
-      });
-
-      it('then DOES NOT move the item from its temporary key', function() {
-        expect(this.store.getState().users.items.temp.values).toEqual({
-          username: 'Bob',
-        });
-      });
-
-      it('then sets the items status type to ERROR', function() {
-        expect(this.store.getState().users.items.temp.status.type).toEqual(ERROR);
-      });
-
-      it('then sets the items status httpCode', function() {
-        expect(this.store.getState().users.items.temp.status.httpCode).toEqual(404);
-      });
-
-      it('then does NOT set the syncedAt attribute', function() {
-        expect(this.store.getState().users.items.temp.status.errorOccurredAt).not.toBeUndefined();
-      });
-
-      it('then merges in the server\'s response into the status', function() {
-        expect(this.store.getState().users.items.temp.status.error.message).toEqual('Not Found');
-        expect(this.store.getState().users.items.temp.status.errors[0].message).toEqual('Not Found');
-      });
-
-      it('then DOES NOT update the newItemKey', function() {
-        expect(this.store.getState().users.newItemKey).toEqual('temp');
-      });
+      expectToCorrectlySetErrors(200);
     });
   });
+
+  /**
+   * Helpers
+   */
+
+  function expectToHandleSuccessAndFailedRequests(initialState, idArgs) {
+    describe('and the API request succeeds', function () {
+      describe('before the request has completed', function () {
+        beforeAll(function () {
+          setUpBeforeRequest(this, initialState, idArgs, this.newValues);
+        });
+
+        expectToRecordPendingCreate();
+
+        afterAll(() => tearDown(this));
+      });
+
+      describe('when the request has completed', () => {
+        beforeAll(function () {
+          setUpAfterRequestSuccess(this, initialState, idArgs, this.newValues, this.responseValues);
+        });
+
+        expectToRecordCreateSuccess();
+
+        afterAll(() => tearDown(this));
+      });
+    });
+
+    describe('and the API request errors', function () {
+      describe('before the request has completed', function () {
+        beforeAll(function () {
+          setUpBeforeRequest(this, initialState, idArgs, this.newValues);
+        });
+
+        expectToRecordPendingCreate();
+
+        afterAll(() => tearDown(this));
+      });
+
+      describe('when the request has completed', () => {
+        beforeAll(function () {
+          setUpAfterRequestFailure(this, initialState, idArgs, this.newValues);
+        });
+
+        expectToRecordCreateError();
+
+        afterAll(() => tearDown(this));
+      });
+    });
+  }
+
+  function expectToRecordCreateSuccess() {
+    it('then moves the item to the new ID and merges in values from the server', function() {
+      expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, 1, {
+        id: 1,
+        username: 'Bob',
+      });
+    });
+
+    it('then sets the items status type to SUCCESS', function() {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 1, 'type', SUCCESS);
+    });
+
+    it('then updates the newItemKey ', function() {
+      expectToChangeNewItemKeyTo(this, RESOURCE_NAME, 1);
+    });
+  }
+
+  function expectToRecordPendingCreate() {
+    it('then adds a new item with the correct values', function() {
+      expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, 'temp', { username: 'Bob' });
+    });
+
+    it('then adds a new item with a status type of CREATING', function() {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 'temp', 'type', CREATING);
+    });
+
+    it('then does NOT add the temporary key to the default collection', function() {
+      expectToNotChangeResourcesCollection(this, RESOURCE_NAME, EmptyKey);
+    });
+
+    it('then sets the newItemKey to the temporary key', function() {
+      expectToChangeNewItemKeyTo(this, RESOURCE_NAME, 'temp');
+    });
+  }
+
+  function expectToRecordCreateError() {
+    it('then DOES NOT move the item from its temporary key', function() {
+      expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, 'temp', this.newValues);
+    });
+
+    it('then sets the items status type to ERROR', function() {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 'temp', 'type', ERROR);
+    });
+
+    it('then sets the items status httpCode', function() {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 'temp', 'httpCode', 404);
+    });
+
+    it('then sets the syncedAt attribute', function() {
+      expectToChangeResourcesItemStatusErrorOccurredAtToBeSet(this, RESOURCE_NAME, 'temp');
+    });
+
+    it('then merges in the server\'s response into the status', function() {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 'temp', 'error', { message: 'Not Found' });
+    });
+
+    it('then DOES NOT update the newItemKey', function() {
+      expectToChangeNewItemKeyTo(this, RESOURCE_NAME, 'temp');
+    });
+  }
+
+  function expectToCorrectlyApplyOperator(operator, expectedIsolatedStateBefore, expectedIsolatedStateAfter, expectedCumulativeStateBefore, expectedCumulativeStateAfter) {
+    beforeAll(function () {
+      this.newValues = { username: 'Bob' };
+      this.responseValues = { id: 2, username: 'Bob' };
+      this.collectionKey = { order: 'newest' };
+    });
+
+    describe('and there are NO MATCHING collections', () => {
+      describe('before the request has completed', function () {
+        beforeAll(function () {
+          setUpBeforeRequest(this, {
+            items: {},
+            collections: {
+              'active=true': {
+                positions: [],
+                status: { type: SUCCESS }
+              }
+            },
+            newItemKey: null
+          }, 'temp', this.newValues, { [operator]: this.collectionKey });
+        });
+
+        afterAll(() => tearDown(this));
+
+        it('then creates a new collection with the specified temp key and places the item in it', function () {
+          expectToChangeResourceCollectionPositionsTo(
+            this, RESOURCE_NAME, getCollectionKey(this.collectionKey), expectedIsolatedStateBefore
+          );
+        });
+
+        it('then doesn\'t add the new temp key to any other existing collections', function () {
+          expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, 'active=true', []);
+        });
+      });
+
+      expectToReplaceTempKeyInCollections(operator, expectedIsolatedStateAfter);
+    });
+
+    describe('and there are collections with keys that exactly match', function () {
+      describe('before the request has completed', function () {
+        beforeAll(function () {
+          setUpBeforeRequest(this, {
+            items: {
+              1: { id: 1, username: 'Jane' }
+            },
+            collections: {
+              'active=true': {
+                positions: [],
+                status: { type: null }
+              },
+              'order=newest': {
+                positions: [1],
+                status: { type: null }
+              },
+            },
+            newItemKey: null
+          }, 'temp', this.newValues, { [operator]: this.collectionKey });
+        });
+
+        afterAll(() => tearDown(this));
+
+        it('then adds the new item\'s temp key to the matching collections', function () {
+          expectToChangeResourceCollectionPositionsTo(
+            this, RESOURCE_NAME, getCollectionKey(this.collectionKey), expectedCumulativeStateBefore
+          );
+        });
+
+        it('then doesn\'t add the new temp key to any other existing collections', function () {
+          expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, 'active=true', []);
+        });
+      });
+
+      expectToReplaceTempKeyInCollections(operator, expectedCumulativeStateAfter);
+    });
+  }
+
+  function expectToReplaceTempKeyInCollections(operator, expectedIsolatedStateAfter) {
+    describe('when the request has completed', function() {
+      beforeAll(function () {
+        setUpAfterRequestSuccess(this, this.initialState, 'temp', this.newValues, this.responseValues, { [operator]: this.collectionKey });
+      });
+
+      afterAll(() => tearDown(this));
+
+      it('then replaces all references to the temporary key with the new item key', function () {
+        expectToChangeResourceCollectionPositionsTo(
+          this, RESOURCE_NAME, getCollectionKey(this.collectionKey), expectedIsolatedStateAfter
+        );
+      });
+    });
+  }
+
+  function expectToCorrectlySetErrors(status = 200) {
+    beforeAll(function () {
+      this.newValues = { username: 'Bob' };
+
+      setUpAfterRequestFailure(this, { ...RESOURCES }, 'temp', this.newValues, {
+        body: { errors: [{ message: 'Not Found' }] },
+        status
+      });
+    });
+
+    afterAll(function(){
+      tearDown(this);
+    });
+
+    it('then DOES NOT move the item from its temporary key', function () {
+      expect(this.store.getState().users.items.temp.values).toEqual(this.newValues);
+    });
+
+    it('then sets the items status type to ERROR', function () {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 'temp', 'type', ERROR);
+    });
+
+    it('then sets the items status httpCode', function () {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 'temp', 'httpCode', status);
+    });
+
+    it('then does NOT set the syncedAt attribute', function () {
+      expectToChangeResourcesItemStatusErrorOccurredAtToBeSet(this, RESOURCE_NAME, 'temp');
+    });
+
+    it('then merges in the server\'s response into the status', function () {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 'temp', 'error', { message: 'Not Found' });
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 'temp', 'errors', [{ message: 'Not Found' }]);
+    });
+
+    it('then DOES NOT update the newItemKey', function () {
+      expectToChangeNewItemKeyTo(this, RESOURCE_NAME, 'temp');
+    });
+  }
+
+  function setUpBeforeRequest(context, initialState, id, newValues, actionCreatorOptions = {}) {
+    fetchMock.post('http://test.com/users', new Promise(nop));
+
+    setupState(context, initialState, id, newValues, actionCreatorOptions);
+  }
+
+  function setUpAfterRequestSuccess(context, initialState, id, initialValues,
+                                    responseValues = initialValues, actionCreatorOptions = {}) {
+    fetchMock.post('http://test.com/users', {
+      body: responseValues,
+    });
+
+    setupState(context, initialState, id, initialValues, actionCreatorOptions);
+  }
+
+  function setUpAfterRequestFailure(context, initialState, id, newValues, options = { body: { error: 'Not Found' }, status: 404}) {
+    fetchMock.post('http://test.com/users', options);
+
+    setupState(context, initialState, id, newValues);
+  }
+
+  function setupState(context, initialState, id, newValues, actionCreatorOptions = {}) {
+    setupInitialState(context, RESOURCE_NAME, initialState);
+
+    context.store.dispatch(context.createUser(id, newValues, actionCreatorOptions));
+  }
+
+  function tearDown(context) {
+    fetchMock.restore();
+    context.store = null;
+  }
 });

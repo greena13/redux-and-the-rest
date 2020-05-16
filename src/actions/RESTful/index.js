@@ -106,7 +106,7 @@ function requestCollection(options, key) {
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function receiveCollection(options, actionCreatorOptions, collection) {
-  const { transforms, key, keyBy, action, params, requestedAt } = options;
+  const { transforms, key, keyBy, action, params, requestedAt, singular } = options;
 
   const positions = [];
 
@@ -119,7 +119,7 @@ function receiveCollection(options, actionCreatorOptions, collection) {
    */
   const items = collection.reduce((memo, values) => {
     const normalizedParams = wrapInObject(params, keyBy);
-    const itemKey = getItemKey([values, normalizedParams], { keyBy });
+    const itemKey = getItemKey([values, normalizedParams], { keyBy, singular });
 
     /**
      * Push the item's key to the positions list to record where in the list the item is located

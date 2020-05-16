@@ -1,19 +1,19 @@
 import fetchMock from 'fetch-mock';
-import buildStore from '../../helpers/buildStore';
-import { resources, ERROR, SUCCESS, UPDATING, RESOURCES, EDITING } from '../../../index';
+import { resource, ERROR, SUCCESS, UPDATING, RESOURCES, EDITING } from '../../../index';
 import nop from '../../../utils/function/nop';
 import {
-  expectToChangeResourcesItemStatusErrorOccurredAtToBeSet,
-  expectToChangeResourcesItemStatusTo,
-  expectToChangeResourcesItemValuesTo, expectToNotChangeResourcesItemStatus, expectToNotChangeResourcesItemValues,
+  expectToChangeResourceItemStatusErrorOccurredAtToBeSet,
+  expectToChangeResourceItemStatusTo,
+  expectToChangeResourceItemValuesTo, expectToNotChangeResourceItemStatus, expectToNotChangeResourceItemValues,
   setupInitialState
 } from '../../helpers/resourceAssertions';
+import EmptyKey from '../../../constants/EmptyKey';
 
 const RESOURCE_NAME = 'users';
 
 describe('Update reducer:', function () {
   beforeAll(function() {
-    const { reducers, actionCreators: { updateUser } } = resources({
+    const { reducers, actionCreators: { updateUser } } = resource({
       name: 'users',
       url: 'http://test.com/users/:id?',
     }, {
@@ -23,7 +23,6 @@ describe('Update reducer:', function () {
     this.updateUser = updateUser;
     this.reducers = reducers;
 
-    this.itemId = 1;
     this.newValues = { username: 'Robert' };
     this.serverValues = { id: 1, username: 'Robert', approved: false };
   });
@@ -33,7 +32,7 @@ describe('Update reducer:', function () {
       beforeAll(function () {
         spyOn(console, 'warn');
 
-        setUpBeforeRequest(this, { ...RESOURCES }, 'http://test.com/users/1', this.itemId);
+        setUpBeforeRequest(this, { ...RESOURCES }, 'http://test.com/users');
       });
 
       afterAll(function () {
@@ -42,15 +41,15 @@ describe('Update reducer:', function () {
 
       it('then warns about trying to update an item not in the store', function() {
         // eslint-disable-next-line no-console
-        expect(console.warn).toHaveBeenCalledWith('Redux and the REST: UPDATE_USER\'s key \'1\' did not match any items in the store. Check the arguments passed to updateUser(). (Update request still sent to the server.)');
+        expect(console.warn).toHaveBeenCalledWith(`Redux and the REST: UPDATE_USER\'s key \'${EmptyKey}\' did not match any items in the store. Check the arguments passed to updateUser(). (Update request still sent to the server.)`);
       });
 
       it('then adds a new item with a status of UPDATING', function() {
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'type', UPDATING);
+        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'type', UPDATING);
       });
 
       it('then adds a new item with values specified', function() {
-        expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.itemId, this.newValues);
+        expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, this.newValues);
       });
     });
 
@@ -58,7 +57,7 @@ describe('Update reducer:', function () {
       beforeAll(function () {
         spyOn(console, 'warn');
 
-        setUpAfterRequestSuccess(this, { ...RESOURCES }, 'http://test.com/users/1', this.itemId, this.newValues, {
+        setUpAfterRequestSuccess(this, { ...RESOURCES }, 'http://test.com/users', this.newValues, {
           body: this.serverValues,
         });
       });
@@ -68,11 +67,11 @@ describe('Update reducer:', function () {
       });
 
       it('then changes the items\'s status type to SUCCESS', function() {
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'type', SUCCESS);
+        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'type', SUCCESS);
       });
 
       it('then sets the item\'s values from the response', function() {
-        expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.itemId, this.serverValues);
+        expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, this.serverValues);
       });
     });
   });
@@ -80,26 +79,20 @@ describe('Update reducer:', function () {
   describe('Given the resource is in the store', () => {
     const resourceBefore = {
       items: {
-        1: {
+        [EmptyKey]: {
           values: { username: 'Bob', id: 1 },
           status: { type: SUCCESS }
         }
       },
     };
 
-    describe('and only the item\'s id is passed to the action creator', () => {
-      expectToCorrectlyUpdateItemInStore({ ...RESOURCES, ...resourceBefore }, 1);
-    });
-
-    describe('and the item\'s id is passed as an object to the action creator', () => {
-      expectToCorrectlyUpdateItemInStore({ ...RESOURCES, ...resourceBefore }, { id: 1 });
-    });
+    expectToCorrectlyUpdateItemInStore({ ...RESOURCES, ...resourceBefore });
   });
 
   describe('Given the resource item has been edited previously', () => {
     const resourceBefore = {
       items: {
-        1: {
+        [EmptyKey]: {
           values: { username: 'Bob', id: 1 },
           status: {
             type: EDITING,
@@ -110,27 +103,21 @@ describe('Update reducer:', function () {
       },
     };
 
-    describe('and only the item\'s id is passed to the action creator', () => {
-      expectToCorrectlyUpdateAnEditedResourceItem({ ...RESOURCES, ...resourceBefore }, 1);
-    });
-
-    describe('and the item\'s id is passed as an object to the action creator', () => {
-      expectToCorrectlyUpdateAnEditedResourceItem({ ...RESOURCES, ...resourceBefore }, { id: 1 });
-    });
+    expectToCorrectlyUpdateAnEditedResourceItem({ ...RESOURCES, ...resourceBefore });
   });
 
   describe('Given a update action that will succeed with a response that specifies \'errors\' at the top level', () => {
-    expectToMergeInMultipleErrors(1, { body: { errors: ['Not Found'] }, status: 200 });
+    expectToMergeInMultipleErrors({ body: { errors: ['Not Found'] }, status: 200 });
   });
 
   describe('Given a update action that will fail with a response that specifies \'errors\' at the top level', () => {
-    expectToMergeInMultipleErrors(1, { body: { errors: ['Not Found'] }, status: 400 });
+    expectToMergeInMultipleErrors({ body: { errors: ['Not Found'] }, status: 400 });
   });
 
-  function expectToCorrectlyUpdateItemInStore(initialState, params) {
+  function expectToCorrectlyUpdateItemInStore(initialState) {
     describe('when the action creator is called and before the request has completed', function () {
       beforeAll(function () {
-        setUpBeforeRequest(this, initialState, 'http://test.com/users/1', params);
+        setUpBeforeRequest(this, initialState, 'http://test.com/users');
       });
 
       afterAll(function () {
@@ -138,17 +125,17 @@ describe('Update reducer:', function () {
       });
 
       it('then sets the item\'s status type to UPDATING', function () {
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'type', UPDATING);
+        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'type', UPDATING);
       });
 
       it('then merges in the new values with the item\'s old ones', function () {
-        expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.itemId, this.newValues);
+        expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, this.newValues);
       });
     });
 
     describe('when the API request succeeds', function () {
       beforeAll(function () {
-        setUpAfterRequestSuccess(this, initialState, 'http://test.com/users/1', params, this.newValues, {
+        setUpAfterRequestSuccess(this, initialState, 'http://test.com/users', this.newValues, {
           body: this.serverValues,
         });
       });
@@ -158,11 +145,11 @@ describe('Update reducer:', function () {
       });
 
       it('then changes the items\'s status type to SUCCESS', function () {
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, SUCCESS);
+        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, SUCCESS);
       });
 
       it('then sets the item\'s values from the response', function () {
-        expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.itemId, this.serverValues);
+        expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, this.serverValues);
       });
     });
 
@@ -176,8 +163,7 @@ describe('Update reducer:', function () {
         setUpAfterRequestFailure(
           this,
           initialState,
-          'http://test.com/users/1',
-          params,
+          'http://test.com/users',
           this.options
         );
       });
@@ -190,10 +176,10 @@ describe('Update reducer:', function () {
     });
   }
 
-  function expectToCorrectlyUpdateAnEditedResourceItem(initialState, params) {
+  function expectToCorrectlyUpdateAnEditedResourceItem(initialState) {
     describe('before the request has completed', function () {
       beforeAll(function () {
-        setUpBeforeRequest(this, initialState, 'http://test.com/users/1', params);
+        setUpBeforeRequest(this, initialState, 'http://test.com/users');
       });
 
       afterAll(function () {
@@ -201,25 +187,25 @@ describe('Update reducer:', function () {
       });
 
       it('then sets the item\'s status type to UPDATING', function () {
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'type', UPDATING);
+        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'type', UPDATING);
       });
 
       it('then does NOT unset the dirty bit', function () {
-        expectToNotChangeResourcesItemStatus(this, RESOURCE_NAME, this.itemId, 'dirty');
+        expectToNotChangeResourceItemStatus(this, RESOURCE_NAME, 'dirty');
       });
 
       it('then does NOT clear the originalValues', function () {
-        expectToNotChangeResourcesItemStatus(this, RESOURCE_NAME, this.itemId, 'originalValues');
+        expectToNotChangeResourceItemStatus(this, RESOURCE_NAME, 'originalValues');
       });
 
       it('then merges in the new values with the item\'s old ones', function () {
-        expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.itemId, this.newValues);
+        expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, this.newValues);
       });
     });
 
     describe('and the API request succeeds', function () {
       beforeAll(function () {
-        setUpAfterRequestSuccess(this, initialState, 'http://test.com/users/1', params, this.newValues, {
+        setUpAfterRequestSuccess(this, initialState, 'http://test.com/users', this.newValues, {
           body: this.serverValues,
         });
       });
@@ -229,19 +215,19 @@ describe('Update reducer:', function () {
       });
 
       it('then changes the items\'s status type to SUCCESS', function () {
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'type', SUCCESS);
+        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'type', SUCCESS);
       });
 
       it('then removes the dirty bit', function () {
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'dirty', undefined);
+        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'dirty', undefined);
       });
 
       it('then clears the original values', function () {
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'originalValues', undefined);
+        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'originalValues', undefined);
       });
 
       it('then sets the item\'s values from the response', function () {
-        expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.itemId, this.serverValues);
+        expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, this.serverValues);
       });
     });
 
@@ -255,8 +241,7 @@ describe('Update reducer:', function () {
         setUpAfterRequestFailure(
           this,
           initialState,
-          'http://test.com/users/1',
-          params,
+          'http://test.com/users',
           this.options
         );
       });
@@ -266,11 +251,11 @@ describe('Update reducer:', function () {
       });
 
       it('then does NOT unset the dirty bit', function () {
-        expectToNotChangeResourcesItemStatus(this, RESOURCE_NAME, this.itemId, 'dirty');
+        expectToNotChangeResourceItemStatus(this, RESOURCE_NAME, 'dirty');
       });
 
       it('then does NOT clear the originalValues', function () {
-        expectToNotChangeResourcesItemStatus(this, RESOURCE_NAME, this.itemId, 'originalValues');
+        expectToNotChangeResourceItemStatus(this, RESOURCE_NAME, 'originalValues');
       });
 
       expectToHandleErrorResponse();
@@ -279,35 +264,35 @@ describe('Update reducer:', function () {
 
   function expectToHandleErrorResponse() {
     it('then changes the items\'s status type to ERROR', function () {
-      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'type', ERROR);
+      expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'type', ERROR);
     });
 
     it('then sets the syncedAt attribute', function () {
-      expectToChangeResourcesItemStatusErrorOccurredAtToBeSet(this, RESOURCE_NAME, this.itemId);
+      expectToChangeResourceItemStatusErrorOccurredAtToBeSet(this, RESOURCE_NAME);
     });
 
     it('then updates the item\'s status httpCode', function () {
-      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'httpCode', this.options.status);
+      expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'httpCode', this.options.status);
     });
 
     it('then does not update the values from the response', function () {
-      expectToNotChangeResourcesItemValues(this, RESOURCE_NAME, this.itemId);
+      expectToNotChangeResourceItemValues(this, RESOURCE_NAME);
     });
 
     it('then sets the status error from the response', function () {
-      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'error', { message: this.options.body.error });
+      expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'error', { message: this.options.body.error });
     });
   }
 
-  function expectToMergeInMultipleErrors(itemId, options) {
+  function expectToMergeInMultipleErrors(options) {
     describe('when the request has completed', function () {
       beforeAll(function () {
         setUpAfterRequestFailure(this, { ...RESOURCES, items: {
-            [itemId]: {
-              values: { username: 'Bob', id: itemId },
+            [EmptyKey]: {
+              values: { username: 'Bob', id: 1 },
               status: { type: SUCCESS }
             }
-          }, }, 'http://test.com/users/1', itemId, options);
+          }, }, 'http://test.com/users', options);
       });
 
       afterAll(function () {
@@ -315,49 +300,49 @@ describe('Update reducer:', function () {
       });
 
       it('then changes the items\'s status type to ERROR', function() {
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'type', ERROR);
+        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'type', ERROR);
       });
 
       it('then sets the syncedAt attribute', function() {
-        expectToChangeResourcesItemStatusErrorOccurredAtToBeSet(this, RESOURCE_NAME, this.itemId);
+        expectToChangeResourceItemStatusErrorOccurredAtToBeSet(this, RESOURCE_NAME);
       });
 
       it('then updates the item\'s status httpCode', function() {
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'httpCode', options.status);
+        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'httpCode', options.status);
       });
 
       it('then sets the item\'s status error from the response', function () {
         const { body: { errors } } = options;
         const [errorMessage] = errors;
 
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, itemId, 'error', errorMessage);
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, itemId, 'errors', [errorMessage]);
+        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'error', errorMessage);
+        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'errors', [errorMessage]);
       });
     });
   }
 
-  function setUpBeforeRequest(context, initialState, url, params) {
+  function setUpBeforeRequest(context, initialState, url) {
     fetchMock.put(url, new Promise(nop));
 
-    setupState(context, initialState, params);
+    setupState(context, initialState);
   }
 
-  function setUpAfterRequestSuccess(context, initialState, url, params, values, options = { body: {} }) {
+  function setUpAfterRequestSuccess(context, initialState, url, values, options = { body: {} }) {
     fetchMock.put(url, options);
 
-    setupState(context, initialState, params, values);
+    setupState(context, initialState, values);
   }
 
-  function setUpAfterRequestFailure(context, initialState, url, params, options = { body: { error: 'Not Found' }, status: 404 }) {
+  function setUpAfterRequestFailure(context, initialState, url, options = { body: { error: 'Not Found' }, status: 404 }) {
     fetchMock.put(url, options);
 
-    setupState(context, initialState, params);
+    setupState(context, initialState);
   }
 
-  function setupState(context, initialState, params, values) {
+  function setupState(context, initialState, values) {
     setupInitialState(context, RESOURCE_NAME, initialState);
 
-    context.store.dispatch(context.updateUser(params, values));
+    context.store.dispatch(context.updateUser(values));
   }
 
   function tearDown(context) {

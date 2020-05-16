@@ -31,7 +31,7 @@ const HTTP_REQUEST_TYPE = 'PUT';
 function actionCreator(options, params, values, actionCreatorOptions = {}) {
   const {
     action, transforms, url: urlTemplate, progress, keyBy, projection, requestAdaptor, request = {}
-  } = options;
+, singular } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
   const url = generateUrl({ urlTemplate }, wrapInObject(normalizedParams, keyBy));
@@ -42,7 +42,7 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
     registerRequestStart(HTTP_REQUEST_TYPE, url);
   }
 
-  const key = getItemKey(normalizedParams, { keyBy });
+  const key = getItemKey(normalizedParams, { keyBy, singular });
 
   return (dispatch) => {
     const requestedAt = Date.now();
@@ -130,14 +130,14 @@ function localActionCreator(options, params, values, actionCreatorOptions = {}) 
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function receiveUpdatedResource(options, actionCreatorOptions, values, previousValues) {
-  const { transforms, action, params, keyBy, localOnly } = options;
+  const { transforms, action, params, keyBy, localOnly, singular } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
 
   return {
     type: action,
     status: SUCCESS,
-    key: getItemKey([values, normalizedParams], { keyBy }),
+    key: getItemKey([values, normalizedParams], { keyBy, singular }),
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       values,
       status: { type: SUCCESS, syncedAt: Date.now() }

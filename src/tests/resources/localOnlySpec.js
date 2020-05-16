@@ -1,5 +1,6 @@
 import { resources, SUCCESS } from '../../index';
 import buildStore from '../helpers/buildStore';
+import EmptyKey from '../../constants/EmptyKey';
 
 describe('localOnly:', function () {
   beforeAll(function () {
@@ -15,7 +16,7 @@ describe('localOnly:', function () {
           },
         },
         collections: {
-          '': {
+          [EmptyKey]: {
             positions: [ 1 ],
             status: { type: SUCCESS }
           }

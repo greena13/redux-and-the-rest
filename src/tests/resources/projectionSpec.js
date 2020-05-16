@@ -3,6 +3,7 @@ import buildStore from '../helpers/buildStore';
 import fetchMock from 'fetch-mock';
 import { COMPLETE, PREVIEW } from '../../../index';
 import nop from '../../utils/function/nop';
+import EmptyKey from '../../constants/EmptyKey';
 
 describe('projection:', function () {
   describe('when configuring the INDEX action', function() {
@@ -41,7 +42,7 @@ describe('projection:', function () {
             });
 
             it('then the item and collection\'s projection type is COMPLETE', function() {
-              expect(this.store.getState().users.collections[''].projection.type).toEqual(COMPLETE);
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(COMPLETE);
             });
           });
 
@@ -67,7 +68,7 @@ describe('projection:', function () {
 
             it('then the item and collection\'s projection type is COMPLETE', function() {
               expect(this.store.getState().users.items['1'].projection.type).toEqual(COMPLETE);
-              expect(this.store.getState().users.collections[''].projection.type).toEqual(COMPLETE);
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(COMPLETE);
             });
           });
         });
@@ -92,7 +93,7 @@ describe('projection:', function () {
             });
 
             it('then the collection\'s projection type is COMPLETE', function() {
-              expect(this.store.getState().users.collections[''].projection.type).toEqual(COMPLETE);
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(COMPLETE);
             });
           });
 
@@ -118,7 +119,7 @@ describe('projection:', function () {
             });
 
             it('then the collection\'s projection type is COMPLETE', function() {
-              expect(this.store.getState().users.collections[''].projection.type).toEqual(COMPLETE);
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(COMPLETE);
             });
           });
         });
@@ -145,7 +146,7 @@ describe('projection:', function () {
             });
 
             it('then uses the value passed to the action creator for the item\'s projection type', function() {
-              expect(this.store.getState().users.collections[''].projection.type).toEqual(PREVIEW);
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(PREVIEW);
             });
           });
 
@@ -171,7 +172,7 @@ describe('projection:', function () {
 
             it('then uses the value passed to the action creator for the item\'s projection type', function() {
               expect(this.store.getState().users.items['1'].projection.type).toEqual(PREVIEW);
-              expect(this.store.getState().users.collections[''].projection.type).toEqual(PREVIEW);
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(PREVIEW);
             });
           });
         });
@@ -196,7 +197,7 @@ describe('projection:', function () {
             });
 
             it('then the collection\'s projection type is the value passed to the action creator', function() {
-              expect(this.store.getState().users.collections[''].projection.type).toEqual(PREVIEW);
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(PREVIEW);
             });
           });
 
@@ -222,7 +223,7 @@ describe('projection:', function () {
             });
 
             it('then the collection\'s projection type is the value passed to the action creator', function() {
-              expect(this.store.getState().users.collections[''].projection.type).toEqual(PREVIEW);
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(PREVIEW);
             });
           });
         });
@@ -265,7 +266,7 @@ describe('projection:', function () {
             });
 
             it('then the item and collection\'s projection type is the value specified when defining the resource', function() {
-              expect(this.store.getState().users.collections[''].projection.type).toEqual('RESOURCE_PROJECTION');
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('RESOURCE_PROJECTION');
             });
           });
 
@@ -291,7 +292,7 @@ describe('projection:', function () {
 
             it('then the item and collection\'s projection type is the value specified when defining the resource', function() {
               expect(this.store.getState().users.items['1'].projection.type).toEqual('RESOURCE_PROJECTION');
-              expect(this.store.getState().users.collections[''].projection.type).toEqual('RESOURCE_PROJECTION');
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('RESOURCE_PROJECTION');
             });
           });
         });
@@ -316,7 +317,7 @@ describe('projection:', function () {
             });
 
             it('then the collection\'s projection type is the value specified when defining the resource', function() {
-              expect(this.store.getState().users.collections[''].projection.type).toEqual('RESOURCE_PROJECTION');
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('RESOURCE_PROJECTION');
             });
           });
 
@@ -342,7 +343,7 @@ describe('projection:', function () {
             });
 
             it('then the collection\'s projection type is the value specified when defining the resource', function() {
-              expect(this.store.getState().users.collections[''].projection.type).toEqual('RESOURCE_PROJECTION');
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('RESOURCE_PROJECTION');
             });
           });
         });
@@ -369,7 +370,7 @@ describe('projection:', function () {
             });
 
             it('then uses the value passed to the action creator for the collection\'s projection type', function() {
-              expect(this.store.getState().users.collections[''].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
             });
           });
 
@@ -395,7 +396,7 @@ describe('projection:', function () {
 
             it('then uses the value passed to the action creator for the item and collection\'s projection type', function() {
               expect(this.store.getState().users.items['1'].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
-              expect(this.store.getState().users.collections[''].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
             });
           });
         });
@@ -420,7 +421,7 @@ describe('projection:', function () {
             });
 
             it('then uses the value passed to the action creator for the collection\'s projection type', function() {
-              expect(this.store.getState().users.collections[''].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
             });
           });
 
@@ -446,7 +447,7 @@ describe('projection:', function () {
             });
 
             it('then uses the value passed to the action creator for the collection\'s projection type', function() {
-              expect(this.store.getState().users.collections[''].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
             });
           });
         });

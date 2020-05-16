@@ -128,7 +128,7 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
     if (reducer) {
 
       /**
-       * Construct the correct reducer options, merging the those specified (in order of precedence):
+       * Construct the correct reducer options, merging those specified (in order of precedence):
        * - In the individual action definitions passed to the resource function ("Action options")
        * - Using the general options passed to the resources function ("Resource options"
        * - Using the configure function ("Global options")

@@ -1,10 +1,18 @@
-import buildStore from '../../helpers/buildStore';
 import { resources, SUCCESS } from '../../../index';
+import {
+  expectToNotChangeResourcesCollection,
+  expectToNotChangeResourcesItem,
+  expectToNotChangeSelectionMap, expectToChangeSelectionMapTo,
+  setupInitialState
+} from '../../helpers/resourceAssertions';
+import EmptyKey from '../../../constants/EmptyKey';
+
+const RESOURCE_NAME = 'users';
 
 describe('Clear selected reducer:', function () {
   beforeAll(function () {
     const { reducers, actionCreators: { clearSelectedUsers } } = resources({
-      name: 'users',
+      name: RESOURCE_NAME,
     }, {
       clearSelected: true
     });
@@ -12,7 +20,7 @@ describe('Clear selected reducer:', function () {
     this.clearSelectedUsers = clearSelectedUsers;
     this.reducers = reducers;
 
-    this.resourceBefore = {
+    this.initialState = {
       items: {
         1: {
           values: {
@@ -30,7 +38,7 @@ describe('Clear selected reducer:', function () {
         }
       },
       collections: {
-        '': {
+        [EmptyKey]: {
           positions: [ 1, 2 ],
           status: { type: null }
         }
@@ -42,47 +50,37 @@ describe('Clear selected reducer:', function () {
 
   describe('when there are no resources selected', function () {
     beforeAll(function() {
-      this.store = buildStore({
-        users: { ...this.resourceBefore, selectionMap: {} },
-      }, { users: this.reducers } );
+      this.initialState = { ...this.initialState, selectionMap: {} };
+
+      setupInitialState(this, RESOURCE_NAME, this.initialState);
 
       this.store.dispatch(this.clearSelectedUsers());
-
-      this.users = this.store.getState().users;
     });
 
     it('then does NOT change the selectionMap', function() {
-      expect(this.users.selectionMap).toEqual({});
+      expectToNotChangeSelectionMap(this, RESOURCE_NAME);
     });
   });
 
   describe('when there are resources selected', function () {
     beforeAll(function() {
-      this.store = buildStore({
-        users: { ...this.resourceBefore, selectionMap: { 1: true, 2: true }, },
-      }, { users: this.reducers } );
+      this.initialState = { ...this.initialState, selectionMap: { 1: true, 2: true } };
+
+      setupInitialState(this, RESOURCE_NAME, this.initialState);
 
       this.store.dispatch(this.clearSelectedUsers());
-
-      this.users = this.store.getState().users;
     });
 
     it('then clears the selectionMap', function() {
-      expect(this.users.selectionMap).toEqual({});
+      expectToChangeSelectionMapTo(this, RESOURCE_NAME, {});
     });
 
     it('then DOES NOT remove the selected resources', function() {
-      expect(this.users.items['1']).toEqual({
-        values: {
-          id: 1,
-          username: 'Bob',
-        },
-        status: { type: SUCCESS },
-      });
+      expectToNotChangeResourcesItem(this, RESOURCE_NAME, 1);
     });
 
     it('then DOES NOT remove the selected resources from collections', function() {
-      expect(this.users.collections[''].positions).toEqual([ 1, 2 ]);
+      expectToNotChangeResourcesCollection(this, RESOURCE_NAME, EmptyKey, 'positions', [ 1, 2 ]);
     });
   });
 });

@@ -18,6 +18,7 @@ import isUndefined from '../../utils/isUndefined';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
 import nop from '../../utils/function/nop';
+import EmptyKey from '../../constants/EmptyKey';
 
 const HTTP_REQUEST_TYPE = 'POST';
 
@@ -53,7 +54,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     projection,
     requestAdaptor,
     request = {}
-  } = options;
+, singular } = options;
 
 
   const normalizedParams = wrapInObject(params, keyBy);
@@ -67,9 +68,9 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
   }
 
   const key = function () {
-    const specifiedKey = getItemKey([normalizedParams, values], { keyBy });
+    const specifiedKey = getItemKey([normalizedParams, values], { keyBy, singular });
 
-    if (specifiedKey) {
+    if (specifiedKey || specifiedKey === EmptyKey) {
       return specifiedKey;
     } else {
 
@@ -169,12 +170,12 @@ function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOption
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function receiveCreatedResource(options, actionCreatorOptions, values) {
-  const { action, keyBy, transforms, params, collectionOperations, localOnly } = options;
+  const { action, keyBy, transforms, params, collectionOperations, localOnly, singular } = options;
 
   const key = function () {
     const normalizedParams = wrapInObject(params, keyBy);
 
-    const specifiedKey = getItemKey([values, normalizedParams], { keyBy });
+    const specifiedKey = getItemKey([values, normalizedParams], { keyBy, singular });
 
     if (isUndefined(specifiedKey)) {
       const actionCreatorName = getActionCreatorNameFrom(action);

@@ -1,5 +1,12 @@
-import buildStore from '../../helpers/buildStore';
-import { resources, NEW, SUCCESS } from '../../../index';
+import { resources, NEW, SUCCESS, RESOURCES } from '../../../index';
+import {
+  expectToChangeResourcesItemValuesTo,
+  expectToNotChangeResourcesItemStatus,
+  expectToNotChangeResourcesItemValues,
+  setupInitialState
+} from '../../helpers/resourceAssertions';
+
+const RESOURCE_NAME = 'users';
 
 describe('Edit new reducer:', function () {
   beforeAll(function () {
@@ -13,25 +20,15 @@ describe('Edit new reducer:', function () {
     this.editNewUser = editNewUser;
     this.reducers = reducers;
 
-    this.resourceBefore = {
-      collections: {},
-      selectionMap: { },
-      newItemKey: null
-    };
+    this.newValues = { username: 'Bob' };
   });
 
-  describe('Given there is no existing new resource item', function () {
+  describe('Given there is no existing new resource item', () => {
     describe('and the action creator is called with no params arguments', () => {
       beforeAll(function () {
-        this.store = buildStore({
-          users: { ...this.resourceBefore, items: {} }
-        }, {
-          users: this.reducers
-        });
-
         spyOn(console, 'warn');
 
-        this.store.dispatch(this.editNewUser({ username: 'Bob' }));
+        setupState(this, { ...RESOURCES }, this.newValues);
       });
 
       it('then warns about the missing item', function() {
@@ -43,15 +40,9 @@ describe('Edit new reducer:', function () {
 
     describe('and the action creator is called with a params arguments', () => {
       beforeAll(function () {
-        this.store = buildStore({
-          users: { ...this.resourceBefore, items: {} }
-        }, {
-          users: this.reducers
-        });
-
         spyOn(console, 'warn');
 
-        this.store.dispatch(this.editNewUser('temp', { username: 'Bob' }));
+        setupState(this, { ...RESOURCES }, 'temp', this.newValues);
       });
 
       it('then warns about the missing item', function() {
@@ -65,120 +56,87 @@ describe('Edit new reducer:', function () {
   describe('Given the editNew action creator is called with params', () => {
     describe('that match a resource item that is not new', () => {
       beforeAll(function () {
-        this.store = buildStore({
-          users: {
-            ...this.resourceBefore,
-            items: {
-              1: {
-                values: {
-                  username: 'Jane'
-                },
-                status: {
-                  type: SUCCESS
-                }
-              }
-            }
-          }
-        }, {
-          users: this.reducers
-        });
-
         spyOn(console, 'warn');
 
-        this.store.dispatch(this.editNewUser(1, { username: 'Bob' }));
+        this.id = 1;
+
+        setupState(this, getInitialState(this.id, SUCCESS), this.id, this.newValues);
       });
 
       it('then warns attempting to edit a resource item that is not NEW', function() {
         // eslint-disable-next-line no-console
         expect(console.warn).toHaveBeenCalledWith(
-          'Redux and the REST: EDIT_NEW_USER\'s key \'1\' matches a resource that is NOT new. Use a editUser() to edit existing items. Update ignored.');
+          `Redux and the REST: EDIT_NEW_USER\'s key \'${this.id}\' matches a resource that is NOT new. Use a editUser() to edit existing items. Update ignored.`);
       });
 
       it('then doesn\'t update the item', function() {
-        expect(this.store.getState().users.items['1']).toEqual({
-          values: {
-            username: 'Jane'
-          },
-          status: {
-            type: SUCCESS
-          }
-        });
+        expectToNotChangeResourcesItemStatus(this, RESOURCE_NAME, this.id);
+        expectToNotChangeResourcesItemValues(this, RESOURCE_NAME, this.id);
       });
     });
 
     describe('that match the new resource item', () => {
       beforeAll(function () {
-        this.store = buildStore({
-          users: {
-            ...this.resourceBefore,
-            items: {
-              temp: {
-                values: {
-                  username: 'Jane'
-                },
-                status: {
-                  type: NEW
-                }
-              }
-            },
-            newItemKey: 'temp'
-          }
-        }, {
-          users: this.reducers
-        });
+        this.id = 'temp';
 
-        this.store.dispatch(this.editNewUser('temp', { username: 'Bob' }));
+        setupState(this, getInitialState(this.id, NEW), this.id, this.newValues);
       });
 
       it('then updates the item\'s values', function() {
-        expect(this.store.getState().users.items.temp.values).toEqual({
-          username: 'Bob'
-        });
+        expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.id, this.newValues);
       });
 
       it('then leaves the item\'s status as NEW', function() {
-        expect(this.store.getState().users.items.temp.status).toEqual({
-          type: NEW
-        });
+        expectToNotChangeResourcesItemStatus(this, RESOURCE_NAME, this.id);
       });
     });
   });
 
   describe('Given the editNew action creator is called without a params argument,', () => {
     beforeAll(function () {
-      this.store = buildStore({
-        users: {
-          ...this.resourceBefore,
-          items: {
-            temp: {
-              values: {
-                username: 'Jane'
-              },
-              status: {
-                type: NEW
-              }
-            }
-          },
-          newItemKey: 'temp'
-        }
-      }, {
-        users: this.reducers
-      });
+      this.id = 'temp';
 
-      this.store.dispatch(this.editNewUser({ username: 'Bob' }));
+      setupState(this, getInitialState(this.id, NEW), this.newValues);
     });
 
     it('then updates the new item\'s values', function() {
-      expect(this.store.getState().users.items.temp.values).toEqual({
-        username: 'Bob'
-      });
+      expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.id, this.newValues);
     });
 
     it('then leaves the item\'s status as NEW', function() {
-      expect(this.store.getState().users.items.temp.status).toEqual({
-        type: NEW
-      });
+      expectToNotChangeResourcesItemStatus(this, RESOURCE_NAME, this.id, 'type');
     });
-
   });
+
+  function setupState(context, initialState, paramsOrNewValues, newValues = undefined) {
+    setupInitialState(context, RESOURCE_NAME, initialState);
+
+    if (newValues) {
+      context.store.dispatch(context.editNewUser(paramsOrNewValues, newValues));
+    } else {
+      context.store.dispatch(context.editNewUser(paramsOrNewValues));
+    }
+  }
+
+  function getInitialState(id, statusType) {
+    const base = {
+      ...RESOURCES,
+      items: {
+        [id]: {
+          values: {
+            username: 'Jane'
+          },
+          status: {
+            type: statusType
+          }
+        }
+      }
+    };
+
+    if (statusType === NEW) {
+      base.newItemKey = id;
+    }
+
+    return base;
+  }
 });

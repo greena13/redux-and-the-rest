@@ -3,6 +3,7 @@ import fetchMock from 'fetch-mock';
 import { resources, NEW, SUCCESS, RESOURCES } from '../../../index';
 import buildStore from '../../helpers/buildStore';
 import nop from '../../../utils/function/nop';
+import EmptyKey from '../../../constants/EmptyKey';
 
 describe('hasAndBelongsToMany:', function () {
   describe('when the association is many-to-one', function () {
@@ -35,7 +36,7 @@ describe('hasAndBelongsToMany:', function () {
             }
           },
           collections: {
-            '': {
+            [EmptyKey]: {
               positions: [ 1 ],
               status: { type: SUCCESS }
             }
@@ -412,7 +413,7 @@ describe('hasAndBelongsToMany:', function () {
             }
           },
           collections: {
-            '': {
+            [EmptyKey]: {
               positions: [ 1 ],
               status: { type: SUCCESS }
             }

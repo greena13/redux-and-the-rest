@@ -2,6 +2,7 @@ import fetchMock from 'fetch-mock';
 
 import { resources, NEW, SUCCESS, RESOURCES } from '../../index';
 import buildStore from '../helpers/buildStore';
+import EmptyKey from '../../constants/EmptyKey';
 
 describe('clearOn:', function () {
   beforeAll(function () {
@@ -24,7 +25,7 @@ describe('clearOn:', function () {
           }
         },
         collections: {
-          '': {
+          [EmptyKey]: {
             positions: [ 1 ],
             status: { type: SUCCESS }
           }

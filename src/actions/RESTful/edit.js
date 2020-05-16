@@ -23,15 +23,16 @@ import wrapInObject from '../../utils/object/wrapInObject';
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator(options, params, values, actionCreatorOptions = {}) {
-  const { action, transforms, keyBy } = options;
+  const { action, transforms, keyBy, singular } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
-  const key = getItemKey(normalizedParams, { keyBy });
+  const key = getItemKey(normalizedParams, { keyBy, singular });
 
   return {
     type: action,
     status: EDITING,
     key,
+    singular,
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
       values,
@@ -52,7 +53,7 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources, action) {
-  const { type, key, item } = action;
+  const { type, key, item, singular } = action;
   const { items } = resources;
 
   /**
@@ -62,11 +63,19 @@ function reducer(resources, action) {
     if (!items[key]) {
       const actionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'new' });
 
-      warn(
-        `${type}'s key '${key}' does not match any items in the store. Use ${actionCreatorName}() to create ` +
-        `a new item or check the arguments passed to ${getActionCreatorNameFrom(type)}(). (A new item was ` +
-        'created to contain the edit.)'
-      );
+      if (singular) {
+        warn(
+          `Use ${actionCreatorName}() to create ` +
+          `a new item or check the arguments passed to ${getActionCreatorNameFrom(type)}(). (A new item was ` +
+          'created to contain the edit.)'
+        );
+      } else {
+        warn(
+          `${type}'s key '${key}' does not match any items in the store. Use ${actionCreatorName}() to create ` +
+          `a new item or check the arguments passed to ${getActionCreatorNameFrom(type)}(). (A new item was ` +
+          'created to contain the edit.)'
+        );
+      }
     }
   });
 
@@ -76,10 +85,16 @@ function reducer(resources, action) {
     assertInDevMode(() => {
       const actionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'editNew' });
 
-      warn(
-        `${type}'s key '${key}' matches a NEW item. Use a ${actionCreatorName}() to edit ` +
-        'new items that have not yet been saved to an external API. Update ignored.'
-      );
+      if (singular) {
+        warn(
+          `Use a ${actionCreatorName}() to edit new items that have not yet been saved to an external API. Update ignored.`
+        );
+      } else {
+        warn(
+          `${type}'s key '${key}' matches a NEW item. Use a ${actionCreatorName}() to edit ` +
+          'new items that have not yet been saved to an external API. Update ignored.'
+        );
+      }
     });
 
     return resources;

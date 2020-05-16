@@ -1,10 +1,19 @@
 import fetchMock from 'fetch-mock';
-import buildStore from '../../helpers/buildStore';
 import { resources, ERROR, FETCHING, SUCCESS, RESOURCES } from '../../../index';
 import nop from '../../../utils/function/nop';
+import {
+  expectToChangeResourcesItemStatusErrorOccurredAtToBeSet,
+  expectToChangeResourcesItemStatusTo,
+  expectToChangeResourcesItemValuesTo,
+  expectToNotChangeResourcesItemValues,
+  resourcesDefinition,
+  setupInitialState
+} from '../../helpers/resourceAssertions';
+
+const RESOURCE_NAME = 'users';
 
 describe('Show reducers:', function () {
-  describe('when the keyBy option is a string', function () {
+  describe('Given the keyBy option passed to resources is a string', function () {
     beforeAll(function() {
       const { reducers, actionCreators: { fetchUser } } = resources({
         name: 'users',
@@ -18,142 +27,25 @@ describe('Show reducers:', function () {
       this.reducers = reducers;
     });
 
-    describe('when no actions have come before it', () => {
-      [
-        {
-          idArgsDescription: 'and only the item\'s id is passed to the action creator',
-          idArgs: 1
-        },
-        {
-          idArgsDescription: 'and the item\'s id is passed as an object to the action creator',
-          idArgs: { id: 1 }
-        }
-      ].forEach(({ idArgsDescription, idArgs }) => {
-        describe(idArgsDescription, () => {
-          describe('and the API request succeeds', function() {
-            describe('before the request has completed', function () {
-              beforeAll(function () {
-                fetchMock.get('http://test.com/users/1', new Promise(nop));
+    describe('Given no actions have come before it', () => {
+      beforeAll(function () {
+        this.url = 'http://test.com/users/1';
+      });
 
-                this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
-                this.store.dispatch(this.fetchUser(idArgs));
-              });
+      describe('When only the item\'s id is passed to the action creator', () => {
+        expectToHandleSuccessAndFailure(this.url, 1, 1);
+      });
 
-              afterAll(function() {
-                fetchMock.restore();
-                this.store = null;
-              });
-
-              it('then adds a new item with a status of FETCHING', function() {
-                expect(this.store.getState().users.items['1'].status.type).toEqual(FETCHING);
-              });
-
-              it('then adds a new item with empty values', function() {
-                expect(this.store.getState().users.items['1'].values).toEqual({});
-              });
-
-              it('then does NOT add the item to the default collection', function() {
-                expect(this.store.getState().users.collections).toEqual({});
-              });
-            });
-
-            describe('when the request has completed', function () {
-              beforeAll(function () {
-                fetchMock.get('http://test.com/users/1', {
-                  body: { id: 1, username: 'Bob' },
-                });
-
-                this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
-                this.store.dispatch(this.fetchUser(idArgs));
-              });
-
-              afterAll(function() {
-                fetchMock.restore();
-                this.store = null;
-              });
-
-              it('then changes the items\'s status type to SUCCESS', function() {
-                expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
-              });
-
-              it('then sets the item\'s values from the response', function() {
-                expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Bob' });
-              });
-            });
-          });
-
-          describe('when the API request errors', function() {
-            describe('before the request has completed', function () {
-              beforeAll(function () {
-                fetchMock.get('http://test.com/users/1', new Promise(nop));
-
-                this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
-                this.store.dispatch(this.fetchUser(idArgs));
-              });
-
-              afterAll(function() {
-                fetchMock.restore();
-                this.store = null;
-              });
-
-              it('then adds a new item with a status of FETCHING', function() {
-                expect(this.store.getState().users.items['1'].status.type).toEqual(FETCHING);
-              });
-
-              it('then adds a new item with empty values', function() {
-                expect(this.store.getState().users.items['1'].values).toEqual({});
-              });
-
-              it('then does NOT add the item to the default collection', function() {
-                expect(this.store.getState().users.collections).toEqual({});
-              });
-            });
-
-            describe('when the request has completed', function () {
-              beforeAll(function () {
-                fetchMock.get('http://test.com/users/1', {
-                  body: { error: 'Not Found' },
-                  status: 404
-                });
-
-                this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
-                this.store.dispatch(this.fetchUser(idArgs));
-              });
-
-              afterAll(function() {
-                fetchMock.restore();
-                this.store = null;
-              });
-
-              it('then changes the items\'s status type to ERROR', function() {
-                expect(this.store.getState().users.items['1'].status.type).toEqual(ERROR);
-              });
-
-              it('then sets the syncedAt attribute', function() {
-                expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
-              });
-
-              it('then updates the item\'s status httpCode', function() {
-                expect(this.store.getState().users.items['1'].status.httpCode).toEqual(404);
-              });
-
-              it('then sets the item\'s status error from the response', function() {
-                expect(this.store.getState().users.items['1'].status.error.message).toEqual('Not Found');
-              });
-
-              it('then does NOT set the item\'s values from the response', function() {
-                expect(this.store.getState().users.items['1'].values).toEqual({ });
-              });
-            });
-          });
-        });
+      describe('When the item\'s id is passed as an object to the action creator', () => {
+        expectToHandleSuccessAndFailure(this.url, 1, { id: 1 });
       });
     });
 
-    describe('when another show action has come before it', function () {
+    describe('and another show action has come before it', function () {
       beforeAll(function () {
+        this.url = 'http://test.com/users/1';
+
         this.resourceBefore = {
-          ...RESOURCES,
           items: {
             1: {
               values: {
@@ -164,136 +56,47 @@ describe('Show reducers:', function () {
             }
           }
         };
+
+        this.itemId = 1;
       });
 
-      describe('and the API request succeeds', () => {
-        describe('before the request has completed', function () {
-          beforeAll(function () {
-            fetchMock.get('http://test.com/users/1', new Promise(nop));
-
-            this.store = buildStore({
-              users: this.resourceBefore
-            }, { users: this.reducers } );
-
-            this.store.dispatch(this.fetchUser(1));
-          });
-
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
-
-          it('then sets the status of the item to FETCHING', function() {
-            expect(this.store.getState().users.items['1'].status.type).toEqual(FETCHING);
-          });
-
-          it('then does NOT clear the item\'s values', function() {
-            expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Bob' });
-          });
-
-          it('then does NOT add the item to the default collection', function() {
-            expect(this.store.getState().users.collections).toEqual({});
-          });
+      describe('before the request has completed', function () {
+        beforeAll(function () {
+          setUpBeforeRequest(this, { ...RESOURCES, ...this.resourceBefore }, this.url, 1);
         });
 
-        describe('when the request has completed', function () {
-          beforeAll(function () {
-            fetchMock.get('http://test.com/users/1', {
-              body: { id: 1, username: 'Robert' },
-            });
+        afterAll(function () {
+          tearDown(this);
+        });
 
-            this.store = buildStore({
-              users: this.resourceBefore
-            }, { users: this.reducers } );
+        it('then sets the status of the item to FETCHING', function() {
+          expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'type', FETCHING);
+        });
 
-            this.store.dispatch(this.fetchUser(1));
-          });
+        it('then does NOT clear the item\'s values', function() {
+          expectToNotChangeResourcesItemValues(this, RESOURCE_NAME, this.itemId);
+        });
 
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
-
-          it('then changes the items\'s status type to SUCCESS', function() {
-            expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
-          });
-
-          it('then sets the item\'s values from the response', function() {
-            expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Robert' });
-          });
+        it('then does NOT add the item to the default collection', function() {
+          expect(resourcesDefinition(this, RESOURCE_NAME).collections).toEqual({});
         });
       });
 
-      describe('when the API request errors', function() {
-        describe('before the request has completed', function () {
-          beforeAll(function () {
-            fetchMock.get('http://test.com/users/1', new Promise(nop));
-
-            this.store = buildStore({
-              users: this.resourceBefore
-            }, { users: this.reducers } );
-
-            this.store.dispatch(this.fetchUser(1));
-          });
-
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
-
-          it('then sets the status of the item to FETCHING', function() {
-            expect(this.store.getState().users.items['1'].status.type).toEqual(FETCHING);
-          });
-
-          it('then does NOT clear the item\'s values', function() {
-            expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Bob' });
-          });
-
-          it('then does NOT add the item to the default collection', function() {
-            expect(this.store.getState().users.collections).toEqual({});
-          });
-        });
-
-        describe('when the request has completed', function () {
-          beforeAll(function () {
-            fetchMock.get('http://test.com/users/1', {
-              body: { error: 'Not Found' },
-              status: 404
-            });
-
-            this.store = buildStore({
-              users: this.resourceBefore
-            }, { users: this.reducers } );
-
-            this.store.dispatch(this.fetchUser(1));
-          });
-
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
-
-          it('then changes the items\'s status type to ERROR', function() {
-            expect(this.store.getState().users.items['1'].status.type).toEqual(ERROR);
-          });
-
-          it('then updates the item\'s status httpCode', function() {
-            expect(this.store.getState().users.items['1'].status.httpCode).toEqual(404);
-          });
-
-          it('then sets the syncedAt attribute', function() {
-            expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
-          });
-
-          it('then sets the item\'s status error from the response', function() {
-            expect(this.store.getState().users.items['1'].status.error.message).toEqual('Not Found');
-          });
-
-          it('then does NOT set the item\'s values from the response', function() {
-            expect(this.store.getState().users.items['1'].values).toEqual({ id: 1, username: 'Bob' });
-          });
-        });
+      describe('When the API request succeeds', () => {
+        expectToMergeInResponseBody(this.url, 1, 1, { ...RESOURCES, ...this.resourceBefore });
       });
+
+      describe('when the API request errors', () => {
+        expectToMergeInError(this.url, 1, 1, { ...RESOURCES, ...this.resourceBefore });
+      });
+    });
+
+    describe('Given a show action that will succeed with a response that specifies \'errors\' at the top level', () => {
+      expectToMergeInMultipleErrors(1, { body: { errors: ['Not Found'] }, status: 200 });
+    });
+
+    describe('Given a show action that will fail with a response that specifies \'errors\' at the top level', () => {
+      expectToMergeInMultipleErrors(1, { body: { errors: ['Not Found'] }, status: 400 });
     });
   });
 
@@ -311,215 +114,160 @@ describe('Show reducers:', function () {
       this.reducers = reducers;
     });
 
-    describe('and the API request succeeds', function() {
-      describe('before the request has completed', function () {
-        beforeAll(function () {
-          fetchMock.get('http://test.com/groups/1/users/1', new Promise(nop));
-
-          this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
-          this.store.dispatch(this.fetchUser({ id: 1, groupId: 1 }));
-        });
-
-        afterAll(function() {
-          fetchMock.restore();
-          this.store = null;
-        });
-
-        it('then adds a new item with a status of FETCHING', function() {
-          expect(this.store.getState().users.items['groupId=1.id=1'].status.type).toEqual(FETCHING);
-        });
-
-        it('then adds a new item with empty values', function() {
-          expect(this.store.getState().users.items['groupId=1.id=1'].values).toEqual({});
-        });
-
-        it('then does NOT add the item to the default collection', function() {
-          expect(this.store.getState().users.collections).toEqual({});
-        });
-      });
-
-      describe('when the request has completed', function () {
-        beforeAll(function () {
-          fetchMock.get('http://test.com/groups/1/users/1', {
-                body: { id: 1, username: 'Bob' },
-          });
-
-          this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
-          this.store.dispatch(this.fetchUser({ id: 1, groupId: 1 }));
-        });
-
-        afterAll(function() {
-          fetchMock.restore();
-          this.store = null;
-        });
-
-        it('then changes the items\'s status type to SUCCESS', function() {
-          expect(this.store.getState().users.items['groupId=1.id=1'].status.type).toEqual(SUCCESS);
-        });
-
-        it('then sets the item\'s values from the response', function() {
-          expect(this.store.getState().users.items['groupId=1.id=1'].values).toEqual({ id: 1, username: 'Bob' });
-        });
-      });
-    });
-
-    describe('and the API request errors', function() {
-      describe('before the request has completed', function () {
-        beforeAll(function () {
-          fetchMock.get('http://test.com/groups/1/users/1', new Promise(nop));
-
-          this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
-          this.store.dispatch(this.fetchUser({ id: 1, groupId: 1 }));
-        });
-
-        afterAll(function() {
-          fetchMock.restore();
-          this.store = null;
-        });
-
-        it('then adds a new item with a status of FETCHING', function() {
-          expect(this.store.getState().users.items['groupId=1.id=1'].status.type).toEqual(FETCHING);
-        });
-
-        it('then adds a new item with empty values', function() {
-          expect(this.store.getState().users.items['groupId=1.id=1'].values).toEqual({});
-        });
-
-        it('then does NOT add the item to the default collection', function() {
-          expect(this.store.getState().users.collections).toEqual({});
-        });
-      });
-
-      describe('and the request has completed', function () {
-        beforeAll(function () {
-          fetchMock.get('http://test.com/groups/1/users/1', {
-            body: { error: 'Not Found' },
-            status: 404
-          });
-
-          this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
-          this.store.dispatch(this.fetchUser({ id: 1, groupId: 1 }));
-        });
-
-        afterAll(function() {
-          fetchMock.restore();
-          this.store = null;
-        });
-
-        it('then changes the items\'s status type to ERROR', function() {
-          expect(this.store.getState().users.items['groupId=1.id=1'].status.type).toEqual(ERROR);
-        });
-
-        it('then sets the syncedAt attribute', function() {
-          expect(this.store.getState().users.items['groupId=1.id=1'].status.errorOccurredAt).not.toBeUndefined();
-        });
-
-        it('then updates the item\'s status httpCode', function() {
-          expect(this.store.getState().users.items['groupId=1.id=1'].status.httpCode).toEqual(404);
-        });
-
-        it('then sets the item\'s status error from the response', function() {
-          expect(this.store.getState().users.items['groupId=1.id=1'].status.error.message).toEqual('Not Found');
-        });
-
-        it('then does NOT set the item\'s values from the response', function() {
-          expect(this.store.getState().users.items['groupId=1.id=1'].values).toEqual({ });
-        });
-      });
-    });
+    expectToHandleSuccessAndFailure('http://test.com/groups/1/users/1', 'groupId=1.id=1', { id: 1, groupId: 1 });
   });
 
-  describe('Given a show action that will succeed with a response that specifies \'errors\' at the top level', () => {
+  function expectToHandleSuccessAndFailure(url, id, params) {
+    describe('before the request has completed', function () {
+      expectToSetFetchingState(url, id, params);
+    });
+
+    describe('and the API request succeeds', function () {
+      expectToMergeInResponseBody(url, id, params, { ...RESOURCES });
+    });
+
+    describe('when the API request errors', function () {
+      expectToMergeInError(url, id, params, { ...RESOURCES });
+    });
+  }
+
+  function expectToSetFetchingState(url, id, params) {
+    beforeAll(function () {
+      setUpBeforeRequest(this, { ...RESOURCES }, url, params);
+    });
+
+    afterAll(function () {
+      tearDown(this);
+    });
+
+    it('then adds a new item with a status of FETCHING', function () {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, id, 'type', FETCHING);
+    });
+
+    it('then adds a new item with empty values', function () {
+      expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, id, {});
+    });
+
+    it('then does NOT add the item to the default collection', function () {
+      expect(resourcesDefinition(this, RESOURCE_NAME).collections).toEqual({});
+    });
+  }
+
+  function expectToMergeInResponseBody(url, id, params, initialState) {
+    beforeAll(function () {
+      this.newValues = { id: 1, username: 'Bob' };
+
+      setUpAfterRequestSuccess(this, initialState, url, params, {
+        body: this.newValues,
+      });
+    });
+
+    afterAll(function () {
+      tearDown(this);
+    });
+
+    it('then changes the items\'s status type to SUCCESS', function () {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, id, 'type', SUCCESS);
+    });
+
+    it('then sets the item\'s values from the response', function () {
+      expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, id, this.newValues);
+    });
+  }
+
+  function expectToMergeInError(url, id, params, initialState) {
+    beforeAll(function () {
+      this.options = {
+        body: { error: 'Not Found' },
+        status: 404
+      };
+
+      setUpAfterRequestFailure(this, initialState, url, params, this.options);
+    });
+
+    afterAll(function () {
+      tearDown(this);
+    });
+
+    it('then changes the items\'s status type to ERROR', function () {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, id, 'type', ERROR);
+    });
+
+    it('then sets the syncedAt attribute', function () {
+      expectToChangeResourcesItemStatusErrorOccurredAtToBeSet(this, RESOURCE_NAME, id);
+    });
+
+    it('then updates the item\'s status httpCode', function () {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, id, 'httpCode', 404);
+    });
+
+    it('then sets the item\'s status error from the response', function () {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, id, 'error', { message: this.options.body.error });
+    });
+
+    it('then does NOT set the item\'s values from the response', function () {
+      expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, id, {});
+    });
+  }
+
+  function expectToMergeInMultipleErrors(itemId, options) {
     describe('when the request has completed', function () {
       beforeAll(function () {
-        const { reducers, actionCreators: { fetchUser } } = resources({
-          name: 'users',
-          url: 'http://test.com/users/:id?',
-          keyBy: 'id',
-        }, {
-          show: true
-        });
-
-        this.fetchUser = fetchUser;
-        this.reducers = reducers;
-
-        fetchMock.get('http://test.com/users/1', {
-          body: { errors: ['Not Found'] },
-          status: 200
-        });
-
-        this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
-        this.store.dispatch(this.fetchUser(1));
+        setUpAfterRequestFailure(this, { ...RESOURCES }, 'http://test.com/users/1', itemId, options);
       });
 
-      afterAll(function() {
-        fetchMock.restore();
-        this.store = null;
+      afterAll(function () {
+        tearDown(this);
       });
 
-      it('then changes the items\'s status type to ERROR', function() {
-        expect(this.store.getState().users.items['1'].status.type).toEqual(ERROR);
+      it('then changes the items\'s status type to ERROR', function () {
+        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, itemId, 'type', ERROR);
       });
 
-      it('then sets the syncedAt attribute', function() {
-        expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
+      it('then sets the syncedAt attribute', function () {
+        expectToChangeResourcesItemStatusErrorOccurredAtToBeSet(this, RESOURCE_NAME, itemId);
       });
 
-      it('then updates the item\'s status httpCode', function() {
-        expect(this.store.getState().users.items['1'].status.httpCode).toEqual(200);
+      it('then updates the item\'s status httpCode', function () {
+        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, itemId, 'httpCode', options.status);
       });
 
-      it('then sets the item\'s status error from the response', function() {
-        expect(this.store.getState().users.items['1'].status.error).toEqual('Not Found');
-        expect(this.store.getState().users.items['1'].status.errors[0]).toEqual('Not Found');
+      it('then sets the item\'s status error from the response', function () {
+        const { body: { errors } } = options;
+        const [errorMessage] = errors;
+
+        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, itemId, 'error', errorMessage);
+        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, itemId, 'errors', [errorMessage]);
       });
     });
-  });
+  }
 
-  describe('Given a show action that will fail with a response that specifies \'errors\' at the top level', () => {
-    describe('when the request has completed', function () {
-      beforeAll(function () {
-        const { reducers, actionCreators: { fetchUser } } = resources({
-          name: 'users',
-          url: 'http://test.com/users/:id?',
-          keyBy: 'id',
-        }, {
-          show: true
-        });
+  function setUpBeforeRequest(context, initialState, url, params) {
+    fetchMock.get(url, new Promise(nop));
 
-        this.fetchUser = fetchUser;
-        this.reducers = reducers;
+    setupState(context, initialState, params);
+  }
 
-        fetchMock.get('http://test.com/users/1', {
-          body: { errors: ['Not Found'] },
-          status: 404
-        });
+  function setUpAfterRequestSuccess(context, initialState, url, params, options = { body: {} }) {
+    fetchMock.get(url, options);
 
-        this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
-        this.store.dispatch(this.fetchUser(1));
-      });
+    setupState(context, initialState, params);
+  }
 
-      afterAll(function() {
-        fetchMock.restore();
-        this.store = null;
-      });
+  function setUpAfterRequestFailure(context, initialState, url, params, options = { body: { error: 'Not Found' }, status: 404 }) {
+    fetchMock.get(url, options);
 
-      it('then changes the items\'s status type to ERROR', function() {
-        expect(this.store.getState().users.items['1'].status.type).toEqual(ERROR);
-      });
+    setupState(context, initialState, params);
+  }
 
-      it('then sets the syncedAt attribute', function() {
-        expect(this.store.getState().users.items['1'].status.errorOccurredAt).not.toBeUndefined();
-      });
+  function setupState(context, initialState, params) {
+    setupInitialState(context, RESOURCE_NAME, initialState);
 
-      it('then updates the item\'s status httpCode', function() {
-        expect(this.store.getState().users.items['1'].status.httpCode).toEqual(404);
-      });
+    context.store.dispatch(context.fetchUser(params));
+  }
 
-      it('then sets the item\'s status error from the response', function() {
-        expect(this.store.getState().users.items['1'].status.error).toEqual('Not Found');
-        expect(this.store.getState().users.items['1'].status.errors[0]).toEqual('Not Found');
-      });
-    });
-  });
+  function tearDown(context) {
+    fetchMock.restore();
+    context.store = null;
+  }
 });

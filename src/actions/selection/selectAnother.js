@@ -15,9 +15,9 @@ import wrapInObject from '../../utils/object/wrapInObject';
  * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function actionCreator({ action, keyBy }, params, actionCreatorOptions = {}) {
+function actionCreator({ action, keyBy, singular }, params, actionCreatorOptions = {}) {
   const normalizedParams = wrapInObject(params, keyBy);
-  const key = getItemKey(normalizedParams, { keyBy });
+  const key = getItemKey(normalizedParams, { keyBy, singular });
 
   return {
     type: action, key, value: actionCreatorOptions.value || true

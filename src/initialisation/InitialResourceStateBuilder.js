@@ -53,7 +53,7 @@ class InitialResourceStateBuilder extends InitialStateBuilder {
   addItem(paramsOrValues, optionalValues) {
     const { values, params = {} } = extractVariableArguments(['params', 'values'], [paramsOrValues, optionalValues]);
 
-    const key = getItemKey([params, values], { keyBy: this.options.keyBy });
+    const key = getItemKey([params, values], { keyBy: this.options.keyBy, singular: this.options.singular });
 
     const itemStateBuilder = new InitialItemStateBuilder(this.options, values);
 

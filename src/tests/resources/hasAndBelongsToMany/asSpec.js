@@ -3,6 +3,7 @@ import fetchMock from 'fetch-mock';
 import { resources, RESOURCES, SUCCESS } from '../../../index';
 import buildStore from '../../helpers/buildStore';
 import nop from '../../../utils/function/nop';
+import EmptyKey from '../../../constants/EmptyKey';
 
 describe('hasAndBelongsToMany:', function () {
   describe('when the \'as\' option is used', function () {
@@ -20,7 +21,7 @@ describe('hasAndBelongsToMany:', function () {
             },
           },
           collections: {
-            '': {
+            [EmptyKey]: {
               positions: [ 1 ],
               status: { type: SUCCESS }
             }

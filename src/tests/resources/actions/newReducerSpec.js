@@ -1,8 +1,19 @@
-import buildStore from '../../helpers/buildStore';
 import {
   resources,
-  CREATING, DESTROY_ERROR, DESTROYING, EDITING, ERROR, NEW, SUCCESS, UPDATING
+  CREATING, DESTROY_ERROR, DESTROYING, EDITING, ERROR, NEW, SUCCESS, UPDATING, RESOURCES
 } from '../../../index';
+import {
+  expectToChangeNewItemKeyTo, expectToChangeResourceCollectionPositionsTo,
+  expectToChangeResourcesItemStatusTo,
+  expectToChangeResourcesItemValuesTo, expectToNotChangeResourceCollectionPositions,
+  expectToNotChangeResourcesItemStatus,
+  expectToNotChangeResourcesItemValues,
+  resourcesDefinition,
+  setupInitialState
+} from '../../helpers/resourceAssertions';
+import EmptyKey from '../../../constants/EmptyKey';
+
+const RESOURCE_NAME = 'users';
 
 describe('New reducer:', () => {
   beforeAll(function () {
@@ -15,381 +26,262 @@ describe('New reducer:', () => {
 
     this.newUser = newUser;
     this.reducers = reducers;
-
-    this.resourceBefore = {
-      items: {},
-      collections: {},
-      selectionMap: { },
-      newItemKey: null
-    };
-
   });
 
-  describe('when there is NOT already a new item', () => {
-    [
-      {
-        idArgsDescription: 'and only the item\'s id is passed to the action creator',
-        idArgs: 'temp'
-      },
-      {
-        idArgsDescription: 'and the item\'s id is passed as an object to the action creator',
-        idArgs: { id: 'temp' }
+  describe('Given there is NOT already a new item', () => {
+    describe('When only the item\'s id is passed to the action creator', () => {
+      expectToAddNewItem('temp');
+    });
+
+    describe('When the item\'s id is passed as an object to the action creator', () => {
+      expectToAddNewItem({ id: 'temp' });
+    });
+  });
+
+  describe('Given newItemKey already points to a resource with a status of NEW', () => {
+    expectToChangeNewItem(NEW);
+  });
+
+  describe('Given newItemKey already points to a resource with a status of EDITING', () => {
+    expectToChangeNewItem(EDITING);
+  });
+
+  describe('Given newItemKey already points to a resource with a status of CREATING', () => {
+    expectToChangeNewItem(CREATING);
+  });
+
+  describe('Given newItemKey already points to a resource with a status of ERROR', () => {
+    expectToChangeNewItem(ERROR);
+  });
+
+  describe('Given there is already an item with the same key with a status of SUCCESS', function () {
+     expectToChangeToNewItem(SUCCESS);
+  });
+
+  describe('Given there is already an item with the same key with a status of EDITING', function () {
+     expectToChangeToNewItem(EDITING);
+  });
+
+  describe('Given there is already an item with the same key with a status of UPDATING', function () {
+     expectToChangeToNewItem(UPDATING);
+  });
+
+  describe('Given there is already an item with the same key with a status of ERROR', function () {
+     expectToChangeToNewItem(ERROR);
+  });
+
+  describe('Given there is already an item with the same key with a status of DESTROYING', function () {
+     expectToChangeToNewItem(DESTROYING);
+  });
+
+  describe('Given there is already an item with the same key with a status of DESTROY_ERROR', function () {
+     expectToChangeToNewItem(DESTROY_ERROR);
+  });
+
+  describe('when the push collections operator is used', () => {
+    expectToAddNewItemToCollectionsPositions('push', [1], [2, 1]);
+  });
+
+  describe('when the unshift collections operator is used', () => {
+    expectToAddNewItemToCollectionsPositions('unshift', [1], [1, 2]);
+  });
+
+  describe('when the invalidate collections operator is used', () => {
+    expectToAddNewItemToCollectionsPositions('invalidate', [], []);
+  });
+
+  function expectToAddNewItem(params) {
+    beforeAll(function () {
+      this.id = 'temp';
+      this.newValues = { username: 'Jill', };
+
+      setupState(this, { ...RESOURCES }, params, this.newValues);
+    });
+
+    it('then adds the new item', function () {
+      expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.id, this.newValues);
+    });
+
+    it('then sets the status type of the new item to NEW', function () {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.id, 'type', NEW);
+    });
+
+    it('then sets the newItemKey', function () {
+      expectToChangeNewItemKeyTo(this, RESOURCE_NAME, this.id);
+    });
+
+    it('then does NOT add the key of the new item to the default collection', function () {
+      expect(resourcesDefinition(this, RESOURCE_NAME).collections).toEqual({});
+    });
+  }
+
+  function expectToChangeNewItem(status) {
+    beforeAll(function () {
+      this.previousItemId = 'previous';
+      this.id = 'temp';
+      this.newValues = { username: 'Jill', };
+
+      spyOn(console, 'warn');
+
+      setupState(this, {
+        ...RESOURCES,
+        items: {
+          [this.previousItemId]: {
+            values: { username: 'Bob' },
+            status: { type: status }
+          }
+        },
+        newItemKey: this.previousItemId,
+        collections: {
+          [EmptyKey]: {
+            positions: [ this.previousItemId ]
+          }
+        } }, this.id, this.newValues);
+    });
+
+    it('then DOES NOT warn about the existing new record', function() {
+      // eslint-disable-next-line no-console
+      expect(console.warn).not.toHaveBeenCalled();
+    });
+
+    it('then DOES NOT change the values of the previous item', function() {
+      expectToNotChangeResourcesItemValues(this, RESOURCE_NAME, this.previousItemId);
+      expectToNotChangeResourcesItemStatus(this, RESOURCE_NAME, this.previousItemId);
+    });
+
+    it('then adds the new item', function() {
+      expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.id, this.newValues);
+    });
+
+    it('then sets the new item\'s status type to NEW', function() {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.id, 'type', NEW);
+    });
+
+    it('then does NOT add the key of the new item to the default collection', function() {
+      expectToNotChangeResourceCollectionPositions(this, RESOURCE_NAME, EmptyKey);
+    });
+  }
+
+  function expectToChangeToNewItem(status) {
+    beforeAll(function () {
+      this.previousItemId = 'previous';
+      this.id = 'temp';
+      this.newValues = { username: 'Jill' };
+
+      const initialState = {
+        ...RESOURCES,
+        items: {
+          [this.id]: {
+            values: { username: 'Bob' },
+            status: { type: status }
+          }
+        },
+        collections: {
+          [EmptyKey]: {
+            positions: [ this.id ]
+          }
+        } };
+
+      if (status === NEW) {
+        initialState.newItemKey = this.id;
       }
-    ].forEach(({ idArgsDescription, idArgs }) => {
-      describe(idArgsDescription, () => {
-        beforeAll(function () {
-          this.store = buildStore({
-              users: {
-                ...this.resourceBefore,
-                items: {},
-                newItemKey: null,
-              }
-            },
-            { users: this.reducers }
-          );
 
-          this.store.dispatch(this.newUser(idArgs, {
-            username: 'Jill',
-          }));
+      spyOn(console, 'warn');
 
-          this.users = this.store.getState().users;
-        });
-
-        it('then adds the new item', function() {
-          expect(this.users.items.temp.values).toEqual({ username: 'Jill' });
-        });
-
-        it('then sets the status type of the new item to NEW', function() {
-          expect(this.users.items.temp.status.type).toEqual(NEW);
-        });
-
-        it('then sets the newItemKey', function() {
-          expect(this.users.newItemKey).toEqual('temp');
-        });
-
-        it('then does NOT add the key of the new item to the default collection', function() {
-          expect(this.users.collections).toEqual({});
-        });
-      });
-    });
-  });
-
-  describe('when newItemKey already points to a resource', () => {
-    [
-      {
-        description: 'with a status of NEW',
-        status: { type: NEW },
-      },
-      {
-        description: 'with a status of EDITING',
-        status: { type: EDITING },
-      },
-      {
-        description: 'with a status of CREATING',
-        status: { type: CREATING },
-      },
-      {
-        description: 'with a status of ERROR',
-        status: { type: ERROR },
-      },
-    ].forEach(({ description, status }) => {
-
-      describe(description, function() {
-
-        beforeAll(function () {
-          this.store = buildStore({
-              users: {
-                ...this.resourceBefore,
-                items: {
-                  temp: {
-                    values: { username: 'Bob' },
-                    status
-                  }
-                },
-                newItemKey: 'temp',
-                collections: {
-                  '': {
-                    positions: [ 'temp' ]
-                  }
-                }
-              }
-            },
-            { users: this.reducers }
-          );
-
-          spyOn(console, 'warn');
-
-          this.store.dispatch(this.newUser('temp', {
-            username: 'Jill',
-          }));
-
-          this.users = this.store.getState().users;
-        });
-
-        it('then warns about the existing new record with the same key', function() {
-          // eslint-disable-next-line no-console
-          expect(console.warn).toHaveBeenCalledWith(
-            'Redux and the REST: \'NEW_USER\' has same key \'temp\' as the previous new item, which has not finished saving to the server. If you wish to create new items before the previous ones have finished saving, ensure you use unique temporary keys. If you want to discard the previous item, use the clearNewUser() action. (Previous item was overridden with new values.)'
-          );
-        });
-
-        it('then changes the values of then new item', function() {
-          expect(this.users.items.temp.values).toEqual({ username: 'Jill' });
-        });
-
-        it('then sets the item\'s status type to NEW', function() {
-          expect(this.users.items.temp.status.type).toEqual(NEW);
-        });
-
-        it('then does NOT add the key of the new item to the default collection', function() {
-          expect(this.users.collections[''].positions).toEqual([ 'temp' ]);
-        });
-      });
+      setupState(this, initialState, this.id, this.newValues);
     });
 
-    describe('with a different key', function () {
+    it('then warns about the existing record with the same key', function() {
+      // eslint-disable-next-line no-console
+      expect(console.warn).toHaveBeenCalledWith(
+        `Redux and the REST: \'NEW_USER\' has same key \'${this.id}\' as existing item, use editUser() to update it instead, or clearNewUser() if you want to discard the previous values. (Previous item was overridden with new values.)`
+      );
+    });
+
+    it('then changes the values of then existing item', function() {
+      expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.id, this.newValues);
+    });
+
+    it('then sets the item\'s status type to NEW', function() {
+      expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.id, 'type', NEW);
+    });
+
+    it('then sets the newItemKey to point to the new item', function() {
+      expectToChangeNewItemKeyTo(this, RESOURCE_NAME, this.id);
+    });
+  }
+
+  function expectToAddNewItemToCollectionsPositions(operator, expectedIsolatedState, expectedCumulativeState) {
+    describe('and there are NO collections', function () {
       beforeAll(function () {
-        this.store = buildStore({
-            users: {
-              ...this.resourceBefore,
-              items: {
-                previous: {
-                  values: { username: 'Bob' },
-                  status: { type: NEW }
-                }
-              },
-              newItemKey: 'previous',
-              collections: {
-                '': {
-                  positions: [ 'previous' ]
-                }
-              }
-            }
-          },
-          { users: this.reducers }
-        );
+        this.collectionId = 'order=newest';
 
-        spyOn(console, 'warn');
-
-        this.store.dispatch(this.newUser('temp', {
-          username: 'Jill',
-        }));
-
-        this.users = this.store.getState().users;
+        setupState(this, { ...RESOURCES }, this.id, this.newValues, { [operator]: { order: 'newest' } });
       });
 
-      it('then DOES NOT warn about the existing new record', function() {
-        // eslint-disable-next-line no-console
-        expect(console.warn).not.toHaveBeenCalled();
-      });
-
-      it('then DOES NOT change the values of the previous item', function() {
-        expect(this.users.items.previous.values).toEqual({ username: 'Bob' });
-        expect(this.users.items.previous.status.type).toEqual(NEW);
-      });
-
-      it('then adds the new item', function() {
-        expect(this.users.items.temp.values).toEqual({ username: 'Jill' });
-      });
-
-      it('then sets the new item\'s status type to NEW', function() {
-        expect(this.users.items.temp.status.type).toEqual(NEW);
-      });
-
-      it('then does NOT add the key of the new item to the default collection', function() {
-        expect(this.users.collections[''].positions).toEqual([ 'previous' ]);
+      it('then creates a new collection with the specified key and places the item in it', function () {
+        expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, this.collectionId, expectedIsolatedState);
       });
     });
-  });
 
-  describe('when there is already an item with the same key', function () {
-    [
-      {
-        description: 'with a status of SUCCESS',
-        status: { type: SUCCESS },
-      },
-      {
-        description: 'with a status of EDITING',
-        status: { type: EDITING },
-      },
-      {
-        description: 'with a status of UPDATING',
-        status: { type: UPDATING },
-      },
-      {
-        description: 'with a status of ERROR',
-        status: { type: ERROR },
-      },
-      {
-        description: 'with a status of DESTROYING',
-        status: { type: DESTROYING },
-      },
-      {
-        description: 'with a status of DESTROY_ERROR',
-        status: { type: DESTROY_ERROR },
-      },
-    ].forEach(({ description, status }) => {
+    describe('and there are NO matching collections', function () {
+      beforeAll(function () {
+        this.collectionId = 'order=newest';
+        this.otherCollectionId = 'active=true';
 
-      describe(description, function() {
-
-        beforeAll(function () {
-          this.store = buildStore({
-              users: {
-                ...this.resourceBefore,
-                items: {
-                  1: {
-                    values: { username: 'Bob' },
-                    status
-                  }
-                },
-                collections: {
-                  '': {
-                    positions: [ 1 ]
-                  }
-                }
-              }
-            },
-            { users: this.reducers }
-          );
-
-          spyOn(console, 'warn');
-
-          this.store.dispatch(this.newUser(1, {
-            username: 'Jill',
-          }));
-
-          this.users = this.store.getState().users;
-        });
-
-        it('then warns about the existing record with the same key', function() {
-          // eslint-disable-next-line no-console
-          expect(console.warn).toHaveBeenCalledWith(
-            'Redux and the REST: \'NEW_USER\' has same key \'1\' as existing item, use editUser() to update it instead, or clearNewUser() if you want to discard the previous values. (Previous item was overridden with new values.)'
-          );
-        });
-
-        it('then changes the values of then existing item', function() {
-          expect(this.users.items['1'].values).toEqual({ username: 'Jill' });
-        });
-
-        it('then sets the item\'s status type to NEW', function() {
-          expect(this.users.items['1'].status.type).toEqual(NEW);
-        });
-
-        it('then sets the newItemKey to point to the new item', function() {
-          expect(this.users.newItemKey).toEqual(1);
-        });
-      });
-    });
-  });
-
-  [
-    {
-      operator: 'push',
-      expectedIsolatedState: [1],
-      expectedCumulativeState: [2, 1]
-    },
-    {
-      operator: 'unshift',
-      expectedIsolatedState: [1],
-      expectedCumulativeState: [1, 2]
-    },
-    {
-      operator: 'invalidate',
-      expectedIsolatedState: [],
-      expectedCumulativeState: []
-    },
-  ].forEach(({ operator, expectedIsolatedState, expectedCumulativeState }) => {
-    describe(`when the ${operator} collections operator is used`, () => {
-      describe('and there are NO collections', function () {
-        beforeAll(function () {
-          this.store = buildStore({
-            users: {
-              items: {},
-              collections: {},
-              newItemKey: null
-            }
-          }, { users: this.reducers } );
-
-          this.store.dispatch(this.newUser(1, {
-            username: 'Jill',
-          }, { [operator]: { order: 'newest' } }));
-
-          this.users = this.store.getState().users;
-        });
-
-        it('then creates a new collection with the specified key and places the item in it', function() {
-          expect(this.users.collections).toEqual({
-            'order=newest': {
-              positions: expectedIsolatedState,
-              status: { type: null },
+        setupState(this, {
+          ...RESOURCES,
+          collections: {
+            [this.otherCollectionId]: {
+              positions: [],
+              status: { type: SUCCESS },
               projection: { type: null }
             }
-          });
-        });
+          }
+        }, this.id, this.newValues, { [operator]: { order: 'newest' } });
       });
 
-      describe('and there are NO matching collections', function () {
-        beforeAll(function () {
-          this.store = buildStore({
-            users: {
-              items: {},
-              collections: {
-                'active=true': {
-                  positions: [ ],
-                  status: { type: SUCCESS },
-                  projection: { type: null }
-                }
-              },
-              newItemKey: null
-            }
-          }, { users: this.reducers } );
-
-          this.store.dispatch(this.newUser(1, {
-            username: 'Jill',
-          }, { [operator]: { order: 'newest' } }));
-
-          this.users = this.store.getState().users;
-        });
-
-        it('then creates a new collection with the specified key and places the item in it', function() {
-          expect(this.users.collections['order=newest'].positions).toEqual(expectedIsolatedState);
-          expect(this.users.collections['active=true'].positions).toEqual([]);
-        });
-      });
-
-      describe('and there are collections with keys that exactly match', function () {
-        beforeAll(function () {
-          this.store = buildStore({
-            users: {
-              items: {},
-              collections: {
-                'active=true': {
-                  positions: [ ],
-                  status: { type: null }
-                },
-                'order=newest': {
-                  positions: [ 2 ],
-                  status: { type: null }
-                },
-              },
-              newItemKey: null
-            }
-          }, { users: this.reducers } );
-
-          this.store.dispatch(this.newUser(1, {
-            username: 'Jill',
-          }, { [operator]: { order: 'newest' } }));
-
-          this.users = this.store.getState().users;
-        });
-
-        it('then adds the new item to the matching collections', function() {
-          expect(this.users.collections['active=true'].positions).toEqual([]);
-          expect(this.users.collections['order=newest'].positions).toEqual(expectedCumulativeState);
-        });
+      it('then creates a new collection with the specified key and places the item in it', function () {
+        expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, this.collectionId, expectedIsolatedState);
+        expectToNotChangeResourceCollectionPositions(this, RESOURCE_NAME, this.otherCollectionId);
       });
     });
-  });
 
+    describe('and there are collections with keys that exactly match', function () {
+      beforeAll(function () {
+        this.collectionId = 'order=newest';
+        this.otherCollectionId = 'active=true';
+
+        setupState(this, {
+          ...RESOURCES,
+          collections: {
+            [this.otherCollectionId]: {
+              positions: [],
+              status: { type: SUCCESS },
+              projection: { type: null }
+            },
+            [this.collectionId]: {
+              positions: [2],
+              status: { type: null }
+            },
+          }
+        }, this.id, this.newValues, { [operator]: { order: 'newest' } });
+      });
+
+      it('then adds the new item to the matching collections', function () {
+        expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, this.collectionId, expectedCumulativeState);
+        expectToNotChangeResourceCollectionPositions(this, RESOURCE_NAME, this.otherCollectionId);
+      });
+    });
+  }
+
+  function setupState(context, initialState, params, newValues, options) {
+    setupInitialState(context, RESOURCE_NAME, initialState);
+
+    if (options) {
+      context.store.dispatch(context.newUser(params, newValues, options));
+    } else {
+      context.store.dispatch(context.newUser(params, newValues));
+    }
+  }
 });
