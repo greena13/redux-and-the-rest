@@ -4,7 +4,6 @@ import { ITEM } from '../../constants/DataStructures';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
-import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import wrapInObject from '../../utils/object/wrapInObject';
 
 /** ************************************************************************************************************
@@ -61,19 +60,15 @@ function reducer(resources, action) {
    */
   assertInDevMode(() => {
     if (!items[key]) {
-      const actionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'new' });
-
       if (singular) {
         warn(
-          `Use ${actionCreatorName}() to create ` +
-          `a new item or check the arguments passed to ${getActionCreatorNameFrom(type)}(). (A new item was ` +
+          'Use newItem() to create a new item or check the arguments passed to editItem(). (A new item was ' +
           'created to contain the edit.)'
         );
       } else {
         warn(
-          `${type}'s key '${key}' does not match any items in the store. Use ${actionCreatorName}() to create ` +
-          `a new item or check the arguments passed to ${getActionCreatorNameFrom(type)}(). (A new item was ` +
-          'created to contain the edit.)'
+          `${type}'s key '${key}' does not match any items in the store. Use newItem() to create ` +
+          'a new item or check the arguments passed to editItem(). (A new item was created to contain the edit.)'
         );
       }
     }
@@ -83,15 +78,13 @@ function reducer(resources, action) {
 
   if (currentItem.status.type === NEW) {
     assertInDevMode(() => {
-      const actionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'editNew' });
-
       if (singular) {
         warn(
-          `Use a ${actionCreatorName}() to edit new items that have not yet been saved to an external API. Update ignored.`
+          'Use a editItem() to edit new items that have not yet been saved to an external API. Update ignored.'
         );
       } else {
         warn(
-          `${type}'s key '${key}' matches a NEW item. Use a ${actionCreatorName}() to edit ` +
+          `${type}'s key '${key}' matches a NEW item. Use a editItem() to edit ` +
           'new items that have not yet been saved to an external API. Update ignored.'
         );
       }

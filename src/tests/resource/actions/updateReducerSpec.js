@@ -13,7 +13,7 @@ const RESOURCE_NAME = 'users';
 
 describe('Update reducer:', function () {
   beforeAll(function() {
-    const { reducers, actionCreators: { updateUser } } = resource({
+    const { reducers, actionCreators: { updateItem: updateUser } } = resource({
       name: 'users',
       url: 'http://test.com/users/:id?',
     }, {
@@ -41,7 +41,7 @@ describe('Update reducer:', function () {
 
       it('then warns about trying to update an item not in the store', function() {
         // eslint-disable-next-line no-console
-        expect(console.warn).toHaveBeenCalledWith(`Redux and the REST: UPDATE_USER\'s key \'${EmptyKey}\' did not match any items in the store. Check the arguments passed to updateUser(). (Update request still sent to the server.)`);
+        expect(console.warn).toHaveBeenCalledWith(`Redux and the REST: UPDATE_USER\'s key \'${EmptyKey}\' did not match any items in the store. Check the arguments passed to updateItem(). (Update request still sent to the server.)`);
       });
 
       it('then adds a new item with a status of UPDATING', function() {

@@ -10,7 +10,7 @@ const RESOURCE_NAME = 'users';
 
 describe('Edit new reducer:', function () {
   beforeAll(function () {
-    const { reducers, actionCreators: { editNewUser } } = resource({
+    const { reducers, actionCreators: { editNewItem: editNewUser } } = resource({
       name: 'users',
       keyBy: 'id'
     }, {
@@ -34,7 +34,7 @@ describe('Edit new reducer:', function () {
       it('then warns about the missing item', function() {
         // eslint-disable-next-line no-console
         expect(console.warn).toHaveBeenCalledWith(
-          'Redux and the REST: Use newUser() to create a new item first, or check the arguments passed to editNewUser(). Update ignored.');
+          'Redux and the REST: Use newItem() to create a new item first, or check the arguments passed to editItem(). Update ignored.');
       });
     });
   });
@@ -51,7 +51,7 @@ describe('Edit new reducer:', function () {
     it('then warns attempting to edit a resource item that is not NEW', function() {
       // eslint-disable-next-line no-console
       expect(console.warn).toHaveBeenCalledWith(
-        'Redux and the REST: Use newUser() to create a new item first, or check the arguments passed to editNewUser(). Update ignored.');
+        'Redux and the REST: Use newItem() to create a new item first, or check the arguments passed to editItem(). Update ignored.');
     });
 
     it('then doesn\'t update the item', function() {

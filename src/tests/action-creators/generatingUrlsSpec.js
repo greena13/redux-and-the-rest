@@ -9,11 +9,11 @@ describe('Generating URLs:', function() {
       const {
         reducers,
         actionCreators: {
-          createUser,
-          fetchUsers,
-          fetchUser,
-          updateUser,
-          destroyUser
+          createItem: createUser,
+          fetchCollection: fetchUsers,
+          fetchItem: fetchUser,
+          updateItem: updateUser,
+          destroyItem: destroyUser
         }
       } = resources({
         name: 'users',
@@ -160,7 +160,7 @@ describe('Generating URLs:', function() {
     beforeAll(function() {
       const {
         reducers,
-        actionCreators: { fetchUsers, fetchUser },
+        actionCreators: { fetchCollection: fetchUsers, fetchItem: fetchUser },
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',

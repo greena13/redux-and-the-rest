@@ -5,7 +5,7 @@ const RESOURCE_NAME = 'users';
 
 describe('Deselect reducer:', function () {
   beforeAll(function () {
-    const { reducers, actionCreators: { deselectUser } } = resources({
+    const { reducers, actionCreators: { deselectItem: deselectUser } } = resources({
       name: 'users',
       keyBy: 'id'
     }, {

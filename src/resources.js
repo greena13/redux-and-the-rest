@@ -220,9 +220,8 @@ function resources(resourceOptions, actionOptions = {}) {
           typeKey: 'items',
           fallbackActionName: 'show',
           getFunction: getItem,
+          fetchFunction: actionCreators.fetchItem,
           keyFunction: (_params) => getItemKey(_params, { keyBy: resourceOptions.keyBy, singular }),
-
-          actions, actionCreators,
         },
         resourcesState, params, actionCreatorOptions
       );
@@ -243,11 +242,9 @@ function resources(resourceOptions, actionOptions = {}) {
     getOrFetchCollection(resourcesState, params, actionCreatorOptions) {
       return getOrFetch({
           typeKey: 'collections',
-          fallbackActionName: 'index',
           getFunction: getCollection,
+          fetchFunction: actionCreators.fetchCollection,
           keyFunction: (_params) => getCollectionKey(_params, { urlOnlyParams: resourceOptions.urlOnlyParams }),
-
-          actions, actionCreators,
         },
         resourcesState, params, actionCreatorOptions
       );

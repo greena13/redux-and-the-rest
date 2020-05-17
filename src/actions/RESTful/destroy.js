@@ -9,7 +9,6 @@ import { ITEM } from '../../constants/DataStructures';
 import removeItemsFromResources from '../../reducers/helpers/removeItemsFromResources';
 import isEmpty from '../../utils/collection/isEmpty';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
-import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
 import nop from '../../utils/function/nop';
@@ -192,10 +191,8 @@ function reducer(resources, action) {
        * remote API yet
        */
       if (currentItem.status.type === NEW) {
-        const actionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'clearNew' });
-
         warn(
-          `${type}'s key '${key}' matched a new item. Use ${actionCreatorName}() ` +
+          `${type}'s key '${key}' matched a new item. Use clearNewItem() ` +
           'to clear items that haven\'t been saved to the server. (Destroy request was still sent to the server.)'
         );
       }

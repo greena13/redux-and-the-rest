@@ -75,7 +75,7 @@ describe('hasAndBelongsToMany:', function () {
 
         this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-        this.store.dispatch(this.posts.actionCreators.createPost('temp', { authorId: 1, title: 'New Post 3' }));
+        this.store.dispatch(this.posts.actionCreators.createItem('temp', { authorId: 1, title: 'New Post 3' }));
       });
 
       afterAll(function() {
@@ -96,7 +96,7 @@ describe('hasAndBelongsToMany:', function () {
 
         this.store = buildStore({ ...this.initialState }, { users: this.reducers, posts: this.posts.reducers });
 
-        this.store.dispatch(this.posts.actionCreators.createPost('temp', { authorId: 1, title: 'New Post 3' }));
+        this.store.dispatch(this.posts.actionCreators.createItem('temp', { authorId: 1, title: 'New Post 3' }));
       });
 
       afterAll(function() {

@@ -71,7 +71,7 @@ describe('belongsTo:', function () {
         });
 
         this.store.dispatch(
-          this.addresses.actionCreators.createAddress('temp', { residentId: 1, city: 'City 3' })
+          this.addresses.actionCreators.createItem('temp', { residentId: 1, city: 'City 3' })
         );
       });
 
@@ -97,7 +97,7 @@ describe('belongsTo:', function () {
         });
 
         this.store.dispatch(
-          this.addresses.actionCreators.createAddress('temp', { residentId: 1, city: 'City 3' })
+          this.addresses.actionCreators.createItem('temp', { residentId: 1, city: 'City 3' })
         );
       });
 

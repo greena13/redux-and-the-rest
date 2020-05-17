@@ -14,7 +14,7 @@ const RESOURCE_NAME = 'users';
 
 describe('Show reducers:', function () {
   beforeAll(function() {
-    const { reducers, actionCreators: { fetchUser } } = resource({
+    const { reducers, actionCreators: { fetchItem: fetchUser } } = resource({
       name: 'users',
       url: 'http://test.com/users/:id?',
       keyBy: 'id',

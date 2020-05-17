@@ -17,7 +17,7 @@ const RESOURCE_NAME = 'users';
 
 describe('New reducer:', () => {
   beforeAll(function () {
-    const { reducers, actionCreators: { newUser } } = resources({
+    const { reducers, actionCreators: { newItem: newUser } } = resources({
       name: 'users',
       keyBy: 'id'
     }, {
@@ -194,7 +194,7 @@ describe('New reducer:', () => {
     it('then warns about the existing record with the same key', function() {
       // eslint-disable-next-line no-console
       expect(console.warn).toHaveBeenCalledWith(
-        `Redux and the REST: \'NEW_USER\' has same key \'${this.id}\' as existing item, use editUser() to update it instead, or clearNewUser() if you want to discard the previous values. (Previous item was overridden with new values.)`
+        `Redux and the REST: \'NEW_USER\' has same key \'${this.id}\' as existing item, use editItem() to update it instead, or clearNewItem() if you want to discard the previous values. (The previous item was overridden with new values.)`
       );
     });
 

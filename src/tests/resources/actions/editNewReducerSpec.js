@@ -10,7 +10,7 @@ const RESOURCE_NAME = 'users';
 
 describe('Edit new reducer:', function () {
   beforeAll(function () {
-    const { reducers, actionCreators: { editNewUser } } = resources({
+    const { reducers, actionCreators: { editNewItem: editNewUser } } = resources({
       name: 'users',
       keyBy: 'id'
     }, {
@@ -34,7 +34,7 @@ describe('Edit new reducer:', function () {
       it('then warns about the missing item', function() {
         // eslint-disable-next-line no-console
         expect(console.warn).toHaveBeenCalledWith(
-          'Redux and the REST: EDIT_NEW_USER\'s key \'null\' does not match any new items in the store. Use newUser() to create a new item first, or check the arguments passed to editNewUser(). Update ignored.');
+          'Redux and the REST: EDIT_NEW_USER\'s key \'null\' does not match any new items in the store. Use newItem() to create a new item first, or check the arguments passed to editItem(). Update ignored.');
       });
     });
 
@@ -48,7 +48,7 @@ describe('Edit new reducer:', function () {
       it('then warns about the missing item', function() {
         // eslint-disable-next-line no-console
         expect(console.warn).toHaveBeenCalledWith(
-          'Redux and the REST: EDIT_NEW_USER\'s key \'temp\' does not match any new items in the store. Use newUser() to create a new item first, or check the arguments passed to editNewUser(). Update ignored.');
+          'Redux and the REST: EDIT_NEW_USER\'s key \'temp\' does not match any new items in the store. Use newItem() to create a new item first, or check the arguments passed to editItem(). Update ignored.');
       });
     });
   });
@@ -66,7 +66,7 @@ describe('Edit new reducer:', function () {
       it('then warns attempting to edit a resource item that is not NEW', function() {
         // eslint-disable-next-line no-console
         expect(console.warn).toHaveBeenCalledWith(
-          `Redux and the REST: EDIT_NEW_USER\'s key \'${this.id}\' matches a resource that is NOT new. Use a editUser() to edit existing items. Update ignored.`);
+          `Redux and the REST: EDIT_NEW_USER\'s key \'${this.id}\' matches a resource that is NOT new. Use a editItem() to edit existing items. Update ignored.`);
       });
 
       it('then doesn\'t update the item', function() {

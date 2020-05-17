@@ -15,7 +15,7 @@ const RESOURCE_NAME = 'users';
 
 describe('New reducer:', () => {
   beforeAll(function () {
-    const { reducers, actionCreators: { newUser } } = resource({
+    const { reducers, actionCreators: { newItem: newUser } } = resource({
       name: 'users',
       keyBy: 'id'
     }, {

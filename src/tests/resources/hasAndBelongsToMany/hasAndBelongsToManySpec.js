@@ -94,7 +94,7 @@ describe('hasAndBelongsToMany:', function () {
 
           fetchMock.post('http://test.com/posts', new Promise(nop));
 
-          this.store.dispatch(this.posts.actionCreators.createPost('temp', { userId: 1, title: 'New Post 3' }));
+          this.store.dispatch(this.posts.actionCreators.createItem('temp', { userId: 1, title: 'New Post 3' }));
         });
 
         afterAll(function() {
@@ -115,7 +115,7 @@ describe('hasAndBelongsToMany:', function () {
             body: { id: 3, userId: 1, title: 'New Post 3' },
           });
 
-          this.store.dispatch(this.posts.actionCreators.createPost('temp', { userId: 1, title: 'New Post 3' }));
+          this.store.dispatch(this.posts.actionCreators.createItem('temp', { userId: 1, title: 'New Post 3' }));
         });
 
         afterAll(function() {
@@ -139,7 +139,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
+            this.store.dispatch(this.posts.actionCreators.updateItem(1, {
               title: 'Post 1',
               userId: 2
             }, { previous: {
@@ -173,7 +173,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
+            this.store.dispatch(this.posts.actionCreators.updateItem(1, {
               title: 'Post 1',
               userId: 2
             }, { previous: {
@@ -212,7 +212,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
+            this.store.dispatch(this.posts.actionCreators.updateItem(1, {
               title: 'Post 1',
               userId: 2
             }));
@@ -241,7 +241,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
+            this.store.dispatch(this.posts.actionCreators.updateItem(1, {
               title: 'Post 1',
               userId: 2
             }));
@@ -255,7 +255,7 @@ describe('hasAndBelongsToMany:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: UPDATE_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the third argument to updatePost().'
+              'Redux and the REST: UPDATE_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the third argument to updateItem().'
             );
           });
 
@@ -280,7 +280,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.destroyPost(1, {
+            this.store.dispatch(this.posts.actionCreators.destroyItem(1, {
               title: 'Post 1',
               userId: 1
             }));
@@ -306,7 +306,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.destroyPost(1, {
+            this.store.dispatch(this.posts.actionCreators.destroyItem(1, {
               title: 'Post 1',
               userId: 1
             }));
@@ -337,7 +337,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.destroyPost(1));
+            this.store.dispatch(this.posts.actionCreators.destroyItem(1));
           });
 
           afterAll(function() {
@@ -360,7 +360,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.destroyPost(1));
+            this.store.dispatch(this.posts.actionCreators.destroyItem(1));
           });
 
           afterAll(function() {
@@ -371,7 +371,7 @@ describe('hasAndBelongsToMany:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: DESTROY_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the second argument to destroyPost().'
+              'Redux and the REST: DESTROY_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the second argument to destroyItem().'
             );
           });
 
@@ -478,7 +478,7 @@ describe('hasAndBelongsToMany:', function () {
 
           fetchMock.post('http://test.com/posts', new Promise(nop));
 
-          this.store.dispatch(this.posts.actionCreators.createPost('temp', { userIds: [ 1 ], title: 'New Post 3' }));
+          this.store.dispatch(this.posts.actionCreators.createItem('temp', { userIds: [ 1 ], title: 'New Post 3' }));
         });
 
         afterAll(function() {
@@ -499,7 +499,7 @@ describe('hasAndBelongsToMany:', function () {
             body: { id: 3, userIds: [1], title: 'New Post 3' },
           });
 
-          this.store.dispatch(this.posts.actionCreators.createPost('temp', { userIds: [ 1 ], title: 'New Post 3' }));
+          this.store.dispatch(this.posts.actionCreators.createItem('temp', { userIds: [ 1 ], title: 'New Post 3' }));
         });
 
         afterAll(function() {
@@ -523,7 +523,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
+            this.store.dispatch(this.posts.actionCreators.updateItem(1, {
               title: 'Post 1',
               userIds: [ 2 ]
             }, { previous: {
@@ -557,7 +557,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
+            this.store.dispatch(this.posts.actionCreators.updateItem(1, {
               title: 'Post 1',
               userIds: [ 2 ]
             }, { previous: {
@@ -596,7 +596,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
+            this.store.dispatch(this.posts.actionCreators.updateItem(1, {
               title: 'Post 1',
               userIds: [ 2 ]
             }));
@@ -625,7 +625,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.updatePost(1, {
+            this.store.dispatch(this.posts.actionCreators.updateItem(1, {
               title: 'Post 1',
               userIds: [ 2 ]
             }));
@@ -639,7 +639,7 @@ describe('hasAndBelongsToMany:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: UPDATE_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the third argument to updatePost().'
+              'Redux and the REST: UPDATE_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the third argument to updateItem().'
             );
           });
 
@@ -665,7 +665,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.destroyPost(1, {
+            this.store.dispatch(this.posts.actionCreators.destroyItem(1, {
               title: 'Post 1',
               userIds: [ 1 ]
             }));
@@ -691,7 +691,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.destroyPost(1, {
+            this.store.dispatch(this.posts.actionCreators.destroyItem(1, {
               title: 'Post 1',
               userIds: [ 1 ]
             }));
@@ -722,7 +722,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.destroyPost(1));
+            this.store.dispatch(this.posts.actionCreators.destroyItem(1));
           });
 
           afterAll(function() {
@@ -745,7 +745,7 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.destroyPost(1));
+            this.store.dispatch(this.posts.actionCreators.destroyItem(1));
           });
 
           afterAll(function() {
@@ -756,7 +756,7 @@ describe('hasAndBelongsToMany:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: DESTROY_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the second argument to destroyPost().'
+              'Redux and the REST: DESTROY_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the second argument to destroyItem().'
             );
           });
 

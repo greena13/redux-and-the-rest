@@ -18,7 +18,7 @@ const RESOURCE_NAME = 'users';
 
 describe('Index reducers:', function () {
   beforeAll(function() {
-    const { reducers, actionCreators: { fetchUsers } } = resources({
+    const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
       name: 'users',
       url: 'http://test.com/users/:id?',
       keyBy: 'id',

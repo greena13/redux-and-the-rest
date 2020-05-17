@@ -13,7 +13,7 @@ const RESOURCE_NAME = 'users';
 
 describe('Clear edit reducer:', function () {
   beforeAll(function () {
-    const { reducers, actionCreators: { clearUserEdit } } = resources({
+    const { reducers, actionCreators: { clearItemEdit: clearUserEdit } } = resources({
       name: RESOURCE_NAME,
     }, {
       clearEdit: true

@@ -31,7 +31,7 @@ describe('localOnly:', function () {
     beforeAll(function () {
       const {
         reducers: usersReducers,
-        actionCreators: { fetchUser, fetchUsers }
+        actionCreators: { fetchItem: fetchUser, fetchCollection: fetchUsers }
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',
@@ -56,7 +56,7 @@ describe('localOnly:', function () {
 
       const {
         reducers: usersReducers,
-        actionCreators: { fetchUser, fetchUsers, newUser, createUser, editUser, updateUser, destroyUser }
+        actionCreators: { fetchItem: fetchUser, fetchCollection: fetchUsers, newItem: newUser, createItem: createUser, editItem: editUser, updateItem: updateUser, destroyItem: destroyUser }
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',

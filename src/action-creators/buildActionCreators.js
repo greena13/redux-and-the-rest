@@ -151,14 +151,12 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
       return memo;
     }
 
-    const actionName = actions.get(key);
-
     /**
      * @type {{actionCreator}} actionOptions
      */
     const actionOptions = wrapInObject(actionsOptions[key]);
 
-    const actionCreatorName = getActionCreatorNameFrom(actionName);
+    const actionCreatorName = getActionCreatorNameFrom(key);
 
     const actionCreator = isObject(actionOptions) && actionOptions.actionCreator;
 

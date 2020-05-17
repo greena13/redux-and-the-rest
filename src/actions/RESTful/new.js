@@ -7,7 +7,6 @@ import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
 import applyCollectionOperators from '../../reducers/helpers/applyCollectionOperators';
 import processActionCreatorOptions from '../../action-creators/helpers/processActionCreatorOptions';
-import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import wrapInObject from '../../utils/object/wrapInObject';
 
 /** ************************************************************************************************************
@@ -83,22 +82,18 @@ function reducer(resources, action) {
     const existingItem = resources.items[temporaryKey];
 
     if (existingItem) {
-      const clearNewActionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'clearNew' });
-
       if (resources.newItemKey === temporaryKey) {
         warn(
           `'${type}' has same key '${temporaryKey}' as the previous new item, which has not finished saving ` +
           'to the server. If you wish to create new items before the previous ones have finished saving, ' +
           'ensure you use unique temporary keys. If you want to discard the previous item, use the ' +
-          `${clearNewActionCreatorName}() action. (Previous item was overridden with new values.)`
+          'clearNewItem() action. (The previous item was overridden with new values.)'
         );
       } else {
-        const actionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'edit' });
-
         warn(
-          `'${type}' has same key '${temporaryKey}' as existing item, use ${actionCreatorName}() to ` +
-          `update it instead, or ${clearNewActionCreatorName}() if you want to discard the previous values. ` +
-          '(Previous item was overridden with new values.)'
+          `'${type}' has same key '${temporaryKey}' as existing item, use editItem() to ` +
+          'update it instead, or clearNewItem() if you want to discard the previous values. ' +
+          '(The previous item was overridden with new values.)'
         );
       }
     }

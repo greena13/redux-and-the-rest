@@ -22,6 +22,13 @@ This Readme is still being actively written.
 * **Documented:** The API is minimal and expressive, and all options and common use cases are documented in full.
 * **Tested:** `redux-and-the-rest` comes with an extensive test suite.
 
+
+## Design philosophy
+
+`redux-and-the-rest` loosely takes its lead from Reduced Instruction Set Computing (RISC) and the standard Create, Read, Update, Delete (CRUD) paradigm and offers as few low-level reducers and actions as possible. In doing so, it allows a mucher higher re-use and sharing of code and reduces the overhead of scaling out store for large applications.
+
+You are encouraged to write your own helper functions on top of the action creators `redux-and-the-rest` provides for more nuanced updates, where needed. 
+
 ## Basic usage
 
 ```javascript
@@ -32,7 +39,7 @@ import Thunk from 'redux-thunk';
 /**
  * Define a users resource
  */
-const { reducers: usersReducers, actionCreators: { fetchUsers }, getCollection } = resources(
+const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers }, getCollection } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -67,6 +74,11 @@ users = getCollection(store.getState().users);
    * [Peer Dependencies](#peer-dependencies)
 * [Defining resources](#defining-resources)
    * [Defining singular resources](#defining-singular-resources)
+   * [Actions and their action creators](#actions-and-their-action-creators)
+      * [CRUD actions](#crud-actions)
+         * [Local CRUD actions](#local-crud-actions)
+         * [Remote API CRUD actions](#remote-api-crud-actions)
+      * [Selection actions](#selection-actions)
    * [Configuring individual actions](#configuring-individual-actions)
       * [Using the default RESTful action configuration](#using-the-default-restful-action-configuration)
       * [Providing custom action configuration](#providing-custom-action-configuration)
@@ -221,12 +233,12 @@ It returns an object containing Redux components necessary to use the resource y
 * `getCollection` - a helper function for retrieving a collection based on its key parameters
 * `getItem` - a helper function for retrieving an item based on its key parameters
 * `getNewItem` - a helper function for retrieving the item currently being created
-* Action creators - these are the functions you call to trigger your store's actions and are defined if you enabled them in `actionOptions` (e.g. `fetchUsers`).
+* `actionCreators` - a collection of functions (action creators) you call to interact with the resource which match the actions you specify in `actionOptions` and are passed to Redux's `dispatch` function.
 
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { reducers, actionCreators: { fetchUsers } } = resources(
+const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -244,6 +256,52 @@ Sometimes you may need to define a singular resource, or a resource for which th
 
 You can define a singular resource using the `resource` function, which accepts the same arguments as the `resources` function (with a few exceptions largely concerned with defining actions that do not make sense for a singular resource).
 
+### Actions and their action creators
+
+#### CRUD actions
+
+It's common to think about interacting with resources in terms of 4 primary operations: create, read, update, delete (CRUD). `redux-and-the-rest` provides local (client-side) actions to refine the input state of each of these operations, and the remote API actions to persist or submit them.
+
+##### Local CRUD actions
+
+Generally your application will need to perform actions on resources locally, until a point is reached where those changes should be synchronised with a remote API. None of them make any requests to a remote API and are client-side operations that happen only in your Redux store. 
+
+| Action | Action Creator | Description |
+| ------ | -------------- | ----------- |
+| new | newItem() | Creates a new item in the Redux store |
+| editNew | editNewItem() | Continue to add or modify a new item's attributes until it's ready to be saved. |
+| clearNew | clearNewItem() | Discards (removes) the new item fom the Redux store |
+| edit | editItem() | Replaces an existing (saved) item's attributes in the store with new ones |
+| clearEdit | clearEditItem() | Reverts and edit to restore the item's attributes before the edit |
+
+These actions are generally accumulative and reversible, so you can call them successively over multiple screens or stages of a workflow and provide a cancel feature if the user wishes to abort
+
+##### Remote API CRUD actions
+
+When the your application is done with local manipulation of a resource, you can use the following to persist those changes to a remote API.
+
+| Action | Action Creator | Description |
+| ------ | -------------- | ----------- |
+| index | fetchCollection() | Fetches a collection of items from a remote API |
+| show | fetchItem() | Fetches a singular item from a remote API |
+| create | createItem() | Sends a create request with an items attributes to a remote API |
+| update | updateItem() | Sends new attributes (an "update") for an item to a remote API |
+| destroy | destroyItem() | Sends new deletion request for an item to a remote API |
+
+`resources()` accepts a `localOnly` option, that allows you to maintain resources without a remote API and will turn the asynchronous remote API actions into synchronous updates that label your resources as being in a "saved" state.
+
+#### Selection actions
+
+In addition to the CRUD functionality, `redux-and-the-rest` provides a number of actions for selecting one or more items to perform actions on. This is useful if your application needs to select resources on one screen or area and persist that selection to another area, or allow it to be retrieved at a later time.
+
+| Action | Action Creator | Description |
+| ------ | -------------- | ----------- |
+| select | selectItem() | Selects an item in the store, replacing any previous items that may have been selected. |
+| selectAnother | selectAnotherItem() | Selects an item in the store, adding it to any previous items that are selected. |
+| deselect | deselectItem() | Unselects an item that was previous selected |
+| clearSelected | clearSelectedItems() | Unselects all selected items |
+
+
 ### Configuring individual actions
 
 `actionOptions` lists the actions that are defined for a particular resource and allow you to expand upon, or override, the configuration made in `resourceOptions`.
@@ -258,7 +316,7 @@ You can define a singular resource using the `resource` function, which accepts 
 If you want to use the default configuration for a particular action, you just need to pass a value of `true`, for example:
 
 ```javascript
-const { actionCreators: { fetchUsers } } = resources(
+const { actionCreators: { fetchCollection: fetchUsers } } = resources(
     {
         // ...
     },
@@ -269,7 +327,7 @@ const { actionCreators: { fetchUsers } } = resources(
 You can also pass an array of RESTful actions for which you want to use the default configuration:
 
 ```javascript
-const { actionCreators: { fetchUsers } } = resources(
+const { actionCreators: { fetchCollection: fetchUsers } } = resources(
     {
         // ...
     },
@@ -282,7 +340,7 @@ const { actionCreators: { fetchUsers } } = resources(
 You can override or extend the default configuration for an action using an options hash instead of `true` when defining your actions:
 
 ```javascript
-const { actionCreators: { fetchUsers } } = resources(
+const { actionCreators: { fetchCollection: fetchUsers } } = resources(
     {
         // ...
     },
@@ -326,7 +384,7 @@ configure({
     // ...
 });
 
-const { actionCreators: { fetchUsers } } = resources(
+const { actionCreators: { fetchCollection: fetchUsers } } = resources(
     {
         // resourceOptions
         name: 'users',
@@ -377,7 +435,7 @@ Values passed to `resourceOptions` are used to configure the resource and apply 
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { actionCreators: { fetchUsers } } = resources(
+const { actionCreators: { fetchCollection: fetchUsers } } = resources(
     {
         // resourceOptions
     },
@@ -427,7 +485,7 @@ const { actionCreators: { fetchUsers } } = resources(
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { actionCreators: { fetchUsers } } = resources(
+const { actionCreators: { fetchCollection: fetchUsers } } = resources(
     {
         // ...
     },
@@ -480,7 +538,7 @@ Where resources are located in your Redux store depend on how you pass the `redu
 For example, assuming you have defined a users resource like this:
 
 ```javascript
-const { reducers: usersReducers, actionCreators: { fetchUsers } } = resources(
+const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -547,7 +605,7 @@ It will return an [empty item](#item-schema) (instead of `undefined`) if one wit
 import { serializeKey, ITEM } from `redux-and-the-rest`;
 import { connect } from 'react-redux';
 
-const { reducers: usersReducers, actionCreators: { fetchUsers }, getItem } = resources(
+const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers }, getItem } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -590,7 +648,7 @@ And you must define a `show` action when defining your resource:
 import { serializeKey, ITEM } from `redux-and-the-rest`;
 import { connect } from 'react-redux';
 
-const { reducers: usersReducers, actionCreators: { fetchUsers }, getOrFetchItem } = resources(
+const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers }, getOrFetchItem } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -632,7 +690,7 @@ It will return an [empty collection](#collection-schema) (instead of `undefined`
 import { serializeKey, COLLECTION } from `redux-and-the-rest`;
 import { connect } from 'react-redux';
 
-const { reducers: usersReducers, actionCreators: { fetchUsers }, getCollection } = resources(
+const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers }, getCollection } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -707,7 +765,7 @@ A blank item has the following schema:
 Setting the `projection` when defining the resource:
 
 ```
-const { reducers, actionCreators: { fetchUsers } } = resources({
+const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
   name: 'users',
   url: 'http://test.com/users',
   keyBy: 'id',
@@ -743,7 +801,7 @@ A blank collection has the following schema:
 Setting the `projection` when defining the resource:
 
 ```
-const { reducers, actionCreators: { fetchUsers } } = resources({
+const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
   name: 'users',
   url: 'http://test.com/users',
   keyBy: 'id',
@@ -819,7 +877,7 @@ import React from 'react';
 
 class UserIndexPage extends Component {
     componentWillMount() {
-        const { status: { type }, fetchUsers } = this.props;
+        const { status: { type }, fetchCollection: fetchUsers } = this.props;
 
         if (!type) {
           fetchUsers();
@@ -836,7 +894,7 @@ import { NEW } from 'redux-and-the-rest';
 
 class NewUserPage extends Component {
     componentWillMount() {
-        const { status: { type }, newUser } = this.props;
+        const { status: { type }, newItem: newUser } = this.props;
 
         if (!type) {
           newUser(Date.now(), {});
@@ -964,7 +1022,7 @@ Given the following resource definition:
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { reducers, actionCreators: { fetchUsers } } = resources(
+const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -1307,7 +1365,7 @@ The default template URL for a resource is set in [resourceOptions](#resource-op
 However, you can override this default for individual actions using the `url` option for [actionOptions](#action-options-api):
 
 ```javascript
-const { actionCreators: { fetchUser } } = resources(
+const { actionCreators: { fetchItem: fetchUser } } = resources(
 {
     name: 'users',
     url: 'http://test.com/users/:id?',
@@ -1339,7 +1397,7 @@ For example, given the following resource definition:
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { reducers, actionCreators: { fetchUsers } } = resources(
+const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -1386,7 +1444,7 @@ For example, if you define a resource using the following actions:
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { reducers, actionCreators: { fetchUsers } } = resources(
+const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.

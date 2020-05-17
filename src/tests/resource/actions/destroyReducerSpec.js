@@ -23,7 +23,7 @@ const RESOURCE_NAME = 'users';
 
 describe('Destroy reducer:', function () {
   beforeAll(function() {
-    const { reducers, actionCreators: { destroyUser } } = resource({
+    const { reducers, actionCreators: { destroyItem: destroyUser } } = resource({
       name: 'users',
       url: 'http://test.com/users',
       keyBy: 'id'
@@ -45,7 +45,7 @@ describe('Destroy reducer:', function () {
   });
 
   describe('Given the resource item is in the store with a status of NEW', () => {
-    expectToHandleSuccessAndFailedRequests(getInitialState(NEW), `Redux and the REST: DESTROY_USER\'s key \'${EmptyKey}\' matched a new item. Use clearNewUser() to clear items that haven\'t been saved to the server. (Destroy request was still sent to the server.)`);
+    expectToHandleSuccessAndFailedRequests(getInitialState(NEW), `Redux and the REST: DESTROY_USER\'s key \'${EmptyKey}\' matched a new item. Use clearNewItem() to clear items that haven\'t been saved to the server. (Destroy request was still sent to the server.)`);
   });
 
   describe('Given a resources item is in the store with a status of DESTROYING', () => {

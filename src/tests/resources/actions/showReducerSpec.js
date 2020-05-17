@@ -15,7 +15,7 @@ const RESOURCE_NAME = 'users';
 describe('Show reducers:', function () {
   describe('Given the keyBy option passed to resources is a string', function () {
     beforeAll(function() {
-      const { reducers, actionCreators: { fetchUser } } = resources({
+      const { reducers, actionCreators: { fetchItem: fetchUser } } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
@@ -102,7 +102,7 @@ describe('Show reducers:', function () {
 
   describe('when the keyBy option is an array', () => {
     beforeAll(function() {
-      const { reducers, actionCreators: { fetchUser } } = resources({
+      const { reducers, actionCreators: { fetchItem: fetchUser } } = resources({
         name: 'users',
         url: 'http://test.com/groups/:groupId/users/:id?',
         keyBy: ['id', 'groupId'],

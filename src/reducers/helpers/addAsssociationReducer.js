@@ -12,7 +12,6 @@ import removeItemsFromResources from './removeItemsFromResources';
 import contains from '../../utils/collection/contains';
 import serializeKey from '../../public-helpers/serializeKey';
 import isEmpty from '../../utils/collection/isEmpty';
-import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 
 function addCreatedHasManyAssociation(resources, { temporaryKey, key, status, item: associationItem }, { relationType, foreignKeyName, keyName }) {
   const associationValues = associationItem.values;
@@ -127,12 +126,9 @@ function updateHasManyAssociation(resources, { key, type, status, item: associat
 
     } else {
       assertInDevMode(() => {
-        const actionCreatorName = getActionCreatorNameFrom(type);
-
         warn(
           `${type} did not specify any previous values. This makes updating '${name}.${keyName}' much ` +
-          'less efficient. Provide the values of the item you are destroying as the third argument to ' +
-          `${actionCreatorName}().`
+          'less efficient. Provide the values of the item you are destroying as the third argument to updateItem().'
         );
       });
 
@@ -191,11 +187,9 @@ function removeDestroyedHasManyAssociation(resources, { key, type, status, previ
       if (isEmpty(previousValues)) {
 
         assertInDevMode(() => {
-          const actionControllerName = getActionCreatorNameFrom(type);
-
           warn(
             `${type} did not specify any previous values. This makes updating '${name}.${keyName}' much less ` +
-            `efficient. Provide the values of the item you are destroying as the second argument to ${actionControllerName}().`
+            'efficient. Provide the values of the item you are destroying as the second argument to destroyItem().'
           );
         });
 

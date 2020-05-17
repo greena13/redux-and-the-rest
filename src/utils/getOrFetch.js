@@ -1,7 +1,6 @@
 import { getConfiguration } from '../configuration';
 import assertInDevMode from './assertInDevMode';
 import warn from './dev/warn';
-import getActionCreatorNameFrom from '../action-creators/helpers/getActionCreatorNameFrom';
 import without from './collection/without';
 import isFunction from './object/isFunction';
 
@@ -11,12 +10,7 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
     /**
      * Options that change between items and collections
      */
-    typeKey, fallbackActionName, keyFunction, getFunction,
-
-    /**
-     * Options from resources definition
-     */
-    actions, actionCreators
+    typeKey, keyFunction, getFunction, fetchFunction,
   } = options;
 
   /**
@@ -56,8 +50,7 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
      * If the item is not already in the store (or we're forcing the fetch operation), we call the fetch action
      * creator to retrieve it in the background and return an empty item or collection in the meantime.
      */
-    const actionCreator = actionCreators[getActionCreatorNameFrom(actions.get(fallbackActionName))];
-    store.dispatch(actionCreator(params, without(actionCreatorOptions, ['forceFetch'])));
+    store.dispatch(fetchFunction(params, without(actionCreatorOptions, ['forceFetch'])));
   }
 
   return getFunction(resourcesState, key);

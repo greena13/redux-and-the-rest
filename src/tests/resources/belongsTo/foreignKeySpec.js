@@ -68,7 +68,7 @@ describe('belongsTo:', function () {
 
         this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
-        this.store.dispatch(this.addresses.actionCreators.createAddress('temp', { residentIdentity: 1, city: 'City 3' }));
+        this.store.dispatch(this.addresses.actionCreators.createItem('temp', { residentIdentity: 1, city: 'City 3' }));
       });
 
       afterAll(function() {
@@ -89,7 +89,7 @@ describe('belongsTo:', function () {
 
         this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
-        this.store.dispatch(this.addresses.actionCreators.createAddress('temp', { residentIdentity: 1, city: 'City 3' }));
+        this.store.dispatch(this.addresses.actionCreators.createItem('temp', { residentIdentity: 1, city: 'City 3' }));
       });
 
       afterAll(function() {

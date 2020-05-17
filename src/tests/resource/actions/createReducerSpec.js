@@ -14,7 +14,7 @@ const RESOURCE_NAME = 'users';
 
 describe('Create reducer:', function () {
   beforeAll(function() {
-    const { reducers, actionCreators: { createUser } } = resource({
+    const { reducers, actionCreators: { createItem: createUser } } = resource({
       name: 'users',
       url: 'http://test.com/users/:id?',
       keyBy: 'id'

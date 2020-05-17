@@ -98,7 +98,7 @@ describe('belongsTo:', function () {
 
           fetchMock.post('http://test.com/addresses', new Promise(nop));
 
-          this.store.dispatch(this.addresses.actionCreators.createAddress('temp', { userId: 1, city: 'New City 3' }));
+          this.store.dispatch(this.addresses.actionCreators.createItem('temp', { userId: 1, city: 'New City 3' }));
         });
 
         afterAll(function() {
@@ -119,7 +119,7 @@ describe('belongsTo:', function () {
             body: { id: 3, userId: 1, city: 'New City 3' },
           });
 
-          this.store.dispatch(this.addresses.actionCreators.createAddress('temp', { userId: 1, city: 'New City 3' }));
+          this.store.dispatch(this.addresses.actionCreators.createItem('temp', { userId: 1, city: 'New City 3' }));
         });
 
         afterAll(function() {
@@ -143,7 +143,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.updateAddress(1, {
+            this.store.dispatch(this.addresses.actionCreators.updateItem(1, {
               city: 'City 1',
               userId: 2
             }, { previous: {
@@ -177,7 +177,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.updateAddress(1, {
+            this.store.dispatch(this.addresses.actionCreators.updateItem(1, {
               city: 'City 1',
               userId: 2
             }, { previous: {
@@ -216,7 +216,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.updateAddress(1, {
+            this.store.dispatch(this.addresses.actionCreators.updateItem(1, {
               city: 'City 1',
               userId: 2
             }));
@@ -245,7 +245,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.updateAddress(1, {
+            this.store.dispatch(this.addresses.actionCreators.updateItem(1, {
               city: 'City 1',
               userId: 2
             }));
@@ -259,7 +259,7 @@ describe('belongsTo:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: UPDATE_ADDRESS did not specify any previous values. This makes updating \'users.addressId\' much less efficient. Provide the values of the item you are destroying as the third argument to updateAddress().'
+              'Redux and the REST: UPDATE_ADDRESS did not specify any previous values. This makes updating \'users.addressId\' much less efficient. Provide the values of the item you are destroying as the third argument to updateItem().'
             );
           });
 
@@ -285,7 +285,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.destroyAddress(1, {
+            this.store.dispatch(this.addresses.actionCreators.destroyItem(1, {
               city: 'City 1',
               userId: 1
             }));
@@ -311,7 +311,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.destroyAddress(1, {
+            this.store.dispatch(this.addresses.actionCreators.destroyItem(1, {
               city: 'City 1',
               userId: 1
             }));
@@ -342,7 +342,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.destroyAddress(1));
+            this.store.dispatch(this.addresses.actionCreators.destroyItem(1));
           });
 
           afterAll(function() {
@@ -365,7 +365,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.destroyAddress(1));
+            this.store.dispatch(this.addresses.actionCreators.destroyItem(1));
           });
 
           afterAll(function() {
@@ -376,7 +376,7 @@ describe('belongsTo:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: DESTROY_ADDRESS did not specify any previous values. This makes updating \'users.addressId\' much less efficient. Provide the values of the item you are destroying as the second argument to destroyAddress().'
+              'Redux and the REST: DESTROY_ADDRESS did not specify any previous values. This makes updating \'users.addressId\' much less efficient. Provide the values of the item you are destroying as the second argument to destroyItem().'
             );
           });
 
@@ -480,7 +480,7 @@ describe('belongsTo:', function () {
 
           fetchMock.post('http://test.com/addresses', new Promise(nop));
 
-          this.store.dispatch(this.addresses.actionCreators.createAddress('temp', { userIds: [ 1 ], city: 'New City 3' }));
+          this.store.dispatch(this.addresses.actionCreators.createItem('temp', { userIds: [ 1 ], city: 'New City 3' }));
         });
 
         afterAll(function() {
@@ -501,7 +501,7 @@ describe('belongsTo:', function () {
             body: { id: 3, userIds: [1], city: 'New City 3' },
           });
 
-          this.store.dispatch(this.addresses.actionCreators.createAddress('temp', { userIds: [ 1 ], city: 'New City 3' }));
+          this.store.dispatch(this.addresses.actionCreators.createItem('temp', { userIds: [ 1 ], city: 'New City 3' }));
         });
 
         afterAll(function() {
@@ -525,7 +525,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.updateAddress(1, {
+            this.store.dispatch(this.addresses.actionCreators.updateItem(1, {
               city: 'City 1',
               userIds: [ 2 ]
             }, { previous: {
@@ -559,7 +559,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.updateAddress(1, {
+            this.store.dispatch(this.addresses.actionCreators.updateItem(1, {
               city: 'City 1',
               userIds: [ 2 ]
             }, { previous: {
@@ -598,7 +598,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.updateAddress(1, {
+            this.store.dispatch(this.addresses.actionCreators.updateItem(1, {
               city: 'City 1',
               userIds: [ 2 ]
             }));
@@ -627,7 +627,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.updateAddress(1, {
+            this.store.dispatch(this.addresses.actionCreators.updateItem(1, {
               city: 'City 1',
               userIds: [ 2 ]
             }));
@@ -641,7 +641,7 @@ describe('belongsTo:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: UPDATE_ADDRESS did not specify any previous values. This makes updating \'users.addressId\' much less efficient. Provide the values of the item you are destroying as the third argument to updateAddress().'
+              'Redux and the REST: UPDATE_ADDRESS did not specify any previous values. This makes updating \'users.addressId\' much less efficient. Provide the values of the item you are destroying as the third argument to updateItem().'
             );
           });
 
@@ -667,7 +667,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.destroyAddress(1, {
+            this.store.dispatch(this.addresses.actionCreators.destroyItem(1, {
               city: 'City 1',
               userIds: [ 1 ]
             }));
@@ -693,7 +693,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.destroyAddress(1, {
+            this.store.dispatch(this.addresses.actionCreators.destroyItem(1, {
               city: 'City 1',
               userIds: [ 1 ]
             }));
@@ -724,7 +724,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.destroyAddress(1));
+            this.store.dispatch(this.addresses.actionCreators.destroyItem(1));
           });
 
           afterAll(function() {
@@ -747,7 +747,7 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.destroyAddress(1));
+            this.store.dispatch(this.addresses.actionCreators.destroyItem(1));
           });
 
           afterAll(function() {
@@ -758,7 +758,7 @@ describe('belongsTo:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: DESTROY_ADDRESS did not specify any previous values. This makes updating \'users.addressId\' much less efficient. Provide the values of the item you are destroying as the second argument to destroyAddress().'
+              'Redux and the REST: DESTROY_ADDRESS did not specify any previous values. This makes updating \'users.addressId\' much less efficient. Provide the values of the item you are destroying as the second argument to destroyItem().'
             );
           });
 

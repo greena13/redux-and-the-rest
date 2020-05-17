@@ -10,7 +10,7 @@ const RESOURCE_NAME = 'users';
 
 describe('Edit reducer:', function () {
   beforeAll(function () {
-    const { reducers, actionCreators: { editUser } } = resource({
+    const { reducers, actionCreators: { editItem: editUser } } = resource({
       name: 'users',
       keyBy: 'id'
     }, {
@@ -39,7 +39,7 @@ describe('Edit reducer:', function () {
 
     it('then warns that the edit action controller is not intended to edit new resource items', function() {
       expect(console.warn).toHaveBeenCalledWith(
-        'Redux and the REST: Use a editNewUser() to edit new items that have not yet been saved to an external API. Update ignored.'
+        'Redux and the REST: Use a editItem() to edit new items that have not yet been saved to an external API. Update ignored.'
       );
     });
 
@@ -59,7 +59,7 @@ describe('Edit reducer:', function () {
     it('then warns about the missing item', function () {
       // eslint-disable-next-line no-console
       expect(console.warn).toHaveBeenCalledWith(
-        'Redux and the REST: Use newUser() to create a new item or check the arguments passed to editUser(). (A new item was created to contain the edit.)');
+        'Redux and the REST: Use newItem() to create a new item or check the arguments passed to editItem(). (A new item was created to contain the edit.)');
     });
 
     it('then adds an item with the correct values', function () {

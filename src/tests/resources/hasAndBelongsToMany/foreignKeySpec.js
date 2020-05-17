@@ -75,7 +75,7 @@ describe('hasAndBelongsToMany:', function () {
 
         fetchMock.post('http://test.com/posts', new Promise(nop));
 
-        this.store.dispatch(this.posts.actionCreators.createPost('temp', {
+        this.store.dispatch(this.posts.actionCreators.createItem('temp', {
           authorIdentity: 1,
           title: 'New Post 3'
         }));
@@ -99,7 +99,7 @@ describe('hasAndBelongsToMany:', function () {
           body: { id: 3, authorIdentity: 1, title: 'New Post 3' },
         });
 
-        this.store.dispatch(this.posts.actionCreators.createPost('temp', {
+        this.store.dispatch(this.posts.actionCreators.createItem('temp', {
           authorIdentity: 1,
           title: 'New Post 3'
         }));

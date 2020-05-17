@@ -3,7 +3,6 @@ import processActionCreatorOptions from '../../action-creators/helpers/processAc
 import getItemKey from '../../action-creators/helpers/getItemKey';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import assertInDevMode from '../../utils/assertInDevMode';
-import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import warn from '../../utils/dev/warn';
 
 /** ************************************************************************************************************
@@ -71,17 +70,14 @@ function reducer(resources, action) {
       /**
        * We warn about editing a resource that doesn't actually exist in the redux store
        */
-      const actionControllerName = getActionCreatorNameFrom(type);
-      const newActionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'new', verb: 'EDIT_NEW' });
-
       if (singular) {
         warn(
-          `Use ${newActionCreatorName}() to create a new item first, or check the arguments passed to ${actionControllerName}(). Update ignored.`
+          'Use newItem() to create a new item first, or check the arguments passed to editItem(). Update ignored.'
         );
       } else {
         warn(
-          `${type}'s key '${_key}' does not match any new items in the store. Use ${newActionCreatorName}() ` +
-          `to create a new item first, or check the arguments passed to ${actionControllerName}(). Update ignored.`
+          `${type}'s key '${_key}' does not match any new items in the store. Use newItem() ` +
+          'to create a new item first, or check the arguments passed to editItem(). Update ignored.'
         );
       }
     });
@@ -117,10 +113,8 @@ function reducer(resources, action) {
       /**
        * We warn about editing a resource that isn't new
        */
-      const editActionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'edit', verb: 'EDIT_NEW' });
-
       warn(
-        `${type}'s key '${key}' matches a resource that is NOT new. Use a ${editActionCreatorName}() to edit ` +
+        `${type}'s key '${key}' matches a resource that is NOT new. Use a editItem() to edit ` +
         'existing items. Update ignored.'
       );
     });

@@ -1,6 +1,5 @@
 import getItemKey from '../../action-creators/helpers/getItemKey';
 import warn from '../../utils/dev/warn';
-import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import wrapInObject from '../../utils/object/wrapInObject';
 
 /** ************************************************************************************************************
@@ -45,12 +44,10 @@ function reducer(resources, action) {
       }
     };
   } else {
-    const actionControllerName = getActionCreatorNameFrom(type);
-
     warn(
       `selectMap is not intended to hold references to items that are not in the store. ${type}'s key ` +
       `'${key}' did not match any of the item keys: ${Object.keys(resources.items).join(', ')}. Check the ` +
-      `options passed to ${actionControllerName}(). (The selection was ignored.)`
+      'options passed to selectItem(). (The selection was ignored.)'
     );
 
     return resources;

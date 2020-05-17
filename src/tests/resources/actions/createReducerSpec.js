@@ -16,7 +16,7 @@ const RESOURCE_NAME = 'users';
 
 describe('Create reducer:', function () {
   beforeAll(function() {
-    const { reducers, actionCreators: { createUser } } = resources({
+    const { reducers, actionCreators: { createItem: createUser } } = resources({
       name: 'users',
       url: 'http://test.com/users/:id?',
       keyBy: 'id'
@@ -76,7 +76,7 @@ describe('Create reducer:', function () {
 
       it('then warns about the collision', function() {
         // eslint-disable-next-line no-console
-        expect(console.warn).toHaveBeenCalledWith('Redux and the REST: CREATE_USER has the same key \'1\' as an existing item. Use updateUser() to update an existing item, or ensure the new item has a unique temporary key. (The create request was still sent to the server.)');
+        expect(console.warn).toHaveBeenCalledWith('Redux and the REST: CREATE_USER has the same key \'1\' as an existing item. Use updateItem() to update an existing item, or ensure the new item has a unique temporary key. (The create request was still sent to the server.)');
       });
 
       it('then replaces the existing item\'s values', function() {

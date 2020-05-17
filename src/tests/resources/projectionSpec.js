@@ -9,7 +9,7 @@ describe('projection:', function () {
   describe('when configuring the INDEX action', function() {
     describe('and the projection value is NOT set when defining the resource', function () {
       beforeAll(function () {
-        const { reducers, actionCreators: { fetchUsers } } = resources({
+        const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
           name: 'users',
           url: 'http://test.com/users',
           keyBy: 'id'
@@ -232,7 +232,7 @@ describe('projection:', function () {
 
     describe('and the projection type is set when defining the resource', function () {
       beforeAll(function () {
-        const { reducers, actionCreators: { fetchUsers } } = resources({
+        const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
           name: 'users',
           url: 'http://test.com/users',
           keyBy: 'id',
@@ -458,7 +458,7 @@ describe('projection:', function () {
   describe('when configuring the SHOW action', function() {
     describe('and the projection type is NOT set when defining the resource', function () {
       beforeAll(function () {
-        const { reducers, actionCreators: { fetchUser } } = resources({
+        const { reducers, actionCreators: { fetchItem: fetchUser } } = resources({
           name: 'users',
           url: 'http://test.com/users/:id',
           keyBy: 'id'
@@ -581,7 +581,7 @@ describe('projection:', function () {
 
     describe('and the projection type is set when defining the resource', function () {
       beforeAll(function () {
-        const { reducers, actionCreators: { fetchUser } } = resources({
+        const { reducers, actionCreators: { fetchItem: fetchUser } } = resources({
           name: 'users',
           url: 'http://test.com/users/:id',
           keyBy: 'id',

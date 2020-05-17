@@ -22,7 +22,7 @@ const RESOURCE_NAME = 'users';
 
 describe('Destroy reducer:', function () {
   beforeAll(function() {
-    const { reducers, actionCreators: { destroyUser } } = resources({
+    const { reducers, actionCreators: { destroyItem: destroyUser } } = resources({
       name: 'users',
       url: 'http://test.com/users/:id?',
       keyBy: 'id'
@@ -45,11 +45,11 @@ describe('Destroy reducer:', function () {
 
   describe('Given a resources item is in the store with a status of NEW', () => {
     describe('and only the item\'s id is passed to the action creator', () => {
-      expectToHandleSuccessAndFailedRequests(getInitialState(NEW), 1, 1, 'Redux and the REST: DESTROY_USER\'s key \'1\' matched a new item. Use clearNewUser() to clear items that haven\'t been saved to the server. (Destroy request was still sent to the server.)');
+      expectToHandleSuccessAndFailedRequests(getInitialState(NEW), 1, 1, 'Redux and the REST: DESTROY_USER\'s key \'1\' matched a new item. Use clearNewItem() to clear items that haven\'t been saved to the server. (Destroy request was still sent to the server.)');
     });
 
     describe('and the item\'s id is passed as an object to the action creator', () => {
-      expectToHandleSuccessAndFailedRequests(getInitialState(NEW), { id: 1 }, 1, 'Redux and the REST: DESTROY_USER\'s key \'1\' matched a new item. Use clearNewUser() to clear items that haven\'t been saved to the server. (Destroy request was still sent to the server.)');
+      expectToHandleSuccessAndFailedRequests(getInitialState(NEW), { id: 1 }, 1, 'Redux and the REST: DESTROY_USER\'s key \'1\' matched a new item. Use clearNewItem() to clear items that haven\'t been saved to the server. (Destroy request was still sent to the server.)');
     });
   });
 

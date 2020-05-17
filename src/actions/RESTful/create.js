@@ -13,7 +13,6 @@ import replace from '../../utils/collection/replace';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import processActionCreatorOptions from '../../action-creators/helpers/processActionCreatorOptions';
 import getItem from '../../utils/getItem';
-import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import isUndefined from '../../utils/isUndefined';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
@@ -178,14 +177,12 @@ function receiveCreatedResource(options, actionCreatorOptions, values) {
     const specifiedKey = getItemKey([values, normalizedParams], { keyBy, singular });
 
     if (isUndefined(specifiedKey)) {
-      const actionCreatorName = getActionCreatorNameFrom(action);
-
       assertInDevMode(() => {
         warn(
-          `${actionCreatorName}() did not specify a temporary key. One has been generated and stored in ` +
+          'createItem() did not specify a temporary key. One has been generated and stored in ' +
           'newItemKey, but unless you save a reference to it, it will be lost when you create the next item. ' +
           'It\'s therefore recommended when using the localOnly option to always specify a key by passing it ' +
-          `as the first argument to ${actionCreatorName}.`
+          'as the first argument to createItem.'
         );
       });
 
@@ -255,7 +252,7 @@ function reducer(resources, action) {
       if (currentItem.status.type && currentItem.status.type !== NEW) {
         warn(
           `${type} has the same key '${temporaryKey}' as an existing item. ` +
-          `Use ${getActionCreatorNameFrom(type, { replaceVerb: 'update' })}() to update an existing item, ` +
+          'Use updateItem() to update an existing item, ' +
           'or ensure the new item has a unique temporary key. (The create request was still sent to the server.)'
         );
       }

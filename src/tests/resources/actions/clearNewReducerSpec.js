@@ -14,7 +14,7 @@ const RESOURCE_NAME = 'users';
 
 describe('Clear new reducer:', function () {
   beforeAll(function () {
-    const { reducers, actionCreators: { clearNewUser } } = resources({
+    const { reducers, actionCreators: { clearNewItem: clearNewUser } } = resources({
       name: RESOURCE_NAME,
     }, {
       clearNew: true

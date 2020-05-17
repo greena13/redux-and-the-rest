@@ -7,7 +7,6 @@ import warn from '../../utils/dev/warn';
 import { ERROR, NEW, SUCCESS, UPDATING } from '../../constants/Statuses';
 import { ITEM } from '../../constants/DataStructures';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
-import getActionCreatorNameFrom from '../../action-creators/helpers/getActionCreatorNameFrom';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
 import without from '../../utils/collection/without';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
@@ -190,17 +189,13 @@ function reducer(resources, action) {
      * if the user is attempting to update a resource that has not yet been saved to the external API
      */
     if (!items[key]) {
-      const actionCreatorName = getActionCreatorNameFrom(type);
-
       warn(
         `${type}'s key '${key}' did not match any items in the store. Check the arguments passed to ` +
-        `${actionCreatorName}(). (Update request still sent to the server.)`
+        'updateItem(). (Update request still sent to the server.)'
       );
     } else if (items[key].status.type === NEW) {
-      const actionCreatorName = getActionCreatorNameFrom(type, { replaceVerb: 'edit' });
-
       warn(
-        `${type}'s key '${key}' matched a new resource. Use ${actionCreatorName}() to modify an item that has ` +
+        `${type}'s key '${key}' matched a new resource. Use editItem() to modify an item that has ` +
         'not been saved to the server yet. (Update request still sent to the server.)'
       );
     }

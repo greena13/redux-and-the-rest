@@ -11,7 +11,7 @@ const RESOURCE_NAME = 'users';
 
 describe('Clear selected reducer:', function () {
   beforeAll(function () {
-    const { reducers, actionCreators: { clearSelectedUsers } } = resources({
+    const { reducers, actionCreators: { clearSelectedItems: clearSelectedUsers } } = resources({
       name: RESOURCE_NAME,
     }, {
       clearSelected: true
