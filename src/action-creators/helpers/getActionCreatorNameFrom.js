@@ -2,7 +2,10 @@ const ACTION_CREATOR_DICT = {
   index: 'fetchCollection',
   show: 'fetchItem',
   clearEdit: 'clearItemEdit',
-  clearSelected: 'clearSelectedItems'
+  clearSelected: 'clearSelectedItems',
+  clearItem: 'clearItem',
+  clearCollection: 'clearCollection',
+  clearAll: 'clearAll'
 };
 
 function getActionCreatorNameFrom(actionName) {

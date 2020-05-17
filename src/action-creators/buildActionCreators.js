@@ -19,6 +19,9 @@ import selectAction from '../actions/selection/select';
 import selectAnotherAction from '../actions/selection/selectAnother';
 import deselectAction from '../actions/selection/deselect';
 import clearSelectedAction from '../actions/selection/clearSelected';
+import clearAllAction from '../actions/clear/clearAll';
+import clearItemAction from '../actions/clear/clearItem';
+import clearCollectionAction from '../actions/clear/clearCollection';
 import without from '../utils/collection/without';
 import getActionCreatorNameFrom from './helpers/getActionCreatorNameFrom';
 import DefaultConfigurationOptions from '../constants/DefaultConfigurationOptions';
@@ -41,6 +44,10 @@ const STANDARD_ACTION_CREATORS = {
   clearEdit: clearEditAction.actionCreator,
   update: updateAction.actionCreator,
   destroy: destroyAction.actionCreator,
+
+  clearItem: clearItemAction.actionCreator,
+  clearCollection: clearCollectionAction.actionCreator,
+  clearAll: clearAllAction.actionCreator,
 
   select: selectAction.actionCreator,
   selectAnother: selectAnotherAction.actionCreator,

@@ -19,7 +19,7 @@ function actionCreator({ action }) {
  ***************************************************************************************************************/
 
 /**
- * Handles reducing clearing the new resource item in a Redux store
+ * Handles clearing the new resource item in a Redux store
  * @param {ResourcesReduxState} resources The current state of part of the Redux store that contains
  *        the resources
  * @returns {ResourcesReduxState} The new resource state

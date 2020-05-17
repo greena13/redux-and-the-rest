@@ -46,6 +46,13 @@ const STANDARD_ACTIONS = {
   destroy: 'DESTROY_ITEM',
 
   /**
+   * Clearing
+   */
+  clearItem: 'CLEAR_ITEM',
+  clearCollection: 'CLEAR_ITEMS',
+  clearAll: 'CLEAR_ALL_ITEMS',
+
+  /**
    * Selection actions
    */
   select: 'SELECT_ITEM',

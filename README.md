@@ -290,6 +290,22 @@ When the your application is done with local manipulation of a resource, you can
 
 `resources()` accepts a `localOnly` option, that allows you to maintain resources without a remote API and will turn the asynchronous remote API actions into synchronous updates that label your resources as being in a "saved" state.
 
+#### Clearing actions
+
+It's generally _not_ recommended to use any of the following directly, as there is usually a better way of achieving what you need, but they are available:
+
+| Action | Action Creator | Description |
+| ------ | -------------- | ----------- |
+| clearItem | clearItem() | Removes an item from the store. |
+| clearCollection | clearCollection() | Removes a collection from the store (but still leaving behind its items). |
+| clearAll | clearAll() | Completely resets a resource to its empty state, clearing all selections, items and collections. |
+
+Some common situations where you may be tempted to use the above, are:
+
+* Refreshing an item or collection from a remote API: `fetchItem()` or `fetchCollection()` should handle transitioning between the stale and new records more cleanly.
+* Cancelling an edit to an item: Use `clearEdit()` to roll back the changes without the need to refetch from the remote API.
+* Clearing a resource when an event occurs, such as when user logs out: use the `clearOn` option to achieve this more efficiently.   
+
 #### Selection actions
 
 In addition to the CRUD functionality, `redux-and-the-rest` provides a number of actions for selecting one or more items to perform actions on. This is useful if your application needs to select resources on one screen or area and persist that selection to another area, or allow it to be retrieved at a later time.
