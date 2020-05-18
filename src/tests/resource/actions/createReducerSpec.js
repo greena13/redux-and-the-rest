@@ -60,12 +60,12 @@ describe('Create reducer:', function () {
           },
           collections: {
             [EmptyKey]: {
-              positions: [ 1 ],
+              positions: [ EmptyKey ],
               status: { type: null }
             }
           },
           newItemKey: null
-        }, 1, this.newValues);
+        }, this.newValues);
       });
 
       it('then replaces the existing item\'s values', function() {
@@ -96,20 +96,20 @@ describe('Create reducer:', function () {
         setUpAfterRequestSuccess(this, {
           users: {
             items: {
-              1: {
+              [EmptyKey]: {
                 values: { username: 'Robert' },
                 status: { type: SUCCESS }
               }
             },
             collections: {
               [EmptyKey]: {
-                positions: [ 1 ],
+                positions: [ EmptyKey ],
                 status: { type: null }
               }
             },
             newItemKey: null
           }
-        }, 1, this.newValues, this.responseValues);
+        }, this.newValues, this.responseValues);
       });
 
       afterAll(() => tearDown(this));
@@ -192,7 +192,7 @@ describe('Create reducer:', function () {
 
   function expectToRecordCreateSuccess() {
     it('then moves the item to the new ID and merges in values from the server', function() {
-      expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, { id: 1, username: 'Bob', });
+      expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, { id: 1, username: 'Bob' });
     });
 
     it('then sets the items status type to SUCCESS', function() {

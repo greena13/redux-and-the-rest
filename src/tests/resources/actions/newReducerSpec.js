@@ -79,15 +79,15 @@ describe('New reducer:', () => {
   });
 
   describe('when the push collections operator is used', () => {
-    expectToAddNewItemToCollectionsPositions('push', [1], [2, 1]);
+    expectToAddNewItemToCollectionsPositions('push', 1, [1], [2, 1]);
   });
 
   describe('when the unshift collections operator is used', () => {
-    expectToAddNewItemToCollectionsPositions('unshift', [1], [1, 2]);
+    expectToAddNewItemToCollectionsPositions('unshift', 1, [1], [1, 2]);
   });
 
   describe('when the invalidate collections operator is used', () => {
-    expectToAddNewItemToCollectionsPositions('invalidate', [], []);
+    expectToAddNewItemToCollectionsPositions('invalidate', 1, [], []);
   });
 
   function expectToAddNewItem(params) {
@@ -211,12 +211,12 @@ describe('New reducer:', () => {
     });
   }
 
-  function expectToAddNewItemToCollectionsPositions(operator, expectedIsolatedState, expectedCumulativeState) {
+  function expectToAddNewItemToCollectionsPositions(operator, itemId, expectedIsolatedState, expectedCumulativeState) {
     describe('and there are NO collections', function () {
       beforeAll(function () {
         this.collectionId = 'order=newest';
 
-        setupState(this, { ...RESOURCES }, this.id, this.newValues, { [operator]: { order: 'newest' } });
+        setupState(this, { ...RESOURCES }, itemId, this.newValues, { [operator]: { order: 'newest' } });
       });
 
       it('then creates a new collection with the specified key and places the item in it', function () {
@@ -238,7 +238,7 @@ describe('New reducer:', () => {
               projection: { type: null }
             }
           }
-        }, this.id, this.newValues, { [operator]: { order: 'newest' } });
+        }, itemId, this.newValues, { [operator]: { order: 'newest' } });
       });
 
       it('then creates a new collection with the specified key and places the item in it', function () {
@@ -265,7 +265,7 @@ describe('New reducer:', () => {
               status: { type: null }
             },
           }
-        }, this.id, this.newValues, { [operator]: { order: 'newest' } });
+        }, itemId, this.newValues, { [operator]: { order: 'newest' } });
       });
 
       it('then adds the new item to the matching collections', function () {

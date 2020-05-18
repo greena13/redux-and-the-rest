@@ -126,7 +126,7 @@ describe('Index reducers:', function () {
 
       it('then sets the items status to SUCCESS', function() {
         this.newValues.forEach((item) => {
-          expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, item.id, SUCCESS);
+          expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, item.id, 'type', SUCCESS);
         });
       });
     });

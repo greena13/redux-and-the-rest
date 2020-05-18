@@ -1,9 +1,7 @@
 import EmptyKey from '../../constants/EmptyKey';
-import getItem from '../../utils/getItem';
 import isUndefined from '../../utils/isUndefined';
 import buildStore from './buildStore';
 import { RESOURCES } from '../..';
-import getCollection from '../../utils/getCollection';
 
 /** ***************************************************************************************
  * Shared helpers
@@ -47,7 +45,9 @@ export function expectToChangeResourceItemStatusTo(context, resourcesName, subke
 }
 
 export function expectToClearResourceItemStatus(context, resourcesName, subkey) {
-  expectToChangeResourceItemStatusTo(context, resourcesName, subkey, undefined);
+  const newValue = resourceItem(context, resourcesName).status[subkey];
+
+  expect(newValue).toEqual(undefined);
 }
 
 export function expectToChangeResourceItemValuesTo(context, resourcesName, subkeyOrExpectedValue, expectedValue = undefined) {
@@ -103,7 +103,9 @@ export function expectToChangeResourcesItemStatusTo(context, resourcesName, id, 
 }
 
 export function expectToClearResourcesItemStatus(context, resourcesName, id, subkey) {
-  expectToChangeResourcesItemStatusTo(context, resourcesName, id, subkey, undefined);
+  const newValue = resourcesItem(context, resourcesName, id).status[subkey];
+
+  expect(newValue).toEqual(undefined);
 }
 
 export function expectToChangeResourcesItemStatusErrorOccurredAtToBeSet(context, resourceName, id) {
@@ -136,7 +138,7 @@ function expectResourcesCollectionToChangeTo(context, resourcesName, id, key, su
 function expectResourcesToChangeTo(context, resourcesName, type, id, key, subkeyOrExpectedValue, expectedValue = undefined) {
   const newValue = resourcesDefinition(context, resourcesName)[type][id][key];
 
-  if (isUndefined(subkeyOrExpectedValue)) {
+  if (isUndefined(expectedValue)) {
     expect(newValue).toEqual(subkeyOrExpectedValue);
   } else {
     expect(newValue[subkeyOrExpectedValue]).toEqual(expectedValue);
@@ -191,10 +193,10 @@ export function expectToNotChangeResources(context, resourcesName, type, id, att
  */
 
 export function resourcesItem(context, resourcesName, id) {
-  return getItem(resourcesDefinition(context, resourcesName), id);
+  return resourcesDefinition(context, resourcesName).items[id];
 }
 export function resourcesCollection(context, resourcesName, id) {
-  return getCollection(resourcesDefinition(context, resourcesName), id);
+  return resourcesDefinition(context, resourcesName).collections[id];
 }
 
 export function resourcesDefinition(context, resourceName) {

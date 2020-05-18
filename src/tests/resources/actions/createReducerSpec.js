@@ -7,7 +7,7 @@ import {
   expectToChangeResourcesItemStatusErrorOccurredAtToBeSet,
   expectToChangeResourcesItemStatusTo,
   expectToChangeResourcesItemValuesTo,
-  setupInitialState, expectToChangeResourceCollectionPositionsTo
+  setupInitialState, expectToChangeResourceCollectionPositionsTo,
 } from '../../helpers/resourceAssertions';
 import EmptyKey from '../../../constants/EmptyKey';
 import getCollectionKey from '../../../action-creators/helpers/getCollectionKey';
@@ -15,7 +15,7 @@ import getCollectionKey from '../../../action-creators/helpers/getCollectionKey'
 const RESOURCE_NAME = 'users';
 
 describe('Create reducer:', function () {
-  beforeAll(function() {
+  beforeAll(function () {
     const { reducers, actionCreators: { createItem: createUser } } = resources({
       name: 'users',
       url: 'http://test.com/users/:id?',
@@ -46,7 +46,7 @@ describe('Create reducer:', function () {
             status: { type: NEW }
           }
         },
-        collections: { },
+        collections: {},
         newItemKey: 'temp'
       }, { id: 'temp' });
     });
@@ -54,7 +54,7 @@ describe('Create reducer:', function () {
 
   describe('when there is already an item in the store with the same key', function () {
     describe('before the request has completed', function () {
-      beforeAll(function(){
+      beforeAll(function () {
         spyOn(console, 'warn');
 
         setUpBeforeRequest(this, {
@@ -66,7 +66,7 @@ describe('Create reducer:', function () {
           },
           collections: {
             [EmptyKey]: {
-              positions: [ 1 ],
+              positions: [1],
               status: { type: null }
             }
           },
@@ -74,24 +74,26 @@ describe('Create reducer:', function () {
         }, 1, this.newValues);
       });
 
-      it('then warns about the collision', function() {
+      it('then warns about the collision', function () {
         // eslint-disable-next-line no-console
         expect(console.warn).toHaveBeenCalledWith('Redux and the REST: CREATE_USER has the same key \'1\' as an existing item. Use updateItem() to update an existing item, or ensure the new item has a unique temporary key. (The create request was still sent to the server.)');
       });
 
-      it('then replaces the existing item\'s values', function() {
+      it('then replaces the existing item\'s values', function () {
         expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, 1, this.newValues);
       });
 
-      it('then sets the status of the existing item to CREATING', function() {
+      it('then sets the status of the existing item to CREATING', function () {
         expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 1, 'type', CREATING);
       });
 
-      it('then sets the newItemKey to the temporary key', function() {
+      it('then sets the newItemKey to the temporary key', function () {
         expectToChangeNewItemKeyTo(this, RESOURCE_NAME, 1);
       });
 
-      afterAll(() => tearDown(this));
+      afterAll(function () {
+        tearDown(this);
+      });
     });
 
     describe('when the request has completed', () => {
@@ -114,7 +116,7 @@ describe('Create reducer:', function () {
             },
             collections: {
               [EmptyKey]: {
-                positions: [ 1 ],
+                positions: [1],
                 status: { type: null }
               }
             },
@@ -123,17 +125,19 @@ describe('Create reducer:', function () {
         }, 1, this.newValues, this.responseValues);
       });
 
-      afterAll(() => tearDown(this));
+      afterAll(function () {
+        tearDown(this);
+      });
 
-      it('then moves the item to the new ID and merges in values from the server', function() {
+      it('then moves the item to the new ID and merges in values from the server', function () {
         expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.responseValues.id, this.responseValues);
       });
 
-      it('then sets the items status type to SUCCESS', function() {
+      it('then sets the items status type to SUCCESS', function () {
         expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.responseValues.id, 'type', SUCCESS);
       });
 
-      it('then updates the newItemKey ', function() {
+      it('then updates the newItemKey ', function () {
         expectToChangeNewItemKeyTo(this, RESOURCE_NAME, this.responseValues.id);
       });
     });
@@ -176,7 +180,9 @@ describe('Create reducer:', function () {
 
         expectToRecordPendingCreate();
 
-        afterAll(() => tearDown(this));
+        afterAll(function () {
+          tearDown(this);
+        });
       });
 
       describe('when the request has completed', () => {
@@ -186,7 +192,9 @@ describe('Create reducer:', function () {
 
         expectToRecordCreateSuccess();
 
-        afterAll(() => tearDown(this));
+        afterAll(function () {
+          tearDown(this);
+        });
       });
     });
 
@@ -198,7 +206,9 @@ describe('Create reducer:', function () {
 
         expectToRecordPendingCreate();
 
-        afterAll(() => tearDown(this));
+        afterAll(function () {
+          tearDown(this);
+        });
       });
 
       describe('when the request has completed', () => {
@@ -208,68 +218,70 @@ describe('Create reducer:', function () {
 
         expectToRecordCreateError();
 
-        afterAll(() => tearDown(this));
+        afterAll(function () {
+          tearDown(this);
+        });
       });
     });
   }
 
   function expectToRecordCreateSuccess() {
-    it('then moves the item to the new ID and merges in values from the server', function() {
+    it('then moves the item to the new ID and merges in values from the server', function () {
       expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, 1, {
         id: 1,
         username: 'Bob',
       });
     });
 
-    it('then sets the items status type to SUCCESS', function() {
+    it('then sets the items status type to SUCCESS', function () {
       expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 1, 'type', SUCCESS);
     });
 
-    it('then updates the newItemKey ', function() {
+    it('then updates the newItemKey ', function () {
       expectToChangeNewItemKeyTo(this, RESOURCE_NAME, 1);
     });
   }
 
   function expectToRecordPendingCreate() {
-    it('then adds a new item with the correct values', function() {
+    it('then adds a new item with the correct values', function () {
       expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, 'temp', { username: 'Bob' });
     });
 
-    it('then adds a new item with a status type of CREATING', function() {
+    it('then adds a new item with a status type of CREATING', function () {
       expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 'temp', 'type', CREATING);
     });
 
-    it('then does NOT add the temporary key to the default collection', function() {
+    it('then does NOT add the temporary key to the default collection', function () {
       expectToNotChangeResourcesCollection(this, RESOURCE_NAME, EmptyKey);
     });
 
-    it('then sets the newItemKey to the temporary key', function() {
+    it('then sets the newItemKey to the temporary key', function () {
       expectToChangeNewItemKeyTo(this, RESOURCE_NAME, 'temp');
     });
   }
 
   function expectToRecordCreateError() {
-    it('then DOES NOT move the item from its temporary key', function() {
+    it('then DOES NOT move the item from its temporary key', function () {
       expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, 'temp', this.newValues);
     });
 
-    it('then sets the items status type to ERROR', function() {
+    it('then sets the items status type to ERROR', function () {
       expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 'temp', 'type', ERROR);
     });
 
-    it('then sets the items status httpCode', function() {
+    it('then sets the items status httpCode', function () {
       expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 'temp', 'httpCode', 404);
     });
 
-    it('then sets the syncedAt attribute', function() {
+    it('then sets the syncedAt attribute', function () {
       expectToChangeResourcesItemStatusErrorOccurredAtToBeSet(this, RESOURCE_NAME, 'temp');
     });
 
-    it('then merges in the server\'s response into the status', function() {
+    it('then merges in the server\'s response into the status', function () {
       expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 'temp', 'error', { message: 'Not Found' });
     });
 
-    it('then DOES NOT update the newItemKey', function() {
+    it('then DOES NOT update the newItemKey', function () {
       expectToChangeNewItemKeyTo(this, RESOURCE_NAME, 'temp');
     });
   }
@@ -282,21 +294,27 @@ describe('Create reducer:', function () {
     });
 
     describe('and there are NO MATCHING collections', () => {
+      beforeAll(function() {
+        this.initialState = {
+          items: {},
+          collections: {
+            'active=true': {
+              positions: [],
+              status: { type: SUCCESS }
+            }
+          },
+          newItemKey: null
+        };
+      });
+
       describe('before the request has completed', function () {
         beforeAll(function () {
-          setUpBeforeRequest(this, {
-            items: {},
-            collections: {
-              'active=true': {
-                positions: [],
-                status: { type: SUCCESS }
-              }
-            },
-            newItemKey: null
-          }, 'temp', this.newValues, { [operator]: this.collectionKey });
+          setUpBeforeRequest(this, this.initialState, 'temp', this.newValues, { [operator]: this.collectionKey });
         });
 
-        afterAll(() => tearDown(this));
+        afterAll(function () {
+          tearDown(this);
+        });
 
         it('then creates a new collection with the specified temp key and places the item in it', function () {
           expectToChangeResourceCollectionPositionsTo(
@@ -313,27 +331,33 @@ describe('Create reducer:', function () {
     });
 
     describe('and there are collections with keys that exactly match', function () {
+      beforeAll(function() {
+        this.initialState = {
+          items: {
+            1: { id: 1, username: 'Jane' }
+          },
+          collections: {
+            'active=true': {
+              positions: [],
+              status: { type: null }
+            },
+            'order=newest': {
+              positions: [1],
+              status: { type: null }
+            },
+          },
+          newItemKey: null
+        };
+      });
+
       describe('before the request has completed', function () {
         beforeAll(function () {
-          setUpBeforeRequest(this, {
-            items: {
-              1: { id: 1, username: 'Jane' }
-            },
-            collections: {
-              'active=true': {
-                positions: [],
-                status: { type: null }
-              },
-              'order=newest': {
-                positions: [1],
-                status: { type: null }
-              },
-            },
-            newItemKey: null
-          }, 'temp', this.newValues, { [operator]: this.collectionKey });
+          setUpBeforeRequest(this, this.initialState, 'temp', this.newValues, { [operator]: this.collectionKey });
         });
 
-        afterAll(() => tearDown(this));
+        afterAll(function () {
+          tearDown(this);
+        });
 
         it('then adds the new item\'s temp key to the matching collections', function () {
           expectToChangeResourceCollectionPositionsTo(
@@ -351,12 +375,14 @@ describe('Create reducer:', function () {
   }
 
   function expectToReplaceTempKeyInCollections(operator, expectedIsolatedStateAfter) {
-    describe('when the request has completed', function() {
+    describe('when the request has completed', function () {
       beforeAll(function () {
         setUpAfterRequestSuccess(this, this.initialState, 'temp', this.newValues, this.responseValues, { [operator]: this.collectionKey });
       });
 
-      afterAll(() => tearDown(this));
+      afterAll(function () {
+        tearDown(this);
+      });
 
       it('then replaces all references to the temporary key with the new item key', function () {
         expectToChangeResourceCollectionPositionsTo(
@@ -376,7 +402,7 @@ describe('Create reducer:', function () {
       });
     });
 
-    afterAll(function(){
+    afterAll(function () {
       tearDown(this);
     });
 

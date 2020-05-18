@@ -1,10 +1,11 @@
 import { resource, NEW, SUCCESS, RESOURCES } from '../../../index';
 import {
-  expectToChangeResourcesItemValuesTo,
-  expectToNotChangeResourcesItemStatus,
-  expectToNotChangeResourcesItemValues,
+  expectToChangeResourceItemValuesTo,
+  expectToNotChangeResourceItemStatus,
+  expectToNotChangeResourceItemValues,
   setupInitialState
 } from '../../helpers/resourceAssertions';
+import EmptyKey from '../../../constants/EmptyKey';
 
 const RESOURCE_NAME = 'users';
 
@@ -43,9 +44,7 @@ describe('Edit new reducer:', function () {
     beforeAll(function () {
       spyOn(console, 'warn');
 
-      this.id = 1;
-
-      setupState(this, getInitialState(this.id, SUCCESS), this.id, this.newValues);
+      setupState(this, getInitialState(SUCCESS), this.newValues);
     });
 
     it('then warns attempting to edit a resource item that is not NEW', function() {
@@ -55,24 +54,22 @@ describe('Edit new reducer:', function () {
     });
 
     it('then doesn\'t update the item', function() {
-      expectToNotChangeResourcesItemStatus(this, RESOURCE_NAME, this.id);
-      expectToNotChangeResourcesItemValues(this, RESOURCE_NAME, this.id);
+      expectToNotChangeResourceItemStatus(this, RESOURCE_NAME);
+      expectToNotChangeResourceItemValues(this, RESOURCE_NAME);
     });
   });
 
   describe('Given the resource item is new', () => {
     beforeAll(function () {
-      this.id = 'temp';
-
-      setupState(this, getInitialState(this.id, NEW), this.id, this.newValues);
+      setupState(this, getInitialState(NEW), this.newValues);
     });
 
     it('then updates the item\'s values', function() {
-      expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.id, this.newValues);
+      expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, this.newValues);
     });
 
     it('then leaves the item\'s status as NEW', function() {
-      expectToNotChangeResourcesItemStatus(this, RESOURCE_NAME, this.id);
+      expectToNotChangeResourceItemStatus(this, RESOURCE_NAME);
     });
   });
 
@@ -82,11 +79,11 @@ describe('Edit new reducer:', function () {
     context.store.dispatch(context.editNewUser(newValues));
   }
 
-  function getInitialState(id, statusType) {
+  function getInitialState(statusType) {
     const base = {
       ...RESOURCES,
       items: {
-        [id]: {
+        [EmptyKey]: {
           values: {
             username: 'Jane'
           },
@@ -98,7 +95,7 @@ describe('Edit new reducer:', function () {
     };
 
     if (statusType === NEW) {
-      base.newItemKey = id;
+      base.newItemKey = EmptyKey;
     }
 
     return base;

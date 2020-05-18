@@ -4,7 +4,10 @@ import nop from '../../../utils/function/nop';
 import {
   expectToChangeResourcesItemStatusErrorOccurredAtToBeSet,
   expectToChangeResourcesItemStatusTo,
-  expectToChangeResourcesItemValuesTo, expectToNotChangeResourcesItemStatus, expectToNotChangeResourcesItemValues,
+  expectToChangeResourcesItemValuesTo,
+  expectToClearResourcesItemStatus,
+  expectToNotChangeResourcesItemStatus,
+  expectToNotChangeResourcesItemValues,
   setupInitialState
 } from '../../helpers/resourceAssertions';
 
@@ -23,7 +26,7 @@ describe('Update reducer:', function () {
     this.reducers = reducers;
 
     this.itemId = 1;
-    this.newValues = { username: 'Robert' };
+    this.newValues = { id: 1, username: 'Robert' };
     this.serverValues = { id: 1, username: 'Robert', approved: false };
   });
 
@@ -32,7 +35,7 @@ describe('Update reducer:', function () {
       beforeAll(function () {
         spyOn(console, 'warn');
 
-        setUpBeforeRequest(this, { ...RESOURCES }, 'http://test.com/users/1', this.itemId);
+        setUpBeforeRequest(this, { ...RESOURCES }, 'http://test.com/users/1', this.itemId, this.newValues);
       });
 
       afterAll(function () {
@@ -129,7 +132,7 @@ describe('Update reducer:', function () {
   function expectToCorrectlyUpdateItemInStore(initialState, params) {
     describe('when the action creator is called and before the request has completed', function () {
       beforeAll(function () {
-        setUpBeforeRequest(this, initialState, 'http://test.com/users/1', params);
+        setUpBeforeRequest(this, initialState, 'http://test.com/users/1', params, this.newValues);
       });
 
       afterAll(function () {
@@ -156,8 +159,8 @@ describe('Update reducer:', function () {
         tearDown(this);
       });
 
-      it('then changes the items\'s status type to SUCCESS', function () {
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, SUCCESS);
+      it('then changes the item\'s status type to SUCCESS', function () {
+        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'type', SUCCESS);
       });
 
       it('then sets the item\'s values from the response', function () {
@@ -192,7 +195,7 @@ describe('Update reducer:', function () {
   function expectToCorrectlyUpdateAnEditedResourceItem(initialState, params) {
     describe('before the request has completed', function () {
       beforeAll(function () {
-        setUpBeforeRequest(this, initialState, 'http://test.com/users/1', params);
+        setUpBeforeRequest(this, initialState, 'http://test.com/users/1', params, this.newValues);
       });
 
       afterAll(function () {
@@ -232,11 +235,11 @@ describe('Update reducer:', function () {
       });
 
       it('then removes the dirty bit', function () {
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'dirty', undefined);
+        expectToClearResourcesItemStatus(this, RESOURCE_NAME, this.itemId, 'dirty');
       });
 
       it('then clears the original values', function () {
-        expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.itemId, 'originalValues', undefined);
+        expectToClearResourcesItemStatus(this, RESOURCE_NAME, this.itemId, 'originalValues');
       });
 
       it('then sets the item\'s values from the response', function () {
@@ -335,10 +338,10 @@ describe('Update reducer:', function () {
     });
   }
 
-  function setUpBeforeRequest(context, initialState, url, params) {
+  function setUpBeforeRequest(context, initialState, url, params, values) {
     fetchMock.put(url, new Promise(nop));
 
-    setupState(context, initialState, params);
+    setupState(context, initialState, params, values);
   }
 
   function setUpAfterRequestSuccess(context, initialState, url, params, values, options = { body: {} }) {

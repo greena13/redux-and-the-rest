@@ -4,7 +4,9 @@ import nop from '../../../utils/function/nop';
 import {
   expectToChangeResourceItemStatusErrorOccurredAtToBeSet,
   expectToChangeResourceItemStatusTo,
-  expectToChangeResourceItemValuesTo, expectToNotChangeResourceItemStatus, expectToNotChangeResourceItemValues,
+  expectToChangeResourceItemValuesTo, expectToClearResourceItemStatus,
+  expectToNotChangeResourceItemStatus,
+  expectToNotChangeResourceItemValues,
   setupInitialState
 } from '../../helpers/resourceAssertions';
 import EmptyKey from '../../../constants/EmptyKey';
@@ -32,7 +34,7 @@ describe('Update reducer:', function () {
       beforeAll(function () {
         spyOn(console, 'warn');
 
-        setUpBeforeRequest(this, { ...RESOURCES }, 'http://test.com/users');
+        setUpBeforeRequest(this, { ...RESOURCES }, this.newValues, 'http://test.com/users');
       });
 
       afterAll(function () {
@@ -117,7 +119,7 @@ describe('Update reducer:', function () {
   function expectToCorrectlyUpdateItemInStore(initialState) {
     describe('when the action creator is called and before the request has completed', function () {
       beforeAll(function () {
-        setUpBeforeRequest(this, initialState, 'http://test.com/users');
+        setUpBeforeRequest(this, initialState, this.newValues, 'http://test.com/users');
       });
 
       afterAll(function () {
@@ -129,7 +131,7 @@ describe('Update reducer:', function () {
       });
 
       it('then merges in the new values with the item\'s old ones', function () {
-        expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, this.newValues);
+        expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, { ...initialState.items[EmptyKey].values, ...this.newValues });
       });
     });
 
@@ -145,7 +147,7 @@ describe('Update reducer:', function () {
       });
 
       it('then changes the items\'s status type to SUCCESS', function () {
-        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, SUCCESS);
+        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'type', SUCCESS);
       });
 
       it('then sets the item\'s values from the response', function () {
@@ -179,7 +181,7 @@ describe('Update reducer:', function () {
   function expectToCorrectlyUpdateAnEditedResourceItem(initialState) {
     describe('before the request has completed', function () {
       beforeAll(function () {
-        setUpBeforeRequest(this, initialState, 'http://test.com/users');
+        setUpBeforeRequest(this, initialState, this.newValues, 'http://test.com/users');
       });
 
       afterAll(function () {
@@ -199,7 +201,7 @@ describe('Update reducer:', function () {
       });
 
       it('then merges in the new values with the item\'s old ones', function () {
-        expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, this.newValues);
+        expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, { ...initialState.items[EmptyKey].values, ...this.newValues });
       });
     });
 
@@ -219,11 +221,11 @@ describe('Update reducer:', function () {
       });
 
       it('then removes the dirty bit', function () {
-        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'dirty', undefined);
+        expectToClearResourceItemStatus(this, RESOURCE_NAME, 'dirty');
       });
 
       it('then clears the original values', function () {
-        expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'originalValues', undefined);
+        expectToClearResourceItemStatus(this, RESOURCE_NAME, 'originalValues');
       });
 
       it('then sets the item\'s values from the response', function () {
@@ -321,10 +323,10 @@ describe('Update reducer:', function () {
     });
   }
 
-  function setUpBeforeRequest(context, initialState, url) {
+  function setUpBeforeRequest(context, initialState, newValues, url) {
     fetchMock.put(url, new Promise(nop));
 
-    setupState(context, initialState);
+    setupState(context, initialState, newValues);
   }
 
   function setUpAfterRequestSuccess(context, initialState, url, values, options = { body: {} }) {
