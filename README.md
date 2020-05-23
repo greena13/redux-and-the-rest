@@ -5,12 +5,6 @@
 
 Declarative, flexible Redux integration with RESTful APIs.
 
-## Stability and Maturity
-
-`redux-and-the-rest` is still under active development and is likely to change its functionality and API in the next few releases.
-
-This Readme is still being actively written.
-
 ## Feature overview
 
 * **DRY:** All of the boilerplate code usually required to use Redux is abstracted away into a succinct DSL inspired by the Ruby on Rails framework.
@@ -25,9 +19,9 @@ This Readme is still being actively written.
 
 ## Design philosophy
 
-`redux-and-the-rest` loosely takes its lead from Reduced Instruction Set Computing (RISC) and the standard Create, Read, Update, Delete (CRUD) paradigm and offers as few low-level reducers and actions as possible. In doing so, it allows a mucher higher re-use and sharing of code and reduces the overhead of scaling out store for large applications.
+`redux-and-the-rest` loosely takes its lead from Reduced Instruction Set Computing (RISC) and the standard Create, Read, Update, Delete (CRUD) paradigm and offers as few low-level reducers and actions as possible. In doing so, it allows more re-use and sharing of code, and reduces the overhead of scaling out a store for large applications.
 
-You are encouraged to write your own helper functions on top of the action creators `redux-and-the-rest` provides for more nuanced updates, where needed. 
+You are encouraged to write your own helper functions on top of the action creators `redux-and-the-rest` provides for more nuanced updates, where needed (details and examples follow). 
 
 ## Basic usage
 
@@ -57,8 +51,7 @@ const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers }
 const store = createStore(combineReducers({ users: usersReducers }), {}, applyMiddleware(Thunk));
 
 /**
- * Action to fetch the users from http://test.com/users/newest and make them
- * available in your store
+ * Action to fetch the users from http://test.com/users and make them available in your store
  */
 fetchUsers();
 
@@ -174,7 +167,7 @@ yarn add redux-and-the-rest
 
 ### Peer Dependencies
 
-If you have already installed `redux`; `redux-thunk`; some form of fetch polyfill (suggested: `isomorphic-fetch`); and (optionally) `react-redux`, then you can skip to the next section and dive right in.
+If you have already installed `redux`; `redux-thunk`; some form of fetch polyfill (suggested: `isomorphic-fetch`); and (optionally) `react-redux`, then you can skip to the next section.
 
 If you have not already done so, you must also install `redux` ([full installation](https://github.com/reduxjs/redux)):
 
@@ -193,7 +186,7 @@ npm install redux-thunk --save
 yarn add redux-thunk
 ```
 
-You must then pass the middleware in as a parameter when you create your Redux store ([full instructions](https://github.com/reduxjs/redux-thunk#installation)):
+You must then pass the `redux-thunk` middleware in as a parameter when you create your Redux store ([full instructions](https://github.com/reduxjs/redux-thunk#installation)):
 
 ```javascript
 import { createStore, applyMiddleware, combineReducers } from 'redux';
@@ -206,7 +199,7 @@ function buildStore(initialState, reducers) {
 export default buildStore;
 ```
 
-If you are using React, then you will also need the `react-redux` bindings ([full instructions](https://github.com/reduxjs/react-redux)):
+If you are using React, it's also recommended to use the `react-redux` bindings ([full instructions](https://github.com/reduxjs/react-redux)):
 
 ```
 npm install react-redux --save
@@ -224,19 +217,26 @@ yarn add isomorphic-fetch es6-promise
 
 ## Defining resources
 
-Resources are defined with the `resources` function, which accepts two options hashes as arguments:
+Resources are defined with one of two functions: 
+
+* `resources` - For when there are many resources, each referenced with one or more ids or keys, or 
+* `resource` - For singular resources; cases where there is only one like the current user's profile
+
+They both accept two options hashes as arguments:
 
 * `resourceOptions` - options that apply to all of a resource's actions
 * `actionOptions` - options that configure individual actions (RESTful or not)
 
-It returns an object containing Redux components necessary to use the resource you have just defined:
+The functions return an object containing Redux components necessary to use the resource you have just defined:
 
 * `reducers` - an object of reducers that you can pass to Redux's `combineReducers` function.
 * `actions` - an object of action constants where the keys are the generic action names and the values are the specific action constants (e.g. `{ index: 'FETCH_USERS' }`)
-* `getCollection` - a helper function for retrieving a collection based on its key parameters
-* `getItem` - a helper function for retrieving an item based on its key parameters
-* `getNewItem` - a helper function for retrieving the item currently being created
-* `actionCreators` - a collection of functions (action creators) you call to interact with the resource which match the actions you specify in `actionOptions` and are passed to Redux's `dispatch` function.
+* `actionCreators` - an object of functions (action creators) you call to interact with the resource which match the actions you specify in `actionOptions` and are passed to Redux's `dispatch` function.
+
+Also returned are 3 helper functions:
+* `getCollection` - for retrieving a collection based on its key parameters
+* `getItem` - for retrieving an item based on its key parameters
+* `getNewItem` - for retrieving the item currently being created
 
 ```javascript
 import { resources } from 'redux-and-the-rest';
@@ -252,83 +252,26 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
     }
 );
 ```     
-
-### Defining singular resources
-
-Sometimes you may need to define a singular resource, or a resource for which there is only every one singular item. A good example of such a resource is a user's current session or their profile. 
-
-You can define a singular resource using the `resource` function, which accepts the same arguments as the `resources` function (with a few exceptions largely concerned with defining actions that do not make sense for a singular resource).
-
-### Actions and their action creators
-
-#### CRUD actions
-
-It's common to think about interacting with resources in terms of 4 primary operations: create, read, update, delete (CRUD). `redux-and-the-rest` provides local (client-side) actions to refine the input state of each of these operations, and the remote API actions to persist or submit them.
-
-##### Local CRUD actions
-
-Generally your application will need to perform actions on resources locally, until a point is reached where those changes should be synchronised with a remote API. None of them make any requests to a remote API and are client-side operations that happen only in your Redux store. 
-
-| Action | Action Creator | Description |
-| ------ | -------------- | ----------- |
-| new | newItem() | Creates a new item in the Redux store |
-| editNew | editNewItem() | Continue to add or modify a new item's attributes until it's ready to be saved. |
-| clearNew | clearNewItem() | Discards (removes) the new item fom the Redux store |
-| edit | editItem() | Replaces an existing (saved) item's attributes in the store with new ones |
-| clearEdit | clearEditItem() | Reverts and edit to restore the item's attributes before the edit |
-
-These actions are generally accumulative and reversible, so you can call them successively over multiple screens or stages of a workflow and provide a cancel feature if the user wishes to abort
-
-##### Remote API CRUD actions
-
-When the your application is done with local manipulation of a resource, you can use the following to persist those changes to a remote API.
-
-| Action | Action Creator | Description |
-| ------ | -------------- | ----------- |
-| index | fetchCollection() | Fetches a collection of items from a remote API |
-| show | fetchItem() | Fetches a singular item from a remote API |
-| create | createItem() | Sends a create request with an items attributes to a remote API |
-| update | updateItem() | Sends new attributes (an "update") for an item to a remote API |
-| destroy | destroyItem() | Sends new deletion request for an item to a remote API |
-
-`resources()` accepts a `localOnly` option, that allows you to maintain resources without a remote API and will turn the asynchronous remote API actions into synchronous updates that label your resources as being in a "saved" state.
-
-#### Clearing actions
-
-It's generally _not_ recommended to use any of the following directly, as there is usually a better way of achieving what you need, but they are available:
-
-| Action | Action Creator | Description |
-| ------ | -------------- | ----------- |
-| clearItem | clearItem() | Removes an item from the store. |
-| clearCollection | clearCollection() | Removes a collection from the store (but still leaving behind its items). |
-| clearAll | clearAll() | Completely resets a resource to its empty state, clearing all selections, items and collections. |
-
-Some common situations where you may be tempted to use the above, are:
-
-* Refreshing an item or collection from a remote API: `fetchItem()` or `fetchCollection()` should handle transitioning between the stale and new records more cleanly.
-* Cancelling an edit to an item: Use `clearEdit()` to roll back the changes without the need to refetch from the remote API.
-* Clearing a resource when an event occurs, such as when user logs out: use the `clearOn` option to achieve this more efficiently.   
-
-#### Selection actions
-
-In addition to the CRUD functionality, `redux-and-the-rest` provides a number of actions for selecting one or more items to perform actions on. This is useful if your application needs to select resources on one screen or area and persist that selection to another area, or allow it to be retrieved at a later time.
-
-| Action | Action Creator | Description |
-| ------ | -------------- | ----------- |
-| select | selectItem() | Selects an item in the store, replacing any previous items that may have been selected. |
-| selectAnother | selectAnotherItem() | Selects an item in the store, adding it to any previous items that are selected. |
-| deselect | deselectItem() | Unselects an item that was previous selected |
-| clearSelected | clearSelectedItems() | Unselects all selected items |
-
-
 ### Configuring individual actions
 
-`actionOptions` lists the actions that are defined for a particular resource and allow you to expand upon, or override, the configuration made in `resourceOptions`.
+`actionOptions` specifies the actions defined for a particular resource and allow you to expand upon, or override, the configuration made in `resourceOptions`.
 
-`actionOptions` should be an either:
+`actionOptions` should be an either one of two formats:
 
-* An object with action names as keys and configuration objects as values or
-* An array of RESTful action names as strings
+An array of action names as strings:
+
+```javascript
+const { actionCreators: { fetchCollection: fetchUsers } } = resources(
+    {
+        // ...
+    },
+    [ 'index' ]
+);
+```                                
+
+This format is shorter, and recommended unless you need the second format.
+
+The other format is an object with action names as keys and configuration objects as values.
 
 #### Using the default RESTful action configuration
 
@@ -340,17 +283,6 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
         // ...
     },
     { index: true }
-);
-```
-
-You can also pass an array of RESTful actions for which you want to use the default configuration:
-
-```javascript
-const { actionCreators: { fetchCollection: fetchUsers } } = resources(
-    {
-        // ...
-    },
-    [ 'index' ]
 );
 ```
 
@@ -371,23 +303,86 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 );
 ```
 
-Please see [Action Options API](#action-options-api) for a full list of supported options.
+See [Action Options API](#action-options-api) for a full list of supported options.
+
+### Actions and their action creators
+
+#### CRUD actions
+
+It's common to think about interacting with resources in terms of 4 primary operations: create, read, update, delete (CRUD). `redux-and-the-rest` provides local (client-side) actions to refine the input state of each of these operations, and the remote API actions to persist or submit them.
+
+##### Local CRUD actions
+
+Generally your application will need to perform actions on resources locally, until a point is reached where those changes should be synchronised with a remote API. None of them make any requests to a remote API and are client-side operations that happen only in your Redux store. 
+
+| Action | Action Creator | Description |
+| ------ | -------------- | ----------- |
+| new | newItem() | Creates a new item in the Redux store |
+| editNew | editNewItem() | Continue to add or modify a new item's attributes until it's ready to be saved. |
+| clearNew | clearNewItem() | Discards (removes) the new item fom the Redux store |
+| edit | editItem() | Replaces an existing (saved) item's attributes in the store with new ones |
+| clearEdit | clearEditItem() | Reverts an edit, to restore the item's attributes before the edit |
+
+These actions are generally accumulative and reversible, so you can call them successively over multiple screens or stages of a workflow and provide a cancel feature if the user wishes to abort.
+
+##### Remote API CRUD actions
+
+When the your application is done with local manipulation of a resource, you can use the following to persist those changes to a remote API.
+
+| Action | Action Creator | Description |
+| ------ | -------------- | ----------- |
+| index | fetchCollection() | Fetches a collection of items from a remote API |
+| show | fetchItem() | Fetches an item from a remote API |
+| create | createItem() | Sends a create request with an item's attributes to a remote API |
+| update | updateItem() | Sends new attributes (an "update") for an item to a remote API |
+| destroy | destroyItem() | Sends a delete request for an item to a remote API |
+
+`resources()` accepts a `localOnly` option, that allows you to maintain resources without a remote API and will turn the asynchronous remote API actions into synchronous updates that label your resources as being in a "saved" state.
+
+#### Clearing actions
+
+It's generally _not_ recommended to use any of the following directly, as there is usually a better way of achieving what you need, but they are available:
+
+| Action | Action Creator | Description |
+| ------ | -------------- | ----------- |
+| clearItem | clearItem() | Removes an item from the store. |
+| clearCollection | clearCollection() | Removes a collection from the store (but still leaves behind its items). |
+| clearAll | clearAll() | Completely resets a resource to its empty state, clearing all selections, items and collections. |
+
+Some common situations where you may be tempted to use the above, are:
+
+* Refreshing an item or collection from a remote API: `fetchItem()` or `fetchCollection()` should handle transitioning between the stale and new records more cleanly.
+* Cancelling an edit to an item: Use `clearEdit()` to roll back the changes without the need to refetch from the remote API.
+* Clearing a resource when an event occurs, such as when user logs out: use the `clearOn` option to achieve this more efficiently (discussed below).   
+
+#### Selection actions
+
+In addition to the CRUD functionality, `redux-and-the-rest` provides a number of actions for selecting one or more items to perform actions on. This is useful if your application needs to select resources on one screen or area and persist that selection to another area, or allow it to be retrieved at a later time.
+
+| Action | Action Creator | Description |
+| ------ | -------------- | ----------- |
+| select | selectItem() | Selects an item in the store, replacing any previous items that may have been selected. |
+| selectAnother | selectAnotherItem() | Selects an item in the store, adding it to any previous items that are selected. |
+| deselect | deselectItem() | Unselects an item that is currently selected |
+| clearSelected | clearSelectedItems() | Unselects all selected items |
+
 
 ## Connecting to React
 
 ### Usage with react-redux
 
-Although not required, it's recommended you use `redux-and-the-rest` with `react-redux`, which provides the standard high-level API, `connect` which accepts two functions:
+Although not required, when using `redux-and-the-rest` with React, it's recommended you use `react-redux`. It provides the `connect` function, which accepts two arguments:
 
 | function | Has access to | Passes to your component as props | Can be thought of as |
-| `mapStateToProps` | Current redux state and props passed to your container | Some subset of the total redux state | READ |
+| -------- | ------------- | --------------------------------- | -------------------- |
+| `mapStateToProps` | Current Redux state and the props passed to your container | Some subset of the total redux state | READ |
 | `mapDispatchToProps` | `dispatch` (the function for dispatching actions or updates on the Redux store) | Handler functions that accept values from your component and call `dispatch` | WRITE (CREATE, UPDATE, DELETE) |
 
 The full API can be seen in the [docs](https://react-redux.js.org/api/connect).
 
-Because `redux-and-the-rest` is built around the principle of providing a reduced set of reducers for the standard CRUD operations (with a few extras for selection and clearing), you're expected to define utility functions for performing "sub-operations". Take the example of a widget that sets the user's age: you only want to modify one of the the user resource's attributes, but you need to provide the entire new set of values back to `redux-and-the-rest` (this is to allow for removal of attributes and complex or deep merging that `redux-and-the-rest` cannot be expected to guess).
+Because `redux-and-the-rest` is built around the principle of providing a reduced set of reducers for the standard CRUD operations (with a few extras for selection and clearing), you're expected to define utility functions for performing "sub-operations". Take the example of a widget that sets the user's age: you only want to modify one of the the user items's values, but you need to provide the entire new set of values back to `redux-and-the-rest` (this is to allow for removal of attributes and complex or deep merging that `redux-and-the-rest` cannot be expected to guess).
 
-Because the `connect` function separates access to `dispatch` (`mapDispatchToProps`) and access to the current redux state (`mapStateToProps`), you have two options.
+Because the `connect` function separates access to `dispatch` (`mapDispatchToProps`) and access to the current Redux state (`mapStateToProps`), you have a few options.
 
 When your component needs access to all the resource's attributes anyway, you can pass the whole resource item into your component and then back out again in the handler:
 
@@ -418,7 +413,7 @@ export default connect(
 And you would then call it in your component:
 
 ```javascript
-<Button onPress={updateAge(user, user.age + 1)} >
+<Button onPress={updateAge(user.values, user.values.age + 1)} >
   Increment
 </Button>
 ``` 
@@ -439,7 +434,7 @@ const mapStateToProps = ({ user } ) => {
 
 const mapDispatchToProps = ((dispatch) => {
   return {
-    updateAge: (user, newAge) => dispatch(updateUser({ ...user, age: newAge }))
+    updateAge: (values, newAge) => dispatch(updateUser({ ...values, age: newAge }))
   };
 });         
 
@@ -447,7 +442,7 @@ const mergeProps = ((stateProps, dispatchProps, ownProps) => {
   return {
     ...stateProps,
     ...dispatchProps,
-    updateAge: (newAge) => dispatchProps.updateAge(stateProps.user, newAge),
+    updateAge: (newAge) => dispatchProps.updateAge(stateProps.user.values, newAge),
     ...ownProps
   }   
 });
@@ -462,7 +457,7 @@ export default connect(
 And call it in your component with the reduced argument list:
 
 ```javascript
-<Button onPress={updateAge(user.age + 1)} >
+<Button onPress={updateAge(user.values.age + 1)} >
   Increment
 </Button>
 ``` 
@@ -486,9 +481,9 @@ const mapStateToProps = ({ user } ) => {
 const mapDispatchToProps = ((dispatch) => {
   return {
     updateAge: (newAge) => {
-      const user = getUser(store.getState().users).values; 
+      const { values } = getUser(store.getState().users); 
       
-      dispatch(updateUser({ ...user, age: newAge }));
+      dispatch(updateUser({ ...values, age: newAge }));
     }   
   };
 });
@@ -523,7 +518,7 @@ const mergeProps = ((stateProps, dispatchProps, ownProps) => {
   // The final collection of props passed to your component
   return {
     age: stateProps.user.values.age,
-    updateAge: (newAge) => dispatchProps.updateAge(stateProps.user, newAge),
+    updateAge: (newAge) => dispatchProps.updateAge(stateProps.user.values, newAge),
     ...ownProps
   }   
 });
@@ -538,7 +533,7 @@ export default connect(
 Either option will allow you to call the handler in your component with only the new values:
 
 ```javascript
-<Button onPress={updateAge(user.age + 1)} >
+<Button onPress={updateAge(age + 1)} >
   Increment
 </Button>
 ``` 
@@ -547,7 +542,7 @@ Either option will allow you to call the handler in your component with only the
 
 ### Levels of configuration
 
-It's important to have a basic understanding of how `redux-and-the-rest` achieves its flexibility using its four levels of configuration; each one has a different scope and is specified at different times.
+`redux-and-the-rest` achieves its flexibility using four levels of configuration; each one has a different scope and is specified at different times.
 
 You need to select where you place your configuration depending on how wide you want particular options to apply, and when the desired values are available.
 
@@ -557,11 +552,11 @@ For example, `actionCreatorOptions` take precedence over `actionOptions` (which 
 
 
 | Options | Priority | Defined | Scope | Required |
-| ---- | :---- | :---- | :-- | :--: |
-| `globalOptions` | Lowest | Before calling your action creators, using `configure()`. | All resources and their actions | No |
-| `resourceOptions` |  | When defining resources, using `resources()` | All of a single resource's actions | Yes |
-| `actionOptions` |  | When defining resources, using `resources()` | A single resource action | No |
-| `actionCreatorOptions` | Highest | When calling an action creator, as the last argument | A single store operation | No |
+| ------- | -------- | ------- | ----- | -------- |
+| `globalOptions` | Lowest | At any time, using `configure()`. | All resources and their actions | No |
+| `resourceOptions` |  | When defining resources, using `resources()` | All of a resource's actions | Yes |
+| `actionOptions` |  | When defining resources, using `resources()` | An action creator function | No |
+| `actionCreatorOptions` | Highest | When calling an action creator, as the last argument | An invocation of an action creator | No |
 
 Here is an example of them used all in once place:
 
@@ -606,18 +601,28 @@ fetchUsers({order: 'newest'}, {
 import { configure } from 'redux-and-the-rest';
 
 configure({
-    // globalOptions
+  // globalOptions
 });
 ```
 
 #### Options
 
-| key |  Type |Required or Default Value | Description |
-| --------------------------------------- | :----: | :----: | :-- |
+| key | Type | Required or Default Value | Description |
+| --- | ---- | ------------------------- | ----------- |
+| keyBy | string or array of strings | No | The resource attribute used to key/index all items of the current resource type. This will be the value you pass to each action creator to identify the target of each action. By default, 'id' is used. |
+| localOnly | boolean | No | Set to true for resources that should be edited locally, only. The show and index actions are disabled (the fetch* action creators are not exported) and the create, update and destroy only update the store locally, without making any HTTP requests. |
+| urlOnlyParams | Array of string | No | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
+| responseAdaptor | (responseBody: Object, response: Response) => { values: Object, error?: Object or string, errors?: Array<Object or string> } | No | Function used to adapt the responses for requests before it is handed over to the reducers. The function must return the results as an object with properties values and (optionally) error. |
+| requestAdaptor | (requestBody: Object) => Object | No | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
+| credentials | RequestCredentials | No | Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the request only if it's on the same origin. |
+| request | RequestInit | No | The request configuration object to be passed to the fetch method, or the new XMLHttpRequest object, when the progress option is used. |
+| beforeReducers | Array of reducers | No | A list of functions to call before passing the resource to the reducer. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
+| afterReducers | Array of reducers  | No | A list of functions to call after passing the resource to the reducer. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
+| store | Store | Yes, if you use the mentioned helpers | The Redux store, used to directly invoke dispatch and get state for the getOrFetchItem() and getOrFetchCollection() functions |
 
 ### Resource Options API
 
-Values passed to `resourceOptions` are used to configure the resource and apply to all actions, unless overridden by more specific configuration in `actionOptions`.
+Values passed to `resourceOptions` are used to configure the resource and apply to all of that resource's actions, unless overridden by more specific configuration in `actionOptions`.
 
 #### Usage
 
@@ -638,26 +643,26 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 
 ##### Naming and indexing
 
-| key |  Type |Required or Default Value | Description |
-| --------------------------------------- | :----: | :----: | :-- |
-| `name` | string | Required | The pluralized name of the resource you are defining.
+| key | Type | Required or Default Value | Description |
+| --- | ---- | ------------------------  | ----------- |
+| `name` | string | Required | The pluralized name of the resource you are defining, used to create the names of the action types
 | `keyBy` | string |  'id' | The resource attribute used to key/index all items of the current resource type. This will be the value you pass to each action creator to identify the target of each action. |
 
 ##### Synchronising with a remote API
 
-| key |  Type |Required or Default Value | Description |
-| --------------------------------------- | :----: | :----: | :-- |
+| key | Type | Required or Default Value | Description |
+| --- | ---- | ------------------------- | ----------- |
 | `localOnly` | boolean | false | Set to true for resources that should be edited locally, only. The `show` and `index` actions are disabled (the `fetch*` action creators are not exported) and the `create`, `update` and `destroy` only update the store locally, without making any HTTP requests. |
 | `url` | string |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
-| `urlOnlyParams` | string[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
+| `urlOnlyParams` | string[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. Useful for pagination. |
 | `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error` or `errors`. |
 | `credentials` | string | undefined | Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the request only if it's on the same origin. |
 | `requestAdaptor` | Function | Identity function | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
 
 ##### Reducers
 
-| key |  Type |Required or Default Value | Description |
-| --------------------------------------- | :----: | :----: | :-- |
+| key | Type | Required or Default Value | Description |
+| --- | ---- | ------------------------- | ----------- |
 | `beforeReducers` | Function[] | [ ] | A list of functions to call before passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
 | `afterReducers` | Function[] | [ ] |A list of functions to call after passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
 | `reducesOn` | {action: Action, reducer: function} | [ ] | A single or list of objects with an `action` and a `reducer`, used to specify custom reducers in response to actions external to the current resource. |
@@ -694,13 +699,13 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 ##### Naming and indexing
 
 | key | Type | Required or Default Value | Description |
-| --------------------------------------- | :----: | :----: | :-- |
+| --- | ---- | ------------------------- | ----------- |
 | `keyBy` | string | `resourceOptions.keyBy` | The key to index all items on for this particular action. |
 
 ##### Synchronising with a remote API
 
 | key | Type | Required or Default Value | Description |
-| --------------------------------------- | :----: | :----: | :-- |
+| --- | ---- | ------------------------- | ----------- |
 | `url` |  string |`resourceOptions.url` | The URL template to use for this particular action. |
 | `urlOnlyParams` | string[] | `resourceOptions.urlOnlyParams` | The attributes passed to the action creator that should be used to create the request URL, and ignored when storing the result in the store. |
 | `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error` or `errors`. |
@@ -711,7 +716,7 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 ##### Reducers
 
 | key | Type | Required or Default Value | Description |
-| --------------------------------------- | :----: | :----: | :-- |
+| --- | ---- | ------------------------- | ----------- |
 | `reducer` | Function | RESTFUL actions: a sensible default; non-RESTFUL: Required | A custom reducer function to adapt the resource as it exists in the Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful actions. |
 | `beforeReducers` | Function[] | [ ] | A list of functions to call before passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
 | `afterReducers` | Function[] | [ ] |A list of functions to call after passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
@@ -719,72 +724,7 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 
 ## Store data
 
-
-### Getting resources from the store
-
-Where resources are located in your Redux store depend on how you pass the `reducers` returned by the `resources()` function to Redux.
-
-For example, assuming you have defined a users resource like this:
-
-```javascript
-const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
-    {
-        name: 'users',
-        url: 'http://test.com/users/:id?'.
-        keyBy: 'id'
-    },
-    {
-        index: true
-    }
-);
-```
-
-Passing the reducers to Redux like the following:
-
-```javascript
-const store = createStore(combineReducers({ users: usersReducers }), {}, applyMiddleware(Thunk));
-```
-
-Will mean that the users resource will be located at:
-
-```javascript
-store.getState().users;
-```
-
-Or if you are using Redux's React bindings:
-
-```javascript
-import { connect } from 'react-redux';
-
-function mapStateToProps({ users }) {
-  return { users };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    //...
-  };
-}
-
-const MyComponentContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(MyComponent);
-```
-
-Similarly, if you passed it like so:
-
-```javascript
-const store = createStore(combineReducers({ guests: usersReducers }), {}, applyMiddleware(Thunk));
-```
-
-Then you could get the resource with:
-
-```javascript
-store.getState().guests;
-```
-
-#### Getting items from the store
+### Getting items from the store
 
 To get an item from a resource, you use the `getItem()` function returned by `resources()`.
 
@@ -810,13 +750,13 @@ function mapStateToProps({ users }, { params: { id } }) {
 }
 ```
 
-#### Automatically fetching items that are not in the store
+### Automatically fetching items not in the store
 
-To get an item from a resource or request it if it's not in the store, you use the `getOrFetchItem()` function returned by `resources()`.
+To get a resource item or collection from the store and fallback to making a request to the remote API if it's not there, use the `getOrFetchItem()` function returned by `resources()`.
 
 If the item is in the store, it will return it. However, if it is not there, it will return an [empty item](#item-schema) (instead of `undefined`) and trigger the action(s) to fetch the resource in the background.
 
-You can use this method call multiple times, across renders and components mounted at the same time, as duplicate actions and requests are ignored, so no unnecessary updates to the store or HTTP request will be made.
+You can use this function multiple times, across renders and components mounted at the same time, because duplicate actions and requests are ignored, so no unnecessary updates to the store or remote requests will be made.
 
 In order for you to use this, a few pre-requisites must be met:
 
@@ -849,7 +789,7 @@ const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers }
 );
 ```
 
-`getOrFetchItem()` expects the current resources state (the part of the Redux store that contains your resources data) as its first argument. The second argument is the params object will be serialized to generate the item or collection's key. The third (optional) argument are options to pass to the action creator if it's called.
+`getOrFetchItem()` expects the current resources state (the part of the Redux store that contains your resources data) as its first argument. The second argument is the params object that will be serialized to generate the item or collection's key. The third (optional) argument are options to pass to the action creator, if it's called.
 
 ```javascript
 function mapStateToProps({ users }, { params: { id } }) {
@@ -858,7 +798,7 @@ function mapStateToProps({ users }, { params: { id } }) {
 }
 ```
 
-The actionCreatorOptions accepts the option `forceFetch`, which accepts a boolean or a function that is passed the current item or collection and is expected to return a boolean value. This provides a way to conditionally ignore the version of the item or collection in the store and make fetch request anyway:
+The actionCreatorOptions accepts the option `forceFetch`, which accepts a boolean or a function that is passed the current item or collection and is expected to return a boolean value. This provides a way to conditionally ignore the version of the item or collection in the store and to make a fetch request anyway:
 
 ```javascript
 function mapStateToProps({ users }, { params: { id } }) {
@@ -909,7 +849,12 @@ It is helpful to first clarify some of the terms used in the next few sections:
 
 * **Resource:** A *type of thing* that is available in your application and you can view or perform actions on. Examples of resources are "users", "posts" or "comments".
 * **Collection:** An ordered list of items of a particular resource. This is generally what is returned from an RESTful index server endpoint. They can be ordered, scoped or filtered. Examples include "the newest users", "the most popular posts", or simply "comments" (collections don't have to have an explicit order - but one will be implied by how they are listed in a server's response).
-* **Item:** Individual resource objects, that can belong to collections or can exist as individual entities. They always have a unique primary id, or key that identifies them. For example "user with ID 123" or "post with ID 7".
+* **Item:** Individual resource objects, that can belong to collections or can exist as individual entities. They have a unique primary id when using `resources()` or an implicit id when using `resource()`. For example "user with ID 123" or "post with ID 7".
+
+#### Use helper methods where possible
+
+Although the structure of each resource is standard, it's strongly recommended you use the helper methods `redux-and-the-rest` makes available to retrieve the data, whenever possible. Doing so will help isolate you from any changes in the underlying structure that may occur with future versions of the package.  
+
 
 #### Resource schema
 
@@ -1009,9 +954,20 @@ dispatch(fetchUsers({}, { projection: { type: 'PAGINATED', page: 1 }}));
 
 ### Data lifecycle
 
-`redux-and-the-rest` uses the `status.type` attribute of collections and items to indicate what state they are currently in.
+`redux-and-the-rest` uses the `status.type` attribute of collections and items to indicate what state they are currently in. However, it's recommended to use one of the helper methods to query the status rather than accessing the attribute directly:
 
-To check an item or collection's state, you only have to inspect it's `status.type` attribute and compare it to one of the constants that are exported by the package:
+Checking if resource is out of sync with remote:
+* `isEditing(item)` - Whether the resource item has been modified since it was last synced with the server
+
+Checking if resource item or collection is syncing with a remote API:
+* `isSyncingWithRemote(itemOrCollection)` - Whether the item or collection is currently syncing (fetching, creating, updating, destroying, progress) with the remote 
+* `isSyncedWithRemote(itemOrCollection)` - Complement of `isSyncingWithRemote(itemOrCollection)`
+* `isFinishedFetching(itemOrCollection)` - Whether the item or collection has finished being fetched (specifically) from the remote API.
+ 
+
+Checking the status of the latest sync with the remote API:
+* `isSuccessfullyFetched(itemOrCollection)` - Whether the item or collection has finished being successfully fetched
+* `isInAnErrorState(itemOrCollection)` - Whether the item or collection is in an errored state - usually because the last request failed
 
 ```javascript
 import React from 'react';
@@ -1031,6 +987,8 @@ class MyComponent extends Component {
     }
 }
 ```
+
+If for whatever reason the above helper methods are not suitable for your needs, the raw status type are as follows:
 
 #### Client statuses
 
@@ -1056,51 +1014,6 @@ Checking for these statuses is useful for displaying success or error messages:
 * `SUCCESS`: When the response to the a request to fetch collection or an item has arrived and it was a success. You can now use the contents of the collection or item.
 * `ERROR`: When the response to the a request to fetch collection or an item has arrived and it was an error. You should now check the `status.errors` attribute for details.
 * `DESTROY_ERROR`: When the response to the request to destroy an existing item has arrived, and it's an error. You should now check the `status.errors` attribute for details.
-
-#### Knowing when to call your action creators
-
-You can tell when no attempt to fetch a resource has been made yet, because `status.type` is `null`. You can use this to decide when to call your action creators:
-
-```javascript
-import React from 'react';
-
-class UserIndexPage extends Component {
-    componentWillMount() {
-        const { status: { type }, fetchCollection: fetchUsers } = this.props;
-
-        if (!type) {
-          fetchUsers();
-        }
-    }
-}
-```
-
-The same applies for initialising new resources:
-
-```javascript
-import React from 'react';
-import { NEW } from 'redux-and-the-rest';
-
-class NewUserPage extends Component {
-    componentWillMount() {
-        const { status: { type }, newItem: newUser } = this.props;
-
-        if (!type) {
-          newUser(Date.now(), {});
-        }
-    }
-
-    render() {
-        const { status: { type } } = this.props;
-
-        if (status === NEW) {
-            // Display new user form
-        } else {
-           // display preloader
-        }
-    }
-}
-```
 
 ## Setting initial state
 
@@ -1295,7 +1208,7 @@ The index action fetches a list or collection of resources from a particular URL
 | Action creator name | `fetchCollection()` |
 | First action creator argument | (Optional) `keys` - See [Getting collections from the store](#getting-collections-from-the-store) and [Configuring the URLs used for a request](configuring-the-urls-used-for-a-request) for more information.|
 | Second action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
-| `status.type` lifecycle |  `FETCHING` -> (`SUCCESS` \| `ERROR`) |
+| `status.type` lifecycle |  `FETCHING` -> (`SUCCESS` or `ERROR`) |
 
 
 #### Index action creator options
@@ -1318,7 +1231,7 @@ The show action creator fetches an individual resource item from the server and 
 | Action creator name | `fetchItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) and [Configuring the URLs used for a request](configuring-the-urls-used-for-a-request) for more information. |
 | Second action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
-| `status.type` lifecycle |  `FETCHING` -> (`SUCCESS` \| `ERROR`) |
+| `status.type` lifecycle |  `FETCHING` -> (`SUCCESS` or `ERROR`) |
 
 #### Show action creator options
 
@@ -1341,7 +1254,7 @@ The create action creator saves a new resource item to the server, with a set of
 | First action creator argument | (Optional) `keys` - The temporary id to use to index the new resource in the store until a permanent id has been assigned by the server. This temporary id is available as `newItemKey` on the resource, until a new one is returned by the server, and then `newItemKey` is updated to the value assigned by the server. This argument is optional unless used with the `localOnly` option (`localOnly` requires you to specify an id, as there is no external API to assign one). If it is not specified, a temporary key is automatically generated and you can access the resource item using the `getNewItem()` helper. If you do not want to specify this argument, you can pass the resource item's `values` as the first parameter.|
 | Second action creator argument | Resource item's attributes - An object of attributes to save to the server |
 | Third action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
-| `status.type` lifecycle |  `CREATING` -> (`SUCCESS` \| `ERROR`) |
+| `status.type` lifecycle |  `CREATING` -> (`SUCCESS` or `ERROR`) |
 
 #### Create action creator options
 
@@ -1366,7 +1279,7 @@ The update action creator updates an existing resource item's attributes with a 
 | First action creator argument | `keys` - The keys that point to the resource item to update. |
 | Second action creator argument | The resource item's new attributes - An object of attributes to save to the server. |
 | Third action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
-| `status.type` lifecycle |  `UPDATING` -> (`SUCCESS` \| `ERROR`) |
+| `status.type` lifecycle |  `UPDATING` -> (`SUCCESS` or `ERROR`) |
 
 #### Update action creator options
 
