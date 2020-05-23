@@ -66,16 +66,15 @@ users = getCollection(store.getState().users);
 * [Install &amp; Setup](#install--setup)
    * [Peer Dependencies](#peer-dependencies)
 * [Defining resources](#defining-resources)
-   * [Defining singular resources](#defining-singular-resources)
+   * [Configuring individual actions](#configuring-individual-actions)
+      * [Using the default RESTful action configuration](#using-the-default-restful-action-configuration)
+      * [Providing custom action configuration](#providing-custom-action-configuration)
    * [Actions and their action creators](#actions-and-their-action-creators)
       * [CRUD actions](#crud-actions)
          * [Local CRUD actions](#local-crud-actions)
          * [Remote API CRUD actions](#remote-api-crud-actions)
       * [Clearing actions](#clearing-actions)
       * [Selection actions](#selection-actions)
-   * [Configuring individual actions](#configuring-individual-actions)
-      * [Using the default RESTful action configuration](#using-the-default-restful-action-configuration)
-      * [Providing custom action configuration](#providing-custom-action-configuration)
 * [Connecting to React](#connecting-to-react)
    * [Usage with react-redux](#usage-with-react-redux)
 * [API Reference](#api-reference)
@@ -96,13 +95,13 @@ users = getCollection(store.getState().users);
          * [Synchronising with a remote API](#synchronising-with-a-remote-api-1)
          * [Reducers](#reducers-1)
 * [Store data](#store-data)
-   * [Getting resources from the store](#getting-resources-from-the-store)
-      * [Getting items from the store](#getting-items-from-the-store)
-      * [Automatically fetching items that are not in the store](#automatically-fetching-items-that-are-not-in-the-store)
+   * [Getting items from the store](#getting-items-from-the-store)
+   * [Automatically fetching items not in the store](#automatically-fetching-items-not-in-the-store)
       * [Getting collections from the store](#getting-collections-from-the-store)
       * [Automatically fetching collections that are not in the store](#automatically-fetching-collections-that-are-not-in-the-store)
    * [Store data schemas](#store-data-schemas)
       * [Nomenclature](#nomenclature)
+      * [Use helper methods where possible](#use-helper-methods-where-possible)
       * [Resource schema](#resource-schema)
          * [Top level schema](#top-level-schema)
          * [Item schema](#item-schema)
@@ -111,12 +110,7 @@ users = getCollection(store.getState().users);
       * [Client statuses](#client-statuses)
       * [Pending statuses](#pending-statuses)
       * [Response statuses](#response-statuses)
-      * [Knowing when to call your action creators](#knowing-when-to-call-your-action-creators)
 * [Setting initial state](#setting-initial-state)
-* [Working with Authenticated APIs](#working-with-authenticated-apis)
-   * [Auth tokens as headers](#auth-tokens-as-headers)
-   * [Auth tokens as query parameters](#auth-tokens-as-query-parameters)
-   * [Session cookies](#session-cookies)
 * [RESTful (asynchronous) actions](#restful-asynchronous-actions)
    * [RESTful behaviour overview](#restful-behaviour-overview)
       * [Preventing duplicate requests](#preventing-duplicate-requests)
@@ -153,8 +147,12 @@ users = getCollection(store.getState().users);
          * [Using object values](#using-object-values)
          * [Specifying query parameters](#specifying-query-parameters)
       * [Pagination](#pagination)
+   * [Working with Authenticated APIs](#working-with-authenticated-apis)
+      * [Auth tokens as headers](#auth-tokens-as-headers)
+      * [Auth tokens as query parameters](#auth-tokens-as-query-parameters)
+      * [Session cookies](#session-cookies)
    * [Configuring other request properties](#configuring-other-request-properties)
-
+   
 ## Install & Setup
 
 `redux-and-the-rest` can be installed as a CommonJS module:
@@ -1073,48 +1071,6 @@ Items inherit the state and projection of their collection, unless explicitly se
 **Note** It is strongly recommended that you set the syncedAt value for your initial state, to allow the `canFallbackToOldValues()` helper to function correctly.
 
 
-## Working with Authenticated APIs
-
-### Auth tokens as headers
-
-If you're working with an API that uses authentication tokens transmitted as headers, you need to authenticate the user to get access to the token (possibly even through redux-and-the-rest itself) and then use the `request` options for global configuration when the token is available. 
-
-```javascript
-import { configure } from 'redux-and-the-rest';
-
-// Once you have your token
-
-configure({
-  request: {
-    headers: {
-      'Authorization': `Token token="${token}"`
-    }
-  }
-});
-```      
-
-You may need to merge with any existing request options you have already configured.
-
-### Auth tokens as query parameters
-
-APIs that use query parameters to communicate authentication tokens are not explicitly supported (there is no global configuration option you can specify that will apply to all subsequent requests).
-
-However, you can define a global constant in your own code and pass it to each action creator that needs to be authenticated (all non-key values passed to the first argument of an action creator are converted to query parameters).
-
-```javascript 
-const AUTHENTICATION_PARAMS = {
-  auth: 'MY-TOKEN'
-}
-
-fetchUser({ id: 1, ...AUTHENTICATION_PARAMS }) 
-```
-
-### Session cookies
-
-If you're working with an API that uses session cookies, you simply need to have the user sign in so their cookie is correctly populated before calling any of the action creators that make requests of authenticated endpoints, and use the `credentials` option to global configuration, resource options or action options depending on the scope of requests you need to send the cookie with. 
-
-Accepted values are 'include', 'omit' or 'same-origin' - [see for more details](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#Sending_a_request_with_credentials_included). 
-
 ## RESTful (asynchronous) actions
 
 ### RESTful behaviour overview
@@ -1559,6 +1515,48 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
 ```
 
 Then calling `fetchUsers({ order: 'newest', page: 1 })` will load the first page of results in `store.getState().users.collections['newest']` and calling `fetchUsers({ order: 'newest', page: 2 })` will add the second page of users to the end of the same collection.
+
+### Working with Authenticated APIs
+
+#### Auth tokens as headers
+
+If you're working with an API that uses authentication tokens transmitted as headers, you need to authenticate the user to get access to the token (possibly even through redux-and-the-rest itself) and then use the `request` options for global configuration when the token is available. 
+
+```javascript
+import { configure } from 'redux-and-the-rest';
+
+// Once you have your token
+
+configure({
+  request: {
+    headers: {
+      'Authorization': `Token token="${token}"`
+    }
+  }
+});
+```      
+
+You may need to merge with any existing request options you have already configured.
+
+#### Auth tokens as query parameters
+
+APIs that use query parameters to communicate authentication tokens are not explicitly supported (there is no global configuration option you can specify that will apply to all subsequent requests).
+
+However, you can define a global constant in your own code and pass it to each action creator that needs to be authenticated (all non-key values passed to the first argument of an action creator are converted to query parameters).
+
+```javascript 
+const AUTHENTICATION_PARAMS = {
+  auth: 'MY-TOKEN'
+}
+
+fetchUser({ id: 1, ...AUTHENTICATION_PARAMS }) 
+```
+
+#### Session cookies
+
+If you're working with an API that uses session cookies, you simply need to have the user sign in so their cookie is correctly populated before calling any of the action creators that make requests of authenticated endpoints, and use the `credentials` option to global configuration, resource options or action options depending on the scope of requests you need to send the cookie with. 
+
+Accepted values are 'include', 'omit' or 'same-origin' - [see for more details](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#Sending_a_request_with_credentials_included). 
 
 ### Configuring other request properties
 
