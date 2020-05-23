@@ -13,7 +13,7 @@ describe('Edit reducer:', function () {
       name: 'users',
       keyBy: 'id'
     }, {
-      edit: true
+      editItem: true
     });
 
     this.editUser = editUser;
@@ -41,7 +41,7 @@ describe('Edit reducer:', function () {
     });
   });
 
-  describe('Given a new resource item exists in the store and the edit action controller is called to update it', () => {
+  describe('Given a new resource item exists in the store and the editItem action controller is called to update it', () => {
     beforeAll(function () {
       spyOn(console, 'warn');
 
@@ -50,7 +50,7 @@ describe('Edit reducer:', function () {
       setupState(this, getInitialState(this.id, { type: NEW }), this.id, this.newValues);
     });
 
-    it('then warns that the edit action controller is not intended to edit new resource items', function() {
+    it('then warns that the editItem action controller is not intended to edit new resource items', function() {
       expect(console.warn).toHaveBeenCalledWith(
         'Redux and the REST: EDIT_USER\'s key \'temp\' matches a NEW item. Use a editItem() to edit new items that have not yet been saved to an external API. Update ignored.'
       );

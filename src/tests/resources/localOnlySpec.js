@@ -62,7 +62,7 @@ describe('localOnly:', function () {
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
         localOnly: true,
-      }, ['fetchCollection', 'fetchItem', 'new', 'create', 'edit', 'update', 'destroy']);
+      }, ['fetchCollection', 'fetchItem', 'new', 'create', 'editItem', 'update', 'destroy']);
 
       this.store = buildStore({ ...this.initialState }, { users: usersReducers });
 

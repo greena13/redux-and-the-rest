@@ -8,13 +8,13 @@ import EmptyKey from '../../../constants/EmptyKey';
 
 const RESOURCE_NAME = 'users';
 
-describe('Edit reducer:', function () {
+describe('EditItem reducer:', function () {
   beforeAll(function () {
     const { reducers, actionCreators: { editItem: editUser } } = resource({
       name: 'users',
       keyBy: 'id'
     }, {
-      edit: true
+      editItem: true
     });
 
     this.editUser = editUser;
@@ -30,14 +30,14 @@ describe('Edit reducer:', function () {
     expectToStartEditingWithNewValues({ initialStatus: { type: ERROR, error: { code: 'INVALID_RESOURCE' } } });
   });
 
-  describe('Given a new resource item exists in the store and the edit action controller is called to update it', () => {
+  describe('Given a new resource item exists in the store and the editItem action controller is called to update it', () => {
     beforeAll(function () {
       spyOn(console, 'warn');
 
       setupState(this, getInitialState({ type: NEW }), this.newValues);
     });
 
-    it('then warns that the edit action controller is not intended to edit new resource items', function() {
+    it('then warns that the editItem action controller is not intended to edit new resource items', function() {
       expect(console.warn).toHaveBeenCalledWith(
         'Redux and the REST: Use a editItem() to edit new items that have not yet been saved to an external API. Update ignored.'
       );

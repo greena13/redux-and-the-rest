@@ -11,7 +11,7 @@ import newAction from '../actions/RESTful/new';
 import clearNewAction from '../actions/RESTful/clearNew';
 import editNewAction from '../actions/RESTful/editNew';
 import createAction from '../actions/RESTful/create';
-import editAction from '../actions/RESTful/edit';
+import editAction from '../actions/RESTful/editItem';
 import clearEditAction from '../actions/RESTful/clearEdit';
 import updateAction from '../actions/RESTful/update';
 import destroyAction from '../actions/RESTful/destroy';
@@ -40,7 +40,7 @@ const STANDARD_ACTION_CREATORS = {
   clearNew: clearNewAction.actionCreator,
   editNew: editNewAction.actionCreator,
   create: createAction.actionCreator,
-  edit: editAction.actionCreator,
+  editItem: editAction.actionCreator,
   clearEdit: clearEditAction.actionCreator,
   update: updateAction.actionCreator,
   destroy: destroyAction.actionCreator,

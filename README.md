@@ -318,7 +318,7 @@ Generally your application will need to perform actions on resources locally, un
 | new | newItem() | Creates a new item in the Redux store |
 | editNew | editNewItem() | Continue to add or modify a new item's attributes until it's ready to be saved. |
 | clearNew | clearNewItem() | Discards (removes) the new item fom the Redux store |
-| edit | editItem() | Replaces an existing (saved) item's attributes in the store with new ones |
+| editItem | editItem() | Replaces an existing (saved) item's attributes in the store with new ones |
 | clearEdit | clearEditItem() | Reverts an edit, to restore the item's attributes before the edit |
 
 These actions are generally accumulative and reversible, so you can call them successively over multiple screens or stages of a workflow and provide a cancel feature if the user wishes to abort.
@@ -1313,7 +1313,7 @@ The editNew action creator updates the new resource item in the store before it'
 
 This is useful when you want to create the new resource item over several pages or steps, before saving it to the server.
 
-This is different from the edit action creator in that it only allows editing the current new resource item, and maintains the `NEW` state, so you can differentiate between editing a resource that has been saved to an external API and one that is still being refined before being saved.
+This is different from the editItem action creator in that it only allows editing the current new resource item, and maintains the `NEW` state, so you can differentiate between editing a resource that has been saved to an external API and one that is still being refined before being saved.
 
 | Property | Value |
 | :--- | :--- |
@@ -1325,7 +1325,7 @@ This is different from the edit action creator in that it only allows editing th
 
 ### Edit an existing resource item in the store
 
-The edit action creator updates a resource item in the store with new values, without sending any requests to the server.
+The editItem action creator updates a resource item in the store with new values, without sending any requests to the server.
 
 This is useful when you want to edit a particular resource item over several pages or steps, before saving it to the server.
 
@@ -1333,7 +1333,7 @@ It should not be used for editing a new resource item - user the editNew action 
 
 | Property | Value |
 | :--- | :--- |
-| Action name for defining with `actionOptions` | `edit` |
+| Action name for defining with `actionOptions` | `editItem` |
 | Action creator name | `editItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 | Second action creator argument | Resource item's attributes - An object of attributes to save as the resource item's new values in the store. |

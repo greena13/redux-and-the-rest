@@ -11,7 +11,7 @@ import {
 
 const RESOURCE_NAME = 'users';
 
-describe('Clear edit reducer:', function () {
+describe('Clear editItem reducer:', function () {
   beforeAll(function () {
     const { reducers, actionCreators: { clearItemEdit: clearUserEdit } } = resources({
       name: RESOURCE_NAME,
