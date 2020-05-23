@@ -10,3 +10,4 @@ function isInAnErrorState({ status: { type } }) {
 }
 
 export default isInAnErrorState;
+

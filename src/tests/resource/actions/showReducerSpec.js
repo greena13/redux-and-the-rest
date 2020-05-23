@@ -16,7 +16,7 @@ describe('Show reducers:', function () {
   beforeAll(function() {
     const { reducers, actionCreators: { fetchItem: fetchUser } } = resource({
       name: 'users',
-      url: 'http://test.com/users/:id?',
+      url: 'http://test.com/users',
       keyBy: 'id',
     }, {
       show: true
@@ -31,13 +31,7 @@ describe('Show reducers:', function () {
       this.url = 'http://test.com/users';
     });
 
-    describe('When only the item\'s id is passed to the action creator', () => {
-      expectToHandleSuccessAndFailure(this.url);
-    });
-
-    describe('When the item\'s id is passed as an object to the action creator', () => {
-      expectToHandleSuccessAndFailure(this.url);
-    });
+    expectToHandleSuccessAndFailure(this.url);
   });
 
   describe('Given another show action has come before it', function () {

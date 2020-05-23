@@ -1,4 +1,5 @@
 import { ERROR } from '../constants/Statuses';
+import isUndefined from '../utils/isUndefined';
 
 /**
  * Whether the last request for an item or collection errored, but there is still old values in the store that
@@ -7,7 +8,7 @@ import { ERROR } from '../constants/Statuses';
  * @returns {boolean} True if the item or collection has errored but has old values that can be displayed
  */
 function canFallbackToOldValues({ status: { syncedAt, requestedAt, type } }) {
-  return requestedAt > syncedAt && type === ERROR;
+  return !isUndefined(syncedAt) && (requestedAt > syncedAt) && type === ERROR;
 }
 
 export default canFallbackToOldValues;
