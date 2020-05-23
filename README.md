@@ -78,10 +78,13 @@ users = getCollection(store.getState().users);
       * [CRUD actions](#crud-actions)
          * [Local CRUD actions](#local-crud-actions)
          * [Remote API CRUD actions](#remote-api-crud-actions)
+      * [Clearing actions](#clearing-actions)
       * [Selection actions](#selection-actions)
    * [Configuring individual actions](#configuring-individual-actions)
       * [Using the default RESTful action configuration](#using-the-default-restful-action-configuration)
       * [Providing custom action configuration](#providing-custom-action-configuration)
+* [Connecting to React](#connecting-to-react)
+   * [Usage with react-redux](#usage-with-react-redux)
 * [API Reference](#api-reference)
    * [Levels of configuration](#levels-of-configuration)
    * [Global Options API](#global-options-api)
@@ -369,6 +372,176 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 ```
 
 Please see [Action Options API](#action-options-api) for a full list of supported options.
+
+## Connecting to React
+
+### Usage with react-redux
+
+Although not required, it's recommended you use `redux-and-the-rest` with `react-redux`, which provides the standard high-level API, `connect` which accepts two functions:
+
+| function | Has access to | Passes to your component as props | Can be thought of as |
+| `mapStateToProps` | Current redux state and props passed to your container | Some subset of the total redux state | READ |
+| `mapDispatchToProps` | `dispatch` (the function for dispatching actions or updates on the Redux store) | Handler functions that accept values from your component and call `dispatch` | WRITE (CREATE, UPDATE, DELETE) |
+
+The full API can be seen in the [docs](https://react-redux.js.org/api/connect).
+
+Because `redux-and-the-rest` is built around the principle of providing a reduced set of reducers for the standard CRUD operations (with a few extras for selection and clearing), you're expected to define utility functions for performing "sub-operations". Take the example of a widget that sets the user's age: you only want to modify one of the the user resource's attributes, but you need to provide the entire new set of values back to `redux-and-the-rest` (this is to allow for removal of attributes and complex or deep merging that `redux-and-the-rest` cannot be expected to guess).
+
+Because the `connect` function separates access to `dispatch` (`mapDispatchToProps`) and access to the current redux state (`mapStateToProps`), you have two options.
+
+When your component needs access to all the resource's attributes anyway, you can pass the whole resource item into your component and then back out again in the handler:
+
+```javascript
+import { connect } from 'react-redux'
+
+import { getUser, updateUser } from './resources/users';    
+import AgeWidget from './components/AgeWidget';
+
+const mapStateToProps = ({ user } ) => {
+  return {
+    user: getUser(user)
+  }
+};
+
+const mapDispatchToProps = ((dispatch) => {
+  return {
+    updateAge: (user, newAge) => dispatch(updateUser({ ...user, age: newAge }))
+  };
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AgeWidget)
+```
+
+And you would then call it in your component:
+
+```javascript
+<Button onPress={updateAge(user, user.age + 1)} >
+  Increment
+</Button>
+``` 
+
+You may also choose to use `connect`'s third argument to curry your handler props:
+
+```javascript
+import { connect } from 'react-redux'
+
+import { getUser, updateUser } from './resources/users';    
+import AgeWidget from './components/AgeWidget';
+
+const mapStateToProps = ({ user } ) => {
+  return {
+    user: getUser(user)
+  }
+};
+
+const mapDispatchToProps = ((dispatch) => {
+  return {
+    updateAge: (user, newAge) => dispatch(updateUser({ ...user, age: newAge }))
+  };
+});         
+
+const mergeProps = ((stateProps, dispatchProps, ownProps) => {
+  return {
+    ...stateProps,
+    ...dispatchProps,
+    updateAge: (newAge) => dispatchProps.updateAge(stateProps.user, newAge),
+    ...ownProps
+  }   
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+  mergeProps
+)(AgeWidget)
+```        
+
+And call it in your component with the reduced argument list:
+
+```javascript
+<Button onPress={updateAge(user.age + 1)} >
+  Increment
+</Button>
+``` 
+
+However, if your component doesn't need access to the rest of the user's attributes it's recommended that you keep the component's interface minimal and your handler arguments as few as possible and just retrieve the state directly from the store when it's needed in your handlers:
+
+
+```javascript
+import { connect } from 'react-redux'
+
+import { getUser, updateUser } from './resources/users';
+import store from './store';    
+import AgeWidget from './components/AgeWidget';
+
+const mapStateToProps = ({ user } ) => {
+  return {
+    user: getUser(user)
+  }
+};
+
+const mapDispatchToProps = ((dispatch) => {
+  return {
+    updateAge: (newAge) => {
+      const user = getUser(store.getState().users).values; 
+      
+      dispatch(updateUser({ ...user, age: newAge }));
+    }   
+  };
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AgeWidget)
+```              
+
+Or alternatively, you can chose not to pass down the attributes you only needed to make available to your handlers:
+
+```javascript
+import { connect } from 'react-redux'
+
+import { getUser, updateUser } from './resources/users';    
+import AgeWidget from './components/AgeWidget';
+
+const mapStateToProps = ({ user } ) => {
+  return {
+    user: getUser(user)
+  }
+};
+
+const mapDispatchToProps = ((dispatch) => {
+  return {
+    updateAge: (user, newAge) => dispatch(updateUser({ ...user, age: newAge }))
+  };
+});         
+
+const mergeProps = ((stateProps, dispatchProps, ownProps) => {
+  // The final collection of props passed to your component
+  return {
+    age: stateProps.user.values.age,
+    updateAge: (newAge) => dispatchProps.updateAge(stateProps.user, newAge),
+    ...ownProps
+  }   
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+  mergeProps
+)(AgeWidget)
+```        
+
+Either option will allow you to call the handler in your component with only the new values:
+
+```javascript
+<Button onPress={updateAge(user.age + 1)} >
+  Increment
+</Button>
+``` 
 
 ## API Reference
 
