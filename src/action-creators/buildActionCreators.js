@@ -9,7 +9,7 @@ import fetchItemAction from '../actions/RESTful/fetchItem';
 import fetchCollectionAction from '../actions/RESTful/fetchCollection';
 import newAction from '../actions/RESTful/new';
 import clearNewAction from '../actions/RESTful/clearNew';
-import editNewAction from '../actions/RESTful/editNew';
+import editNewItemAction from '../actions/RESTful/editNewItem';
 import createAction from '../actions/RESTful/create';
 import editAction from '../actions/RESTful/editItem';
 import clearEditAction from '../actions/RESTful/clearEdit';
@@ -38,7 +38,7 @@ const STANDARD_ACTION_CREATORS = {
   fetchItem: fetchItemAction.actionCreator,
   new: newAction.actionCreator,
   clearNew: clearNewAction.actionCreator,
-  editNew: editNewAction.actionCreator,
+  editNewItem: editNewItemAction.actionCreator,
   create: createAction.actionCreator,
   editItem: editAction.actionCreator,
   clearEdit: clearEditAction.actionCreator,
@@ -145,7 +145,6 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
   const effectiveActionCreators = getActionCreators(resourceOptions);
 
   return Object.keys(actionsOptions).reduce((memo, key) => {
-
     /**
      * We don't export certain action creators when the localOnly option is used (as they don't make sense in
      * a local context).

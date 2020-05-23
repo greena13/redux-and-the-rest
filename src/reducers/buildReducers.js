@@ -12,7 +12,7 @@ import fetchCollectionAction from '../actions/RESTful/fetchCollection';
 import fetchItemAction from '../actions/RESTful/fetchItem';
 import newAction from '../actions/RESTful/new';
 import clearNewAction from '../actions/RESTful/clearNew';
-import editNewAction from '../actions/RESTful/editNew';
+import editNewItemAction from '../actions/RESTful/editNewItem';
 import createAction from '../actions/RESTful/create';
 import editAction from '../actions/RESTful/editItem';
 import clearEditAction from '../actions/RESTful/clearEdit';
@@ -40,7 +40,7 @@ const STANDARD_REDUCERS = {
   fetchItem: fetchItemAction.reducer,
   new: newAction.reducer,
   clearNew: clearNewAction.reducer,
-  editNew: editNewAction.reducer,
+  editNewItem: editNewItemAction.reducer,
   create: createAction.reducer,
   editItem: editAction.reducer,
   clearEdit: clearEditAction.reducer,

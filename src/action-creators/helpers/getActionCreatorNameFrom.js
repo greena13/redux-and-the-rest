@@ -2,6 +2,7 @@ const ACTION_CREATOR_DICT = {
   fetchCollection: 'fetchCollection',
   fetchItem: 'fetchItem',
   editItem: 'editItem',
+  editNewItem: 'editNewItem',
   clearEdit: 'clearItemEdit',
   clearSelected: 'clearSelectedItems',
   clearItem: 'clearItem',

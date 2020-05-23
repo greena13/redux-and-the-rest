@@ -15,7 +15,7 @@ describe('Edit new reducer:', function () {
       name: 'users',
       keyBy: 'id'
     }, {
-      editNew: true
+      editNewItem: true
     });
 
     this.editNewUser = editNewUser;

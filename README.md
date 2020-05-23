@@ -316,7 +316,7 @@ Generally your application will need to perform actions on resources locally, un
 | Action | Action Creator | Description |
 | ------ | -------------- | ----------- |
 | new | newItem() | Creates a new item in the Redux store |
-| editNew | editNewItem() | Continue to add or modify a new item's attributes until it's ready to be saved. |
+| editNewItem | editNewItem() | Continue to add or modify a new item's attributes until it's ready to be saved. |
 | clearNew | clearNewItem() | Discards (removes) the new item fom the Redux store |
 | editItem | editItem() | Replaces an existing (saved) item's attributes in the store with new ones |
 | clearEdit | clearEditItem() | Reverts an edit, to restore the item's attributes before the edit |
@@ -1309,7 +1309,7 @@ This is useful when the user wishes to cancel or navigate away from creating a n
 
 ### Edit the new resource item in the store
 
-The editNew action creator updates the new resource item in the store before it's been saved to an external API, with new values.
+The editNewItem action creator updates the new resource item in the store before it's been saved to an external API, with new values.
 
 This is useful when you want to create the new resource item over several pages or steps, before saving it to the server.
 
@@ -1317,7 +1317,7 @@ This is different from the editItem action creator in that it only allows editin
 
 | Property | Value |
 | :--- | :--- |
-| Action name for defining with `actionOptions` | `editNew` |
+| Action name for defining with `actionOptions` | `editNewItem` |
 | Action creator name | `editNewItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 | Second action creator argument | Resource item's attributes - An object of attributes to save as the resource item's new values in the store. |
@@ -1329,7 +1329,7 @@ The editItem action creator updates a resource item in the store with new values
 
 This is useful when you want to edit a particular resource item over several pages or steps, before saving it to the server.
 
-It should not be used for editing a new resource item - user the editNew action creator instead.
+It should not be used for editing a new resource item - user the editNewItem action creator instead.
 
 | Property | Value |
 | :--- | :--- |

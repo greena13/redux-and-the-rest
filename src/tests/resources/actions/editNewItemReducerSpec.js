@@ -14,7 +14,7 @@ describe('Edit new reducer:', function () {
       name: 'users',
       keyBy: 'id'
     }, {
-      editNew: true
+      editNewItem: true
     });
 
     this.editNewUser = editNewUser;
@@ -82,7 +82,7 @@ describe('Edit new reducer:', function () {
         setupState(this, getInitialState(this.id, NEW), this.id, this.newValues);
       });
 
-      it('then updates the item\'s values', function() {
+      fit('then updates the item\'s values', function() {
         expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.id, this.newValues);
       });
 
