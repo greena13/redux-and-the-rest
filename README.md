@@ -1269,9 +1269,11 @@ if (getTimeSinceFetchStarted(item) > 3000) {
 }
 ```
 
+You will likely need to wrap this in a `setInterval` or similar, to ensure the check is performed regularly until the fetch is resolved.
+
 #### Detecting old data
 
-You can use the `getTimeSinceLastSync()` helper method to identify an item or collections age and establish whether it should be re-requested.
+You can use the `getTimeSinceLastSync()` helper method to identify an item or collection's age (when its state was last confirmed with a remote API using `fetchItem`, `fetchCollection`, `updateItem` or `createItem`) and establish whether it should be re-requested.
 
 It accepts an item or a collection and returns the time duration in milliseconds.
 
@@ -1290,7 +1292,7 @@ The index action fetches a list or collection of resources from a particular URL
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `index` |
-| Action creator name | `fetch<PluralizedResourceName>()` |
+| Action creator name | `fetchCollection()` |
 | First action creator argument | (Optional) `keys` - See [Getting collections from the store](#getting-collections-from-the-store) and [Configuring the URLs used for a request](configuring-the-urls-used-for-a-request) for more information.|
 | Second action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
 | `status.type` lifecycle |  `FETCHING` -> (`SUCCESS` \| `ERROR`) |
@@ -1313,7 +1315,7 @@ The show action creator fetches an individual resource item from the server and 
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `show` |
-| Action creator name | `fetch<SingularizedResourceName>()` |
+| Action creator name | `fetchItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) and [Configuring the URLs used for a request](configuring-the-urls-used-for-a-request) for more information. |
 | Second action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
 | `status.type` lifecycle |  `FETCHING` -> (`SUCCESS` \| `ERROR`) |
@@ -1335,7 +1337,7 @@ The create action creator saves a new resource item to the server, with a set of
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `create` |
-| Action creator name | `create<SingularizedResourceName>()` |
+| Action creator name | `createItem()` |
 | First action creator argument | (Optional) `keys` - The temporary id to use to index the new resource in the store until a permanent id has been assigned by the server. This temporary id is available as `newItemKey` on the resource, until a new one is returned by the server, and then `newItemKey` is updated to the value assigned by the server. This argument is optional unless used with the `localOnly` option (`localOnly` requires you to specify an id, as there is no external API to assign one). If it is not specified, a temporary key is automatically generated and you can access the resource item using the `getNewItem()` helper. If you do not want to specify this argument, you can pass the resource item's `values` as the first parameter.|
 | Second action creator argument | Resource item's attributes - An object of attributes to save to the server |
 | Third action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
@@ -1360,7 +1362,7 @@ The update action creator updates an existing resource item's attributes with a 
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `update` |
-| Action creator name | `update<SingularizedResourceName>()` |
+| Action creator name | `updateItem()` |
 | First action creator argument | `keys` - The keys that point to the resource item to update. |
 | Second action creator argument | The resource item's new attributes - An object of attributes to save to the server. |
 | Third action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
@@ -1383,7 +1385,7 @@ The destroy action creator deletes an existing resource item from the server and
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `destroy` |
-| Action creator name | `destroy<SingularizedResourceName>()` |
+| Action creator name | `destroyItem()` |
 | First action creator argument | `keys` - The keys that point to the resource item to destroy. |
 | Second action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
 | `status.type` lifecycle |  `DESTROYING` -> (`SUCCESS` \| `DESTROY_ERROR`) |
@@ -1409,7 +1411,7 @@ The new action creator creates a new resource item and adds it to the store, wit
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `new` |
-| Action creator name | `new<SingularizedResourceName>()` |
+| Action creator name | `newItem()` |
 | First action creator argument | `keys` - The temporary id to use to store the new resource in the store until a permanent id has been assigned by the server. This temporary id is available as `newItemKey` on the resource. |
 | Second action creator argument | Resource item's attributes - An object of attributes to save as a new resource item in the store. |
 | Third action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
@@ -1434,7 +1436,7 @@ This is useful when the user wishes to cancel or navigate away from creating a n
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `new` |
-| Action creator name | `new<SingularizedResourceName>()` |
+| Action creator name | `newItem()` |
 
 ### Edit the new resource item in the store
 
@@ -1447,7 +1449,7 @@ This is different from the edit action creator in that it only allows editing th
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `editNew` |
-| Action creator name | `editNew<SingularizedResourceName>()` |
+| Action creator name | `editNewItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 | Second action creator argument | Resource item's attributes - An object of attributes to save as the resource item's new values in the store. |
 | `status.type` lifecycle |  `NEW` |
@@ -1463,7 +1465,7 @@ It should not be used for editing a new resource item - user the editNew action 
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `edit` |
-| Action creator name | `edit<SingularizedResourceName>()` |
+| Action creator name | `editItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 | Second action creator argument | Resource item's attributes - An object of attributes to save as the resource item's new values in the store. |
 | `status.type` lifecycle |  `EDITING` |
@@ -1501,7 +1503,7 @@ It can also be used to clear an edit after an UPDATE request has failed to be su
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `clearEdit` |
-| Action creator name | `clear<SingularizedResourceName>Edit()` |
+| Action creator name | `clearItemEdit()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 | `status.type` lifecycle |  `EDITING` -> `SUCCESS` |
 
@@ -1512,7 +1514,7 @@ The select action creator adds an item's key to the `selectionMap` dictionary. I
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `select` |
-| Action creator name | `select<SingularizedResourceName>()` |
+| Action creator name | `selectItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 
 ### Select another resource item in the store
@@ -1522,7 +1524,7 @@ The selectAnother action creator adds an item's key to the `selectionMap` dictio
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `selectAnother` |
-| Action creator name | `selectAnother<SingularizedResourceName>()` |
+| Action creator name | `selectAnotherItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 
 ### Deselect a resource item in the store
@@ -1532,7 +1534,7 @@ The deselect action creator removes an item's key from the `selectionMap` dictio
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `deselect` |
-| Action creator name | `deselect<SingularizedResourceName>()` |
+| Action creator name | `deselectItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 
 ### Clear all the selected resource items in the store
@@ -1542,7 +1544,7 @@ The clearSelected action creator clears the `selectionMap` dictionary, resetting
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `clearSelected` |
-| Action creator name | `clearSelected<SingularizedResourceName>()` |
+| Action creator name | `clearSelectedItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 
 ## Configuring requests
