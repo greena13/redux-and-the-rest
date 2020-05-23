@@ -84,7 +84,7 @@ describe('belongsTo:', function () {
           address: this.addresses
         }
       }, {
-        index: true,
+        fetchCollection: true,
         new: true,
       });
 
@@ -466,7 +466,7 @@ describe('belongsTo:', function () {
           },
         }
       }, {
-        index: true,
+        fetchCollection: true,
         new: true,
       });
 

@@ -22,7 +22,7 @@ describe('Specifying a response adaptor:', function () {
         keyBy: 'id',
         responseAdaptor: (body) => ({ values: body.response, error: body.error })
       }, {
-        index: true,
+        fetchCollection: true,
         fetchItem: true,
         update: true,
         destroy: true,
@@ -38,7 +38,7 @@ describe('Specifying a response adaptor:', function () {
       this.destroyUser = destroyUser;
     });
 
-    describe('when the index request', function () {
+    describe('when the fetchCollection request', function () {
       describe('succeeds', () => {
         beforeAll(function () {
           this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
@@ -558,7 +558,7 @@ describe('Specifying a response adaptor:', function () {
         keyBy: 'id',
         responseAdaptor: (body) => ({ values: body.response, error: body.error })
       }, {
-        index: {
+        fetchCollection: {
           responseAdaptor: (body) => ({ values: body.items, error: body.error })
         },
         fetchItem: true,

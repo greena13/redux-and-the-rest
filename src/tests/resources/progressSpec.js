@@ -819,7 +819,7 @@ describe('progress option', function () {
     });
   });
 
-  describe('for the index action:', function () {
+  describe('for the fetchCollection action:', function () {
     describe('when it is NOT set to a truthy value', function () {
       beforeAll(function () {
         const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
@@ -827,7 +827,7 @@ describe('progress option', function () {
           url: 'http://test.com/users/:id?',
           keyBy: 'id'
         }, {
-          index: true
+          fetchCollection: true
         });
 
         this.reducers = reducers;
@@ -917,7 +917,7 @@ describe('progress option', function () {
           url: 'http://test.com/users/:id?',
           keyBy: 'id'
         }, {
-          index: {
+          fetchCollection: {
             progress: true
           }
         });

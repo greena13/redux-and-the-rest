@@ -87,7 +87,7 @@ describe('Request options:', () => {
       name: 'users',
       url: 'http://test.com/users/:id?',
       keyBy: 'id',
-    }, ['index']);
+    }, ['fetchCollection']);
 
     context.fetchUsers = fetchUsers;
     context.reducers = reducers;

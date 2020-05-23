@@ -20,7 +20,7 @@ describe('Generating URLs:', function() {
         url: 'http://test.com/users/:id?',
         keyBy: 'id'
       }, {
-        index: true,
+        fetchCollection: true,
         fetchItem: true,
         update: true,
         destroy: true,
@@ -166,7 +166,7 @@ describe('Generating URLs:', function() {
         url: 'http://test.com/users/:id?',
         keyBy: 'id'
       }, {
-        index: true,
+        fetchCollection: true,
         fetchItem: {
           url: 'http://test.com/guests/:order?'
         },

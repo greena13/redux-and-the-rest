@@ -5,8 +5,8 @@ import resolveOptions from './helpers/resolveOptions';
 import projectionTransform from './helpers/transforms/projectionTransform';
 import { getConfiguration } from '../configuration';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
-import indexAction from '../actions/RESTful/index';
 import fetchItemAction from '../actions/RESTful/fetchItem';
+import fetchCollectionAction from '../actions/RESTful/fetchCollection';
 import newAction from '../actions/RESTful/new';
 import clearNewAction from '../actions/RESTful/clearNew';
 import editNewAction from '../actions/RESTful/editNew';
@@ -34,7 +34,7 @@ import pluck from '../utils/collection/pluck';
  * updates need to be sent to a remote API to synchronise the local data state with the remote one.
  */
 const STANDARD_ACTION_CREATORS = {
-  index: indexAction.actionCreator,
+  fetchCollection: fetchCollectionAction.actionCreator,
   fetchItem: fetchItemAction.actionCreator,
   new: newAction.actionCreator,
   clearNew: clearNewAction.actionCreator,

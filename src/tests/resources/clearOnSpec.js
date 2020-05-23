@@ -79,7 +79,7 @@ describe('clearOn:', function () {
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
       }, {
-        index: true,
+        fetchCollection: true,
         new: true,
       });
 
@@ -103,7 +103,7 @@ describe('clearOn:', function () {
         keyBy: 'id',
         clearOn: this.sessionActions.destroy,
       }, {
-        index: true,
+        fetchCollection: true,
         new: true,
       });
 

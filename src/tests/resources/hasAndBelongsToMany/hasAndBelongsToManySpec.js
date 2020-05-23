@@ -80,7 +80,7 @@ describe('hasAndBelongsToMany:', function () {
           posts: this.posts
         }
       }, {
-        index: true,
+        fetchCollection: true,
         new: true,
       });
 
@@ -464,7 +464,7 @@ describe('hasAndBelongsToMany:', function () {
           },
         }
       }, {
-        index: true,
+        fetchCollection: true,
         new: true,
       });
 

@@ -14,7 +14,7 @@ describe('projection:', function () {
           url: 'http://test.com/users',
           keyBy: 'id'
         }, {
-          index: true
+          fetchCollection: true
         });
 
         this.reducers = reducers;
@@ -238,7 +238,7 @@ describe('projection:', function () {
           keyBy: 'id',
           projection: { type: 'RESOURCE_PROJECTION' }
         }, {
-          index: true
+          fetchCollection: true
         });
 
         this.fetchUsers = fetchUsers;

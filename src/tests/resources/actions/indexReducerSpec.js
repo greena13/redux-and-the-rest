@@ -16,14 +16,14 @@ import EmptyKey from '../../../constants/EmptyKey';
 
 const RESOURCE_NAME = 'users';
 
-describe('Index reducers:', function () {
+describe('fetchCollection reducers:', function () {
   beforeAll(function() {
     const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
       name: 'users',
       url: 'http://test.com/users/:id?',
       keyBy: 'id',
     }, {
-      index: true
+      fetchCollection: true
     });
 
     this.fetchUsers = fetchUsers;
@@ -247,7 +247,7 @@ describe('Index reducers:', function () {
     });
   });
 
-  describe('Given an index action that will succeed with a response that specifies \'error\' at the top level', () => {
+  describe('Given an fetchCollection action that will succeed with a response that specifies \'error\' at the top level', () => {
     describe('when the request has completed', () => {
       beforeAll(function () {
         this.options = {
@@ -271,7 +271,7 @@ describe('Index reducers:', function () {
     });
   });
 
-  describe('Given an index action that will fail with a response that specifies \'errors\' at the top level', () => {
+  describe('Given an fetchCollection action that will fail with a response that specifies \'errors\' at the top level', () => {
     describe('when the request has completed', () => {
       beforeAll(function () {
         this.options = {

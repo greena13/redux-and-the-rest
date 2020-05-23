@@ -87,7 +87,7 @@ describe('reducesOn:', function () {
         }
       ],
     }, {
-      index: true,
+      fetchCollection: true,
       new: true,
     });
 

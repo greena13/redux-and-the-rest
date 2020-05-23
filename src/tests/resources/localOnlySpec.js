@@ -36,7 +36,7 @@ describe('localOnly:', function () {
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
-      }, ['index', 'fetchItem', 'create', 'update', 'destroy' ]);
+      }, ['fetchCollection', 'fetchItem', 'create', 'update', 'destroy' ]);
 
       this.store = buildStore({ ...this.initialState }, { users: usersReducers });
 
@@ -62,7 +62,7 @@ describe('localOnly:', function () {
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
         localOnly: true,
-      }, ['index', 'fetchItem', 'new', 'create', 'edit', 'update', 'destroy']);
+      }, ['fetchCollection', 'fetchItem', 'new', 'create', 'edit', 'update', 'destroy']);
 
       this.store = buildStore({ ...this.initialState }, { users: usersReducers });
 
@@ -82,7 +82,7 @@ describe('localOnly:', function () {
 
     it('then warns about some actions being incompatible with the option', function() {
       expect(console.warn).toHaveBeenCalledWith(
-        'Redux and the REST: Action \'index\' is not compatible with the localOnly option.'
+        'Redux and the REST: Action \'fetchCollection\' is not compatible with the localOnly option.'
       );
 
       expect(console.warn).toHaveBeenCalledWith(

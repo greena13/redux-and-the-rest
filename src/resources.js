@@ -36,7 +36,7 @@ import EmptyKey from './constants/EmptyKey';
  *           default, 'id' is used.
  *
  * @property {boolean} [localOnly] Set to true for resources that should be edited locally, only. The fetch and
- *           index actions are disabled (the fetch* action creators are not exported) and the create, update
+ *           fetchCollection actions are disabled (the fetch* action creators are not exported) and the create, update
  *           and destroy only update the store locally, without making any HTTP requests.
  * @property {string} [url] A url template that is used for all of the resource's actions. The template string
  *           can include required url parameters by prefixing them with a colon (e.g. :id) and optional
@@ -86,7 +86,7 @@ import EmptyKey from './constants/EmptyKey';
  *           Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this
  *           attribute is required for Non-RESTful actions.
  * @property {boolean} progress Whether the store should emit progress events as the resource is uploaded or
- *           downloaded. This is applicable to the RESTful actions index, fetch, create, update and any
+ *           downloaded. This is applicable to the RESTful actions fetchCollection, fetch, create, update and any
  *           custom actions.
  * @property {ResponseAdaptorFunction} responseAdaptor Function used to adapt the response for a particular
  *           request before it is handed over to the reducers. The function must return the results as an object
@@ -147,21 +147,21 @@ function resources(resourceOptions, actionOptions = {}) {
   /**
    * Standardise the shape of the action options to support all forms:
    *  Array Syntax:
-   *    ['index', 'fetch']
+   *    ['fetchCollection', 'fetch']
    *
    *  Object syntax:
-   *    { index: true, fetch: true }
+   *    { fetchCollection: true, fetch: true }
    *
    *  Extended object syntax:
-   *    { index: { keyBy: 'identifier' }, fetch: { keyBy: 'id' } }
+   *    { fetchCollection: { keyBy: 'identifier' }, fetch: { keyBy: 'id' } }
    *
    * @type {ActionOptionsMap}
    */
   let _actionOptions = objectFrom(actionOptions, {});
 
-  if (singular && _actionOptions.index) {
-    warn('resource does not support the index action. Ignoring.');
-    _actionOptions = without(actionOptions, 'index');
+  if (singular && _actionOptions.fetchCollection) {
+    warn('resource does not support the fetchCollection action. Ignoring.');
+    _actionOptions = without(actionOptions, 'fetchCollection');
   }
 
   const actions = new ActionsDictionary(name, resourceOptions, Object.keys(_actionOptions));

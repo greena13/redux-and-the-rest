@@ -8,7 +8,7 @@ import resolveOptions from '../action-creators/helpers/resolveOptions';
 import progressReducer from './helpers/progressReducer';
 import { getConfiguration } from '../configuration';
 import standardiseAssociationOptions from '../utils/standardiseAssociationOptions';
-import indexAction from '../actions/RESTful/index';
+import fetchCollectionAction from '../actions/RESTful/fetchCollection';
 import fetchItemAction from '../actions/RESTful/fetchItem';
 import newAction from '../actions/RESTful/new';
 import clearNewAction from '../actions/RESTful/clearNew';
@@ -36,7 +36,7 @@ const STANDARD_REDUCERS = {
   /**
    * RESTful actions
    */
-  index: indexAction.reducer,
+  fetchCollection: fetchCollectionAction.reducer,
   fetchItem: fetchItemAction.reducer,
   new: newAction.reducer,
   clearNew: clearNewAction.reducer,
@@ -68,14 +68,14 @@ const STANDARD_REDUCERS = {
  * @type {Object<string, boolean>}
  */
 const PROGRESS_COMPATIBLE_ACTIONS = {
-  index: true,
+  fetchCollection: true,
   fetchItem: true,
   update: true,
   create: true
 };
 
 function getProgressReducer(key) {
-  if (key === 'index') {
+  if (key === 'fetchCollection') {
     return (resources, action) => progressReducer(resources, action, 'collections');
   } else {
     return progressReducer;

@@ -15,7 +15,7 @@ describe('Generating key:', function () {
         url: 'http://test.com/users/:id?',
         keyBy: 'id'
       }, {
-        index: true,
+        fetchCollection: true,
       });
 
       this.fetchUsers = fetchUsers;
@@ -115,7 +115,7 @@ describe('Generating key:', function () {
         keyBy: 'id',
         urlOnlyParams: [ 'page' ]
       }, {
-        index: true,
+        fetchCollection: true,
       });
 
       this.reducers = reducers;
@@ -171,7 +171,7 @@ describe('Generating key:', function () {
         this.store = null;
       });
 
-      it('then overrides the results for the index action', function() {
+      it('then overrides the results for the fetchCollection action', function() {
         return this.store.dispatch(this.fetchUsers({ order: 'newest', page: 1 })).
                   then(() => this.store.dispatch(this.fetchUsers({ order: 'newest', page: 2 })).
                   then(() => {
