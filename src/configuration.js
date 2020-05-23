@@ -12,7 +12,7 @@ let configuration = {};
  *           This will be the value you pass to each action creator to identify the target of each action. By
  *           default, 'id' is used.
  *
- * @property {boolean} localOnly Set to true for resources that should be edited locally, only. The show and
+ * @property {boolean} localOnly Set to true for resources that should be edited locally, only. The fetch and
  *           index actions are disabled (the fetch* action creators are not exported) and the create, update
  *           and destroy only update the store locally, without making any HTTP requests.
  * @property {string[]} urlOnlyParams The attributes passed to action creators that should be used to create the request URL,

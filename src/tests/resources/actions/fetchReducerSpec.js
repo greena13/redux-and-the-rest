@@ -12,7 +12,7 @@ import {
 
 const RESOURCE_NAME = 'users';
 
-describe('Show reducers:', function () {
+describe('Fetch reducers:', function () {
   describe('Given the keyBy option passed to resources is a string', function () {
     beforeAll(function() {
       const { reducers, actionCreators: { fetchItem: fetchUser } } = resources({
@@ -20,7 +20,7 @@ describe('Show reducers:', function () {
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
       }, {
-        show: true
+        fetchItem: true
       });
 
       this.fetchUser = fetchUser;
@@ -41,7 +41,7 @@ describe('Show reducers:', function () {
       });
     });
 
-    describe('and another show action has come before it', function () {
+    describe('and another fetchItem action has come before it', function () {
       beforeAll(function () {
         this.url = 'http://test.com/users/1';
 
@@ -91,11 +91,11 @@ describe('Show reducers:', function () {
       });
     });
 
-    describe('Given a show action that will succeed with a response that specifies \'errors\' at the top level', () => {
+    describe('Given a fetchItem action that will succeed with a response that specifies \'errors\' at the top level', () => {
       expectToMergeInMultipleErrors(1, { body: { errors: ['Not Found'] }, status: 200 });
     });
 
-    describe('Given a show action that will fail with a response that specifies \'errors\' at the top level', () => {
+    describe('Given a fetchItem action that will fail with a response that specifies \'errors\' at the top level', () => {
       expectToMergeInMultipleErrors(1, { body: { errors: ['Not Found'] }, status: 400 });
     });
   });
@@ -107,7 +107,7 @@ describe('Show reducers:', function () {
         url: 'http://test.com/groups/:groupId/users/:id?',
         keyBy: ['id', 'groupId'],
       }, {
-        show: true
+        fetchItem: true
       });
 
       this.fetchUser = fetchUser;

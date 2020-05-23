@@ -120,7 +120,7 @@ users = getCollection(store.getState().users);
    * [Fetch a resource collection from the server](#fetch-a-resource-collection-from-the-server)
       * [Index action creator options](#index-action-creator-options)
    * [Fetch an individual resource item from the server](#fetch-an-individual-resource-item-from-the-server)
-      * [Show action creator options](#show-action-creator-options)
+      * [Fetch action creator options](#fetch-action-creator-options)
    * [Create a new resource item on the server](#create-a-new-resource-item-on-the-server)
       * [Create action creator options](#create-action-creator-options)
    * [Update a resource item on the server](#update-a-resource-item-on-the-server)
@@ -330,7 +330,7 @@ When the your application is done with local manipulation of a resource, you can
 | Action | Action Creator | Description |
 | ------ | -------------- | ----------- |
 | index | fetchCollection() | Fetches a collection of items from a remote API |
-| show | fetchItem() | Fetches an item from a remote API |
+| fetchItem | fetchItem() | Fetches an item from a remote API |
 | create | createItem() | Sends a create request with an item's attributes to a remote API |
 | update | updateItem() | Sends new attributes (an "update") for an item to a remote API |
 | destroy | destroyItem() | Sends a delete request for an item to a remote API |
@@ -578,7 +578,7 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
             // actionOptions
             // ...
         },
-        show: {
+        fetch: {
             // actionOptions
             // ...
         }
@@ -608,7 +608,7 @@ configure({
 | key | Type | Required or Default Value | Description |
 | --- | ---- | ------------------------- | ----------- |
 | keyBy | string or array of strings | No | The resource attribute used to key/index all items of the current resource type. This will be the value you pass to each action creator to identify the target of each action. By default, 'id' is used. |
-| localOnly | boolean | No | Set to true for resources that should be edited locally, only. The show and index actions are disabled (the fetch* action creators are not exported) and the create, update and destroy only update the store locally, without making any HTTP requests. |
+| localOnly | boolean | No | Set to true for resources that should be edited locally, only. The fetchItem and index actions are disabled (the fetch* action creators are not exported) and the create, update and destroy only update the store locally, without making any HTTP requests. |
 | urlOnlyParams | Array of string | No | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
 | responseAdaptor | (responseBody: Object, response: Response) => { values: Object, error?: Object or string, errors?: Array<Object or string> } | No | Function used to adapt the responses for requests before it is handed over to the reducers. The function must return the results as an object with properties values and (optionally) error. |
 | requestAdaptor | (requestBody: Object) => Object | No | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
@@ -650,7 +650,7 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 
 | key | Type | Required or Default Value | Description |
 | --- | ---- | ------------------------- | ----------- |
-| `localOnly` | boolean | false | Set to true for resources that should be edited locally, only. The `show` and `index` actions are disabled (the `fetch*` action creators are not exported) and the `create`, `update` and `destroy` only update the store locally, without making any HTTP requests. |
+| `localOnly` | boolean | false | Set to true for resources that should be edited locally, only. The `fetchItem` and `index` actions are disabled (the `fetchItem*` action creators are not exported) and the `create`, `update` and `destroy` only update the store locally, without making any HTTP requests. |
 | `url` | string |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
 | `urlOnlyParams` | string[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. Useful for pagination. |
 | `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error` or `errors`. |
@@ -685,7 +685,7 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
         index: {
             // actionOptions
         },
-        show: {
+        fetch: {
             // actionOptions
         }
     }
@@ -709,7 +709,7 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 | `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error` or `errors`. |
 | `requestAdaptor` | Function | Identity function | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
 | `credentials` | string | undefined | Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the request only if it's on the same origin. |
-| `progress` | boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `index`, `show`, `create`, `update` and any custom actions. |
+| `progress` | boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `index`, `fetchItem`, `create`, `update` and any custom actions. |
 
 ##### Reducers
 
@@ -739,7 +739,7 @@ const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers }
         keyBy: 'id'
     },
     {
-        show: true
+        fetch: true
     }
 );
 
@@ -769,7 +769,7 @@ const store = createStore(reducers, {});
 configure({ store });
 ```
 
-And you must define a `show` action when defining your resource:
+And you must define a `fetchItem` action when defining your resource:
 
 ```javascript
 import { serializeKey, ITEM } from `redux-and-the-rest`;
@@ -782,7 +782,7 @@ const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers }
         keyBy: 'id',
     },
     {
-        show: true,
+        fetch: true,
     }
 );
 ```
@@ -796,7 +796,7 @@ function mapStateToProps({ users }, { params: { id } }) {
 }
 ```
 
-The actionCreatorOptions accepts the option `forceFetch`, which accepts a boolean or a function that is passed the current item or collection and is expected to return a boolean value. This provides a way to conditionally ignore the version of the item or collection in the store and to make a fetch request anyway:
+The actionCreatorOptions accepts the option `forceFetch`, which accepts a boolean or a function that is passed the current item or collection and is expected to return a boolean value. This provides a way to conditionally ignore the version of the item or collection in the store and to make a fetchItem request anyway:
 
 ```javascript
 function mapStateToProps({ users }, { params: { id } }) {
@@ -902,7 +902,7 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
   url: 'http://test.com/users',
   keyBy: 'id',
 }, {
-  show: {
+  fetch: {
     projection: { type: 'PREVIEW' }
   }
 });
@@ -1023,7 +1023,7 @@ Checking for these statuses is useful for displaying success or error messages:
 const { buildInitialState } = resources({
     name: 'users',
     url: 'http://test.com/users/:id',
-}, ['show']);
+}, ['fetch']);
 
 const stateBuilder = buildInitialState([ { id: 1, username: 'John' }]);
 
@@ -1087,7 +1087,7 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
         keyBy: 'id'
     },
     [
-        'index', 'show', 'create', 'update', 'destroy'
+        'index', 'fetch', 'create', 'update', 'destroy'
     ]
 );
 ```
@@ -1097,7 +1097,7 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
 | Action creator | RESTful action | HTTP Request |
 | ---- | :--- | :--- |
 | `fetchUsers()` | #index | `GET http://test.com/users` |
-| `fetchUser(1)` | #show | `GET http://test.com/users/1` |
+| `fetchUser(1)` | #fetchItem | `GET http://test.com/users/1` |
 | `createUser('tempId', {name: 'foo'})` | #create | `POST http://test.com/users` |
 | `updateUser(1, {name: 'foo'})` | #update | `PUT http://test.com/users/1` |
 | `destroyUser(1)` | #destroy | `DELETE http://test.com/users/1` |
@@ -1179,25 +1179,25 @@ When the collection is successfully fetched, the default index reducer expects t
 
 ### Fetch an individual resource item from the server
 
-The show action creator fetches an individual resource item from the server and adds it in the store.
+The fetchItem action creator fetches an individual resource item from the server and adds it in the store.
 
 | Property | Value |
 | :--- | :--- |
-| Action name for defining with `actionOptions` | `show` |
+| Action name for defining with `actionOptions` | `fetchItem` |
 | Action creator name | `fetchItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) and [Configuring the URLs used for a request](configuring-the-urls-used-for-a-request) for more information. |
 | Second action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
 | `status.type` lifecycle |  `FETCHING` -> (`SUCCESS` or `ERROR`) |
 
-#### Show action creator options
+#### Fetch action creator options
 
-The show action creator supports the following options as its second argument:
+The fetchItem action creator supports the following options as its second argument:
 
 | actionCreatorOptions | Type | Default value or required | Description |
 | :--- | :---: | :---: | :--- |
 | `request` | Object | { } | An object that [configures the HTTP request](#configuring-other-request-properties) made to fetch the item. |
 
-When the resource item is successfully fetched, the default show reducer expects the server to respond with a JSON object containing resource's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
+When the resource item is successfully fetched, the default fetchItem reducer expects the server to respond with a JSON object containing resource's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
 ### Create a new resource item on the server
 
@@ -1432,7 +1432,7 @@ const { actionCreators: { fetchItem: fetchUser } } = resources(
     keyBy: 'id'
 }, {
     index: true,
-    show: {
+    fetch: {
       url: 'http://test.com/guests/:id?'
     },
 });

@@ -21,7 +21,7 @@ describe('Generating URLs:', function() {
         keyBy: 'id'
       }, {
         index: true,
-        show: true,
+        fetchItem: true,
         update: true,
         destroy: true,
         create: true
@@ -167,7 +167,7 @@ describe('Generating URLs:', function() {
         keyBy: 'id'
       }, {
         index: true,
-        show: {
+        fetchItem: {
           url: 'http://test.com/guests/:order?'
         },
       });

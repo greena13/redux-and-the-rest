@@ -561,7 +561,7 @@ describe('progress option', function () {
     });
   });
 
-  describe('for the show action:', function () {
+  describe('for the fetchItem action:', function () {
     describe('when it is NOT set to a truthy value', function () {
       beforeAll(function () {
         const { reducers, actionCreators: { fetchItem: fetchUser } } = resources({
@@ -569,7 +569,7 @@ describe('progress option', function () {
           url: 'http://test.com/users/:id',
           keyBy: 'id'
         }, {
-          show: true
+          fetchItem: true
         });
 
         this.reducers = reducers;
@@ -648,7 +648,7 @@ describe('progress option', function () {
           url: 'http://test.com/users/:id',
           keyBy: 'id'
         }, {
-          show: {
+          fetchItem: {
             progress: true
           }
         });

@@ -35,7 +35,7 @@ import EmptyKey from './constants/EmptyKey';
  *           This will be the value you pass to each action creator to identify the target of each action. By
  *           default, 'id' is used.
  *
- * @property {boolean} [localOnly] Set to true for resources that should be edited locally, only. The show and
+ * @property {boolean} [localOnly] Set to true for resources that should be edited locally, only. The fetch and
  *           index actions are disabled (the fetch* action creators are not exported) and the create, update
  *           and destroy only update the store locally, without making any HTTP requests.
  * @property {string} [url] A url template that is used for all of the resource's actions. The template string
@@ -86,7 +86,7 @@ import EmptyKey from './constants/EmptyKey';
  *           Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this
  *           attribute is required for Non-RESTful actions.
  * @property {boolean} progress Whether the store should emit progress events as the resource is uploaded or
- *           downloaded. This is applicable to the RESTful actions index, show, create, update and any
+ *           downloaded. This is applicable to the RESTful actions index, fetch, create, update and any
  *           custom actions.
  * @property {ResponseAdaptorFunction} responseAdaptor Function used to adapt the response for a particular
  *           request before it is handed over to the reducers. The function must return the results as an object
@@ -147,13 +147,13 @@ function resources(resourceOptions, actionOptions = {}) {
   /**
    * Standardise the shape of the action options to support all forms:
    *  Array Syntax:
-   *    ['index', 'show']
+   *    ['index', 'fetch']
    *
    *  Object syntax:
-   *    { index: true, show: true }
+   *    { index: true, fetch: true }
    *
    *  Extended object syntax:
-   *    { index: { keyBy: 'identifier' }, show: { keyBy: 'id' } }
+   *    { index: { keyBy: 'identifier' }, fetch: { keyBy: 'id' } }
    *
    * @type {ActionOptionsMap}
    */
@@ -218,7 +218,7 @@ function resources(resourceOptions, actionOptions = {}) {
     getOrFetchItem(resourcesState, params, actionCreatorOptions) {
       return getOrFetch({
           typeKey: 'items',
-          fallbackActionName: 'show',
+          fallbackActionName: 'fetchItem',
           getFunction: getItem,
           fetchFunction: actionCreators.fetchItem,
           keyFunction: (_params) => getItemKey(_params, { keyBy: resourceOptions.keyBy, singular }),

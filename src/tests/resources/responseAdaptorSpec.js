@@ -23,7 +23,7 @@ describe('Specifying a response adaptor:', function () {
         responseAdaptor: (body) => ({ values: body.response, error: body.error })
       }, {
         index: true,
-        show: true,
+        fetchItem: true,
         update: true,
         destroy: true,
         create: true
@@ -122,7 +122,7 @@ describe('Specifying a response adaptor:', function () {
       });
     });
 
-    describe('when the show request', function () {
+    describe('when the fetchItem request', function () {
       describe('succeeds', function () {
         beforeAll(function () {
           this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
@@ -561,7 +561,7 @@ describe('Specifying a response adaptor:', function () {
         index: {
           responseAdaptor: (body) => ({ values: body.items, error: body.error })
         },
-        show: true,
+        fetchItem: true,
       });
 
       this.fetchUsers = fetchUsers;

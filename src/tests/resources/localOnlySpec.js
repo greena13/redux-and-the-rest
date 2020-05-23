@@ -36,7 +36,7 @@ describe('localOnly:', function () {
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
-      }, ['index', 'show', 'create', 'update', 'destroy' ]);
+      }, ['index', 'fetchItem', 'create', 'update', 'destroy' ]);
 
       this.store = buildStore({ ...this.initialState }, { users: usersReducers });
 
@@ -44,7 +44,7 @@ describe('localOnly:', function () {
       this.fetchUsers = fetchUsers;
     });
 
-    it('then exports the fetch action creators', function() {
+    it('then exports the fetchItem action creators', function() {
       expect(typeof this.fetchUser).toEqual('function');
       expect(typeof this.fetchUsers).toEqual('function');
     });
@@ -62,7 +62,7 @@ describe('localOnly:', function () {
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
         localOnly: true,
-      }, ['index', 'show', 'new', 'create', 'edit', 'update', 'destroy']);
+      }, ['index', 'fetchItem', 'new', 'create', 'edit', 'update', 'destroy']);
 
       this.store = buildStore({ ...this.initialState }, { users: usersReducers });
 
@@ -75,7 +75,7 @@ describe('localOnly:', function () {
       this.destroyUser = destroyUser;
     });
 
-    it('then does NOT export the fetch action creators', function() {
+    it('then does NOT export the fetchItem action creators', function() {
       expect(typeof this.fetchUser).not.toEqual('function');
       expect(typeof this.fetchUsers).not.toEqual('function');
     });
@@ -86,7 +86,7 @@ describe('localOnly:', function () {
       );
 
       expect(console.warn).toHaveBeenCalledWith(
-        'Redux and the REST: Action \'show\' is not compatible with the localOnly option.'
+        'Redux and the REST: Action \'fetchItem\' is not compatible with the localOnly option.'
       );
     });
 

@@ -15,7 +15,7 @@ describe('getTimeSinceFetchStarted:', function () {
       name: 'users',
       url: this.url,
       keyBy: 'id',
-    }, ['new', 'show', 'create', 'update']);
+    }, ['new', 'fetchItem', 'create', 'update']);
 
     this.actionCreators = actionCreators;
     this.reducers = reducers;
@@ -57,7 +57,7 @@ describe('getTimeSinceFetchStarted:', function () {
       tearDown(this);
     });
 
-    it('then returns the time since the fetch started', function() {
+    it('then returns the time since the fetchItem started', function() {
       expect(getTimeSinceFetchStarted(resourcesItem(this, RESOURCE_NAME, this.itemId))).toBeGreaterThanOrEqual(0);
     });
   });
@@ -83,7 +83,7 @@ describe('getTimeSinceFetchStarted:', function () {
     });
   });
 
-  describe('Given the item has failed to fetch', () => {
+  describe('Given the item has failed to fetchItem', () => {
     beforeAll(function () {
       this.itemId = 1;
 

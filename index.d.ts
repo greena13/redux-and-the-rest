@@ -499,7 +499,7 @@ export interface GlobalConfigurationOptions {
     keyBy?: string | Array<string>,
 
     /**
-     * Set to true for resources that should be edited locally, only. The show and index actions are disabled
+     * Set to true for resources that should be edited locally, only. The fetch and index actions are disabled
      * (the fetch* action creators are not exported) and the create, update and destroy only update the store
      * locally, without making any HTTP requests.
      */
@@ -608,7 +608,7 @@ export interface ActionOptions<T> {
     keyBy?: string | Array<string>,
 
     /**
-     * Set to true for resources that should be edited locally, only. The show and index actions are disabled
+     * Set to true for resources that should be edited locally, only. The fetch and index actions are disabled
      * (the fetch* action creators are not exported) and the create, update and destroy only update the store
      * locally, without making any HTTP requests.
      */
@@ -629,7 +629,7 @@ export interface ActionOptions<T> {
 
     /**
      * Whether the store should emit progress events as the resource is uploaded or downloaded. This is
-     * applicable to the RESTful actions index, show, create, update and any custom actions.
+     * applicable to the RESTful actions index, fetch, create, update and any custom actions.
      */
     progress?: boolean,
 

@@ -3,7 +3,7 @@
  */
 const RemoteOnlyActionsDictionary = {
   index: true,
-  show: true,
+  fetchItem: true,
 };
 
 export default RemoteOnlyActionsDictionary;

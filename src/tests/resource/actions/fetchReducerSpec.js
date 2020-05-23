@@ -12,14 +12,14 @@ import EmptyKey from '../../../constants/EmptyKey';
 
 const RESOURCE_NAME = 'users';
 
-describe('Show reducers:', function () {
+describe('Fetch reducers:', function () {
   beforeAll(function() {
     const { reducers, actionCreators: { fetchItem: fetchUser } } = resource({
       name: 'users',
       url: 'http://test.com/users',
       keyBy: 'id',
     }, {
-      show: true
+      fetchItem: true
     });
 
     this.fetchUser = fetchUser;
@@ -34,7 +34,7 @@ describe('Show reducers:', function () {
     expectToHandleSuccessAndFailure(this.url);
   });
 
-  describe('Given another show action has come before it', function () {
+  describe('Given another fetchItem action has come before it', function () {
     beforeAll(function () {
       this.url = 'http://test.com/users';
 
@@ -84,11 +84,11 @@ describe('Show reducers:', function () {
     });
   });
 
-  describe('Given a show action that will succeed with a response that specifies \'errors\' at the top level', () => {
+  describe('Given a fetchItem action that will succeed with a response that specifies \'errors\' at the top level', () => {
     expectToMergeInMultipleErrors({ body: { errors: ['Not Found'] }, status: 200 });
   });
 
-  describe('Given a show action that will fail with a response that specifies \'errors\' at the top level', () => {
+  describe('Given a fetchItem action that will fail with a response that specifies \'errors\' at the top level', () => {
     expectToMergeInMultipleErrors({ body: { errors: ['Not Found'] }, status: 400 });
   });
 

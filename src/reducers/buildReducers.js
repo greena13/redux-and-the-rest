@@ -9,7 +9,7 @@ import progressReducer from './helpers/progressReducer';
 import { getConfiguration } from '../configuration';
 import standardiseAssociationOptions from '../utils/standardiseAssociationOptions';
 import indexAction from '../actions/RESTful/index';
-import showAction from '../actions/RESTful/show';
+import fetchItemAction from '../actions/RESTful/fetchItem';
 import newAction from '../actions/RESTful/new';
 import clearNewAction from '../actions/RESTful/clearNew';
 import editNewAction from '../actions/RESTful/editNew';
@@ -37,7 +37,7 @@ const STANDARD_REDUCERS = {
    * RESTful actions
    */
   index: indexAction.reducer,
-  show: showAction.reducer,
+  fetchItem: fetchItemAction.reducer,
   new: newAction.reducer,
   clearNew: clearNewAction.reducer,
   editNew: editNewAction.reducer,
@@ -69,7 +69,7 @@ const STANDARD_REDUCERS = {
  */
 const PROGRESS_COMPATIBLE_ACTIONS = {
   index: true,
-  show: true,
+  fetchItem: true,
   update: true,
   create: true
 };

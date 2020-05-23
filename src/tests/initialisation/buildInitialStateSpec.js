@@ -10,7 +10,7 @@ describe('buildInitialState:', function() {
       const { buildInitialState } = resources({
         name: 'users',
         url: 'http://test.com/users/:id',
-      }, ['show']);
+      }, ['fetchItem']);
 
       this.buildInitialState = buildInitialState;
     });

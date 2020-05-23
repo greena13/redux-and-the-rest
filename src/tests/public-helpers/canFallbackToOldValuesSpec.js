@@ -16,7 +16,7 @@ describe('canFallbackToOldValues:', function () {
       url: this.url,
       keyBy: 'id',
     }, {
-      show: true
+      fetchItem: true
     });
 
     this.fetchUser = fetchUser;

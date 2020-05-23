@@ -17,7 +17,7 @@ const HTTP_REQUEST_TYPE = 'GET';
  ***************************************************************************************************************/
 
 /**
- * Redux action creator used for fetching a single resource item from a show RESTful API endpoint
+ * Redux action creator used for fetching a single resource item from a fetch RESTful API endpoint
  * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
@@ -26,6 +26,7 @@ const HTTP_REQUEST_TYPE = 'GET';
  */
 function actionCreator(options, params, actionCreatorOptions = {}) {
   const {
+
     action, transforms, url: urlTemplate, keyBy, progress, projection, request = {}
 , singular } = options;
 

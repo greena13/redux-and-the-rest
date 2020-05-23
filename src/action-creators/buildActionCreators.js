@@ -6,7 +6,7 @@ import projectionTransform from './helpers/transforms/projectionTransform';
 import { getConfiguration } from '../configuration';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 import indexAction from '../actions/RESTful/index';
-import showAction from '../actions/RESTful/show';
+import fetchItemAction from '../actions/RESTful/fetchItem';
 import newAction from '../actions/RESTful/new';
 import clearNewAction from '../actions/RESTful/clearNew';
 import editNewAction from '../actions/RESTful/editNew';
@@ -35,7 +35,7 @@ import pluck from '../utils/collection/pluck';
  */
 const STANDARD_ACTION_CREATORS = {
   index: indexAction.actionCreator,
-  show: showAction.actionCreator,
+  fetchItem: fetchItemAction.actionCreator,
   new: newAction.actionCreator,
   clearNew: clearNewAction.actionCreator,
   editNew: editNewAction.actionCreator,
