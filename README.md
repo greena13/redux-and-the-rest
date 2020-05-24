@@ -319,7 +319,7 @@ Generally your application will need to perform actions on resources locally, un
 | editNewItem | editNewItem() | Continue to add or modify a new item's attributes until it's ready to be saved. |
 | clearNew | clearNewItem() | Discards (removes) the new item fom the Redux store |
 | editItem | editItem() | Replaces an existing (saved) item's attributes in the store with new ones |
-| clearEdit | clearEditItem() | Reverts an edit, to restore the item's attributes before the edit |
+| clearItemEdit | clearItemEdit() | Reverts an edit, to restore the item's attributes before the edit |
 
 These actions are generally accumulative and reversible, so you can call them successively over multiple screens or stages of a workflow and provide a cancel feature if the user wishes to abort.
 
@@ -350,7 +350,7 @@ It's generally _not_ recommended to use any of the following directly, as there 
 Some common situations where you may be tempted to use the above, are:
 
 * Refreshing an item or collection from a remote API: `fetchItem()` or `fetchCollection()` should handle transitioning between the stale and new records more cleanly.
-* Cancelling an edit to an item: Use `clearEdit()` to roll back the changes without the need to refetch from the remote API.
+* Cancelling an edit to an item: Use `clearItemEdit()` to roll back the changes without the need to refetch from the remote API.
 * Clearing a resource when an event occurs, such as when user logs out: use the `clearOn` option to achieve this more efficiently (discussed below).   
 
 #### Selection actions
@@ -1363,7 +1363,7 @@ const originalValues = getValuesBeforeEditing(item);
 
 ### Clear local edits
 
-The clearEdit action creator reverts any local edits (those that haven't been sent to an external API) and resets a resource item back to its original values (as they existed when the resource was last synced).
+The clearItemEdit action creator reverts any local edits (those that haven't been sent to an external API) and resets a resource item back to its original values (as they existed when the resource was last synced).
 
 This is useful when a user wants to cancel or clear their editing of a particular resource item.
 
@@ -1371,7 +1371,7 @@ It can also be used to clear an edit after an UPDATE request has failed to be su
 
 | Property | Value |
 | :--- | :--- |
-| Action name for defining with `actionOptions` | `clearEdit` |
+| Action name for defining with `actionOptions` | `clearItemEdit` |
 | Action creator name | `clearItemEdit()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 | `status.type` lifecycle |  `EDITING` -> `SUCCESS` |

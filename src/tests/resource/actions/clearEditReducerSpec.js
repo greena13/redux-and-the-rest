@@ -18,7 +18,7 @@ describe('Clear editItem reducer:', function () {
     const { reducers, actionCreators: { clearItemEdit: clearUserEdit } } = resource({
       name: RESOURCE_NAME,
     }, {
-      clearEdit: true
+      clearItemEdit: true
     });
 
     this.clearUserEdit = clearUserEdit;
