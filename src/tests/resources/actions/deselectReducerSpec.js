@@ -9,7 +9,7 @@ describe('Deselect reducer:', function () {
       name: 'users',
       keyBy: 'id'
     }, {
-      deselect: true
+      deselectItem: true
     });
 
     this.reducers = reducers;

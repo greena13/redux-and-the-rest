@@ -136,9 +136,9 @@ users = getCollection(store.getState().users);
    * [Detecting if a resource item has been edited](#detecting-if-a-resource-item-has-been-edited)
    * [Accessing values before they were edited](#accessing-values-before-they-were-edited)
    * [Clear local edits](#clear-local-edits)
-   * [Select a resource item in the store](#select-a-resource-item-in-the-store)
-   * [Select another resource item in the store](#select-another-resource-item-in-the-store)
-   * [Deselect a resource item in the store](#deselect-a-resource-item-in-the-store)
+   * [Select a resource item in the store](#selectItem-a-resource-item-in-the-store)
+   * [Select another resource item in the store](#selectItem-another-resource-item-in-the-store)
+   * [Deselect a resource item in the store](#deselectItem-a-resource-item-in-the-store)
    * [Clear all the selected resource items in the store](#clear-all-the-selected-resource-items-in-the-store)
 * [Configuring requests](#configuring-requests)
    * [Configuring the URLs used for a request](#configuring-the-urls-used-for-a-request)
@@ -355,14 +355,14 @@ Some common situations where you may be tempted to use the above, are:
 
 #### Selection actions
 
-In addition to the CRUD functionality, `redux-and-the-rest` provides a number of actions for selecting one or more items to perform actions on. This is useful if your application needs to select resources on one screen or area and persist that selection to another area, or allow it to be retrieved at a later time.
+In addition to the CRUD functionality, `redux-and-the-rest` provides a number of actions for selecting one or more items to perform actions on. This is useful if your application needs to selectItem resources on one screen or area and persist that selection to another area, or allow it to be retrieved at a later time.
 
 | Action | Action Creator | Description |
 | ------ | -------------- | ----------- |
-| select | selectItem() | Selects an item in the store, replacing any previous items that may have been selected. |
-| selectAnother | selectAnotherItem() | Selects an item in the store, adding it to any previous items that are selected. |
-| deselect | deselectItem() | Unselects an item that is currently selected |
-| clearSelected | clearSelectedItems() | Unselects all selected items |
+| selectItem | selectItem() | Selects an item in the store, replacing any previous items that may have been selected. |
+| selectAnotherItem | selectAnotherItem() | Selects an item in the store, adding it to any previous items that are selected. |
+| deselectItem | deselectItem() | Unselects an item that is currently selected |
+| clearSelectedItems | clearSelectedItems() | Unselects all selected items |
 
 
 ## Connecting to React
@@ -542,7 +542,7 @@ Either option will allow you to call the handler in your component with only the
 
 `redux-and-the-rest` achieves its flexibility using four levels of configuration; each one has a different scope and is specified at different times.
 
-You need to select where you place your configuration depending on how wide you want particular options to apply, and when the desired values are available.
+You need to selectItem where you place your configuration depending on how wide you want particular options to apply, and when the desired values are available.
 
 The options are set out in a hierarchy, so as their scope becomes increasingly specific, their priority increases and they override any corresponding action that may have been provided to a lower priority set of options.
 
@@ -1378,41 +1378,41 @@ It can also be used to clear an edit after an UPDATE request has failed to be su
 
 ### Select a resource item in the store
 
-The select action creator adds an item's key to the `selectionMap` dictionary. It ensures that it is the only resource item (and overrides any previous values).
+The selectItem action creator adds an item's key to the `selectionMap` dictionary. It ensures that it is the only resource item (and overrides any previous values).
 
 | Property | Value |
 | :--- | :--- |
-| Action name for defining with `actionOptions` | `select` |
+| Action name for defining with `actionOptions` | `selectItem` |
 | Action creator name | `selectItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 
 ### Select another resource item in the store
 
-The selectAnother action creator adds an item's key to the `selectionMap` dictionary, while persisting any items' keys that have already been selected.
+The selectAnotherItem action creator adds an item's key to the `selectionMap` dictionary, while persisting any items' keys that have already been selected.
 
 | Property | Value |
 | :--- | :--- |
-| Action name for defining with `actionOptions` | `selectAnother` |
+| Action name for defining with `actionOptions` | `selectAnotherItem` |
 | Action creator name | `selectAnotherItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 
 ### Deselect a resource item in the store
 
-The deselect action creator removes an item's key from the `selectionMap` dictionary, if appears in there.
+The deselectItem action creator removes an item's key from the `selectionMap` dictionary, if appears in there.
 
 | Property | Value |
 | :--- | :--- |
-| Action name for defining with `actionOptions` | `deselect` |
+| Action name for defining with `actionOptions` | `deselectItem` |
 | Action creator name | `deselectItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 
 ### Clear all the selected resource items in the store
 
-The clearSelected action creator clears the `selectionMap` dictionary, resetting it to an empty object.
+The clearSelectedItems action creator clears the `selectionMap` dictionary, resetting it to an empty object.
 
 | Property | Value |
 | :--- | :--- |
-| Action name for defining with `actionOptions` | `clearSelected` |
+| Action name for defining with `actionOptions` | `clearSelectedItems` |
 | Action creator name | `clearSelectedItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 

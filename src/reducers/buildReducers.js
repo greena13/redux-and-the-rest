@@ -18,10 +18,10 @@ import editAction from '../actions/RESTful/editItem';
 import clearItemEditAction from '../actions/RESTful/clearItemEdit';
 import updateAction from '../actions/RESTful/updateItem';
 import destroyItemAction from '../actions/RESTful/destroyItem';
-import selectAction from '../actions/selection/select';
-import selectAnotherAction from '../actions/selection/selectAnother';
-import deselectAction from '../actions/selection/deselect';
-import clearSelectedAction from '../actions/selection/clearSelected';
+import selectItemAction from '../actions/selection/selectItem';
+import selectAnotherAction from '../actions/selection/selectAnotherItem';
+import deselectAction from '../actions/selection/deselectItem';
+import clearSelectedAction from '../actions/selection/clearSelectedItems';
 import clearResourceAction from '../actions/clear/clearResource';
 import clearItemAction from '../actions/clear/clearItem';
 import clearCollectionAction from '../actions/clear/clearCollection';
@@ -57,10 +57,10 @@ const STANDARD_REDUCERS = {
   /**
    * Selection actions
    */
-  select: selectAction.reducer,
-  selectAnother: selectAnotherAction.reducer,
-  deselect: deselectAction.reducer,
-  clearSelected: clearSelectedAction.reducer
+  selectItem: selectItemAction.reducer,
+  selectAnotherItem: selectAnotherAction.reducer,
+  deselectItem: deselectAction.reducer,
+  clearSelectedItems: clearSelectedAction.reducer
 };
 
 /**

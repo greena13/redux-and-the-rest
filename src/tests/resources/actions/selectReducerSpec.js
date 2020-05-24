@@ -12,7 +12,7 @@ describe('Select another reducer:', function () {
     const { reducers, actionCreators: { selectItem: selectUser } } = resources({
       name: 'users',
     }, {
-      select: true
+      selectItem: true
     });
 
     this.selectUser = selectUser;

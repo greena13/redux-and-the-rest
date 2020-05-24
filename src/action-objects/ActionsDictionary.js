@@ -55,10 +55,10 @@ const STANDARD_ACTIONS = {
   /**
    * Selection actions
    */
-  select: 'SELECT_ITEM',
-  selectAnother: 'SELECT_ANOTHER_ITEM',
-  deselect: 'DESELECT_ITEM',
-  clearSelected: 'CLEAR_SELECTED_ITEMS',
+  selectItem: 'SELECT_ITEM',
+  selectAnotherItem: 'SELECT_ANOTHER_ITEM',
+  deselectItem: 'DESELECT_ITEM',
+  clearSelectedItems: 'CLEAR_SELECTED_ITEMS',
 };
 
 

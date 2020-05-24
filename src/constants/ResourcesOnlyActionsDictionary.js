@@ -3,10 +3,10 @@
  */
 const ResourcesOnlyActionsDictionary = {
   fetchCollection: true,
-  select: true,
-  selectAnother: true,
-  deselect: true,
-  clearSelected: true,
+  selectItem: true,
+  selectAnotherItem: true,
+  deselectItem: true,
+  clearSelectedItems: true,
 };
 
 export default ResourcesOnlyActionsDictionary;

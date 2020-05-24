@@ -14,7 +14,7 @@ describe('Clear selected reducer:', function () {
     const { reducers, actionCreators: { clearSelectedItems: clearSelectedUsers } } = resources({
       name: RESOURCE_NAME,
     }, {
-      clearSelected: true
+      clearSelectedItems: true
     });
 
     this.clearSelectedUsers = clearSelectedUsers;
