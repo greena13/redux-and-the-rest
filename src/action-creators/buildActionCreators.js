@@ -23,7 +23,6 @@ import clearResourceAction from '../actions/clear/clearResource';
 import clearItemAction from '../actions/clear/clearItem';
 import clearCollectionAction from '../actions/clear/clearCollection';
 import without from '../utils/collection/without';
-import getActionCreatorNameFrom from './helpers/getActionCreatorNameFrom';
 import DefaultConfigurationOptions from '../constants/DefaultConfigurationOptions';
 import EmptyKey from '../constants/EmptyKey';
 import ResourcesOnlyActionsDictionary from '../constants/ResourcesOnlyActionsDictionary';
@@ -163,15 +162,13 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
      */
     const actionOptions = wrapInObject(actionsOptions[key]);
 
-    const actionCreatorName = getActionCreatorNameFrom(key);
-
     const actionCreator = isObject(actionOptions) && actionOptions.actionCreator;
 
     const standardActionCreator = effectiveActionCreators[key];
 
     if (actionCreator) {
 
-      memo[actionCreatorName] = actionCreator;
+      memo[key] = actionCreator;
 
     } else if (standardActionCreator) {
       const _options = resolveOptions(
@@ -212,7 +209,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
 
       actionCreatorConfig.transforms.push(projectionTransform);
 
-      memo[actionCreatorName] = (arg1, arg2, arg3) => {
+      memo[key] = (arg1, arg2, arg3) => {
         const config = getConfiguration();
 
         const reloadedOptions = {
