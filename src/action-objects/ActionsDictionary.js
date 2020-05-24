@@ -40,7 +40,7 @@ const STANDARD_ACTIONS = {
   clearNewItem: 'CLEAR_NEW_ITEM',
   editNewItem: 'EDIT_NEW_ITEM',
   clearItemEdit: 'CLEAR_ITEM_EDIT',
-  create: 'CREATE_ITEM',
+  createItem: 'CREATE_ITEM',
   editItem: 'EDIT_ITEM',
   update: 'UPDATE_ITEM',
   destroy: 'DESTROY_ITEM',

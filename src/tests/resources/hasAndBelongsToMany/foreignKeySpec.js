@@ -48,7 +48,7 @@ describe('hasAndBelongsToMany:', function () {
         name: 'posts',
         url: 'http://test.com/posts/:id?',
         keyBy: 'id'
-      }, { create: true });
+      }, { createItem: true });
 
       const {
         reducers,

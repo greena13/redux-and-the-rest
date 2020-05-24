@@ -26,7 +26,7 @@ describe('Specifying a response adaptor:', function () {
         fetchItem: true,
         update: true,
         destroy: true,
-        create: true
+        createItem: true
       });
 
       this.reducers = reducers;

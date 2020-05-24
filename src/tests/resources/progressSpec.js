@@ -7,7 +7,7 @@ import nop from '../../utils/function/nop';
 import EmptyKey from '../../constants/EmptyKey';
 
 describe('progress option', function () {
-  describe('for the create action:', function () {
+  describe('for the createItem action:', function () {
     describe('when it is NOT set to a truthy value', function () {
       beforeAll(function () {
         const { reducers, actionCreators: { createItem: createUser } } = resources({
@@ -15,7 +15,7 @@ describe('progress option', function () {
           url: 'http://test.com/users',
           keyBy: 'id'
         }, {
-          create: true
+          createItem: true
         });
 
         this.reducers = reducers;
@@ -90,7 +90,7 @@ describe('progress option', function () {
           url: 'http://test.com/users',
           keyBy: 'id'
         }, {
-          create: {
+          createItem: {
             progress: true
           }
         });

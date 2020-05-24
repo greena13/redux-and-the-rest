@@ -21,7 +21,7 @@ describe('Create reducer:', function () {
       url: 'http://test.com/users/:id?',
       keyBy: 'id'
     }, {
-      create: true
+      createItem: true
     });
 
     this.createUser = createUser;
@@ -155,13 +155,13 @@ describe('Create reducer:', function () {
     expectToCorrectlyApplyOperator('invalidate', [], [], [], []);
   });
 
-  describe('Given a create action that will succeed with a response that specifies \'errors\' at the top level', () => {
+  describe('Given a createItem action that will succeed with a response that specifies \'errors\' at the top level', () => {
     describe('when the request has completed', () => {
       expectToCorrectlySetErrors(404);
     });
   });
 
-  describe('Given a create action that will fail with a response that specifies \'errors\' at the top level', () => {
+  describe('Given a createItem action that will fail with a response that specifies \'errors\' at the top level', () => {
     describe('when the request has completed', () => {
       expectToCorrectlySetErrors(200);
     });

@@ -72,7 +72,7 @@ describe('belongsTo:', function () {
         name: 'addresses',
         url: 'http://test.com/addresses/:id?',
         keyBy: 'id'
-      }, { create: true, update: true, destroy: true });
+      }, { createItem: true, update: true, destroy: true });
 
       const {
         reducers,
@@ -452,7 +452,7 @@ describe('belongsTo:', function () {
         name: 'addresses',
         url: 'http://test.com/addresses/:id?',
         keyBy: 'id'
-      }, { create: true, update: true, destroy: true });
+      }, { createItem: true, update: true, destroy: true });
 
       const {
         reducers,

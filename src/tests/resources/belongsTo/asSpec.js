@@ -40,7 +40,7 @@ describe('belongsTo:', function () {
         name: 'addresses',
         url: 'http://test.com/addresses/:id?',
         keyBy: 'id'
-      }, { create: true });
+      }, { createItem: true });
 
       const {
         reducers,

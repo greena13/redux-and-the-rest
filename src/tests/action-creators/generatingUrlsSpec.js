@@ -24,7 +24,7 @@ describe('Generating URLs:', function() {
         fetchItem: true,
         update: true,
         destroy: true,
-        create: true
+        createItem: true
       });
 
       this.createUser = createUser;

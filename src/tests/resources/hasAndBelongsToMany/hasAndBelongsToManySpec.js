@@ -68,7 +68,7 @@ describe('hasAndBelongsToMany:', function () {
         name: 'posts',
         url: 'http://test.com/posts/:id?',
         keyBy: 'id'
-      }, { create: true, update: true, destroy: true });
+      }, { createItem: true, update: true, destroy: true });
 
       const {
         reducers,
@@ -450,7 +450,7 @@ describe('hasAndBelongsToMany:', function () {
         name: 'posts',
         url: 'http://test.com/posts/:id?',
         keyBy: 'id'
-      }, { create: true, update: true, destroy: true });
+      }, { createItem: true, update: true, destroy: true });
 
       const {
         reducers,

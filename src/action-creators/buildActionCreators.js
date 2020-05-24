@@ -10,7 +10,7 @@ import fetchCollectionAction from '../actions/RESTful/fetchCollection';
 import newAction from '../actions/RESTful/new';
 import clearNewItemAction from '../actions/RESTful/clearNewItem';
 import editNewItemAction from '../actions/RESTful/editNewItem';
-import createAction from '../actions/RESTful/create';
+import createItemAction from '../actions/RESTful/createItem';
 import editAction from '../actions/RESTful/editItem';
 import clearItemEditAction from '../actions/RESTful/clearItemEdit';
 import updateAction from '../actions/RESTful/update';
@@ -39,7 +39,7 @@ const STANDARD_ACTION_CREATORS = {
   new: newAction.actionCreator,
   clearNewItem: clearNewItemAction.actionCreator,
   editNewItem: editNewItemAction.actionCreator,
-  create: createAction.actionCreator,
+  createItem: createItemAction.actionCreator,
   editItem: editAction.actionCreator,
   clearItemEdit: clearItemEditAction.actionCreator,
   update: updateAction.actionCreator,
@@ -61,7 +61,7 @@ const STANDARD_ACTION_CREATORS = {
  */
 const LOCAL_ONLY_ACTION_CREATORS = {
   ...without(STANDARD_ACTION_CREATORS, Object.keys(RemoteOnlyActionsDictionary)),
-  create: createAction.localActionCreator,
+  createItem: createItemAction.localActionCreator,
   update: updateAction.localActionCreator,
   destroy: destroyAction.localActionCreator,
 };

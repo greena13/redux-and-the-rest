@@ -18,7 +18,7 @@ describe('getNewItem:', function () {
       name: 'users',
       url: this.url,
       keyBy: 'id',
-    }, ['new', 'create']);
+    }, ['new', 'createItem']);
 
     this.actionCreators = actionCreators;
     this.reducers = reducers;

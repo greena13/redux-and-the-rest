@@ -36,7 +36,7 @@ describe('localOnly:', function () {
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
-      }, ['fetchCollection', 'fetchItem', 'create', 'update', 'destroy' ]);
+      }, ['fetchCollection', 'fetchItem', 'createItem', 'update', 'destroy' ]);
 
       this.store = buildStore({ ...this.initialState }, { users: usersReducers });
 
@@ -62,7 +62,7 @@ describe('localOnly:', function () {
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
         localOnly: true,
-      }, ['fetchCollection', 'fetchItem', 'new', 'create', 'editItem', 'update', 'destroy']);
+      }, ['fetchCollection', 'fetchItem', 'new', 'createItem', 'editItem', 'update', 'destroy']);
 
       this.store = buildStore({ ...this.initialState }, { users: usersReducers });
 

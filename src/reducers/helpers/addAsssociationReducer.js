@@ -363,7 +363,7 @@ function addAssociationReducer(
 }
 
 const associationReducersDict = {
-  create: addCreatedHasManyAssociation,
+  createItem: addCreatedHasManyAssociation,
   update: updateHasManyAssociation,
   destroy: removeDestroyedHasManyAssociation
 };

@@ -13,7 +13,7 @@ import fetchItemAction from '../actions/RESTful/fetchItem';
 import newAction from '../actions/RESTful/new';
 import clearNewItemAction from '../actions/RESTful/clearNewItem';
 import editNewItemAction from '../actions/RESTful/editNewItem';
-import createAction from '../actions/RESTful/create';
+import createItemAction from '../actions/RESTful/createItem';
 import editAction from '../actions/RESTful/editItem';
 import clearItemEditAction from '../actions/RESTful/clearItemEdit';
 import updateAction from '../actions/RESTful/update';
@@ -41,7 +41,7 @@ const STANDARD_REDUCERS = {
   new: newAction.reducer,
   clearNewItem: clearNewItemAction.reducer,
   editNewItem: editNewItemAction.reducer,
-  create: createAction.reducer,
+  createItem: createItemAction.reducer,
   editItem: editAction.reducer,
   clearItemEdit: clearItemEditAction.reducer,
   update: updateAction.reducer,
@@ -71,7 +71,7 @@ const PROGRESS_COMPATIBLE_ACTIONS = {
   fetchCollection: true,
   fetchItem: true,
   update: true,
-  create: true
+  createItem: true
 };
 
 function getProgressReducer(key) {

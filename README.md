@@ -331,7 +331,7 @@ When the your application is done with local manipulation of a resource, you can
 | ------ | -------------- | ----------- |
 | fetchCollection | fetchCollection() | Fetches a collection of items from a remote API |
 | fetchItem | fetchItem() | Fetches an item from a remote API |
-| create | createItem() | Sends a create request with an item's attributes to a remote API |
+| createItem | createItem() | Sends a create request with an item's attributes to a remote API |
 | update | updateItem() | Sends new attributes (an "update") for an item to a remote API |
 | destroy | destroyItem() | Sends a delete request for an item to a remote API |
 
@@ -650,7 +650,7 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 
 | key | Type | Required or Default Value | Description |
 | --- | ---- | ------------------------- | ----------- |
-| `localOnly` | boolean | false | Set to true for resources that should be edited locally, only. The `fetchItem` and `fetchCollection` actions are disabled (the `fetch*` action creators are not exported) and the `create`, `update` and `destroy` only update the store locally, without making any HTTP requests. |
+| `localOnly` | boolean | false | Set to true for resources that should be edited locally, only. The `fetchItem` and `fetchCollection` actions are disabled (the `fetch*` action creators are not exported) and the `createItem`, `update` and `destroy` only update the store locally, without making any HTTP requests. |
 | `url` | string |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
 | `urlOnlyParams` | string[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. Useful for pagination. |
 | `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error` or `errors`. |
@@ -709,7 +709,7 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 | `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error` or `errors`. |
 | `requestAdaptor` | Function | Identity function | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
 | `credentials` | string | undefined | Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the request only if it's on the same origin. |
-| `progress` | boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `fetchCollection`, `fetchItem`, `create`, `update` and any custom actions. |
+| `progress` | boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `fetchCollection`, `fetchItem`, `createItem`, `update` and any custom actions. |
 
 ##### Reducers
 
@@ -1087,7 +1087,7 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
         keyBy: 'id'
     },
     [
-        'fetchCollection', 'fetch', 'create', 'update', 'destroy'
+        'fetchCollection', 'fetch', 'createItem', 'update', 'destroy'
     ]
 );
 ```
@@ -1098,7 +1098,7 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
 | ---- | :--- | :--- |
 | `fetchCollection()` | #fetchCollection | `GET http://test.com/users` |
 | `fetchItem(1)` | #fetchItem | `GET http://test.com/users/1` |
-| `createUser('tempId', {name: 'foo'})` | #create | `POST http://test.com/users` |
+| `createUser('tempId', {name: 'foo'})` | #createItem | `POST http://test.com/users` |
 | `updateUser(1, {name: 'foo'})` | #update | `PUT http://test.com/users/1` |
 | `destroyUser(1)` | #destroy | `DELETE http://test.com/users/1` |
 
@@ -1205,7 +1205,7 @@ The create action creator saves a new resource item to the server, with a set of
 
 | Property | Value |
 | :--- | :--- |
-| Action name for defining with `actionOptions` | `create` |
+| Action name for defining with `actionOptions` | `createItem` |
 | Action creator name | `createItem()` |
 | First action creator argument | (Optional) `keys` - The temporary id to use to fetchCollection the new resource in the store until a permanent id has been assigned by the server. This temporary id is available as `newItemKey` on the resource, until a new one is returned by the server, and then `newItemKey` is updated to the value assigned by the server. This argument is optional unless used with the `localOnly` option (`localOnly` requires you to specify an id, as there is no external API to assign one). If it is not specified, a temporary key is automatically generated and you can access the resource item using the `getNewItem()` helper. If you do not want to specify this argument, you can pass the resource item's `values` as the first parameter.|
 | Second action creator argument | Resource item's attributes - An object of attributes to save to the server |
@@ -1222,7 +1222,7 @@ The create action creator supports the following options as its third argument:
 | `unshift` | Array | [ ] | An array of collection keys to add the new resource item to the beginning of. |
 | `invalidate` | Array | [ ] | An array of collection keys for which to clear (invalidate). This is useful for when you know the resource item that was just created is likely to appear in a collection, but you don't know where so you need to re-retrieve the whole collection from the server. |
 
-When the resource item is successfully created, the default create reducer expects the server to respond with a JSON object containing resource's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
+When the resource item is successfully created, the default createItem reducer expects the server to respond with a JSON object containing resource's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
 ### Update a resource item on the server
 
