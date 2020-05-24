@@ -500,7 +500,7 @@ export interface GlobalConfigurationOptions {
 
     /**
      * Set to true for resources that should be edited locally, only. The fetch and fetchCollection actions are disabled
-     * (the fetch* action creators are not exported) and the create, update and destroyItem only update the store
+     * (the fetch* action creators are not exported) and the createItem, updateItem and destroyItem only update the store
      * locally, without making any HTTP requests.
      */
     localOnly?: boolean,
@@ -609,7 +609,7 @@ export interface ActionOptions<T> {
 
     /**
      * Set to true for resources that should be edited locally, only. The fetch and fetchCollection actions are disabled
-     * (the fetch* action creators are not exported) and the create, update and destroyItem only update the store
+     * (the fetch* action creators are not exported) and the createItem, updateItem and destroyItem only update the store
      * locally, without making any HTTP requests.
      */
     localOnly?: boolean,
@@ -629,7 +629,7 @@ export interface ActionOptions<T> {
 
     /**
      * Whether the store should emit progress events as the resource is uploaded or downloaded. This is
-     * applicable to the RESTful actions fetchCollection, fetch, create, update and any custom actions.
+     * applicable to the RESTful actions fetchCollection, fetch, create, updateItem and any custom actions.
      */
     progress?: boolean,
 

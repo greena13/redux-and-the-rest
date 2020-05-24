@@ -13,7 +13,7 @@ import editNewItemAction from '../actions/RESTful/editNewItem';
 import createItemAction from '../actions/RESTful/createItem';
 import editAction from '../actions/RESTful/editItem';
 import clearItemEditAction from '../actions/RESTful/clearItemEdit';
-import updateAction from '../actions/RESTful/update';
+import updateAction from '../actions/RESTful/updateItem';
 import destroyItemAction from '../actions/RESTful/destroyItem';
 import selectAction from '../actions/selection/select';
 import selectAnotherAction from '../actions/selection/selectAnother';
@@ -42,7 +42,7 @@ const STANDARD_ACTION_CREATORS = {
   createItem: createItemAction.actionCreator,
   editItem: editAction.actionCreator,
   clearItemEdit: clearItemEditAction.actionCreator,
-  update: updateAction.actionCreator,
+  updateItem: updateAction.actionCreator,
   destroyItem: destroyItemAction.actionCreator,
 
   clearItem: clearItemAction.actionCreator,
@@ -62,7 +62,7 @@ const STANDARD_ACTION_CREATORS = {
 const LOCAL_ONLY_ACTION_CREATORS = {
   ...without(STANDARD_ACTION_CREATORS, Object.keys(RemoteOnlyActionsDictionary)),
   createItem: createItemAction.localActionCreator,
-  update: updateAction.localActionCreator,
+  updateItem: updateAction.localActionCreator,
   destroyItem: destroyItemAction.localActionCreator,
 };
 

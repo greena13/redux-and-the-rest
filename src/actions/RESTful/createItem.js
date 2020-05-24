@@ -115,7 +115,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
 /**
  * Creates an action object to update the Redux store to list a new resource item as being created on a remote API
  * @param {Object} options Options specified when defining the resource and action
- * @param {Object} [actionCreatorOptions={}] The options passed to the create* action creator function
+ * @param {Object} [actionCreatorOptions={}] The options passed to the createItem* action creator function
  * @param {Object} values The attributes of the resource currently being created
  * @param {Object} [collectionOperations={}] Options for how the newly created resource should be added to an
  *        existing collections - if any.

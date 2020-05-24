@@ -81,7 +81,7 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
  ***************************************************************************************************************/
 
 /**
- * Creates an action object to  update a new resource item as being created on a remote API
+ * Creates an action object to update a new resource item as being created on a remote API
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} [actionCreatorOptions={}] The options passed to the update* action creator function
  * @param {Object} values The attributes of the resource currently being created

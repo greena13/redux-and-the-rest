@@ -268,7 +268,7 @@ describe('progress option', function () {
           url: 'http://test.com/users/:id',
           keyBy: 'id'
         }, {
-          update: true
+          updateItem: true
         });
 
         this.reducers = reducers;
@@ -375,7 +375,7 @@ describe('progress option', function () {
           url: 'http://test.com/users/:id',
           keyBy: 'id'
         }, {
-          update: {
+          updateItem: {
             progress: true
           }
         });

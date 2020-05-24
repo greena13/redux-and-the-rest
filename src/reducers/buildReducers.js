@@ -16,7 +16,7 @@ import editNewItemAction from '../actions/RESTful/editNewItem';
 import createItemAction from '../actions/RESTful/createItem';
 import editAction from '../actions/RESTful/editItem';
 import clearItemEditAction from '../actions/RESTful/clearItemEdit';
-import updateAction from '../actions/RESTful/update';
+import updateAction from '../actions/RESTful/updateItem';
 import destroyItemAction from '../actions/RESTful/destroyItem';
 import selectAction from '../actions/selection/select';
 import selectAnotherAction from '../actions/selection/selectAnother';
@@ -44,7 +44,7 @@ const STANDARD_REDUCERS = {
   createItem: createItemAction.reducer,
   editItem: editAction.reducer,
   clearItemEdit: clearItemEditAction.reducer,
-  update: updateAction.reducer,
+  updateItem: updateAction.reducer,
   destroyItem: destroyItemAction.reducer,
 
   /**
@@ -70,7 +70,7 @@ const STANDARD_REDUCERS = {
 const PROGRESS_COMPATIBLE_ACTIONS = {
   fetchCollection: true,
   fetchItem: true,
-  update: true,
+  updateItem: true,
   createItem: true
 };
 
@@ -227,7 +227,7 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
   });
 
   /**
-   * Add actions that update this resources' foreign keys
+   * Add actions that updates this resources' foreign keys
    */
   if (resourceOptions.hasAndBelongsToMany) {
     Object.keys(resourceOptions.hasAndBelongsToMany).forEach((associationName) => {

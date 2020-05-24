@@ -22,7 +22,7 @@ describe('Generating URLs:', function() {
       }, {
         fetchCollection: true,
         fetchItem: true,
-        update: true,
+        updateItem: true,
         destroyItem: true,
         createItem: true
       });

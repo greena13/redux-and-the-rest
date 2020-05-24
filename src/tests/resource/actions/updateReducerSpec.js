@@ -19,7 +19,7 @@ describe('Update reducer:', function () {
       name: 'users',
       url: 'http://test.com/users/:id?',
     }, {
-      update: true
+      updateItem: true
     });
 
     this.updateUser = updateUser;
@@ -108,11 +108,11 @@ describe('Update reducer:', function () {
     expectToCorrectlyUpdateAnEditedResourceItem({ ...RESOURCES, ...resourceBefore });
   });
 
-  describe('Given a update action that will succeed with a response that specifies \'errors\' at the top level', () => {
+  describe('Given a updateItem action that will succeed with a response that specifies \'errors\' at the top level', () => {
     expectToMergeInMultipleErrors({ body: { errors: ['Not Found'] }, status: 200 });
   });
 
-  describe('Given a update action that will fail with a response that specifies \'errors\' at the top level', () => {
+  describe('Given a updateItem action that will fail with a response that specifies \'errors\' at the top level', () => {
     expectToMergeInMultipleErrors({ body: { errors: ['Not Found'] }, status: 400 });
   });
 

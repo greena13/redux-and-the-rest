@@ -24,7 +24,7 @@ describe('Specifying a response adaptor:', function () {
       }, {
         fetchCollection: true,
         fetchItem: true,
-        update: true,
+        updateItem: true,
         destroyItem: true,
         createItem: true
       });

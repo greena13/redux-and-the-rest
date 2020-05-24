@@ -36,7 +36,7 @@ import EmptyKey from './constants/EmptyKey';
  *           default, 'id' is used.
  *
  * @property {boolean} [localOnly] Set to true for resources that should be edited locally, only. The fetch and
- *           fetchCollection actions are disabled (the fetch* action creators are not exported) and the create, update
+ *           fetchCollection actions are disabled (the fetch* action creators are not exported) and the createItem, updateItem
  *           and destroyItem only update the store locally, without making any HTTP requests.
  * @property {string} [url] A url template that is used for all of the resource's actions. The template string
  *           can include required url parameters by prefixing them with a colon (e.g. :id) and optional
@@ -86,7 +86,7 @@ import EmptyKey from './constants/EmptyKey';
  *           Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this
  *           attribute is required for Non-RESTful actions.
  * @property {boolean} progress Whether the store should emit progress events as the resource is uploaded or
- *           downloaded. This is applicable to the RESTful actions fetchCollection, fetch, create, update and any
+ *           downloaded. This is applicable to the RESTful actions fetchCollection, fetchItem, createItem, updateItem and any
  *           custom actions.
  * @property {ResponseAdaptorFunction} responseAdaptor Function used to adapt the response for a particular
  *           request before it is handed over to the reducers. The function must return the results as an object
