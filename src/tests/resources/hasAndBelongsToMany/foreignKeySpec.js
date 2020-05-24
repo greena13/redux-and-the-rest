@@ -63,7 +63,7 @@ describe('hasAndBelongsToMany:', function () {
           },
         }
       }, {
-        new: true,
+        newItem: true,
       });
 
       this.reducers = reducers;

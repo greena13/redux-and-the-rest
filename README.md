@@ -129,7 +129,7 @@ users = getCollection(store.getState().users);
       * [DestroyItem action creator options](#destroy-item-action-creator-options)
 * [Local (synchronous) actions](#local-synchronous-actions)
    * [Add a new resource item to the store](#add-a-new-resource-item-to-the-store)
-      * [New action creator options](#new-action-creator-options)
+      * [NewItem action creator options](#newItem-action-creator-options)
    * [Clear the new resource item from the store](#clear-the-new-resource-item-from-the-store)
    * [Edit the new resource item in the store](#edit-the-new-resource-item-in-the-store)
    * [Edit an existing resource item in the store](#edit-an-existing-resource-item-in-the-store)
@@ -315,7 +315,7 @@ Generally your application will need to perform actions on resources locally, un
 
 | Action | Action Creator | Description |
 | ------ | -------------- | ----------- |
-| new | newItem() | Creates a new item in the Redux store |
+| newItem | newItem() | Creates a new item in the Redux store |
 | editNewItem | editNewItem() | Continue to add or modify a new item's attributes until it's ready to be saved. |
 | clearNewItem | clearNewItem() | Discards (removes) the new item fom the Redux store |
 | editItem | editItem() | Replaces an existing (saved) item's attributes in the store with new ones |
@@ -1279,14 +1279,14 @@ The new action creator creates a new resource item and adds it to the store, wit
 
 | Property | Value |
 | :--- | :--- |
-| Action name for defining with `actionOptions` | `new` |
+| Action name for defining with `actionOptions` | `newItem` |
 | Action creator name | `newItem()` |
 | First action creator argument | `keys` - The temporary id to use to store the new resource in the store until a permanent id has been assigned by the server. This temporary id is available as `newItemKey` on the resource. |
 | Second action creator argument | Resource item's attributes - An object of attributes to save as a new resource item in the store. |
 | Third action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
 | `status.type` lifecycle |  `NEW` |
 
-#### New action creator options
+#### NewItem action creator options
 
 The new action creator supports the following options as its third argument:
 
@@ -1304,7 +1304,7 @@ This is useful when the user wishes to cancel or navigate away from creating a n
 
 | Property | Value |
 | :--- | :--- |
-| Action name for defining with `actionOptions` | `new` |
+| Action name for defining with `actionOptions` | `newItem` |
 | Action creator name | `newItem()` |
 
 ### Edit the new resource item in the store

@@ -88,7 +88,7 @@ describe('reducesOn:', function () {
       ],
     }, {
       fetchCollection: true,
-      new: true,
+      newItem: true,
     });
 
     this.store = buildStore({

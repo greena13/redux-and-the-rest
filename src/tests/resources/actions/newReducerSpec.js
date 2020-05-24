@@ -21,7 +21,7 @@ describe('New reducer:', () => {
       name: 'users',
       keyBy: 'id'
     }, {
-      new: true
+      newItem: true
     });
 
     this.newUser = newUser;

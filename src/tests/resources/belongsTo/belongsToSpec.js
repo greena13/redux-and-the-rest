@@ -85,7 +85,7 @@ describe('belongsTo:', function () {
         }
       }, {
         fetchCollection: true,
-        new: true,
+        newItem: true,
       });
 
       this.reducers = reducers;
@@ -467,7 +467,7 @@ describe('belongsTo:', function () {
         }
       }, {
         fetchCollection: true,
-        new: true,
+        newItem: true,
       });
 
       this.reducers = reducers;

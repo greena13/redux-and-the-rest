@@ -81,7 +81,7 @@ describe('hasAndBelongsToMany:', function () {
         }
       }, {
         fetchCollection: true,
-        new: true,
+        newItem: true,
       });
 
       this.reducers = reducers;
@@ -465,7 +465,7 @@ describe('hasAndBelongsToMany:', function () {
         }
       }, {
         fetchCollection: true,
-        new: true,
+        newItem: true,
       });
 
       this.reducers = reducers;

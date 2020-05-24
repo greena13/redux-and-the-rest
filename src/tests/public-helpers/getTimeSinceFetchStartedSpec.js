@@ -15,7 +15,7 @@ describe('getTimeSinceFetchStarted:', function () {
       name: 'users',
       url: this.url,
       keyBy: 'id',
-    }, ['new', 'fetchItem', 'createItem', 'update']);
+    }, ['newItem', 'fetchItem', 'createItem', 'update']);
 
     this.actionCreators = actionCreators;
     this.reducers = reducers;

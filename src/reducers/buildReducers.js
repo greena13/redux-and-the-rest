@@ -10,7 +10,7 @@ import { getConfiguration } from '../configuration';
 import standardiseAssociationOptions from '../utils/standardiseAssociationOptions';
 import fetchCollectionAction from '../actions/RESTful/fetchCollection';
 import fetchItemAction from '../actions/RESTful/fetchItem';
-import newAction from '../actions/RESTful/new';
+import newAction from '../actions/RESTful/newItem';
 import clearNewItemAction from '../actions/RESTful/clearNewItem';
 import editNewItemAction from '../actions/RESTful/editNewItem';
 import createItemAction from '../actions/RESTful/createItem';
@@ -38,7 +38,7 @@ const STANDARD_REDUCERS = {
    */
   fetchCollection: fetchCollectionAction.reducer,
   fetchItem: fetchItemAction.reducer,
-  new: newAction.reducer,
+  newItem: newAction.reducer,
   clearNewItem: clearNewItemAction.reducer,
   editNewItem: editNewItemAction.reducer,
   createItem: createItemAction.reducer,

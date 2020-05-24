@@ -7,7 +7,7 @@ import { getConfiguration } from '../configuration';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 import fetchItemAction from '../actions/RESTful/fetchItem';
 import fetchCollectionAction from '../actions/RESTful/fetchCollection';
-import newAction from '../actions/RESTful/new';
+import newAction from '../actions/RESTful/newItem';
 import clearNewItemAction from '../actions/RESTful/clearNewItem';
 import editNewItemAction from '../actions/RESTful/editNewItem';
 import createItemAction from '../actions/RESTful/createItem';
@@ -36,7 +36,7 @@ import pluck from '../utils/collection/pluck';
 const STANDARD_ACTION_CREATORS = {
   fetchCollection: fetchCollectionAction.actionCreator,
   fetchItem: fetchItemAction.actionCreator,
-  new: newAction.actionCreator,
+  newItem: newAction.actionCreator,
   clearNewItem: clearNewItemAction.actionCreator,
   editNewItem: editNewItemAction.actionCreator,
   createItem: createItemAction.actionCreator,

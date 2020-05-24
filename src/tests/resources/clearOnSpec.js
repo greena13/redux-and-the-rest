@@ -80,7 +80,7 @@ describe('clearOn:', function () {
         keyBy: 'id',
       }, {
         fetchCollection: true,
-        new: true,
+        newItem: true,
       });
 
       this.store = buildStore({ ...this.initialState }, { users: usersReducers, session: this.sessionReducers });
@@ -104,7 +104,7 @@ describe('clearOn:', function () {
         clearOn: this.sessionActions.destroyItem,
       }, {
         fetchCollection: true,
-        new: true,
+        newItem: true,
       });
 
       this.store = buildStore({ ...this.initialState }, { users: usersReducers, session: this.sessionReducers });

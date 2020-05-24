@@ -67,7 +67,7 @@ describe('belongsTo:', function () {
           },
         }
       }, {
-        new: true,
+        newItem: true,
       });
 
       this.reducers = reducers;
