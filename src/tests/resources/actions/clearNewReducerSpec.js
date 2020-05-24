@@ -17,7 +17,7 @@ describe('Clear new reducer:', function () {
     const { reducers, actionCreators: { clearNewItem: clearNewUser } } = resources({
       name: RESOURCE_NAME,
     }, {
-      clearNew: true
+      clearNewItem: true
     });
 
     this.clearNewUser = clearNewUser;

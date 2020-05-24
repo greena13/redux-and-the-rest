@@ -8,7 +8,7 @@ import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionar
 import fetchItemAction from '../actions/RESTful/fetchItem';
 import fetchCollectionAction from '../actions/RESTful/fetchCollection';
 import newAction from '../actions/RESTful/new';
-import clearNewAction from '../actions/RESTful/clearNew';
+import clearNewItemAction from '../actions/RESTful/clearNewItem';
 import editNewItemAction from '../actions/RESTful/editNewItem';
 import createAction from '../actions/RESTful/create';
 import editAction from '../actions/RESTful/editItem';
@@ -37,7 +37,7 @@ const STANDARD_ACTION_CREATORS = {
   fetchCollection: fetchCollectionAction.actionCreator,
   fetchItem: fetchItemAction.actionCreator,
   new: newAction.actionCreator,
-  clearNew: clearNewAction.actionCreator,
+  clearNewItem: clearNewItemAction.actionCreator,
   editNewItem: editNewItemAction.actionCreator,
   create: createAction.actionCreator,
   editItem: editAction.actionCreator,

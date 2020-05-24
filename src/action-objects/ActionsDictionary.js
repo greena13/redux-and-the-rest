@@ -37,7 +37,7 @@ const STANDARD_ACTIONS = {
   fetchCollection: 'FETCH_ITEMS',
   fetchItem: 'FETCH_ITEM',
   new: 'NEW_ITEM',
-  clearNew: 'CLEAR_NEW_ITEM',
+  clearNewItem: 'CLEAR_NEW_ITEM',
   editNewItem: 'EDIT_NEW_ITEM',
   clearItemEdit: 'CLEAR_ITEM_EDIT',
   create: 'CREATE_ITEM',

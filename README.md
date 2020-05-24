@@ -317,7 +317,7 @@ Generally your application will need to perform actions on resources locally, un
 | ------ | -------------- | ----------- |
 | new | newItem() | Creates a new item in the Redux store |
 | editNewItem | editNewItem() | Continue to add or modify a new item's attributes until it's ready to be saved. |
-| clearNew | clearNewItem() | Discards (removes) the new item fom the Redux store |
+| clearNewItem | clearNewItem() | Discards (removes) the new item fom the Redux store |
 | editItem | editItem() | Replaces an existing (saved) item's attributes in the store with new ones |
 | clearItemEdit | clearItemEdit() | Reverts an edit, to restore the item's attributes before the edit |
 
@@ -1298,7 +1298,7 @@ The new action creator supports the following options as its third argument:
 
 ### Clear the new resource item from the store
 
-The clearNew action creator deletes the resource item pointed to by `newItemKey` if it has a status of `NEW`, and sets the `newItemKey` to `null`.
+The clearNewItem action creator deletes the resource item pointed to by `newItemKey` if it has a status of `NEW`, and sets the `newItemKey` to `null`.
 
 This is useful when the user wishes to cancel or navigate away from creating a new resource.
 

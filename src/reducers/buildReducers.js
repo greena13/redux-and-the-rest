@@ -11,7 +11,7 @@ import standardiseAssociationOptions from '../utils/standardiseAssociationOption
 import fetchCollectionAction from '../actions/RESTful/fetchCollection';
 import fetchItemAction from '../actions/RESTful/fetchItem';
 import newAction from '../actions/RESTful/new';
-import clearNewAction from '../actions/RESTful/clearNew';
+import clearNewItemAction from '../actions/RESTful/clearNewItem';
 import editNewItemAction from '../actions/RESTful/editNewItem';
 import createAction from '../actions/RESTful/create';
 import editAction from '../actions/RESTful/editItem';
@@ -39,7 +39,7 @@ const STANDARD_REDUCERS = {
   fetchCollection: fetchCollectionAction.reducer,
   fetchItem: fetchItemAction.reducer,
   new: newAction.reducer,
-  clearNew: clearNewAction.reducer,
+  clearNewItem: clearNewItemAction.reducer,
   editNewItem: editNewItemAction.reducer,
   create: createAction.reducer,
   editItem: editAction.reducer,
