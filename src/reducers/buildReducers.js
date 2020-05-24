@@ -22,7 +22,7 @@ import selectAction from '../actions/selection/select';
 import selectAnotherAction from '../actions/selection/selectAnother';
 import deselectAction from '../actions/selection/deselect';
 import clearSelectedAction from '../actions/selection/clearSelected';
-import clearAllAction from '../actions/clear/clearAll';
+import clearResourceAction from '../actions/clear/clearResource';
 import clearItemAction from '../actions/clear/clearItem';
 import clearCollectionAction from '../actions/clear/clearCollection';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
@@ -50,7 +50,7 @@ const STANDARD_REDUCERS = {
   /**
    * Clearing actions
    */
-  clearAll: clearAllAction.reducer,
+  clearResource: clearResourceAction.reducer,
   clearItem: clearItemAction.reducer,
   clearCollection: clearCollectionAction.reducer,
 
@@ -216,7 +216,7 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
    * Add actions for which the current resource should be cleared
    */
   arrayFrom(resourceOptions.clearOn).forEach((action) => {
-    reducersDict[action] = { reducer: STANDARD_REDUCERS.clearAll };
+    reducersDict[action] = { reducer: STANDARD_REDUCERS.clearResource };
   });
 
   /**

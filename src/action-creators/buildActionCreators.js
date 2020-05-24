@@ -19,7 +19,7 @@ import selectAction from '../actions/selection/select';
 import selectAnotherAction from '../actions/selection/selectAnother';
 import deselectAction from '../actions/selection/deselect';
 import clearSelectedAction from '../actions/selection/clearSelected';
-import clearAllAction from '../actions/clear/clearAll';
+import clearResourceAction from '../actions/clear/clearResource';
 import clearItemAction from '../actions/clear/clearItem';
 import clearCollectionAction from '../actions/clear/clearCollection';
 import without from '../utils/collection/without';
@@ -47,7 +47,7 @@ const STANDARD_ACTION_CREATORS = {
 
   clearItem: clearItemAction.actionCreator,
   clearCollection: clearCollectionAction.actionCreator,
-  clearAll: clearAllAction.actionCreator,
+  clearResource: clearResourceAction.actionCreator,
 
   select: selectAction.actionCreator,
   selectAnother: selectAnotherAction.actionCreator,
@@ -145,6 +145,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
   const effectiveActionCreators = getActionCreators(resourceOptions);
 
   return Object.keys(actionsOptions).reduce((memo, key) => {
+
     /**
      * We don't export certain action creators when the localOnly option is used (as they don't make sense in
      * a local context).

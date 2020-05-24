@@ -345,7 +345,7 @@ It's generally _not_ recommended to use any of the following directly, as there 
 | ------ | -------------- | ----------- |
 | clearItem | clearItem() | Removes an item from the store. |
 | clearCollection | clearCollection() | Removes a collection from the store (but still leaves behind its items). |
-| clearAll | clearAll() | Completely resets a resource to its empty state, clearing all selections, items and collections. |
+| clearResource | clearResource() | Completely resets a resource to its empty state, clearing all selections, items and collections. |
 
 Some common situations where you may be tempted to use the above, are:
 

@@ -50,7 +50,7 @@ const STANDARD_ACTIONS = {
    */
   clearItem: 'CLEAR_ITEM',
   clearCollection: 'CLEAR_ITEMS',
-  clearAll: 'CLEAR_ALL_ITEMS',
+  clearResource: 'CLEAR_ALL_ITEMS',
 
   /**
    * Selection actions

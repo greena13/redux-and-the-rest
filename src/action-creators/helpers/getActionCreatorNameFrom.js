@@ -7,7 +7,7 @@ const ACTION_CREATOR_DICT = {
   clearSelected: 'clearSelectedItems',
   clearItem: 'clearItem',
   clearCollection: 'clearCollection',
-  clearAll: 'clearAll'
+  clearResource: 'clearResource'
 };
 
 function getActionCreatorNameFrom(actionName) {
