@@ -122,7 +122,7 @@ users = getCollection(store.getState().users);
    * [Fetch an individual resource item from the server](#fetch-an-individual-resource-item-from-the-server)
       * [Fetch action creator options](#fetch-action-creator-options)
    * [Create a new resource item on the server](#create-a-new-resource-item-on-the-server)
-      * [Create action creator options](#create-action-creator-options)
+      * [Adding a created item to a collection](#adding-a-created-item-to-a-collection)
    * [Update a resource item on the server](#update-a-resource-item-on-the-server)
       * [Update action creator options](#update-action-creator-options)
    * [Destroy a resource item on the server](#destroy-a-resource-item-on-the-server)
@@ -1212,9 +1212,9 @@ The create action creator saves a new resource item to the server, with a set of
 | Third action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
 | `status.type` lifecycle |  `CREATING` -> (`SUCCESS` or `ERROR`) |
 
-#### Create action creator options
+#### Adding a created item to a collection
 
-The create action creator supports the following options as its third argument:
+Often when you create a new item, you want it to appear in a collection immediately (without having to re-fetch the collection from the remote API). You can achieve this with one of the following options:
 
 | actionCreatorOptions | Type | Default value or required | Description |
 | :--- | :---: | :---: | :--- |
@@ -1222,7 +1222,17 @@ The create action creator supports the following options as its third argument:
 | `unshift` | Array | [ ] | An array of collection keys to add the new resource item to the beginning of. |
 | `invalidate` | Array | [ ] | An array of collection keys for which to clear (invalidate). This is useful for when you know the resource item that was just created is likely to appear in a collection, but you don't know where so you need to re-retrieve the whole collection from the server. |
 
-When the resource item is successfully created, the default createItem reducer expects the server to respond with a JSON object containing resource's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
+If you want to add the new item to the default (unspecified) collection, you can use the `UNSPECIFIED_KEY` exported by the package:
+
+```javascript
+import { UNSPECIFIED_KEY } from 'redux-and-the-rest';
+
+// ...
+
+createUser(userAttributes, { push: [UNSPECIFIED_KEY] })
+```          
+
+When the resource item is successfully created, the default createItem reducer expects the server to respond with a JSON object containing the item's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
 ### Update a resource item on the server
 
