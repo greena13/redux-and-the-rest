@@ -42,7 +42,7 @@ describe('reducesOn:', function () {
       name: 'session',
       url: 'http://test.com/session/:id',
     }, {
-      destroy: true
+      destroyItem: true
     });
 
     this.sessionReducers = sessionReducers;
@@ -65,7 +65,7 @@ describe('reducesOn:', function () {
       keyBy: 'id',
       reducesOn: [
         {
-          action: this.sessionActions.destroy,
+          action: this.sessionActions.destroyItem,
           reducer: (users, { key }) => {
 
             const item = users.items[key];

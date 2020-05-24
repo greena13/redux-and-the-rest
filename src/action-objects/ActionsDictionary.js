@@ -6,7 +6,7 @@ import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionar
 
 /**
  * @typedef {string} RestfulActionName One of the RESTful action names (fetchCollection, fetch, new, create, editItem, update,
- *          destroy)
+ *          destroyItem)
  */
 
 /**
@@ -43,7 +43,7 @@ const STANDARD_ACTIONS = {
   createItem: 'CREATE_ITEM',
   editItem: 'EDIT_ITEM',
   update: 'UPDATE_ITEM',
-  destroy: 'DESTROY_ITEM',
+  destroyItem: 'DESTROY_ITEM',
 
   /**
    * Clearing

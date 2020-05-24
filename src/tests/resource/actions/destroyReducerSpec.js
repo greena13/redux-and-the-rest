@@ -21,14 +21,14 @@ import EmptyKey from '../../../constants/EmptyKey';
 
 const RESOURCE_NAME = 'users';
 
-describe('Destroy reducer:', function () {
+describe('DestroyItem reducer:', function () {
   beforeAll(function() {
     const { reducers, actionCreators: { destroyItem: destroyUser } } = resource({
       name: 'users',
       url: 'http://test.com/users',
       keyBy: 'id'
     }, {
-      destroy: true
+      destroyItem: true
     });
 
     this.reducers = reducers;
@@ -49,7 +49,7 @@ describe('Destroy reducer:', function () {
   });
 
   describe('Given a resources item is in the store with a status of DESTROYING', () => {
-    expectToHandleSuccessAndFailedRequests(getInitialState(DESTROYING), `Redux and the REST: DESTROY_USER\'s key \'${EmptyKey}\' matched a new item that has a pending DESTROY action. (Duplicate destroy request was still sent to the server.)`);
+    expectToHandleSuccessAndFailedRequests(getInitialState(DESTROYING), `Redux and the REST: DESTROY_USER\'s key \'${EmptyKey}\' matched a new item that has a pending DESTROY action. (Duplicate destroyItem request was still sent to the server.)`);
   });
 
   describe('Given a resources item is in the store with a status of EDITING', () => {
@@ -72,13 +72,13 @@ describe('Destroy reducer:', function () {
     expectToHandleSuccessAndFailedRequestsForExistingResourceItem(getInitialState(ERROR));
   });
 
-  describe('Given a destroy action that will succeed with a response that specifies \'errors\' at the top level', () => {
+  describe('Given a destroyItem action that will succeed with a response that specifies \'errors\' at the top level', () => {
     describe('when the request has completed', () => {
       expectToHandleErrorsCorrectly(200);
     });
   });
 
-  describe('Given a destroy action that will fail with a response that specifies \'errors\' at the top level', () => {
+  describe('Given a destroyItem action that will fail with a response that specifies \'errors\' at the top level', () => {
     describe('when the request has completed', () => {
       expectToHandleErrorsCorrectly(404);
     });

@@ -20,14 +20,14 @@ import {
 
 const RESOURCE_NAME = 'users';
 
-describe('Destroy reducer:', function () {
+describe('DestroyItem reducer:', function () {
   beforeAll(function() {
     const { reducers, actionCreators: { destroyItem: destroyUser } } = resources({
       name: 'users',
       url: 'http://test.com/users/:id?',
       keyBy: 'id'
     }, {
-      destroy: true
+      destroyItem: true
     });
 
     this.reducers = reducers;
@@ -55,11 +55,11 @@ describe('Destroy reducer:', function () {
 
   describe('Given a resources item is in the store with a status of DESTROYING', () => {
     describe('and only the item\'s id is passed to the action creator', () => {
-      expectToHandleSuccessAndFailedRequests(getInitialState(DESTROYING), 1, 1, 'Redux and the REST: DESTROY_USER\'s key \'1\' matched a new item that has a pending DESTROY action. (Duplicate destroy request was still sent to the server.)');
+      expectToHandleSuccessAndFailedRequests(getInitialState(DESTROYING), 1, 1, 'Redux and the REST: DESTROY_USER\'s key \'1\' matched a new item that has a pending DESTROY action. (Duplicate destroyItem request was still sent to the server.)');
     });
 
     describe('and the item\'s id is passed as an object to the action creator', () => {
-      expectToHandleSuccessAndFailedRequests(getInitialState(DESTROYING), { id: 1 }, 1, 'Redux and the REST: DESTROY_USER\'s key \'1\' matched a new item that has a pending DESTROY action. (Duplicate destroy request was still sent to the server.)');
+      expectToHandleSuccessAndFailedRequests(getInitialState(DESTROYING), { id: 1 }, 1, 'Redux and the REST: DESTROY_USER\'s key \'1\' matched a new item that has a pending DESTROY action. (Duplicate destroyItem request was still sent to the server.)');
     });
   });
 
@@ -113,13 +113,13 @@ describe('Destroy reducer:', function () {
     });
   });
 
-  describe('Given a destroy action that will succeed with a response that specifies \'errors\' at the top level', () => {
+  describe('Given a destroyItem action that will succeed with a response that specifies \'errors\' at the top level', () => {
     describe('when the request has completed', () => {
       expectToHandleErrorsCorrectly(1, 200);
     });
   });
 
-  describe('Given a destroy action that will fail with a response that specifies \'errors\' at the top level', () => {
+  describe('Given a destroyItem action that will fail with a response that specifies \'errors\' at the top level', () => {
     describe('when the request has completed', () => {
       expectToHandleErrorsCorrectly(1, 404);
     });

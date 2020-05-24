@@ -52,7 +52,7 @@ describe('belongsTo:', function () {
         name: 'addresses',
         url: 'http://test.com/addresses/:id?',
         keyBy: 'id'
-      }, { destroy: true });
+      }, { destroyItem: true });
 
       const {
         reducers,
@@ -73,7 +73,7 @@ describe('belongsTo:', function () {
       this.reducers = reducers;
     });
 
-    describe('and the previous values are included in the destroy action', function () {
+    describe('and the previous values are included in the destroyItem action', function () {
       describe('before a request to destroy an associated resource item has completed', function () {
         beforeAll(function () {
           fetchMock.delete('http://test.com/addresses/1', new Promise(nop));
@@ -121,7 +121,7 @@ describe('belongsTo:', function () {
       });
     });
 
-    describe('and the previous values are NOT included in the destroy action', function () {
+    describe('and the previous values are NOT included in the destroyItem action', function () {
       describe('before a request to destroy an associated resource item has completed', function () {
         beforeAll(function () {
           fetchMock.delete('http://test.com/addresses/1', new Promise(nop));

@@ -50,7 +50,7 @@ describe('clearOn:', function () {
       name: 'session',
       url: 'http://test.com/session/:id',
     }, {
-      destroy: true
+      destroyItem: true
     });
 
     this.sessionReducers = sessionReducers;
@@ -101,7 +101,7 @@ describe('clearOn:', function () {
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
-        clearOn: this.sessionActions.destroy,
+        clearOn: this.sessionActions.destroyItem,
       }, {
         fetchCollection: true,
         new: true,

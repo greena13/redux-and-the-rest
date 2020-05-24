@@ -126,7 +126,7 @@ users = getCollection(store.getState().users);
    * [Update a resource item on the server](#update-a-resource-item-on-the-server)
       * [Update action creator options](#update-action-creator-options)
    * [Destroy a resource item on the server](#destroy-a-resource-item-on-the-server)
-      * [Destroy action creator options](#destroy-action-creator-options)
+      * [DestroyItem action creator options](#destroy-item-action-creator-options)
 * [Local (synchronous) actions](#local-synchronous-actions)
    * [Add a new resource item to the store](#add-a-new-resource-item-to-the-store)
       * [New action creator options](#new-action-creator-options)
@@ -333,7 +333,7 @@ When the your application is done with local manipulation of a resource, you can
 | fetchItem | fetchItem() | Fetches an item from a remote API |
 | createItem | createItem() | Sends a create request with an item's attributes to a remote API |
 | update | updateItem() | Sends new attributes (an "update") for an item to a remote API |
-| destroy | destroyItem() | Sends a delete request for an item to a remote API |
+| destroyItem | destroyItem() | Sends a delete request for an item to a remote API |
 
 `resources()` accepts a `localOnly` option, that allows you to maintain resources without a remote API and will turn the asynchronous remote API actions into synchronous updates that label your resources as being in a "saved" state.
 
@@ -608,7 +608,7 @@ configure({
 | key | Type | Required or Default Value | Description |
 | --- | ---- | ------------------------- | ----------- |
 | keyBy | string or array of strings | No | The resource attribute used to key/index all items of the current resource type. This will be the value you pass to each action creator to identify the target of each action. By default, 'id' is used. |
-| localOnly | boolean | No | Set to true for resources that should be edited locally, only. The fetchItem and fetchCollection actions are disabled (the fetch* action creators are not exported) and the create, update and destroy only update the store locally, without making any HTTP requests. |
+| localOnly | boolean | No | Set to true for resources that should be edited locally, only. The fetchItem and fetchCollection actions are disabled (the fetch* action creators are not exported) and the create, update and destroyItem only update the store locally, without making any HTTP requests. |
 | urlOnlyParams | Array of string | No | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
 | responseAdaptor | (responseBody: Object, response: Response) => { values: Object, error?: Object or string, errors?: Array<Object or string> } | No | Function used to adapt the responses for requests before it is handed over to the reducers. The function must return the results as an object with properties values and (optionally) error. |
 | requestAdaptor | (requestBody: Object) => Object | No | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
@@ -650,7 +650,7 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 
 | key | Type | Required or Default Value | Description |
 | --- | ---- | ------------------------- | ----------- |
-| `localOnly` | boolean | false | Set to true for resources that should be edited locally, only. The `fetchItem` and `fetchCollection` actions are disabled (the `fetch*` action creators are not exported) and the `createItem`, `update` and `destroy` only update the store locally, without making any HTTP requests. |
+| `localOnly` | boolean | false | Set to true for resources that should be edited locally, only. The `fetchItem` and `fetchCollection` actions are disabled (the `fetch*` action creators are not exported) and the `createItem`, `update` and `destroyItem` only update the store locally, without making any HTTP requests. |
 | `url` | string |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
 | `urlOnlyParams` | string[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. Useful for pagination. |
 | `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error` or `errors`. |
@@ -1087,7 +1087,7 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
         keyBy: 'id'
     },
     [
-        'fetchCollection', 'fetch', 'createItem', 'update', 'destroy'
+        'fetchCollection', 'fetch', 'createItem', 'update', 'destroyItem'
     ]
 );
 ```
@@ -1100,7 +1100,7 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
 | `fetchItem(1)` | #fetchItem | `GET http://test.com/users/1` |
 | `createUser('tempId', {name: 'foo'})` | #createItem | `POST http://test.com/users` |
 | `updateUser(1, {name: 'foo'})` | #update | `PUT http://test.com/users/1` |
-| `destroyUser(1)` | #destroy | `DELETE http://test.com/users/1` |
+| `destroyUser(1)` | #destroyItem | `DELETE http://test.com/users/1` |
 
 #### Preventing duplicate requests
 
@@ -1249,25 +1249,25 @@ When the resource item is successfully updated, the default update reducer expec
 
 ### Destroy a resource item on the server
 
-The destroy action creator deletes an existing resource item from the server and then removes it from the store.
+The destroyItem action creator deletes an existing resource item from the server and then removes it from the store.
 
 | Property | Value |
 | :--- | :--- |
-| Action name for defining with `actionOptions` | `destroy` |
+| Action name for defining with `actionOptions` | `destroyItem` |
 | Action creator name | `destroyItem()` |
 | First action creator argument | `keys` - The keys that point to the resource item to destroy. |
 | Second action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
 | `status.type` lifecycle |  `DESTROYING` -> (`SUCCESS` \| `DESTROY_ERROR`) |
 
-#### Destroy action creator options
+#### DestroyItem action creator options
 
-The destroy action creator supports the following options as its second argument:
+The destroyItem action creator supports the following options as its second argument:
 
 | actionCreatorOptions | Type | Default value or required | Description |
 | :--- | :---: | :---: | :--- |
 | `previous` | Object | undefined | The previous values, before it was destroyed. This is used to more efficiently update associations defined with `belongsTo` or `hasAndBelongsToMany`, but otherwise is generally not used. |
 
-When the resource item is successfully destroyed, the default destroy reducer expects the server to respond a with a success response. If the request fails, it expects the server to respond with a JSON object containing an error.
+When the resource item is successfully destroyed, the default destroyItem reducer expects the server to respond a with a success response. If the request fails, it expects the server to respond with a JSON object containing an error.
 
 ## Local (synchronous) actions
 

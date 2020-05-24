@@ -37,7 +37,7 @@ import EmptyKey from './constants/EmptyKey';
  *
  * @property {boolean} [localOnly] Set to true for resources that should be edited locally, only. The fetch and
  *           fetchCollection actions are disabled (the fetch* action creators are not exported) and the create, update
- *           and destroy only update the store locally, without making any HTTP requests.
+ *           and destroyItem only update the store locally, without making any HTTP requests.
  * @property {string} [url] A url template that is used for all of the resource's actions. The template string
  *           can include required url parameters by prefixing them with a colon (e.g. :id) and optional
  *           parameters are denoted by adding a question mark at the end (e.g. :id?). This will be used as the

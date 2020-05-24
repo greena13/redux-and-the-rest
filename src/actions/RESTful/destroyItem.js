@@ -64,7 +64,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
         ...request
       },
       onSuccess: removeResource,
-      onError: handleDestroyResourceError,
+      onError: handleDestroyItemError,
       progress
     }, actionCreatorOptions);
   };
@@ -139,7 +139,7 @@ function removeResource(options, previousValues) {
  * @param {object} errorEnvelope An object containing the details of the error
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function handleDestroyResourceError(options, actionCreatorOptions, httpCode, errorEnvelope) {
+function handleDestroyItemError(options, actionCreatorOptions, httpCode, errorEnvelope) {
   const { transforms, action, key } = options;
 
   return {
@@ -202,7 +202,7 @@ function reducer(resources, action) {
        * requests
        */
       if (currentItem.status.type === DESTROYING) {
-        warn(`${type}'s key '${key}' matched a new item that has a pending DESTROY action. (Duplicate destroy request was still sent to the server.)`);
+        warn(`${type}'s key '${key}' matched a new item that has a pending DESTROY action. (Duplicate destroyItem request was still sent to the server.)`);
       }
     });
 

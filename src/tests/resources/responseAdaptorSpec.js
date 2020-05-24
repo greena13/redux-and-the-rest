@@ -25,7 +25,7 @@ describe('Specifying a response adaptor:', function () {
         fetchCollection: true,
         fetchItem: true,
         update: true,
-        destroy: true,
+        destroyItem: true,
         createItem: true
       });
 
@@ -420,7 +420,7 @@ describe('Specifying a response adaptor:', function () {
       });
     });
 
-    describe('when a destroy action', function () {
+    describe('when a destroyItem action', function () {
       describe('succeeds', function () {
         beforeAll(function () {
           this.store = buildStore({

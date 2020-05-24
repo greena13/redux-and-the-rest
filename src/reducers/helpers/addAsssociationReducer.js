@@ -334,7 +334,7 @@ function getKeyName({ key, relationType, associationName }) {
  *          on the current one.
  * @property {string} as If a foreign key is not specified, this association name is used as the prefix with
  *         a suffix of id or ids to derive the foreign key
- * @property {string} dependent When set to 'destroy' it removes the associated resource if the current one is
+ * @property {string} dependent When set to 'destroyItem' it removes the associated resource if the current one is
  *        removed from the store.
  * @property {object|string} collectionParameter The key of the collection to add newly created associated
  *        objects to
@@ -365,7 +365,7 @@ function addAssociationReducer(
 const associationReducersDict = {
   createItem: addCreatedHasManyAssociation,
   update: updateHasManyAssociation,
-  destroy: removeDestroyedHasManyAssociation
+  destroyItem: removeDestroyedHasManyAssociation
 };
 
 function addAssociationReducersTo(reducersDict, { actions, reducerOptions }) {

@@ -23,7 +23,7 @@ describe('Generating URLs:', function() {
         fetchCollection: true,
         fetchItem: true,
         update: true,
-        destroy: true,
+        destroyItem: true,
         createItem: true
       });
 
@@ -143,7 +143,7 @@ describe('Generating URLs:', function() {
         fetchMock.restore();
       });
 
-      it('then uses them as query params when destroy an item', function() {
+      it('then uses them as query params when destroying an item', function() {
         fetchMock.delete('http://test.com/users/1?sandbox=true', {
           body: { },
           status: 200
