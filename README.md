@@ -117,29 +117,29 @@ users = getCollection(store.getState().users);
       * [Dealing with failed requests](#dealing-with-failed-requests)
       * [Dealing with slow requests](#dealing-with-slow-requests)
       * [Detecting old data](#detecting-old-data)
-   * [Fetch a resource collection from the server](#fetch-a-resource-collection-from-the-server)
+   * [Fetch a collection from the server](#fetch-a-collection-from-the-server)
       * [fetchCollection action creator options](#fetchcollection-action-creator-options)
    * [Fetch an individual resource item from the server](#fetch-an-individual-resource-item-from-the-server)
       * [Fetch action creator options](#fetch-action-creator-options)
    * [Create a new resource item on the server](#create-a-new-resource-item-on-the-server)
       * [Create action creator options](#create-action-creator-options)
-   * [Update a resource item on the server](#updateItem-a-resource-item-on-the-server)
-      * [Update action creator options](#updateItem-action-creator-options)
+   * [Update a resource item on the server](#update-a-resource-item-on-the-server)
+      * [Update action creator options](#update-action-creator-options)
    * [Destroy a resource item on the server](#destroy-a-resource-item-on-the-server)
-      * [DestroyItem action creator options](#destroy-item-action-creator-options)
+      * [DestroyItem action creator options](#destroyitem-action-creator-options)
 * [Local (synchronous) actions](#local-synchronous-actions)
    * [Add a new resource item to the store](#add-a-new-resource-item-to-the-store)
-      * [NewItem action creator options](#newItem-action-creator-options)
+      * [NewItem action creator options](#newitem-action-creator-options)
    * [Clear the new resource item from the store](#clear-the-new-resource-item-from-the-store)
    * [Edit the new resource item in the store](#edit-the-new-resource-item-in-the-store)
    * [Edit an existing resource item in the store](#edit-an-existing-resource-item-in-the-store)
    * [Detecting if a resource item has been edited](#detecting-if-a-resource-item-has-been-edited)
    * [Accessing values before they were edited](#accessing-values-before-they-were-edited)
    * [Clear local edits](#clear-local-edits)
-   * [Select a resource item in the store](#selectItem-a-resource-item-in-the-store)
-   * [Select another resource item in the store](#selectItem-another-resource-item-in-the-store)
-   * [Deselect a resource item in the store](#deselectItem-a-resource-item-in-the-store)
-   * [Clear all the selected resource items in the store](#clear-all-the-selected-resource-items-in-the-store)
+   * [Select a resource item in the store](#select-a-resource-item-in-the-store)
+   * [Select another resource item in the store](#select-another-resource-item-in-the-store)
+   * [Deselect a resource item in the store](#deselect-a-resource-item-in-the-store)
+   * [Clear all the selected items in the store](#clear-all-the-selected-items-in-the-store)
 * [Configuring requests](#configuring-requests)
    * [Configuring the URLs used for a request](#configuring-the-urls-used-for-a-request)
       * [URL Parameters](#url-parameters)
@@ -928,7 +928,7 @@ A blank collection has the following schema:
 
 * `positions`: This is an array of keys of the items that exist in the collection. It stores the order of the items separate from the items themselves, so the items may be efficiently stored (without any duplicates) when we have multiple collections that may share them. It also means that we may update individual item's values, without having to alter all of the collections they are a part of.
 * `status`: This is where status information is stored for the entire collection.
-* `projection`: This is where information about the nature of the collection is stored. A `type` attribute indicates whether all of the resource items in the collection have been retrieved (`COMPLETE` by default), or whether only some of them have. Other information can also be stored here, and is configurable when the resource action is defined or when the action creator is called.
+* `projection`: This is where information about the nature of the collection is stored. A `type` attribute indicates whether all of the items in the collection have been retrieved (`COMPLETE` by default), or whether only some of them have. Other information can also be stored here, and is configurable when the resource action is defined or when the action creator is called.
 
 Setting the `projection` when defining the resource:
 
@@ -1154,7 +1154,7 @@ if (getTimeSinceLastSync(item) > 3600000) {
 }
 ```
 
-### Fetch a resource collection from the server
+### Fetch a collection from the server
 
 The fetchCollection action fetches a list or collection of resources from a particular URL. It does not require a primary identifier and instead accepts parameters that may scope, filter or order the collection.
 
@@ -1175,7 +1175,7 @@ The fetchCollection action creator supports the following options as its second 
 | :--- | :---: | :---: | :--- |
 | `request` | Object | { } | An object that [configures the HTTP request](#configuring-other-request-properties) made to fetch the collection. |
 
-When the collection is successfully fetched, the default fetchCollection reducer expects the server to respond with a JSON object containing an array of resource items' attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
+When the collection is successfully fetched, the default fetchCollection reducer expects the server to respond with a JSON object containing an array of items' attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
 ### Fetch an individual resource item from the server
 
@@ -1406,7 +1406,7 @@ The deselectItem action creator removes an item's key from the `selectionMap` di
 | Action creator name | `deselectItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 
-### Clear all the selected resource items in the store
+### Clear all the selected items in the store
 
 The clearSelectedItems action creator clears the `selectionMap` dictionary, resetting it to an empty object.
 
