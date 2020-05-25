@@ -142,7 +142,7 @@ function receiveCollection(options, actionCreatorOptions, collection) {
     key,
     collection: projectionTransform(options, actionCreatorOptions, {
       positions,
-      status: { type: SUCCESS, syncedAt }
+      status: { type: SUCCESS, syncedAt, itemsInLastResponse: Object.keys(items).length }
     })
   };
 }
@@ -195,7 +195,7 @@ function reducer(resources, action) {
      * When a collection is being fetched, we simply update the collection's status and projection values,
      * leaving any items in the collection that are already there untouched.
      *
-     * Note that we completely override the projection object with the new values - we dont' merge it.
+     * Note we completely override the projection object with the new values - we dont' merge it.
      */
     return {
       ...resources,
@@ -208,7 +208,7 @@ function reducer(resources, action) {
            * We persist the syncedAt attribute of the collection if it's been fetched in the past, in case
            * the request fails, we know the last time it was successfully retrieved
            */
-          status: mergeStatus(currentList.status, collection.status, { onlyPersist: ['syncedAt'] }),
+          status: mergeStatus(currentList.status, collection.status, { onlyPersist: ['syncedAt', 'itemsInLastResponse'] }),
           projection: collection.projection
         }
       }
@@ -263,7 +263,7 @@ function reducer(resources, action) {
           type: status,
           httpCode,
           error, errors, errorOccurredAt
-        }),
+        }, { exclude: ['itemsInLastResponse'] }),
       }
     };
 

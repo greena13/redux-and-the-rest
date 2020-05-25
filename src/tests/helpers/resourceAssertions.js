@@ -116,9 +116,16 @@ export function expectToChangeResourcesItemValuesTo(context, resourcesName, id, 
   expectResourcesItemToChangeTo(context, resourcesName, id, 'values', subkeyOrExpectedValue, expectedValue);
 }
 
+export function expectToClearResourcesCollectionStatus(context, resourcesName, id, subkey) {
+  const newValue = resourcesDefinition(context, resourcesName).collections[id].status[subkey];
+
+  expect(newValue).toEqual(undefined);
+}
+
 export function expectToChangeResourceCollectionStatusTo(context, resourcesName, id, subkeyOrExpectedValue, expectedValue = undefined) {
   expectResourcesCollectionToChangeTo(context, resourcesName, id, 'status', subkeyOrExpectedValue, expectedValue);
 }
+
 export function expectToChangeResourceCollectionPositionsTo(context, resourcesName, id, expectedValue) {
   expectResourcesCollectionToChangeTo(context, resourcesName, id, 'positions', expectedValue);
 }

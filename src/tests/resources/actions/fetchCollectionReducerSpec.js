@@ -6,7 +6,7 @@ import {
   expectToChangeResourceCollectionStatusTo,
   expectToChangeResourcesCollectionStatusErrorOccurredAtToBeSet,
   expectToChangeResourcesItemStatusTo,
-  expectToChangeResourcesItemValuesTo,
+  expectToChangeResourcesItemValuesTo, expectToClearResourcesCollectionStatus,
   expectToNotChangeResourceCollectionPositions,
   expectToNotChangeResourcesItemStatus, expectToNotChangeResourcesItemValues,
   resourcesDefinition,
@@ -40,16 +40,6 @@ describe('fetchCollection reducers:', function () {
     });
   });
 
-  describe('Given an INDEX actions has come before it', () => {
-    describe('When the action creator is not passed any params', function(){
-      expectToHandleSuccessAndFailure({ url: 'http://test.com/users', collectionId: EmptyKey });
-    });
-
-    describe('When the action creator is not passed params', function(){
-      expectToHandleSuccessAndFailure({ url: 'http://test.com/users/newest', params: 'newest', collectionId: 'newest' });
-    });
-  });
-
   describe('Given an INDEX action has come before it', function() {
     beforeAll(function () {
       this.itemId = 1;
@@ -68,7 +58,7 @@ describe('fetchCollection reducers:', function () {
         collections: {
           [EmptyKey]: {
             positions: [ this.itemId ],
-            status: { type: SUCCESS }
+            status: { type: SUCCESS, itemsInLastResponse: 1 }
           }
         }
       };
@@ -99,7 +89,7 @@ describe('fetchCollection reducers:', function () {
 
     describe('When the API request succeeds', function() {
       beforeAll(function () {
-        this.newValues = [{ id: 2, username: 'Jane' }];
+        this.newValues = [{ id: 2, username: 'Jane' }, { id: 3, username: 'Jack' }];
 
         setUpAfterRequestSuccess(this, this.initialState, 'http://test.com/users', undefined, { body: this.newValues, });
       });
@@ -116,6 +106,10 @@ describe('fetchCollection reducers:', function () {
         expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, this.collectionId,
           this.newValues.map(({ id }) => id)
         );
+      });
+
+      it('then sets the itemsInLastResponse attribute', function () {
+        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, this.collectionId, 'itemsInLastResponse', this.newValues.length);
       });
 
       it('then adds items returned in the response not already in the store', function() {
@@ -154,6 +148,10 @@ describe('fetchCollection reducers:', function () {
 
       it('then sets the syncedAt attribute', function() {
         expectToChangeResourcesCollectionStatusErrorOccurredAtToBeSet(this, RESOURCE_NAME, this.collectionId);
+      });
+
+      it('then sets the itemsInLastResponse attribute to undefined', function () {
+        expectToClearResourcesCollectionStatus(this, RESOURCE_NAME, this.collectionId, 'itemsInLastResponse');
       });
 
       it('then does NOT change the collection\'s positions', function() {
@@ -330,6 +328,10 @@ describe('fetchCollection reducers:', function () {
 
       it('then changes the collection\'s status type to SUCCESS', function () {
         expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, collectionId, 'type', SUCCESS);
+      });
+
+      it('then sets the itemsInLastResponse attribute', function () {
+        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, collectionId, 'itemsInLastResponse', this.newValues.length);
       });
 
       it('then indexes the returned items according to the keyBy option and places their keys in positions', function () {
