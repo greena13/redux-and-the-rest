@@ -64,6 +64,6 @@
   },
   "dependencies": {
     "pluralize": "^8.0.0",
-    "query-string": "^6.10.1"
+    "query-string": "^6.12.1"
   }
 }
