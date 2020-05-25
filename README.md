@@ -710,6 +710,8 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 | `requestAdaptor` | Function | Identity function | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
 | `credentials` | string | undefined | Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the request only if it's on the same origin. |
 | `progress` | boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `fetchCollection`, `fetchItem`, `createItem`, `updateItem` and any custom actions. |
+| `projection` | object | `{ type: 'COMPLETE' }` | An object of attributes and values that describe the (Set Theory) projection the item of collection represents. It can be used for containing information like page numbers, limits, offsets and includes for collections and types for items (previews, or the complete set of attributes of an item). |  
+| `itemsProjection` | object | `{ type: 'COMPLETE' }` | Accepted only by `fetchCollection` and `getOrfetchCollection`, used to define the projection of each item in the collection (the `projection` is applied to the collection. |  
 
 ##### Reducers
 
@@ -1541,7 +1543,9 @@ const mapStateToProps = ({ users } ) => {
 };
 
 // ...
-```
+```  
+
+The `status.itemsInLastResponse` attribute on each collection can be used to indicate when there are no more pages of results available (when it is less than the total page size, you have reached the last page).
 
 ### Working with Authenticated APIs
 
