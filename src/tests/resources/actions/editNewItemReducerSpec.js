@@ -82,7 +82,7 @@ describe('Edit new reducer:', function () {
         setupState(this, getInitialState(this.id, NEW), this.id, this.newValues);
       });
 
-      fit('then updates the item\'s values', function() {
+      it('then updates the item\'s values', function() {
         expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, this.id, this.newValues);
       });
 

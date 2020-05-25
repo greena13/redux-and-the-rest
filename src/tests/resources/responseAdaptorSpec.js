@@ -164,7 +164,7 @@ describe('Specifying a response adaptor:', function () {
             });
           });
 
-          afterAll(fetchMock.restore);
+          afterAll(() => fetchMock.restore());
 
           it('then uses the response adaptor', function() {
             return this.store.dispatch(this.fetchUser(1)).then(() => {
@@ -251,7 +251,7 @@ describe('Specifying a response adaptor:', function () {
             });
           });
 
-          afterAll(fetchMock.restore);
+          afterAll(() => fetchMock.restore());
 
           it('then uses the response adaptor', function() {
             return this.store.dispatch(this.createUser('temp', { username: 'Bob' })).then(() => {
@@ -363,7 +363,7 @@ describe('Specifying a response adaptor:', function () {
             });
           });
 
-          afterAll(fetchMock.restore);
+          afterAll(() => fetchMock.restore());
 
           it('then uses the response adaptor', function() {
             return this.store.dispatch(this.updateUser(1, { username: 'Robert' })).then(() => {
@@ -487,7 +487,7 @@ describe('Specifying a response adaptor:', function () {
             });
           });
 
-          afterAll(fetchMock.restore);
+          afterAll(() => fetchMock.restore());
 
           it('then uses the response adaptor', function() {
             return this.store.dispatch(this.destroyUser(1)).then(() => {
