@@ -1,4 +1,4 @@
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
 import replace from '@rollup/plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 import license from 'rollup-plugin-license';
@@ -18,7 +18,8 @@ export default {
   ],
   plugins: [
     babel({
-      exclude: 'node_modules/**'
+      exclude: 'node_modules/**',
+      babelHelpers: 'bundled'
     }),
 
     replace({
