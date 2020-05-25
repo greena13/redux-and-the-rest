@@ -126,7 +126,7 @@ function receiveCollection(options, actionCreatorOptions, collection) {
      */
     positions.push(itemKey);
 
-    memo[itemKey] = applyTransforms(transforms, options, actionCreatorOptions, {
+    memo[itemKey] = applyTransforms(transforms, options, { ...actionCreatorOptions, projection: actionCreatorOptions.itemsProjection }, {
       ...ITEM,
       values,
       status: { type: SUCCESS, requestedAt, syncedAt },

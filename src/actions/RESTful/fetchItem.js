@@ -26,9 +26,8 @@ const HTTP_REQUEST_TYPE = 'GET';
  */
 function actionCreator(options, params, actionCreatorOptions = {}) {
   const {
-
-    action, transforms, url: urlTemplate, keyBy, progress, projection, request = {}
-, singular } = options;
+    action, transforms, url: urlTemplate, keyBy, progress, projection, request = {}, singular
+  } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
   const url = generateUrl({ urlTemplate }, normalizedParams);

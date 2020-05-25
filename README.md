@@ -717,7 +717,7 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 | --- | ---- | ------------------------- | ----------- |
 | `reducer` | Function | RESTFUL actions: a sensible default; non-RESTFUL: Required | A custom reducer function to adapt the resource as it exists in the Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful actions. |
 | `beforeReducers` | Function[] | [ ] | A list of functions to call before passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
-| `afterReducers` | Function[] | [ ] |A list of functions to call after passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
+| `afterReducers` | Function[] | [ ] | A list of functions to call after passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
 
 
 ## Store data
@@ -1524,7 +1524,24 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
 );
 ```
 
-Then calling `fetchUsers({ order: 'newest', page: 1 })` will load the first page of results in `store.getState().users.collections['newest']` and calling `fetchUsers({ order: 'newest', page: 2 })` will add the second page of users to the end of the same collection.
+Then calling `fetchUsers({ order: 'newest', page: 1 }, { projection: { page: 1 } })` will load the first page of results in `store.getState().users.collections['newest']` and calling `fetchUsers({ order: 'newest', { projection: { page: 1 } })` will add the second page of users to the end of the same collection.
+
+We provide the projection argument to store what page we are currently on, so it does not have to be retained outside of the Redux store. It can be accessed like so:
+
+```javascript
+import { getUsers } from './resources/users';    
+
+const mapStateToProps = ({ users } ) => {
+  const usersCollection = getUsers(users);
+ 
+  return {
+    user: usersCollection,
+    currentPage: usersCollection.projection.page // Current page is available on the collection's projection
+  }
+};
+
+// ...
+```
 
 ### Working with Authenticated APIs
 

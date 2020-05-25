@@ -162,7 +162,7 @@ describe('projection:', function () {
                     body: [{ id: 1, username: 'Robert' }],
               });
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW } }));
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW }, itemsProjection: { type: PREVIEW } }));
             });
 
             afterAll(function() {
@@ -386,7 +386,7 @@ describe('projection:', function () {
                 body: [{ id: 1, username: 'Robert' }],
               });
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' } }));
+              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' }, itemsProjection: { type: 'ACTION_CREATOR_ITEM_PROJECTION' } }));
             });
 
             afterAll(function() {
@@ -395,7 +395,7 @@ describe('projection:', function () {
             });
 
             it('then uses the value passed to the action creator for the item and collection\'s projection type', function() {
-              expect(this.store.getState().users.items['1'].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+              expect(this.store.getState().users.items['1'].projection.type).toEqual('ACTION_CREATOR_ITEM_PROJECTION');
               expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
             });
           });
