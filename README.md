@@ -119,26 +119,26 @@ users = getCollection(store.getState().users);
       * [Detecting old data](#detecting-old-data)
    * [Fetch a collection from the server](#fetch-a-collection-from-the-server)
       * [fetchCollection action creator options](#fetchcollection-action-creator-options)
-   * [Fetch an individual resource item from the server](#fetch-an-individual-resource-item-from-the-server)
+   * [Fetch an individual item from the server](#fetch-an-individual-resource-item-from-the-server)
       * [Fetch action creator options](#fetch-action-creator-options)
-   * [Create a new resource item on the server](#create-a-new-resource-item-on-the-server)
+   * [Create a new item on the server](#create-a-new-resource-item-on-the-server)
       * [Adding a created item to a collection](#adding-a-created-item-to-a-collection)
-   * [Update a resource item on the server](#update-a-resource-item-on-the-server)
+   * [Update a item on the server](#update-a-resource-item-on-the-server)
       * [Update action creator options](#update-action-creator-options)
-   * [Destroy a resource item on the server](#destroy-a-resource-item-on-the-server)
+   * [Destroy a item on the server](#destroy-a-resource-item-on-the-server)
       * [DestroyItem action creator options](#destroyitem-action-creator-options)
 * [Local (synchronous) actions](#local-synchronous-actions)
-   * [Add a new resource item to the store](#add-a-new-resource-item-to-the-store)
+   * [Add a new item to the store](#add-a-new-resource-item-to-the-store)
       * [NewItem action creator options](#newitem-action-creator-options)
-   * [Clear the new resource item from the store](#clear-the-new-resource-item-from-the-store)
-   * [Edit the new resource item in the store](#edit-the-new-resource-item-in-the-store)
-   * [Edit an existing resource item in the store](#edit-an-existing-resource-item-in-the-store)
-   * [Detecting if a resource item has been edited](#detecting-if-a-resource-item-has-been-edited)
+   * [Clear the new item from the store](#clear-the-new-resource-item-from-the-store)
+   * [Edit the new item in the store](#edit-the-new-resource-item-in-the-store)
+   * [Edit an existing item in the store](#edit-an-existing-resource-item-in-the-store)
+   * [Detecting if a item has been edited](#detecting-if-a-resource-item-has-been-edited)
    * [Accessing values before they were edited](#accessing-values-before-they-were-edited)
    * [Clear local edits](#clear-local-edits)
-   * [Select a resource item in the store](#select-a-resource-item-in-the-store)
-   * [Select another resource item in the store](#select-another-resource-item-in-the-store)
-   * [Deselect a resource item in the store](#deselect-a-resource-item-in-the-store)
+   * [Select a item in the store](#select-a-resource-item-in-the-store)
+   * [Select another item in the store](#select-another-resource-item-in-the-store)
+   * [Deselect a item in the store](#deselect-a-resource-item-in-the-store)
    * [Clear all the selected items in the store](#clear-all-the-selected-items-in-the-store)
 * [Configuring requests](#configuring-requests)
    * [Configuring the URLs used for a request](#configuring-the-urls-used-for-a-request)
@@ -382,7 +382,7 @@ Because `redux-and-the-rest` is built around the principle of providing a reduce
 
 Because the `connect` function separates access to `dispatch` (`mapDispatchToProps`) and access to the current Redux state (`mapStateToProps`), you have a few options.
 
-When your component needs access to all the resource's attributes anyway, you can pass the whole resource item into your component and then back out again in the handler:
+When your component needs access to all the resource's attributes anyway, you can pass the whole item into your component and then back out again in the handler:
 
 ```javascript
 import { connect } from 'react-redux'
@@ -750,7 +750,7 @@ function mapStateToProps({ users }, { params: { id } }) {
 
 ### Automatically fetching items not in the store
 
-To get a resource item or collection from the store and fallback to making a request to the remote API if it's not there, use the `getOrFetchItem()` function returned by `resources()`.
+To get a item or collection from the store and fallback to making a request to the remote API if it's not there, use the `getOrFetchItem()` function returned by `resources()`.
 
 If the item is in the store, it will return it. However, if it is not there, it will return an [empty item](#item-schema) (instead of `undefined`) and trigger the action(s) to fetch the resource in the background.
 
@@ -891,7 +891,7 @@ A blank item has the following schema:
 
 * `values`: This is where all of the item's attributes are stored.
 * `status`: This is where status information is stored, separate from the item's attributes. This allows the `values` to remain pure - so if you are editing an item, all you need to do is send the new `values` back to the server, without having to worry about any irrelevant attributes being mixed in.
-* `projection`: This is where information about the nature of the item's set of attributes is stored. A `type` attribute indicates whether all of the resource item's attributes have been retrieved (`COMPLETE` by default), or whether only some of them have (e.g. `PREVIEW`). Other information can also be stored here, and is configurable when the resource action is defined or when the action creator is called.
+* `projection`: This is where information about the nature of the item's set of attributes is stored. A `type` attribute indicates whether all of the item's attributes have been retrieved (`COMPLETE` by default), or whether only some of them have (e.g. `PREVIEW`). Other information can also be stored here, and is configurable when the resource action is defined or when the action creator is called.
 
 
 Setting the `projection` when defining the resource:
@@ -955,9 +955,9 @@ dispatch(fetchUsers({}, { projection: { type: 'PAGINATED', page: 1 }}));
 `redux-and-the-rest` uses the `status.type` attribute of collections and items to indicate what state they are currently in. However, it's recommended to use one of the helper methods to query the status rather than accessing the attribute directly:
 
 Checking if resource is out of sync with remote:
-* `isEditing(item)` - Whether the resource item has been modified since it was last synced with the server
+* `isEditing(item)` - Whether the item has been modified since it was last synced with the server
 
-Checking if resource item or collection is syncing with a remote API:
+Checking if item or collection is syncing with a remote API:
 * `isSyncingWithRemote(itemOrCollection)` - Whether the item or collection is currently syncing (fetching, creating, updating, destroying, progress) with the remote 
 * `isSyncedWithRemote(itemOrCollection)` - Complement of `isSyncingWithRemote(itemOrCollection)`
 * `isFinishedFetching(itemOrCollection)` - Whether the item or collection has finished being fetched (specifically) from the remote API.
@@ -1177,9 +1177,9 @@ The fetchCollection action creator supports the following options as its second 
 
 When the collection is successfully fetched, the default fetchCollection reducer expects the server to respond with a JSON object containing an array of items' attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
-### Fetch an individual resource item from the server
+### Fetch an individual item from the server
 
-The fetchItem action creator fetches an individual resource item from the server and adds it in the store.
+The fetchItem action creator fetches an individual item from the server and adds it in the store.
 
 | Property | Value |
 | :--- | :--- |
@@ -1197,17 +1197,17 @@ The fetchItem action creator supports the following options as its second argume
 | :--- | :---: | :---: | :--- |
 | `request` | Object | { } | An object that [configures the HTTP request](#configuring-other-request-properties) made to fetch the item. |
 
-When the resource item is successfully fetched, the default fetchItem reducer expects the server to respond with a JSON object containing resource's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
+When the item is successfully fetched, the default fetchItem reducer expects the server to respond with a JSON object containing resource's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
-### Create a new resource item on the server
+### Create a new item on the server
 
-The create action creator saves a new resource item to the server, with a set of specified attributes and adds it to the store.
+The create action creator saves a new item to the server, with a set of specified attributes and adds it to the store.
 
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `createItem` |
 | Action creator name | `createItem()` |
-| First action creator argument | (Optional) `keys` - The temporary id to use to fetchCollection the new resource in the store until a permanent id has been assigned by the server. This temporary id is available as `newItemKey` on the resource, until a new one is returned by the server, and then `newItemKey` is updated to the value assigned by the server. This argument is optional unless used with the `localOnly` option (`localOnly` requires you to specify an id, as there is no external API to assign one). If it is not specified, a temporary key is automatically generated and you can access the resource item using the `getNewItem()` helper. If you do not want to specify this argument, you can pass the resource item's `values` as the first parameter.|
+| First action creator argument | (Optional) `keys` - The temporary id to use to fetchCollection the new resource in the store until a permanent id has been assigned by the server. This temporary id is available as `newItemKey` on the resource, until a new one is returned by the server, and then `newItemKey` is updated to the value assigned by the server. This argument is optional unless used with the `localOnly` option (`localOnly` requires you to specify an id, as there is no external API to assign one). If it is not specified, a temporary key is automatically generated and you can access the item using the `getNewItem()` helper. If you do not want to specify this argument, you can pass the item's `values` as the first parameter.|
 | Second action creator argument | Resource item's attributes - An object of attributes to save to the server |
 | Third action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
 | `status.type` lifecycle |  `CREATING` -> (`SUCCESS` or `ERROR`) |
@@ -1218,9 +1218,9 @@ Often when you create a new item, you want it to appear in a collection immediat
 
 | actionCreatorOptions | Type | Default value or required | Description |
 | :--- | :---: | :---: | :--- |
-| `push` | Array | [ ] | An array of collection keys to push the new resource item to the end of. |
-| `unshift` | Array | [ ] | An array of collection keys to add the new resource item to the beginning of. |
-| `invalidate` | Array | [ ] | An array of collection keys for which to clear (invalidate). This is useful for when you know the resource item that was just created is likely to appear in a collection, but you don't know where so you need to re-retrieve the whole collection from the server. |
+| `push` | Array | [ ] | An array of collection keys to push the new item to the end of. |
+| `unshift` | Array | [ ] | An array of collection keys to add the new item to the beginning of. |
+| `invalidate` | Array | [ ] | An array of collection keys for which to clear (invalidate). This is useful for when you know the item that was just created is likely to appear in a collection, but you don't know where so you need to re-retrieve the whole collection from the server. |
 
 If you want to add the new item to the default (unspecified) collection, you can use the `UNSPECIFIED_KEY` exported by the package:
 
@@ -1232,18 +1232,18 @@ import { UNSPECIFIED_KEY } from 'redux-and-the-rest';
 createUser(userAttributes, { push: [UNSPECIFIED_KEY] })
 ```          
 
-When the resource item is successfully created, the default createItem reducer expects the server to respond with a JSON object containing the item's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
+When the item is successfully created, the default createItem reducer expects the server to respond with a JSON object containing the item's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
-### Update a resource item on the server
+### Update a item on the server
 
-The updateItem action creator updates an existing resource item's attributes with a set of new values by saving them to the server, and updating the store.
+The updateItem action creator updates an existing item's attributes with a set of new values by saving them to the server, and updating the store.
 
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `updateItem` |
 | Action creator name | `updateItem()` |
-| First action creator argument | `keys` - The keys that point to the resource item to update. |
-| Second action creator argument | The resource item's new attributes - An object of attributes to save to the server. |
+| First action creator argument | `keys` - The keys that point to the item to update. |
+| Second action creator argument | The item's new attributes - An object of attributes to save to the server. |
 | Third action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
 | `status.type` lifecycle |  `UPDATING` -> (`SUCCESS` or `ERROR`) |
 
@@ -1255,17 +1255,17 @@ The updateItem action creator supports the following options as its third argume
 | :--- | :---: | :---: | :--- |
 | `previous` | Object | undefined | The previous values, before the update. This is used to more efficiently update associations defined with `belongsTo` or `hasAndBelongsToMany`, but otherwise is generally not used. |
 
-When the resource item is successfully updated, the default updateItem reducer expects the server to respond with a JSON object containing resource's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
+When the item is successfully updated, the default updateItem reducer expects the server to respond with a JSON object containing resource's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
-### Destroy a resource item on the server
+### Destroy a item on the server
 
-The destroyItem action creator deletes an existing resource item from the server and then removes it from the store.
+The destroyItem action creator deletes an existing item from the server and then removes it from the store.
 
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `destroyItem` |
 | Action creator name | `destroyItem()` |
-| First action creator argument | `keys` - The keys that point to the resource item to destroy. |
+| First action creator argument | `keys` - The keys that point to the item to destroy. |
 | Second action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
 | `status.type` lifecycle |  `DESTROYING` -> (`SUCCESS` \| `DESTROY_ERROR`) |
 
@@ -1277,22 +1277,22 @@ The destroyItem action creator supports the following options as its second argu
 | :--- | :---: | :---: | :--- |
 | `previous` | Object | undefined | The previous values, before it was destroyed. This is used to more efficiently update associations defined with `belongsTo` or `hasAndBelongsToMany`, but otherwise is generally not used. |
 
-When the resource item is successfully destroyed, the default destroyItem reducer expects the server to respond a with a success response. If the request fails, it expects the server to respond with a JSON object containing an error.
+When the item is successfully destroyed, the default destroyItem reducer expects the server to respond a with a success response. If the request fails, it expects the server to respond with a JSON object containing an error.
 
 ## Local (synchronous) actions
 
 On top of the RESTful action creators that come with `redux-and-the-rest`, there are a number of extras that do not make any requests, but instead perform synchronous local changes to the store.
 
-### Add a new resource item to the store
+### Add a new item to the store
 
-The new action creator creates a new resource item and adds it to the store, without sending any requests to the server. This is useful when you want to create a particular resource item over several pages or steps, before sending it to the server to be saved.
+The new action creator creates a new item and adds it to the store, without sending any requests to the server. This is useful when you want to create a particular item over several pages or steps, before sending it to the server to be saved.
 
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `newItem` |
 | Action creator name | `newItem()` |
 | First action creator argument | `keys` - The temporary id to use to store the new resource in the store until a permanent id has been assigned by the server. This temporary id is available as `newItemKey` on the resource. |
-| Second action creator argument | Resource item's attributes - An object of attributes to save as a new resource item in the store. |
+| Second action creator argument | Resource item's attributes - An object of attributes to save as a new item in the store. |
 | Third action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
 | `status.type` lifecycle |  `NEW` |
 
@@ -1302,13 +1302,13 @@ The new action creator supports the following options as its third argument:
 
 | actionCreatorOptions | Type | Default value or required | Description |
 | :--- | :---: | :---: | :--- |
-| `push` | Array | [ ] | An array of collection keys to push the new resource item to the end of. |
-| `unshift` | Array | [ ] | An array of collection keys to add the new resource item to the beginning of. |
-| `invalidate` | Array | [ ] | An array of collection keys for which to clear (invalidate). This is useful for when you know the resource item that was just created is likely to appear in a collection, but you don't know where, so you need to re-retrieve the whole collection from the server. |
+| `push` | Array | [ ] | An array of collection keys to push the new item to the end of. |
+| `unshift` | Array | [ ] | An array of collection keys to add the new item to the beginning of. |
+| `invalidate` | Array | [ ] | An array of collection keys for which to clear (invalidate). This is useful for when you know the item that was just created is likely to appear in a collection, but you don't know where, so you need to re-retrieve the whole collection from the server. |
 
-### Clear the new resource item from the store
+### Clear the new item from the store
 
-The clearNewItem action creator deletes the resource item pointed to by `newItemKey` if it has a status of `NEW`, and sets the `newItemKey` to `null`.
+The clearNewItem action creator deletes the item pointed to by `newItemKey` if it has a status of `NEW`, and sets the `newItemKey` to `null`.
 
 This is useful when the user wishes to cancel or navigate away from creating a new resource.
 
@@ -1317,41 +1317,41 @@ This is useful when the user wishes to cancel or navigate away from creating a n
 | Action name for defining with `actionOptions` | `newItem` |
 | Action creator name | `newItem()` |
 
-### Edit the new resource item in the store
+### Edit the new item in the store
 
-The editNewItem action creator updates the new resource item in the store before it's been saved to an external API, with new values.
+The editNewItem action creator updates the new item in the store before it's been saved to an external API, with new values.
 
-This is useful when you want to create the new resource item over several pages or steps, before saving it to the server.
+This is useful when you want to create the new item over several pages or steps, before saving it to the server.
 
-This is different from the editItem action creator in that it only allows editing the current new resource item, and maintains the `NEW` state, so you can differentiate between editing a resource that has been saved to an external API and one that is still being refined before being saved.
+This is different from the editItem action creator in that it only allows editing the current new item, and maintains the `NEW` state, so you can differentiate between editing a resource that has been saved to an external API and one that is still being refined before being saved.
 
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `editNewItem` |
 | Action creator name | `editNewItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
-| Second action creator argument | Resource item's attributes - An object of attributes to save as the resource item's new values in the store. |
+| Second action creator argument | Resource item's attributes - An object of attributes to save as the item's new values in the store. |
 | `status.type` lifecycle |  `NEW` |
 
-### Edit an existing resource item in the store
+### Edit an existing item in the store
 
-The editItem action creator updates a resource item in the store with new values, without sending any requests to the server.
+The editItem action creator updates a item in the store with new values, without sending any requests to the server.
 
-This is useful when you want to edit a particular resource item over several pages or steps, before saving it to the server.
+This is useful when you want to edit a particular item over several pages or steps, before saving it to the server.
 
-It should not be used for editing a new resource item - user the editNewItem action creator instead.
+It should not be used for editing a new item - user the editNewItem action creator instead.
 
 | Property | Value |
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `editItem` |
 | Action creator name | `editItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
-| Second action creator argument | Resource item's attributes - An object of attributes to save as the resource item's new values in the store. |
+| Second action creator argument | Resource item's attributes - An object of attributes to save as the item's new values in the store. |
 | `status.type` lifecycle |  `EDITING` |
 
-### Detecting if a resource item has been edited
+### Detecting if a item has been edited
 
-You can use the `hasBeenEdited()` helper function to determine if a resource item has been edited (but not saved to the server) since it was last synchronised.
+You can use the `hasBeenEdited()` helper function to determine if a item has been edited (but not saved to the server) since it was last synchronised.
 
 ```javascript
 import { hasBeenEdited } from 'redux-and-the-rest';
@@ -1373,11 +1373,11 @@ const originalValues = getValuesBeforeEditing(item);
 
 ### Clear local edits
 
-The clearItemEdit action creator reverts any local edits (those that haven't been sent to an external API) and resets a resource item back to its original values (as they existed when the resource was last synced).
+The clearItemEdit action creator reverts any local edits (those that haven't been sent to an external API) and resets a item back to its original values (as they existed when the resource was last synced).
 
-This is useful when a user wants to cancel or clear their editing of a particular resource item.
+This is useful when a user wants to cancel or clear their editing of a particular item.
 
-It can also be used to clear an edit after an UPDATE request has failed to be submitted to the server to reset the resource item back to its last known valid state, without having to make a separate request to the external API.
+It can also be used to clear an edit after an UPDATE request has failed to be submitted to the server to reset the item back to its last known valid state, without having to make a separate request to the external API.
 
 | Property | Value |
 | :--- | :--- |
@@ -1386,9 +1386,9 @@ It can also be used to clear an edit after an UPDATE request has failed to be su
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 | `status.type` lifecycle |  `EDITING` -> `SUCCESS` |
 
-### Select a resource item in the store
+### Select a item in the store
 
-The selectItem action creator adds an item's key to the `selectionMap` dictionary. It ensures that it is the only resource item (and overrides any previous values).
+The selectItem action creator adds an item's key to the `selectionMap` dictionary. It ensures that it is the only item (and overrides any previous values).
 
 | Property | Value |
 | :--- | :--- |
@@ -1396,7 +1396,7 @@ The selectItem action creator adds an item's key to the `selectionMap` dictionar
 | Action creator name | `selectItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 
-### Select another resource item in the store
+### Select another item in the store
 
 The selectAnotherItem action creator adds an item's key to the `selectionMap` dictionary, while persisting any items' keys that have already been selected.
 
@@ -1406,7 +1406,7 @@ The selectAnotherItem action creator adds an item's key to the `selectionMap` di
 | Action creator name | `selectAnotherItem()` |
 | First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
 
-### Deselect a resource item in the store
+### Deselect a item in the store
 
 The deselectItem action creator removes an item's key from the `selectionMap` dictionary, if appears in there.
 
