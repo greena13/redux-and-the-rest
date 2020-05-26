@@ -31,9 +31,9 @@ const HTTP_REQUEST_TYPE = 'POST';
  * @param {Object|string} paramsOrValues The first argument which can either a string or object that is serialized
  *        and used to fill in the dynamic parameters of the resource's URL (params) or the attribute values to
  *        use to create the resource.
- * @param {Object} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
- *        options passed to the action creator when it is called.
- * @param {Object} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
+ * @param {Object|ActionCreatorOptions} valuesOrActionCreatorOptions Either be the values used by the action
+ *        creator, or addition options passed to the action creator when it is called.
+ * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
  * @returns {Thunk} Function to call to dispatch an action
  */
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {

@@ -24,7 +24,11 @@ const HTTP_REQUEST_TYPE = 'DELETE';
  * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
- * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+ * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is
+ *        called.
+ * @param {ResourceValues} [actionCreatorOptions.previous={}] The values of the resource item that is being
+ *        deleted, used to more efficiently remove the item from any associated resource collections it may
+ *        appear in.
  * @returns {Thunk} Function to call to dispatch an action
  */
 function actionCreator(options, params, actionCreatorOptions = {}) {

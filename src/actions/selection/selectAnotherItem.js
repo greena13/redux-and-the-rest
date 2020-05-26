@@ -12,6 +12,8 @@ import wrapInObject from '../../utils/object/wrapInObject';
  * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
  * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+ * @param {*} actionCreatorOptions.value The value to store with the selection. By default it's the value, true,
+ *        but can be any contextually significant value.
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator({ action, keyBy, singular }, params, actionCreatorOptions = {}) {

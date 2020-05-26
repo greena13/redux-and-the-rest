@@ -89,6 +89,46 @@ const SINGULAR_ACTION_CREATORS = {
  */
 
 /**
+ * @typedef {Object} ActionCreatorOptions Options used to configure individual calls of action creators and
+ *          override any options specified in GlobalOptions, ResourceOptions or ActionOptions.
+ * @property {string} url  A url template that is used for the action. The template string can include required
+ *           url parameters by prefixing them with a colon (e.g. :id) and optional parameters are denoted by
+ *           adding a question mark at the end (e.g. :id?).
+ * @property {string} keyBy The resource attribute used to key/index all items of the current resource type.
+ *           This will be the value you pass to each action creator to identify the target of each action. By
+ *           default, 'id' is used.
+ * @property {string[]} urlOnlyParams The attributes passed to the action's creator used to create the request
+ *           URL, but ignored when storing the request's response.
+ * @property {ReducerFunction} reducer A custom reducer function to adapt the resource as it exists in the
+ *           Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this
+ *           attribute is required for Non-RESTful actions.
+ * @property {boolean} progress Whether the store should emit progress events as the resource is uploaded or
+ *           downloaded. This is applicable to the RESTful actions fetchCollection, fetchItem, createItem, updateItem and any
+ *           custom actions.
+ * @property {ResponseAdaptorFunction} responseAdaptor Function used to adapt the response for a particular
+ *           request before it is handed over to the reducers. The function must return the results as an object
+ *           with properties: values and (optionally) error.
+ * @property {Function} requestAdaptor Function used to adapt the JavaScript object before it is handed over to
+ *           become the body of the request to be sent to an external API.
+ * @property {RequestCredentials} credentials Whether to include, omit or send cookies that may be stored in
+ *           the user agent's cookie jar with the request only if it's on the same origin.
+ * @property {Object} request The request configuration object to be passed to the fetch method, or the
+ *           new XMLHttpRequest object, when the progress option is used.
+ *
+ * @property {Array.<ReducerFunction>} beforeReducers A list of functions to call before passing the resource to
+ *           the reducer. This is useful if you want to use the default reducer, but provide some additional
+ *           pre-processing to standardise the resource before it is added to the store.
+ * @property {Array.<ReducerFunction>} afterReducers A list of functions to call after passing the resource to
+ *           the reducer. This is useful if you want to use the default reducer, but provide some additional
+ *           post-processing to standardise the resource before it is added to the store.
+ *
+ * @property {Projection} [projection] An object of attributes and values that describe the (Set Theory)
+ *           projection the item of collection represents. It can be used for containing information like page
+ *           numbers, limits, offsets and includes for collections and types for items (previews, or the
+ *           complete set of attributes of an item).
+ */
+
+/**
  * @callback ActionCreatorFunction Function that dispatches an ActionObject or an ActionThunk
  * @returns {ActionObject|ActionThunk}
  */

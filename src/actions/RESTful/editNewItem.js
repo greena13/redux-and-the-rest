@@ -17,9 +17,9 @@ import warn from '../../utils/dev/warn';
  * @param {Object|string} paramsOrValues The first argument which can either a string or object that is serialized
  *        and used to fill in the dynamic parameters of the resource's URL (params) or the new attribute values
  *        to merge into the exist ones of the new resource item.
- * @param {Object} valuesOrActionCreatorOptions Either the new attribute values to merge into the exist ones
+ * @param {Object|ActionCreatorOptions} valuesOrActionCreatorOptions Either the new attribute values to merge into the exist ones
  *        of the new resource item, or addition options passed to the action creator when it is called.
- * @param {Object} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
+ * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
