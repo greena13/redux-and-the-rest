@@ -79,7 +79,7 @@ describe('canFallbackToOldValues:', function () {
               requestedAt: 1590216487970,
               syncedAt: 1590216487975
             },
-            projection: {
+            metadata: {
               type: COMPLETE
             }
           }

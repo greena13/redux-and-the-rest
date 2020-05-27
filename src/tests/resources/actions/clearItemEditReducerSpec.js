@@ -138,7 +138,7 @@ describe('Clear editItem reducer:', function () {
                 message: 'Not Found',
               }
             },
-            projection: {
+            metadata: {
               type: 'COMPLETE'
             }
           }

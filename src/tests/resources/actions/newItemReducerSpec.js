@@ -235,7 +235,7 @@ describe('New reducer:', () => {
             [this.otherCollectionId]: {
               positions: [],
               status: { type: SUCCESS },
-              projection: { type: null }
+              metadata: { type: null }
             }
           }
         }, itemId, this.newValues, { [operator]: { order: 'newest' } });
@@ -258,7 +258,7 @@ describe('New reducer:', () => {
             [this.otherCollectionId]: {
               positions: [],
               status: { type: SUCCESS },
-              projection: { type: null }
+              metadata: { type: null }
             },
             [this.collectionId]: {
               positions: [2],

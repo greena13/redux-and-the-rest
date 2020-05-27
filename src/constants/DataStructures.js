@@ -6,14 +6,14 @@
 
 
 /**
- * @typedef {Object} ResourceProjection An object containing the projection information of a particular resource
+ * @typedef {Object} ResourceMetadata An object containing the metadata information of a particular resource
  *         item or resource collection.
- * @property {StatusType|null} type The type of the projection of the of resource
+ * @property {StatusType|null} type The type of the metadata of the of resource
  */
 
 const SHARED_ATTRIBUTES = {
   status: { type: null },
-  projection: { type: null }
+  metadata: { type: null }
 };
 
 
@@ -29,7 +29,7 @@ const SHARED_ATTRIBUTES = {
  * @typedef {Object} ResourcesItem The state and values of a single item of a particular resource
  * @property {ResourceValues} values The attribute values of the resource item
  * @property {ResourceStatus} status The status information of the resource item
- * @property {ResourceProjection} projection The projection information of the resource item
+ * @property {ResourceMetadata} metadata The metadata information of the resource item
  */
 
 const ITEM = {

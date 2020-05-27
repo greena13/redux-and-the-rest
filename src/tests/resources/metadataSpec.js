@@ -5,9 +5,9 @@ import { COMPLETE, PREVIEW } from '../../../index';
 import nop from '../../utils/function/nop';
 import EmptyKey from '../../constants/EmptyKey';
 
-describe('projection:', function () {
+describe('metadata:', function () {
   describe('when configuring the INDEX action', function() {
-    describe('and the projection value is NOT set when defining the resource', function () {
+    describe('and the metadata value is NOT set when defining the resource', function () {
       beforeAll(function () {
         const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
           name: 'users',
@@ -21,7 +21,7 @@ describe('projection:', function () {
         this.fetchUsers = fetchUsers;
       });
 
-      describe('and the projection type is NOT set when calling the action creator', function() {
+      describe('and the metadata type is NOT set when calling the action creator', function() {
         describe('and the request succeeds', () => {
           describe('before the request has completed', function () {
             beforeAll(function () {
@@ -41,8 +41,8 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then the item and collection\'s projection type is COMPLETE', function() {
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(COMPLETE);
+            it('then the item and collection\'s metadata type is COMPLETE', function() {
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(COMPLETE);
             });
           });
 
@@ -66,9 +66,9 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then the item and collection\'s projection type is COMPLETE', function() {
-              expect(this.store.getState().users.items['1'].projection.type).toEqual(COMPLETE);
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(COMPLETE);
+            it('then the item and collection\'s metadata type is COMPLETE', function() {
+              expect(this.store.getState().users.items['1'].metadata.type).toEqual(COMPLETE);
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(COMPLETE);
             });
           });
         });
@@ -92,8 +92,8 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then the collection\'s projection type is COMPLETE', function() {
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(COMPLETE);
+            it('then the collection\'s metadata type is COMPLETE', function() {
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(COMPLETE);
             });
           });
 
@@ -118,14 +118,14 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then the collection\'s projection type is COMPLETE', function() {
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(COMPLETE);
+            it('then the collection\'s metadata type is COMPLETE', function() {
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(COMPLETE);
             });
           });
         });
       });
 
-      describe('and the projection type is set when calling the action creator', function() {
+      describe('and the metadata type is set when calling the action creator', function() {
         describe('and the request succeeds', () => {
           describe('before the request has completed', function () {
             beforeAll(function () {
@@ -137,7 +137,7 @@ describe('projection:', function () {
 
               fetchMock.get('http://test.com/users', new Promise(nop));
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW } }));
+              this.store.dispatch(this.fetchUsers({}, { metadata: { type: PREVIEW } }));
             });
 
             afterAll(function() {
@@ -145,8 +145,8 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then uses the value passed to the action creator for the item\'s projection type', function() {
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(PREVIEW);
+            it('then uses the value passed to the action creator for the item\'s metadata type', function() {
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(PREVIEW);
             });
           });
 
@@ -162,7 +162,7 @@ describe('projection:', function () {
                     body: [{ id: 1, username: 'Robert' }],
               });
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW }, itemsProjection: { type: PREVIEW } }));
+              this.store.dispatch(this.fetchUsers({}, { metadata: { type: PREVIEW }, itemsMetadata: { type: PREVIEW } }));
             });
 
             afterAll(function() {
@@ -170,9 +170,9 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then uses the value passed to the action creator for the item\'s projection type', function() {
-              expect(this.store.getState().users.items['1'].projection.type).toEqual(PREVIEW);
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(PREVIEW);
+            it('then uses the value passed to the action creator for the item\'s metadata type', function() {
+              expect(this.store.getState().users.items['1'].metadata.type).toEqual(PREVIEW);
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(PREVIEW);
             });
           });
         });
@@ -188,7 +188,7 @@ describe('projection:', function () {
 
               fetchMock.get('http://test.com/users', new Promise(nop));
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW } }));
+              this.store.dispatch(this.fetchUsers({}, { metadata: { type: PREVIEW } }));
             });
 
             afterAll(function() {
@@ -196,8 +196,8 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then the collection\'s projection type is the value passed to the action creator', function() {
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(PREVIEW);
+            it('then the collection\'s metadata type is the value passed to the action creator', function() {
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(PREVIEW);
             });
           });
 
@@ -214,7 +214,7 @@ describe('projection:', function () {
                 status: 404
               });
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: PREVIEW } }));
+              this.store.dispatch(this.fetchUsers({}, { metadata: { type: PREVIEW } }));
             });
 
             afterAll(function() {
@@ -222,21 +222,21 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then the collection\'s projection type is the value passed to the action creator', function() {
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual(PREVIEW);
+            it('then the collection\'s metadata type is the value passed to the action creator', function() {
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(PREVIEW);
             });
           });
         });
       });
     });
 
-    describe('and the projection type is set when defining the resource', function () {
+    describe('and the metadata type is set when defining the resource', function () {
       beforeAll(function () {
         const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
           name: 'users',
           url: 'http://test.com/users',
           keyBy: 'id',
-          projection: { type: 'RESOURCE_PROJECTION' }
+          metadata: { type: 'RESOURCE_METADATA' }
         }, {
           fetchCollection: true
         });
@@ -245,7 +245,7 @@ describe('projection:', function () {
         this.reducers = reducers;
       });
 
-      describe('and the projection type is NOT set when calling the action creator', function() {
+      describe('and the metadata type is NOT set when calling the action creator', function() {
         describe('and the request succeeds', () => {
           describe('before the request has completed', function () {
             beforeAll(function () {
@@ -265,8 +265,8 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then the item and collection\'s projection type is the value specified when defining the resource', function() {
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('RESOURCE_PROJECTION');
+            it('then the item and collection\'s metadata type is the value specified when defining the resource', function() {
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('RESOURCE_METADATA');
             });
           });
 
@@ -290,9 +290,9 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then the item and collection\'s projection type is the value specified when defining the resource', function() {
-              expect(this.store.getState().users.items['1'].projection.type).toEqual('RESOURCE_PROJECTION');
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('RESOURCE_PROJECTION');
+            it('then the item and collection\'s metadata type is the value specified when defining the resource', function() {
+              expect(this.store.getState().users.items['1'].metadata.type).toEqual('RESOURCE_METADATA');
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('RESOURCE_METADATA');
             });
           });
         });
@@ -316,8 +316,8 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then the collection\'s projection type is the value specified when defining the resource', function() {
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('RESOURCE_PROJECTION');
+            it('then the collection\'s metadata type is the value specified when defining the resource', function() {
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('RESOURCE_METADATA');
             });
           });
 
@@ -342,14 +342,14 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then the collection\'s projection type is the value specified when defining the resource', function() {
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('RESOURCE_PROJECTION');
+            it('then the collection\'s metadata type is the value specified when defining the resource', function() {
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('RESOURCE_METADATA');
             });
           });
         });
       });
 
-      describe('and the projection type is set when calling the action creator', function() {
+      describe('and the metadata type is set when calling the action creator', function() {
         describe('and the request succeeds', () => {
           describe('before the request has completed', function () {
             beforeAll(function () {
@@ -361,7 +361,7 @@ describe('projection:', function () {
 
               fetchMock.get('http://test.com/users', new Promise(nop));
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' } }));
+              this.store.dispatch(this.fetchUsers({}, { metadata: { type: 'ACTION_CREATOR_METADATA' } }));
             });
 
             afterAll(function() {
@@ -369,8 +369,8 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then uses the value passed to the action creator for the collection\'s projection type', function() {
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+            it('then uses the value passed to the action creator for the collection\'s metadata type', function() {
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('ACTION_CREATOR_METADATA');
             });
           });
 
@@ -386,7 +386,7 @@ describe('projection:', function () {
                 body: [{ id: 1, username: 'Robert' }],
               });
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' }, itemsProjection: { type: 'ACTION_CREATOR_ITEM_PROJECTION' } }));
+              this.store.dispatch(this.fetchUsers({}, { metadata: { type: 'ACTION_CREATOR_METADATA' }, itemsMetadata: { type: 'ACTION_CREATOR_ITEM_METADATA' } }));
             });
 
             afterAll(function() {
@@ -394,9 +394,9 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then uses the value passed to the action creator for the item and collection\'s projection type', function() {
-              expect(this.store.getState().users.items['1'].projection.type).toEqual('ACTION_CREATOR_ITEM_PROJECTION');
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+            it('then uses the value passed to the action creator for the item and collection\'s metadata type', function() {
+              expect(this.store.getState().users.items['1'].metadata.type).toEqual('ACTION_CREATOR_ITEM_METADATA');
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('ACTION_CREATOR_METADATA');
             });
           });
         });
@@ -412,7 +412,7 @@ describe('projection:', function () {
 
               fetchMock.get('http://test.com/users', new Promise(nop));
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' } }));
+              this.store.dispatch(this.fetchUsers({}, { metadata: { type: 'ACTION_CREATOR_METADATA' } }));
             });
 
             afterAll(function() {
@@ -420,8 +420,8 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then uses the value passed to the action creator for the collection\'s projection type', function() {
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+            it('then uses the value passed to the action creator for the collection\'s metadata type', function() {
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('ACTION_CREATOR_METADATA');
             });
           });
 
@@ -438,7 +438,7 @@ describe('projection:', function () {
                 status: 404
               });
 
-              this.store.dispatch(this.fetchUsers({}, { projection: { type: 'ACTION_CREATOR_PROJECTION' } }));
+              this.store.dispatch(this.fetchUsers({}, { metadata: { type: 'ACTION_CREATOR_METADATA' } }));
             });
 
             afterAll(function() {
@@ -446,8 +446,8 @@ describe('projection:', function () {
               this.store = null;
             });
 
-            it('then uses the value passed to the action creator for the collection\'s projection type', function() {
-              expect(this.store.getState().users.collections[EmptyKey].projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+            it('then uses the value passed to the action creator for the collection\'s metadata type', function() {
+              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('ACTION_CREATOR_METADATA');
             });
           });
         });
@@ -456,7 +456,7 @@ describe('projection:', function () {
   });
 
   describe('when configuring the SHOW action', function() {
-    describe('and the projection type is NOT set when defining the resource', function () {
+    describe('and the metadata type is NOT set when defining the resource', function () {
       beforeAll(function () {
         const { reducers, actionCreators: { fetchItem: fetchUser } } = resources({
           name: 'users',
@@ -470,7 +470,7 @@ describe('projection:', function () {
         this.fetchUser = fetchUser;
       });
 
-      describe('and the projection type is NOT set when calling the action creator', function() {
+      describe('and the metadata type is NOT set when calling the action creator', function() {
         describe('before the request has completed', function () {
           beforeAll(function () {
             fetchMock.get('http://test.com/users/1', new Promise(nop));
@@ -491,8 +491,8 @@ describe('projection:', function () {
             this.store = null;
           });
 
-          it('then the item\'s projection type is COMPLETE', function() {
-            expect(this.user.projection.type).toEqual(COMPLETE);
+          it('then the item\'s metadata type is COMPLETE', function() {
+            expect(this.user.metadata.type).toEqual(COMPLETE);
           });
         });
 
@@ -518,13 +518,13 @@ describe('projection:', function () {
             this.store = null;
           });
 
-          it('then the item\'s projection type is COMPLETE', function() {
-            expect(this.user.projection.type).toEqual(COMPLETE);
+          it('then the item\'s metadata type is COMPLETE', function() {
+            expect(this.user.metadata.type).toEqual(COMPLETE);
           });
         });
       });
 
-      describe('and the projection type is set when calling the action creator', function() {
+      describe('and the metadata type is set when calling the action creator', function() {
         describe('before the request has completed', function () {
           beforeAll(function () {
             fetchMock.get('http://test.com/users/1', new Promise(nop));
@@ -535,7 +535,7 @@ describe('projection:', function () {
               }
             }, { users: this.reducers } );
 
-            this.store.dispatch(this.fetchUser(1, { projection: { type: PREVIEW } }));
+            this.store.dispatch(this.fetchUser(1, { metadata: { type: PREVIEW } }));
 
             this.user = this.store.getState().users.items['1'];
           });
@@ -545,8 +545,8 @@ describe('projection:', function () {
             this.store = null;
           });
 
-          it('then uses the value passed to the action creator for the item\'s projection type', function() {
-            expect(this.user.projection.type).toEqual(PREVIEW);
+          it('then uses the value passed to the action creator for the item\'s metadata type', function() {
+            expect(this.user.metadata.type).toEqual(PREVIEW);
           });
         });
 
@@ -562,7 +562,7 @@ describe('projection:', function () {
               }
             }, { users: this.reducers } );
 
-            this.store.dispatch(this.fetchUser(1, { projection: { type: PREVIEW } }));
+            this.store.dispatch(this.fetchUser(1, { metadata: { type: PREVIEW } }));
 
             this.user = this.store.getState().users.items['1'];
           });
@@ -572,20 +572,20 @@ describe('projection:', function () {
             this.store = null;
           });
 
-          it('then uses the value passed to the action creator for the item\'s projection type', function() {
-            expect(this.user.projection.type).toEqual(PREVIEW);
+          it('then uses the value passed to the action creator for the item\'s metadata type', function() {
+            expect(this.user.metadata.type).toEqual(PREVIEW);
           });
         });
       });
     });
 
-    describe('and the projection type is set when defining the resource', function () {
+    describe('and the metadata type is set when defining the resource', function () {
       beforeAll(function () {
         const { reducers, actionCreators: { fetchItem: fetchUser } } = resources({
           name: 'users',
           url: 'http://test.com/users/:id',
           keyBy: 'id',
-          projection: { type: 'RESOURCE_PROJECTION' }
+          metadata: { type: 'RESOURCE_METADATA' }
         }, {
           fetchItem: true
         });
@@ -594,7 +594,7 @@ describe('projection:', function () {
         this.fetchUser = fetchUser;
       });
 
-      describe('and the projection type is NOT set when calling the action creator', function() {
+      describe('and the metadata type is NOT set when calling the action creator', function() {
         describe('before the request has completed', function () {
           beforeAll(function () {
             fetchMock.get('http://test.com/users/1', new Promise(nop));
@@ -615,8 +615,8 @@ describe('projection:', function () {
             this.store = null;
           });
 
-          it('then the item\'s projection type is the value specified when defining the resource', function() {
-            expect(this.user.projection.type).toEqual('RESOURCE_PROJECTION');
+          it('then the item\'s metadata type is the value specified when defining the resource', function() {
+            expect(this.user.metadata.type).toEqual('RESOURCE_METADATA');
           });
         });
 
@@ -642,13 +642,13 @@ describe('projection:', function () {
             this.store = null;
           });
 
-          it('then the item\'s projection type is the value specified when defining the resource', function() {
-            expect(this.user.projection.type).toEqual('RESOURCE_PROJECTION');
+          it('then the item\'s metadata type is the value specified when defining the resource', function() {
+            expect(this.user.metadata.type).toEqual('RESOURCE_METADATA');
           });
         });
       });
 
-      describe('and the projection type is set when calling the action creator', function() {
+      describe('and the metadata type is set when calling the action creator', function() {
         describe('before the request has completed', function () {
           beforeAll(function () {
             fetchMock.get('http://test.com/users/1', new Promise(nop));
@@ -659,7 +659,7 @@ describe('projection:', function () {
               }
             }, { users: this.reducers } );
 
-            this.store.dispatch(this.fetchUser(1, { projection: { type: 'ACTION_CREATOR_PROJECTION' } }));
+            this.store.dispatch(this.fetchUser(1, { metadata: { type: 'ACTION_CREATOR_METADATA' } }));
 
             this.user = this.store.getState().users.items['1'];
           });
@@ -669,8 +669,8 @@ describe('projection:', function () {
             this.store = null;
           });
 
-          it('then uses the value passed to the action creator for the item\'s projection type', function() {
-            expect(this.user.projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+          it('then uses the value passed to the action creator for the item\'s metadata type', function() {
+            expect(this.user.metadata.type).toEqual('ACTION_CREATOR_METADATA');
           });
         });
 
@@ -686,7 +686,7 @@ describe('projection:', function () {
               }
             }, { users: this.reducers } );
 
-            this.store.dispatch(this.fetchUser(1, { projection: { type: 'ACTION_CREATOR_PROJECTION' } }));
+            this.store.dispatch(this.fetchUser(1, { metadata: { type: 'ACTION_CREATOR_METADATA' } }));
 
             this.user = this.store.getState().users.items['1'];
           });
@@ -696,8 +696,8 @@ describe('projection:', function () {
             this.store = null;
           });
 
-          it('then uses the value passed to the action creator for the item\'s projection type', function() {
-            expect(this.user.projection.type).toEqual('ACTION_CREATOR_PROJECTION');
+          it('then uses the value passed to the action creator for the item\'s metadata type', function() {
+            expect(this.user.metadata.type).toEqual('ACTION_CREATOR_METADATA');
           });
         });
       });

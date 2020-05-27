@@ -50,7 +50,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     urlOnlyParams,
     keyBy,
     progress,
-    projection,
+    metadata,
     requestAdaptor,
     request = {}
 , singular } = options;
@@ -85,7 +85,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     const requestedAt = Date.now();
 
     dispatch(
-      submitCreateResource({ action, transforms, key, projection, requestedAt }, actionCreatorOptions, values, collectionOperations)
+      submitCreateResource({ action, transforms, key, metadata, requestedAt }, actionCreatorOptions, values, collectionOperations)
     );
 
     return makeRequest({

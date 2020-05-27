@@ -2,7 +2,7 @@ import warn from '../utils/dev/warn';
 import isObject from '../utils/object/isObject';
 import wrapInObject from '../utils/object/wrapInObject';
 import resolveOptions from './helpers/resolveOptions';
-import projectionTransform from './helpers/transforms/projectionTransform';
+import metadataTransform from './helpers/transforms/metadataTransform';
 import { getConfiguration } from '../configuration';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 import fetchItemAction from '../actions/RESTful/fetchItem';
@@ -122,10 +122,10 @@ const SINGULAR_ACTION_CREATORS = {
  *           the reducer. This is useful if you want to use the default reducer, but provide some additional
  *           post-processing to standardise the resource before it is added to the store.
  *
- * @property {Projection} [projection] An object of attributes and values that describe the (Set Theory)
- *           projection the item of collection represents. It can be used for containing information like page
- *           numbers, limits, offsets and includes for collections and types for items (previews, or the
- *           complete set of attributes of an item).
+ * @property {Metadata} [metadata] An object of attributes and values that describe the metadata of the
+ *           collection. It can be used for containing information like page numbers, limits, offsets and
+ *           includes for collections and types for items (previews, or the complete set of attributes of
+ *           an item).
  */
 
 /**
@@ -223,7 +223,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
           'requestAdaptor',
           'progress',
           'requestErrorHandler',
-          'projection',
+          'metadata',
           'localOnly',
           'singular'
         ]
@@ -247,7 +247,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
         request: requestOptions
       };
 
-      actionCreatorConfig.transforms.push(projectionTransform);
+      actionCreatorConfig.transforms.push(metadataTransform);
 
       memo[key] = (arg1, arg2, arg3) => {
         const config = getConfiguration();

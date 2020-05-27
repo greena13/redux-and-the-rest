@@ -1,6 +1,6 @@
 import InitialStateBuilder from './InitialStateBuilder';
 import { ITEM } from '../constants/DataStructures';
-import { COMPLETE } from '../constants/ProjectionTypes';
+import { COMPLETE } from '../constants/MetadataTypes';
 import { SUCCESS } from '../constants/Statuses';
 
 /**
@@ -19,15 +19,15 @@ class InitialItemStateBuilder extends InitialStateBuilder {
    * the Redux store.
    * @param {Object} options An object of configuration options
    * @param {ResourceStatus} options.status The status to use for the item if it hasn't set its own.
-   * @param {ResourceProjection} options.projection The projection for the item if it hasn't set its own.
+   * @param {ResourceMetadata} options.metadata The metadata for the item if it hasn't set its own.
    * @return {ResourcesItem} The initial item state
    */
-  build({ status = {}, projection = {} }) {
+  build({ status = {}, metadata = {} }) {
     return {
       ...ITEM,
       values: this.values,
       status: { type: SUCCESS, ...status, ...this.status },
-      projection: { type: COMPLETE, ...projection, ...this.projection }
+      metadata: { type: COMPLETE, ...metadata, ...this.metadata }
     };
   }
 }

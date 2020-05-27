@@ -710,8 +710,8 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 | `requestAdaptor` | Function | Identity function | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
 | `credentials` | string | undefined | Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the request only if it's on the same origin. |
 | `progress` | boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `fetchCollection`, `fetchItem`, `createItem`, `updateItem` and any custom actions. |
-| `projection` | object | `{ type: 'COMPLETE' }` | An object of attributes and values that describe the (Set Theory) projection the item of collection represents. It can be used for containing information like page numbers, limits, offsets and includes for collections and types for items (previews, or the complete set of attributes of an item). |  
-| `itemsProjection` | object | `{ type: 'COMPLETE' }` | Accepted only by `fetchCollection` and `getOrFetchCollection`, used to define the projection of each item in the collection (the `projection` is applied to the collection). |  
+| `metadata` | object | `{ type: 'COMPLETE' }` | An object of attributes and values that describe the collection's metadata. It can be used for containing information like page numbers, limits, offsets and includes for collections and types for items (previews, or the complete set of attributes of an item). |  
+| `itemsMetadata` | object | `{ type: 'COMPLETE' }` | Accepted only by `fetchCollection` and `getOrFetchCollection`, used to define the metadata of each item in the collection (the `metadata` is applied to the collection). |  
 
 ##### Reducers
 
@@ -887,16 +887,16 @@ A blank item has the following schema:
 {
   values: {},
   status: { type: null },
-  projection: { type: null }
+  metadata: { type: null }
 };
 ```
 
 * `values`: This is where all of the item's attributes are stored.
 * `status`: This is where status information is stored, separate from the item's attributes. This allows the `values` to remain pure - so if you are editing an item, all you need to do is send the new `values` back to the server, without having to worry about any irrelevant attributes being mixed in.
-* `projection`: This is where information about the nature of the item's set of attributes is stored. A `type` attribute indicates whether all of the item's attributes have been retrieved (`COMPLETE` by default), or whether only some of them have (e.g. `PREVIEW`). Other information can also be stored here, and is configurable when the resource action is defined or when the action creator is called.
+* `metadata`: This is where information about the nature of the item's set of attributes is stored. A `type` attribute indicates whether all of the item's attributes have been retrieved (`COMPLETE` by default), or whether only some of them have (e.g. `PREVIEW`). Other information can also be stored here, and is configurable when the resource action is defined or when the action creator is called.
 
 
-Setting the `projection` when defining the resource:
+Setting the `metadata` when defining the resource:
 
 ```
 const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
@@ -905,15 +905,15 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
   keyBy: 'id',
 }, {
   fetch: {
-    projection: { type: 'PREVIEW' }
+    metadata: { type: 'PREVIEW' }
   }
 });
 ```
 
-Setting the `projection` when calling the action creator:
+Setting the `metadata` when calling the action creator:
 
 ```javascript
-dispatch(fetchUser(1, { projection: { type: 'PREVIEW' }}));
+dispatch(fetchUser(1, { metadata: { type: 'PREVIEW' }}));
 ```
 
 ##### Collection schema
@@ -924,15 +924,15 @@ A blank collection has the following schema:
 {
   positions: [],
   status: { type: null },
-  projection: { type: null }
+  metadata: { type: null }
 };
 ```
 
 * `positions`: This is an array of keys of the items that exist in the collection. It stores the order of the items separate from the items themselves, so the items may be efficiently stored (without any duplicates) when we have multiple collections that may share them. It also means that we may update individual item's values, without having to alter all of the collections they are a part of.
 * `status`: This is where status information is stored for the entire collection.
-* `projection`: This is where information about the nature of the collection is stored. A `type` attribute indicates whether all of the items in the collection have been retrieved (`COMPLETE` by default), or whether only some of them have. Other information can also be stored here, and is configurable when the resource action is defined or when the action creator is called.
+* `metadata`: This is where information about the nature of the collection is stored. A `type` attribute indicates whether all of the items in the collection have been retrieved (`COMPLETE` by default), or whether only some of them have. Other information can also be stored here, and is configurable when the resource action is defined or when the action creator is called.
 
-Setting the `projection` when defining the resource:
+Setting the `metadata` when defining the resource:
 
 ```
 const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
@@ -941,15 +941,15 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
   keyBy: 'id',
 }, {
   fetchCollection: {
-    projection: { type: 'PAGINATED' }
+    metadata: { type: 'PAGINATED' }
   }
 });
 ```
 
-Setting the `projection` when calling the action creator:
+Setting the `metadata` when calling the action creator:
 
 ```javascript
-dispatch(fetchUsers({}, { projection: { type: 'PAGINATED', page: 1 }}));
+dispatch(fetchUsers({}, { metadata: { type: 'PAGINATED', page: 1 }}));
 ```
 
 ### Data lifecycle
@@ -1032,7 +1032,7 @@ const stateBuilder = buildInitialState([ { id: 1, username: 'John' }]);
 createStore(reducers, { users: stateBuilder.build() });
 ```
 
-It provides a `addCollection()` function for specifying a collection, which returns a builder scoped to that collection, so you can further specify state and projection values on that collection and its items. The `addCollection()` function accepts an optional params object, used to create the collection's key and an array of items in the collection, as its arguments.
+It provides a `addCollection()` function for specifying a collection, which returns a builder scoped to that collection, so you can further specify state and metadata values on that collection and its items. The `addCollection()` function accepts an optional params object, used to create the collection's key and an array of items in the collection, as its arguments.
 
 ```javascript
 // The default, unkeyed collection
@@ -1060,15 +1060,15 @@ const stateBuilder = buildInitialState();
 stateBuilder.addItem({ id: 1, username: 'John'});
 ```
 
-All builders allow you to set the state type of its contents using the `setStateType()`, `setSyncedAt()` and the projection values using `setProjection()`. These methods return the state builder you call them on, so you can chain them together
+All builders allow you to set the state type of its contents using the `setStateType()`, `setSyncedAt()` and the metadata values using `setMetadata()`. These methods return the state builder you call them on, so you can chain them together
 
 ```javascript
 const itemStateBuilder = stateBuilder.addItem({ id: 1, username: 'John'});
 
-itemStateBuilder.setStatusType(customStatusType).setProjection({ type: 'CUSTOM' });
+itemStateBuilder.setStatusType(customStatusType).setMetadata({ type: 'CUSTOM' });
 ```
 
-Items inherit the state and projection of their collection, unless explicitly set. Similarly, collections inherit these values from their resource unless explicitly set.
+Items inherit the state and metadata of their collection, unless explicitly set. Similarly, collections inherit these values from their resource unless explicitly set.
 
 **Note** It is strongly recommended that you set the syncedAt value for your initial state, to allow the `canFallbackToOldValues()` helper to function correctly.
 
@@ -1526,9 +1526,9 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
 );
 ```
 
-Then calling `fetchUsers({ order: 'newest', page: 1 }, { projection: { page: 1 } })` will load the first page of results in `store.getState().users.collections['newest']` and calling `fetchUsers({ order: 'newest', { projection: { page: 1 } })` will add the second page of users to the end of the same collection.
+Then calling `fetchUsers({ order: 'newest', page: 1 }, { metadata: { page: 1 } })` will load the first page of results in `store.getState().users.collections['newest']` and calling `fetchUsers({ order: 'newest', { metadata: { page: 1 } })` will add the second page of users to the end of the same collection.
 
-We provide the projection argument to store what page we are currently on, so it does not have to be retained outside of the Redux store. It can be accessed like so:
+We provide the metadata argument to store what page we are currently on, so it does not have to be retained outside of the Redux store. It can be accessed like so:
 
 ```javascript
 import { getUsers } from './resources/users';    
@@ -1538,7 +1538,7 @@ const mapStateToProps = ({ users } ) => {
  
   return {
     user: usersCollection,
-    currentPage: usersCollection.projection.page // Current page is available on the collection's projection
+    currentPage: usersCollection.metadata.page // Current page is available on the collection's metadata
   }
 };
 

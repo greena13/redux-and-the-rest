@@ -1,6 +1,6 @@
 import { resources } from '../../index';
 import { SUCCESS } from '../../constants/Statuses';
-import { COMPLETE } from '../../constants/ProjectionTypes';
+import { COMPLETE } from '../../constants/MetadataTypes';
 import { RESOURCES } from '../../constants/DataStructures';
 import EmptyKey from '../../constants/EmptyKey';
 
@@ -30,7 +30,7 @@ describe('buildInitialState:', function() {
               status: {
                 type: SUCCESS
               },
-              projection: {
+              metadata: {
                 type: COMPLETE
               }
             }
@@ -41,7 +41,7 @@ describe('buildInitialState:', function() {
               status: {
                 type: SUCCESS
               },
-              projection: {
+              metadata: {
                 type: COMPLETE
               }
             }
@@ -66,7 +66,7 @@ describe('buildInitialState:', function() {
               status: {
                 type: SUCCESS
               },
-              projection: {
+              metadata: {
                 type: COMPLETE
               }
             }
@@ -77,7 +77,7 @@ describe('buildInitialState:', function() {
               status: {
                 type: SUCCESS
               },
-              projection: {
+              metadata: {
                 type: COMPLETE
               }
             }
@@ -102,7 +102,7 @@ describe('buildInitialState:', function() {
               status: {
                 type: SUCCESS
               },
-              projection: {
+              metadata: {
                 type: COMPLETE
               }
             }

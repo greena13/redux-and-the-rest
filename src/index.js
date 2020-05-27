@@ -15,7 +15,7 @@ export { default as isSyncedWithRemote } from './public-helpers/isSyncedWithRemo
 export { default as isInAnErrorState } from './public-helpers/isInAnErrorState';
 
 export { RESOURCE, RESOURCES, COLLECTION, ITEM } from './constants/DataStructures';
-export { COMPLETE, PREVIEW } from './constants/ProjectionTypes';
+export { COMPLETE, PREVIEW } from './constants/MetadataTypes';
 
 export { NEW, EDITING, FETCHING, CREATING, UPDATING, DESTROYING, DESTROY_ERROR, SUCCESS, PROGRESS, ERROR } from './constants/Statuses';
 

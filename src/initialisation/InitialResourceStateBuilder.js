@@ -71,14 +71,14 @@ class InitialResourceStateBuilder extends InitialStateBuilder {
     const itemsOutsideOfCollections = Object.keys(this.items).reduce((memo, key) => {
       const item = this.items[key];
 
-      memo[key] = item.build({ status: this.status, projection: this.projection });
+      memo[key] = item.build({ status: this.status, metadata: this.metadata });
 
       return memo;
     }, {});
 
     const itemsFromCollections = Object.values(this.collections).reduce((memo, collection) => ({
         ...memo,
-        ...collection.buildItems({ status: this.status, projection: this.projection })
+        ...collection.buildItems({ status: this.status, metadata: this.metadata })
       }), {});
 
     return {
@@ -100,7 +100,7 @@ class InitialResourceStateBuilder extends InitialStateBuilder {
        */
       collections: Object.keys(this.collections).reduce((memo, key) => {
         const collection = this.collections[key];
-        memo[key] = collection.build({ status: this.status, projection: this.projection });
+        memo[key] = collection.build({ status: this.status, metadata: this.metadata });
 
         return memo;
       }, {})

@@ -53,12 +53,12 @@ export const PROGRESS: string;
 export const ERROR: string;
 
 /**
- * The projection type used when all of the attributes of of a resource are included
+ * The metadata type used when all of the attributes of of a resource are included
  */
 export const COMPLETE: string;
 
 /**
- * The projection type used when only the attributes necessary for a preview are included
+ * The metadata type used when only the attributes necessary for a preview are included
  */
 export const PREVIEW: string;
 
@@ -153,14 +153,14 @@ export interface ResourceItemStatus<T> extends ResourceStatus {
     originalValues?: T
 }
 
-interface ProjectionRequired {
+interface MetadataRequired {
     type: string
 }
 
 /**
- * Information about the type of projection the resource item or collection represents
+ * Information about the type of metadata the resource item or collection represents
  */
-export interface Projection extends ProjectionRequired {
+export interface Metadata extends MetadataRequired {
     [extraValues: string]: any
 }
 
@@ -174,9 +174,9 @@ export interface GenericItemOrCollection {
     status: ResourceStatus,
 
     /**
-     * The projection information of the item or collection
+     * The metadata information of the item or collection
      */
-    projection: Projection
+    metadata: Metadata
 }
 
 /**
@@ -574,17 +574,17 @@ export interface InitialCollectionStateBuilder<T> {
      * pass to the Redux store.
      * @param ResourceStatus The status to use for the collection and all of its items if the collection hasn't
      *        set its own.
-     * @param ResourceProjection The projection to use for the collection and all of its items if the
+     * @param ResourceMetadata The metadata to use for the collection and all of its items if the
      *        collection hasn't set its own.
      */
-    build: ({status: ResourceStatus, projection: ResourceProjection}) => ResourcesCollection<T>;
+    build: ({status: ResourceStatus, metadata: ResourceMetadata}) => ResourcesCollection<T>;
 
     /**
      * Generates a map of items indexed by their correct key
      * @param ResourceStatus The status to use for the items if the collection or item hasn't set its own.
-     * @param ResourceProjection The projection for the items if the collection or item hasn't set its own.
+     * @param ResourceMetadata The metadata for the items if the collection or item hasn't set its own.
      */
-    buildItems: ({status: ResourceStatus, projection: ResourceProjection}) => { [key: string]: ResourcesItem<T>; }
+    buildItems: ({status: ResourceStatus, metadata: ResourceMetadata}) => { [key: string]: ResourcesItem<T>; }
 
     /**
      * Sets the status of the initial state
@@ -601,11 +601,11 @@ export interface InitialCollectionStateBuilder<T> {
     setSyncedAt: (date) => InitialCollectionStateBuilder<T>;
 
     /**
-     * Sets the projection of the initial state
-     * @param ResourceStatusRequired The projection object to set as the initial state
+     * Sets the metadata of the initial state
+     * @param ResourceStatusRequired The metadata object to set as the initial state
      * @returns itself to allow for chaining method calls
      */
-    setProjection: (ProjectionRequired) => InitialCollectionStateBuilder<T>;
+    setMetadata: (MetadataRequired) => InitialCollectionStateBuilder<T>;
 }
 
 /**
@@ -617,9 +617,9 @@ export interface InitialItemStateBuilder<T> {
      * Generates the initial item state the builder has been configured for, in the format suitable to pass to
      * the Redux store.
      * @param ResourceStatus The status to use for the item if it hasn't set its own.
-     * @param ResourceProjection The projection for the item if it hasn't set its own.
+     * @param ResourceMetadata The metadata for the item if it hasn't set its own.
      */
-    build: ({status: ResourceStatus, projection: ResourceProjection}) => ResourcesItem<T>;
+    build: ({status: ResourceStatus, metadata: ResourceMetadata}) => ResourcesItem<T>;
 
     /**
      * Sets the status of the initial state
@@ -636,11 +636,11 @@ export interface InitialItemStateBuilder<T> {
     setSyncedAt: (date) => InitialItemStateBuilder<T>;
 
     /**
-     * Sets the projection of the initial state
-     * @param ResourceStatusRequired The projection object to set as the initial state
+     * Sets the metadata of the initial state
+     * @param ResourceStatusRequired The metadata object to set as the initial state
      * @returns itself to allow for chaining method calls
      */
-    setProjection: (ProjectionRequired) => InitialItemStateBuilder<T>;
+    setMetadata: (MetadataRequired) => InitialItemStateBuilder<T>;
 }
 
 /**
@@ -688,11 +688,11 @@ export interface InitialResourceStateBuilder<T> {
     setSyncedAt: (date) => InitialResourceStateBuilder<T>;
 
     /**
-     * Sets the projection of the initial state
-     * @param ResourceStatusRequired The projection object to set as the initial state
+     * Sets the metadata of the initial state
+     * @param ResourceStatusRequired The metadata object to set as the initial state
      * @returns itself to allow for chaining method calls
      */
-    setProjection: (ProjectionRequired) => InitialResourceStateBuilder<T>;
+    setMetadata: (MetadataRequired) => InitialResourceStateBuilder<T>;
 
 }
 
@@ -944,17 +944,17 @@ interface ActionAndActionCreatorSharedOptions<T> {
  */
 export interface ActionCreatorOptions<T> extends ActionAndActionCreatorSharedOptions<T>{
     /**
-     * An object of attributes and values that describe the (Set Theory) projection the item of collection
-     * represents. It can be used for containing information like page numbers, limits, offsets and includes
-     * for collections and types for items (previews, or the complete set of attributes of an item).
+     * An object of attributes and values that describe the collection's metadata. It can be used for
+     * containing information like page numbers, limits, offsets and includes for collections and types
+     * for items (previews, or the complete set of attributes of an item).
      */
-    projection?: Projection,
+    metadata?: Metadata,
 
     /**
-     * Accepted only by fetchCollection and getOrFetchCollection, used to define the projection of each
-     * item in the collection (the projection is applied to the collection).
+     * Accepted only by fetchCollection and getOrFetchCollection, used to define the metadata of each
+     * item in the collection (the metadata is applied to the collection).
      */
-    itemsProjection?: Projection
+    itemsMetadata?: Metadata
 }
 
 /**

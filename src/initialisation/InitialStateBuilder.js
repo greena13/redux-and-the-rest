@@ -6,7 +6,7 @@ class InitialStateBuilder {
     this.options = options;
 
     this.status = {};
-    this.projection = {};
+    this.metadata = {};
   }
 
   /**
@@ -32,12 +32,12 @@ class InitialStateBuilder {
   }
 
   /**
-   * Sets the projection of the initial state
-   * @param {ResourceProjection} projection The projection object to set as the initial state
+   * Sets the metadata of the initial state
+   * @param {ResourceMetadata} metadata The metadata object to set as the initial state
    * @returns {InitialStateBuilder} itself to allow for chaining method calls
    */
-  setProjection(projection) {
-    this.projection = projection;
+  setMetadata(metadata) {
+    this.metadata = metadata;
 
     return this;
   }

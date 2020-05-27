@@ -2,7 +2,7 @@ import InitialStateBuilder from './InitialStateBuilder';
 import getItemKey from '../action-creators/helpers/getItemKey';
 import InitialItemStateBuilder from './InitialItemStateBuilder';
 import { COLLECTION } from '../constants/DataStructures';
-import { COMPLETE } from '../constants/ProjectionTypes';
+import { COMPLETE } from '../constants/MetadataTypes';
 import { SUCCESS } from '../constants/Statuses';
 import extractVariableArguments from '../utils/extractVariableArguments';
 
@@ -45,16 +45,16 @@ class InitialCollectionStateBuilder extends InitialStateBuilder {
    * @param {Object} options Options hash
    * @param {ResourceStatus} options.status The status to use for the collection and all of its items if
    *        the collection hasn't set its own.
-   * @param {ResourceProjection} options.projection The projection to use for the collection and all of its
+   * @param {ResourceMetadata} options.metadata The metadata to use for the collection and all of its
    *        items if the collection hasn't set its own.
    * @returns {ResourcesCollection} The initial collection state
    */
-  build({ status = {}, projection = {} }) {
+  build({ status = {}, metadata = {} }) {
     return {
       ...COLLECTION,
       positions: this.positions,
       status: { type: SUCCESS, ...status, ...this.status },
-      projection: { type: COMPLETE, ...projection, ...this.projection }
+      metadata: { type: COMPLETE, ...metadata, ...this.metadata }
     };
   }
 
@@ -63,11 +63,11 @@ class InitialCollectionStateBuilder extends InitialStateBuilder {
    * @param {Object} options Options hash
    * @param {ResourceStatus} options.status The status to use for the items if the collection or item hasn't
    *        set its own.
-   * @param {ResourceProjection} options.projection The projection for the items if the collection or item
+   * @param {ResourceMetadata} options.metadata The metadata for the items if the collection or item
    *        hasn't set its own.
    * @returns {Object<ResourceItemId, ResourcesItem>} Map of items by their key
    */
-  buildItems({ status = {}, projection }) {
+  buildItems({ status = {}, metadata }) {
     return Object.keys(this.items).reduce((memo, key) => {
       const item = this.items[key];
 
@@ -75,7 +75,7 @@ class InitialCollectionStateBuilder extends InitialStateBuilder {
         ...memo,
         [key]: item.build({
           status: { ...status, ...this.status },
-          projection: { type: COMPLETE, ...projection, ...this.projection }
+          metadata: { type: COMPLETE, ...metadata, ...this.metadata }
         })
       };
     }, {});

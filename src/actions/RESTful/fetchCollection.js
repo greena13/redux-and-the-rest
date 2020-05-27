@@ -1,13 +1,13 @@
 import { COLLECTION, ITEM } from '../../constants/DataStructures';
 import { ERROR, FETCHING, SUCCESS } from '../../constants/Statuses';
-import { COMPLETE } from '../../constants/ProjectionTypes';
+import { COMPLETE } from '../../constants/MetadataTypes';
 
 import getCollectionKey from '../../action-creators/helpers/getCollectionKey';
 import generateUrl from '../../action-creators/helpers/generateUrl';
 import makeRequest from '../../action-creators/helpers/makeRequest';
 import getItemKey from '../../action-creators/helpers/getItemKey';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
-import projectionTransform from '../../action-creators/helpers/transforms/projectionTransform';
+import metadataTransform from '../../action-creators/helpers/transforms/metadataTransform';
 import wrapInObject from '../../utils/object/wrapInObject';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
@@ -30,7 +30,7 @@ const HTTP_REQUEST_TYPE = 'GET';
  */
 function actionCreator(options, params, actionCreatorOptions = {}) {
   const {
-    action, url: urlTemplate, keyBy, urlOnlyParams, progress, projection, request = {}
+    action, url: urlTemplate, keyBy, urlOnlyParams, progress, metadata, request = {}
   } = options;
 
   const key = getCollectionKey(params, { urlOnlyParams });
@@ -48,7 +48,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
     /**
      * Immediately dispatch an action to change the state of the collection to be FETCHING
      */
-    dispatch(requestCollection({ action, projection: actionCreatorOptions.projection || projection, requestedAt }, key));
+    dispatch(requestCollection({ action, metadata: actionCreatorOptions.metadata || metadata, requestedAt }, key));
 
     /**
      * Make a request to the external API and dispatch another action when the response is received, populating
@@ -83,7 +83,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function requestCollection(options, key) {
-  const { action, projection = { type: COMPLETE }, requestedAt } = options;
+  const { action, metadata = { type: COMPLETE }, requestedAt } = options;
 
   return {
     type: action,
@@ -91,7 +91,7 @@ function requestCollection(options, key) {
     collection: {
       ...COLLECTION,
       status: { type: FETCHING, requestedAt },
-      projection
+      metadata
     },
     key,
   };
@@ -126,7 +126,7 @@ function receiveCollection(options, actionCreatorOptions, collection) {
      */
     positions.push(itemKey);
 
-    memo[itemKey] = applyTransforms(transforms, options, { ...actionCreatorOptions, projection: actionCreatorOptions.itemsProjection }, {
+    memo[itemKey] = applyTransforms(transforms, options, { ...actionCreatorOptions, metadata: actionCreatorOptions.itemsMetadata }, {
       ...ITEM,
       values,
       status: { type: SUCCESS, requestedAt, syncedAt },
@@ -140,7 +140,7 @@ function receiveCollection(options, actionCreatorOptions, collection) {
     status: SUCCESS,
     items,
     key,
-    collection: projectionTransform(options, actionCreatorOptions, {
+    collection: metadataTransform(options, actionCreatorOptions, {
       positions,
       status: { type: SUCCESS, syncedAt, itemsInLastResponse: Object.keys(items).length }
     })
@@ -192,10 +192,10 @@ function reducer(resources, action) {
   if (status === FETCHING) {
 
     /**
-     * When a collection is being fetched, we simply update the collection's status and projection values,
+     * When a collection is being fetched, we simply update the collection's status and metadata values,
      * leaving any items in the collection that are already there untouched.
      *
-     * Note we completely override the projection object with the new values - we dont' merge it.
+     * Note we completely override the metadata object with the new values - we dont' merge it.
      */
     return {
       ...resources,
@@ -209,7 +209,7 @@ function reducer(resources, action) {
            * the request fails, we know the last time it was successfully retrieved
            */
           status: mergeStatus(currentList.status, collection.status, { onlyPersist: ['syncedAt', 'itemsInLastResponse'] }),
-          projection: collection.projection
+          metadata: collection.metadata
         }
       }
     };
@@ -249,7 +249,7 @@ function reducer(resources, action) {
 
     /**
      * When the attempt to fetch a collection from the API results in an error, we leave the current contents
-     * of the collection and update its state and projection to reflect the details of the error.
+     * of the collection and update its state and metadata to reflect the details of the error.
      */
     const newLists = {
       ...resources.collections,

@@ -26,7 +26,7 @@ const HTTP_REQUEST_TYPE = 'GET';
  */
 function actionCreator(options, params, actionCreatorOptions = {}) {
   const {
-    action, transforms, url: urlTemplate, keyBy, progress, projection, request = {}, singular
+    action, transforms, url: urlTemplate, keyBy, progress, metadata, request = {}, singular
   } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
@@ -46,7 +46,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
     /**
      * Immediately dispatch an action to change the state of the resource item to be FETCHING
      */
-    dispatch(requestResource({ action, transforms, key, projection, requestedAt }, actionCreatorOptions));
+    dispatch(requestResource({ action, transforms, key, metadata, requestedAt }, actionCreatorOptions));
 
     /**
      * Make a request to the external API and dispatch another action when the response is received, populating
@@ -104,13 +104,13 @@ function requestResource(options, actionCreatorOptions) {
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function receiveResource(options, actionCreatorOptions, values) {
-  const { transforms, action, params, keyBy, projection, singular } = options;
+  const { transforms, action, params, keyBy, metadata, singular } = options;
 
   const item = applyTransforms(transforms, options, actionCreatorOptions, {
     ...ITEM,
     values,
     status: { type: SUCCESS, syncedAt: Date.now() },
-    projection
+    metadata
   });
 
   const normalizedParams = wrapInObject(params, keyBy);
@@ -133,12 +133,12 @@ function receiveResource(options, actionCreatorOptions, values) {
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function handleResourceError(options, actionCreatorOptions, httpCode, errorEnvelope) {
-  const { action, key, projection } = options;
+  const { action, key, metadata } = options;
 
   return {
     type: action,
     status: ERROR,
-    projection,
+    metadata,
     httpCode,
     key,
     ...errorEnvelope,
@@ -180,9 +180,9 @@ function reducer(resources, action) {
       /**
        * When a resource item is being fetched and that resource already exists in the store - i.e. we are
        * re-retrieving it from the external APi - then we persist the values already in the store and update the
-       * rest of the item's information, such as its state and projection.
+       * rest of the item's information, such as its state and metadata.
        *
-       * This allows use to move between projections of less data to more data (e.g. a PREVIEW to a FULL)
+       * This allows use to move between metadatas of less data to more data (e.g. a PREVIEW to a FULL)
        * without losing any attribute values we already have at any point in the resource's lifecycle. This is
        * useful when displaying a preview of a resource until all the values have arrived.
        */
@@ -206,7 +206,7 @@ function reducer(resources, action) {
 
       /**
        * When a resource item is being fetched and it does NOT already exist in the store, we simply take the
-       * entire set of attributes of the item (including its values, state and projection) and add them to the
+       * entire set of attributes of the item (including its values, state and metadata) and add them to the
        * store.
        */
 

@@ -33,7 +33,7 @@ const HTTP_REQUEST_TYPE = 'PUT';
  */
 function actionCreator(options, params, values, actionCreatorOptions = {}) {
   const {
-    action, transforms, url: urlTemplate, progress, keyBy, projection, requestAdaptor, request = {}
+    action, transforms, url: urlTemplate, progress, keyBy, metadata, requestAdaptor, request = {}
 , singular } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
@@ -52,7 +52,7 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
 
     dispatch(
       submitUpdateResource(
-        { transforms, action, key, projection, requestedAt },
+        { transforms, action, key, metadata, requestedAt },
         actionCreatorOptions,
         values,
         actionCreatorOptions
