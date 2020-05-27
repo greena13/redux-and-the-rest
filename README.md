@@ -1176,6 +1176,9 @@ The fetchList action creator supports the following options as its second argume
 | actionCreatorOptions | Type | Default value or required | Description |
 | :--- | :---: | :---: | :--- |
 | `request` | Object | { } | An object that [configures the HTTP request](#configuring-other-request-properties) made to fetch the list. |
+| `metadata` | Object | {}} | An object of attributes and values that describe the list's metadata. It can be used for containing information like page numbers, limits, offsets and includes for lists and types for items (previews, or the complete set of attributes of an item). |
+| `itemsMetadata` | Object | {}} | An object of attributes to apply to the metadata of each item in the list. |
+| `force` | boolean | false | Whether to ignore any outstanding requests with the same URL and make the request again, anyway |
 
 When the list is successfully fetched, the default fetchList reducer expects the server to respond with a JSON object containing an array of items' attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
@@ -1198,6 +1201,8 @@ The fetchItem action creator supports the following options as its second argume
 | actionCreatorOptions | Type | Default value or required | Description |
 | :--- | :---: | :---: | :--- |
 | `request` | Object | { } | An object that [configures the HTTP request](#configuring-other-request-properties) made to fetch the item. |
+| `metadata` | Object | {}} | An object of attributes and values that describe the list's metadata. It can be used for containing information like page numbers, limits, offsets and includes for lists and types for items (previews, or the complete set of attributes of an item). |
+| `force` | boolean | false | Whether to ignore any outstanding requests with the same URL and make the request again, anyway |
 
 When the item is successfully fetched, the default fetchItem reducer expects the server to respond with a JSON object containing resource's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
@@ -1255,7 +1260,10 @@ The updateItem action creator supports the following options as its third argume
 
 | actionCreatorOptions | Type | Default value or required | Description |
 | :--- | :---: | :---: | :--- |
-| `previous` | Object | undefined | The previous values, before the update. This is used to more efficiently update associations defined with `belongsTo` or `hasAndBelongsToMany`, but otherwise is generally not used. |
+| `request` | Object | { } | An object that [configures the HTTP request](#configuring-other-request-properties) made to fetch the item. |
+| `metadata` | Object | {}} | An object of attributes and values that describe the list's metadata. It can be used for containing information like page numbers, limits, offsets and includes for lists and types for items (previews, or the complete set of attributes of an item). |
+| `force` | boolean | false | Whether to ignore any outstanding requests with the same URL and make the request again, anyway |
+| `previousValues` | Object | undefined | The previous values, before the update. This is used to more efficiently update associations defined with `belongsTo` or `hasAndBelongsToMany`, but otherwise is generally not used. |
 
 When the item is successfully updated, the default updateItem reducer expects the server to respond with a JSON object containing resource's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
@@ -1277,7 +1285,9 @@ The destroyItem action creator supports the following options as its second argu
 
 | actionCreatorOptions | Type | Default value or required | Description |
 | :--- | :---: | :---: | :--- |
-| `previous` | Object | undefined | The previous values, before it was destroyed. This is used to more efficiently update associations defined with `belongsTo` or `hasAndBelongsToMany`, but otherwise is generally not used. |
+| `request` | Object | { } | An object that [configures the HTTP request](#configuring-other-request-properties) made to fetch the item. |
+| `force` | boolean | false | Whether to ignore any outstanding requests with the same URL and make the request again, anyway |
+| `previousValues` | Object | undefined | The previous values, before it was destroyed. This is used to more efficiently update associations defined with `belongsTo` or `hasAndBelongsToMany`, but otherwise is generally not used. |
 
 When the item is successfully destroyed, the default destroyItem reducer expects the server to respond a with a success response. If the request fails, it expects the server to respond with a JSON object containing an error.
 
@@ -1304,6 +1314,9 @@ The new action creator supports the following options as its third argument:
 
 | actionCreatorOptions | Type | Default value or required | Description |
 | :--- | :---: | :---: | :--- |
+| `request` | Object | { } | An object that [configures the HTTP request](#configuring-other-request-properties) made to fetch the item. |
+| `force` | boolean | false | Whether to ignore any outstanding requests with the same URL and make the request again, anyway |
+| `metadata` | Object | {}} | An object of attributes and values that describe the list's metadata. It can be used for containing information like page numbers, limits, offsets and includes for lists and types for items (previews, or the complete set of attributes of an item). |
 | `push` | Array | [ ] | An array of list keys to push the new item to the end of. |
 | `unshift` | Array | [ ] | An array of list keys to add the new item to the beginning of. |
 | `invalidate` | Array | [ ] | An array of list keys for which to clear (invalidate). This is useful for when you know the item that was just created is likely to appear in a list, but you don't know where, so you need to re-retrieve the whole list from the server. |

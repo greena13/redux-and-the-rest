@@ -18,13 +18,21 @@ const HTTP_REQUEST_TYPE = 'PUT';
  * Action creator thunk
  ***************************************************************************************************************/
 
+
+/**
+ * @typedef {RemoteActionCreatorOptionsWithMetadata} UpdateItemActionCreatorOptions
+ *
+ * @property {Object} [previousValues] The values of the resource item being updated, to allow more efficiently
+ *          updating associated items.
+ */
+
 /**
  * Redux action creator used for sending an UPDATE request to a RESTful API endpoint
  * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
  * @param {Object} values The attribute values to use to update the resource
- * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is
+ * @param {UpdateItemActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is
  *        called.
  * @param {ResourceValues} [actionCreatorOptions.previous={}] The values of the resource item that is being
  *        deleted, used to more efficiently remove the item from any associated resource lists it may
@@ -62,7 +70,7 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
     return makeRequest({
       ...options,
 
-      previousValues: actionCreatorOptions.previous,
+      previousValues: actionCreatorOptions.previousValues,
       url,
       key, keyBy,
       params: normalizedParams,

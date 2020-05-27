@@ -128,7 +128,7 @@ function updateHasManyAssociation(resources, { key, type, status, item: associat
       assertInDevMode(() => {
         warn(
           `${type} did not specify any previous values. This makes updating '${name}.${keyName}' much ` +
-          'less efficient. Provide the values of the item you are destroying as the third argument to updateItem().'
+          'less efficient. Use the previousValues option for updateItem() to specify these values.'
         );
       });
 
@@ -189,7 +189,7 @@ function removeDestroyedHasManyAssociation(resources, { key, type, status, previ
         assertInDevMode(() => {
           warn(
             `${type} did not specify any previous values. This makes updating '${name}.${keyName}' much less ` +
-            'efficient. Provide the values of the item you are destroying as the second argument to destroyItem().'
+            'efficient. Use the previousValues option for destroyItem() to specify these values.'
           );
         });
 

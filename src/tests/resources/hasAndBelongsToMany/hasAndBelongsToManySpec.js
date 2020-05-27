@@ -142,7 +142,7 @@ describe('hasAndBelongsToMany:', function () {
             this.store.dispatch(this.posts.actionCreators.updateItem(1, {
               title: 'Post 1',
               userId: 2
-            }, { previous: {
+            }, { previousValues: {
                 title: 'Post 1',
                 userId: 1
               }
@@ -176,7 +176,7 @@ describe('hasAndBelongsToMany:', function () {
             this.store.dispatch(this.posts.actionCreators.updateItem(1, {
               title: 'Post 1',
               userId: 2
-            }, { previous: {
+            }, { previousValues: {
                 title: 'Post 1',
                 userId: 1
               }
@@ -255,7 +255,7 @@ describe('hasAndBelongsToMany:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: UPDATE_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the third argument to updateItem().'
+              'Redux and the REST: UPDATE_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Use the previousValues option for updateItem() to specify these values.'
             );
           });
 
@@ -371,7 +371,7 @@ describe('hasAndBelongsToMany:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: DESTROY_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the second argument to destroyItem().'
+              'Redux and the REST: DESTROY_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Use the previousValues option for destroyItem() to specify these values.'
             );
           });
 
@@ -526,7 +526,7 @@ describe('hasAndBelongsToMany:', function () {
             this.store.dispatch(this.posts.actionCreators.updateItem(1, {
               title: 'Post 1',
               userIds: [ 2 ]
-            }, { previous: {
+            }, { previousValues: {
                 title: 'Post 1',
                 userIds: [ 1 ]
               }
@@ -560,7 +560,7 @@ describe('hasAndBelongsToMany:', function () {
             this.store.dispatch(this.posts.actionCreators.updateItem(1, {
               title: 'Post 1',
               userIds: [ 2 ]
-            }, { previous: {
+            }, { previousValues: {
                 title: 'Post 1',
                 userIds: [ 1 ]
               }
@@ -639,7 +639,7 @@ describe('hasAndBelongsToMany:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: UPDATE_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the third argument to updateItem().'
+              'Redux and the REST: UPDATE_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Use the previousValues option for updateItem() to specify these values.'
             );
           });
 
@@ -756,7 +756,7 @@ describe('hasAndBelongsToMany:', function () {
           it('then displays a warning', function() {
             // eslint-disable-next-line no-console
             expect(console.warn).toHaveBeenCalledWith(
-              'Redux and the REST: DESTROY_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Provide the values of the item you are destroying as the second argument to destroyItem().'
+              'Redux and the REST: DESTROY_POST did not specify any previous values. This makes updating \'users.postIds\' much less efficient. Use the previousValues option for destroyItem() to specify these values.'
             );
           });
 

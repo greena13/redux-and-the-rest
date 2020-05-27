@@ -25,15 +25,28 @@ const HTTP_REQUEST_TYPE = 'POST';
  * Action creator thunk
  ***************************************************************************************************************/
 
+
+/**
+ * @typedef {RemoteActionCreatorOptionsWithMetadata} CreateItemActionCreatorOptions
+ *
+ * @property {Object} [previousValues] The values of the resource item being updated, to allow more efficiently
+ *          updating associated items.
+ * @property {string[]} [push=[]]  An array of list keys to push the new item to the end of.
+ * @property {string[]} [unshift=[]]  An array of list keys to add the new item to the beginning of.
+ * @property {string[]} [invalidate=[]]  An array of list keys for which to clear (invalidate). This is useful
+ *           for when you know the item that was just created is likely to appear in a list, but you don't know
+ *           where, so you need to re-retrieve the whole list from the server.
+ */
+
 /**
  * Redux action creator used for sending a CREATE request to a RESTful API endpoint
  * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} paramsOrValues The first argument which can either a string or object that is serialized
  *        and used to fill in the dynamic parameters of the resource's URL (params) or the attribute values to
  *        use to create the resource.
- * @param {Object|ActionCreatorOptions} valuesOrActionCreatorOptions Either be the values used by the action
+ * @param {Object|CreateItemActionCreatorOptions} valuesOrActionCreatorOptions Either be the values used by the action
  *        creator, or addition options passed to the action creator when it is called.
- * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
+ * @param {CreateItemActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
  * @returns {Thunk} Function to call to dispatch an action
  */
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {

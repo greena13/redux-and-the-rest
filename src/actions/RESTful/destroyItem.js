@@ -20,13 +20,20 @@ const HTTP_REQUEST_TYPE = 'DELETE';
  ***************************************************************************************************************/
 
 /**
+ * @typedef {RemoteActionCreatorOptions} DestroyItemActionCreatorOptions
+ *
+ * @property {Object} [previousValues] The values of the resource item being destroyed, to allow more efficiently
+ *          updating associated items.
+ */
+
+/**
  * Redux action creator used for destroying a resource item by making a DELETE request to a RESTful API endpoint
  * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
- * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is
+ * @param {DestroyItemActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is
  *        called.
- * @param {ResourceValues} [actionCreatorOptions.previous={}] The values of the resource item that is being
+ * @param {ResourceValues} [actionCreatorOptions.previousValues={}] The values of the resource item that is being
  *        deleted, used to more efficiently remove the item from any associated resource lists it may
  *        appear in.
  * @returns {Thunk} Function to call to dispatch an action
@@ -61,7 +68,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
       ...options,
 
       url, key,
-      previousValues: actionCreatorOptions.previous,
+      previousValues: actionCreatorOptions.previousValues,
       requestedAt,
       dispatch,
       request: {

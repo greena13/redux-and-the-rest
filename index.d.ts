@@ -153,14 +153,10 @@ export interface ResourceItemStatus<T> extends ResourceStatus {
     originalValues?: T
 }
 
-interface MetadataRequired {
-    type: string
-}
-
 /**
  * Information about the type of metadata the resource item or list represents
  */
-export interface Metadata extends MetadataRequired {
+export interface Metadata {
     [extraValues: string]: any
 }
 
@@ -240,336 +236,6 @@ export interface ResourcesReduxState<T> {
 }
 
 /**
- * Returns an item of a particular resource item from a Redux store, removing any structure used implicitly.
- */
-export interface GetItemFunction<T> { (currentState: ResourcesReduxState<T>, params: ItemOrListParameters): ResourcesItem<T> }
-
-/**
- * Returns an item of a particular resource from a Redux store. If the item is not available in the store,
- * an empty item is returned immediately and the fetch action creator is called to update the store and
- * request the resource item from an external API.
- * @param currentState The current resource Redux store state
- * @param params The params to serialize to use as the key to find the resource list.
- * @param actionCreatorOptions The options to pass to the fetch action creator if it's called.
- * @returns The resource item if it's in the store, or an empty item.
- */
-export interface GetOrFetchItemFunction<T> { (currentState: ResourcesReduxState<T>, params: ItemOrListParameters, actionCreatorOptions?: object): ResourcesItem<T> }
-
-/**
- * Returns a list of a particular resource from a Redux store, populating it with the correct items, in
- * the right order.
- */
-export interface GetListFunction<T> { (currentState: ResourcesReduxState<T>, params?: ItemOrListParameters): ResourcesList<T> }
-
-/**
- * Returns an list of a particular resource from a Redux store. If the list is not available in the store,
- * an empty list is returned immediately and the fetch action creator is called to update the store and
- * request the resource list from an external API.
- * @param currentState The current resource Redux store state
- * @param params The params to serialize to use as the key to find the resource list.
- * @param actionCreatorOptions The options to pass to the fetch action creator if it's called.
- * @returns The resource list if it's in the store, or an empty list.
- */
-export interface GetOrFetchListFunction<T> { (currentState: ResourcesReduxState<T>, params?: ItemOrListParameters, actionCreatorOptions?: object): ResourcesList<T> }
-
-/**
- * The type of Redux action that is emitted when that action occurs
- */
-export type ActionType = string;
-
-/**
- * Mapping between action names and their types
- */
-export type ActionDictionary = {[key: string]: ActionType };
-
-/**
- * Function that dispatches an AnyAction or an ThunkAction
- */
-export interface ActionCreatorFunction { (...args: any[]): ThunkAction<void, any, any, AnyAction> }
-
-/**
- * A dictionary of ActionCreatorFunctions indexed by their ActionCreatorName
- */
-export interface ResourcesActionCreatorDictionary<T> {
-    /**
-     * Redux action creator used for fetching a list or resources from an index RESTful API endpoint
-     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
-     *        of the resource's URL
-     * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
-     * @returns {ThunkAction} Function to call to dispatch an action
-     */
-    fetchList?: (params?: ItemOrListParameters, actionCreatorOptions?: FetchListActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
-
-    /**
-     * Redux action creator used for fetching a single resource item from a fetch RESTful API endpoint
-     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
-     *        of the resource's URL
-     * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
-     * @returns {ThunkAction} Function to call to dispatch an action
-     */
-    fetchItem?: (params?: ItemOrListParameters, actionCreatorOptions?: ActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
-
-    /**
-     * Redux action creator used for adding a new resource item to the Redux store WITHOUT sending it to a remote API
-     * (yet). This action is used for storing a new resource item locally before actually creating it
-     * (which sends the new attributes to the remote API).
-     * @param {ItemOrListParameters | Object} paramsOrValues The first argument which can either a string or object that is serialized
-     *        and used to fill in the dynamic parameters of the resource's URL (params) or the new attribute values
-     *        to merge into the exist ones of the new resource item, or to use to create the resource item for the
-     *        first time.
-     * @param {Object | ActionCreatorOptions} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
-     *        options passed to the action creator when it is called.
-     * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    newItem?: (paramsOrValues: ItemOrListParameters | T, valuesOrActionCreatorOptions?: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
-
-    /**
-     * Redux action creator used for clearing the new resource.
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    clearNewItem?: () => AnyAction,
-
-    /**
-     * Redux action creator used for editing the attributes of a new resource item (one that hasn't been saved to
-     * a remote API yet). This action is used for editing a resource item locally (perhaps across
-     * multiple stages or screens) before actually saving it (which sends the new attributes to the remote API).
-     * @param {ItemOrListParameters | Object} paramsOrValues The first argument which can either a string or object that is serialized
-     *        and used to fill in the dynamic parameters of the resource's URL (params) or the new attribute values
-     *        to merge into the exist ones of the new resource item.
-     * @param {Object|ActionCreatorOptions} valuesOrActionCreatorOptions Either the new attribute values to merge into the exist ones
-     *        of the new resource item, or addition options passed to the action creator when it is called.
-     * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    editNewItem?: (paramsOrValues: ItemOrListParameters | T, valuesOrActionCreatorOptions?: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
-
-    /**
-     * Redux action creator used for sending a CREATE request to a RESTful API endpoint
-     * @param {ItemOrListParameters | Object} paramsOrValues The first argument which can either a string
-     *        or object that is serialized and used to fill in the dynamic parameters of the resource's URL
-     *        (params) or the attribute values to use to create the resource.
-     * @param {Object|ActionCreatorOptions} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
-     *        options passed to the action creator when it is called.
-     * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
-     * @returns {ThunkAction} Function to call to dispatch an action
-     */
-    createItem?: (paramsOrValues: ItemOrListParameters | T , valuesOrActionCreatorOptions?: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
-
-    /**
-     * Redux action creator used for updating the attributes of a resource item WITHOUT sending those updated
-     * attributes to a remote API (yet). This action is used for editing a resource item locally (perhaps across
-     * multiple stages or screens) before actually updating it (which sends the new attributes to the remote API).
-     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in
-     *        the dynamic parameters of the resource's URL
-     * @param {Object} values The new attribute values to merge into the exist ones of the resource item.
-     * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    editItem?: (params: ItemOrListParameters, values: T, actionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
-
-    /**
-     * Redux action creator used for clearing the new resource.
-     * @param {ItemOrListParameters} params A string or object that is serialized and used to generate
-     *        the index of the resource item
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    clearItemEdit?: (params: ItemOrListParameters) => AnyAction,
-
-    /**
-     * Redux action creator used for sending an UPDATE request to a RESTful API endpoint
-     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill
-     *        in the dynamic parameters of the resource's URL
-     * @param {Object} values The attribute values to use to update the resource
-     * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
-     * @returns {ThunkAction} Function to call to dispatch an action
-     */
-    updateItem?: (params: ItemOrListParameters, values: T, actionCreatorOptions?: UpdateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
-
-    /**
-     * Redux action creator used for destroying a resource item by making a DELETE request to a RESTful API endpoint
-     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in
-     *        the dynamic parameters of the resource's URL
-     * @param {UpdateItemActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action
-     *        creator when it is called.
-     * @returns {ThunkAction} Function to call to dispatch an action
-     */
-    destroyItem?: (params: ItemOrListParameters, actionCreatorOptions?: UpdateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
-
-    /**
-     * Redux action creator used for clearing an item from the store
-     * @param {ItemOrListParameters} params A string or object that is serialized and used to find
-     *        the item to clear.
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    clearItem?: (params: ItemOrListParameters) => AnyAction,
-
-    /**
-     * Redux action creator used for clearing a list from the store
-     * @param {ItemOrListParameters} params A string or object that is serialized and used to find
-     *        the item to clear
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    clearList?: (params: ItemOrListParameters) => AnyAction,
-
-    /**
-     * Redux action creator used for resetting a resource back to empty
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    clearResource?: () => AnyAction,
-
-    /**
-     * Redux action creator used for selecting a resource item and replacing any already selected items
-     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in
-     *        the dynamic parameters of the resource's URL
-     * @param {SelectItemOptions} [actionCreatorOptions={}] The options passed to the action creator when
-     *         it is called.
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    selectItem?: (params: ItemOrListParameters, actionCreatorOptions?: SelectItemOptions) => AnyAction,
-
-    /**
-     * Redux action creator used for selecting a resource item and adding it to those already selected
-     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
-     *        of the resource's URL
-     * @param {SelectItemOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    selectAnotherItem?: (params: ItemOrListParameters, actionCreatorOptions?: SelectItemOptions) => AnyAction,
-
-    /**
-     * Redux action creator used for deselecting a selected resource item
-     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
-     *        of the resource's URL
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    deselectItem?: (params: ItemOrListParameters) => AnyAction,
-
-    /**
-     * Redux action creator used for clearing all of the selected resource items
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    clearSelectedItems?: () => AnyAction,
-}
-
-export interface SelectItemOptions {
-    /**
-     *  The value to store with the selection. By default it's the value, true, but can be any contextually
-     *  significant value.
-     */
-    value?: any
-}
-
-export interface UpdateItemActionCreatorOptions<T> extends ActionCreatorOptions<T> {
-    /**
-     * The values of the resource item that is being deleted, used to more efficiently remove the item
-     * from any associated resource lists it may appear in.
-     */
-    previous: T
-}
-
-export interface FetchListActionCreatorOptions<T> extends ActionCreatorOptions<T> {
-    /**
-     * The values of the resource item that is being deleted, used to more efficiently remove the item
-     * from any associated resource lists it may appear in.
-     */
-    previous: T,
-
-    /**
-     * Accepted only by fetchList and getOrFetchList, used to define the metadata of each
-     * item in the list (the metadata is applied to the list).
-     */
-    itemsMetadata?: Metadata
-}
-
-export interface SingularResourceActionCreatorDictionary<T> {
-    /**
-     * Redux action creator used for fetching a single resource item from a fetch RESTful API endpoint
-     * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
-     * @returns {ThunkAction} Function to call to dispatch an action
-     */
-    fetchItem?: (actionCreatorOptions?: ActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
-
-    /**
-     * Redux action creator used for adding a new resource item to the Redux store WITHOUT sending it to a remote API
-     * (yet). This action is used for storing a new resource item locally before actually creating it
-     * (which sends the new attributes to the remote API).
-     * @param {Object| ActionCreatorOptions} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
-     *        options passed to the action creator when it is called.
-     * @param {Object} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    newItem?: (valuesOrActionCreatorOptions?: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
-
-    /**
-     * Redux action creator used for clearing the new resource.
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    clearNewItem?: () => AnyAction,
-
-    /**
-     * Redux action creator used for editing the attributes of a new resource item (one that hasn't been saved to
-     * a remote API yet). This action is used for editing a resource item locally (perhaps across
-     * multiple stages or screens) before actually saving it (which sends the new attributes to the remote API).
-     * @param {Object} values The new attribute values to merge into the exist ones of the resource item.
-     * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    editNewItem?: (values: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
-
-    /**
-     * Redux action creator used for sending a CREATE request to a RESTful API endpoint
-     * @param {Object} values The values used by the action creator
-     * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
-     * @returns {ThunkAction} Function to call to dispatch an action
-     */
-    createItem?: (values: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
-
-    /**
-     * Redux action creator used for updating the attributes of a resource item WITHOUT sending those updated
-     * attributes to a remote API (yet). This action is used for editing a resource item locally (perhaps across
-     * multiple stages or screens) before actually updating it (which sends the new attributes to the remote API).
-     * @param {Object} values The new attribute values to merge into the exist ones of the resource item.
-     * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    editItem?: (values: T, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
-
-    /**
-     * Redux action creator used for clearing the new resource.
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    clearItemEdit?: () => AnyAction,
-
-    /**
-     * Redux action creator used for sending an UPDATE request to a RESTful API endpoint
-     * @param {Object} values The attribute values to use to update the resource
-     * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
-     * @returns {ThunkAction} Function to call to dispatch an action
-     */
-    updateItem?: (values: T, actionCreatorOptions?: ActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
-
-    /**
-     * Redux action creator used for destroying a resource item by making a DELETE request to a RESTful API endpoint
-     * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
-     * @returns {ThunkAction} Function to call to dispatch an action
-     */
-    destroyItem?: (actionCreatorOptions?: ActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
-
-    /**
-     * Redux action creator used for clearing an item from the store
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    clearItem?: () => AnyAction,
-
-    /**
-     * Redux action creator used for resetting a resource back to empty
-     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
-     */
-    clearResource?: () => AnyAction,
-}
-
-/**
  * Object for building and then returning an initial resource list state that can be passed to a Redux store
  * and work with the reducers returned by the resources() function
  */
@@ -591,14 +257,14 @@ export interface InitialListStateBuilder<T> {
      * @param ResourceMetadata The metadata to use for the list and all of its items if the
      *        list hasn't set its own.
      */
-    build: ({status: ResourceStatus, metadata: ResourceMetadata}) => ResourcesList<T>;
+    build: ({status: ResourceStatus, metadata: Metadata}) => ResourcesList<T>;
 
     /**
      * Generates a map of items indexed by their correct key
      * @param ResourceStatus The status to use for the items if the list or item hasn't set its own.
      * @param ResourceMetadata The metadata for the items if the list or item hasn't set its own.
      */
-    buildItems: ({status: ResourceStatus, metadata: ResourceMetadata}) => { [key: string]: ResourcesItem<T>; }
+    buildItems: ({status: ResourceStatus, metadata: Metadata}) => { [key: string]: ResourcesItem<T>; }
 
     /**
      * Sets the status of the initial state
@@ -619,7 +285,7 @@ export interface InitialListStateBuilder<T> {
      * @param ResourceStatusRequired The metadata object to set as the initial state
      * @returns itself to allow for chaining method calls
      */
-    setMetadata: (MetadataRequired) => InitialListStateBuilder<T>;
+    setMetadata: (Metadata) => InitialListStateBuilder<T>;
 }
 
 /**
@@ -633,7 +299,7 @@ export interface InitialItemStateBuilder<T> {
      * @param ResourceStatus The status to use for the item if it hasn't set its own.
      * @param ResourceMetadata The metadata for the item if it hasn't set its own.
      */
-    build: ({status: ResourceStatus, metadata: ResourceMetadata}) => ResourcesItem<T>;
+    build: ({status: ResourceStatus, metadata: Metadata}) => ResourcesItem<T>;
 
     /**
      * Sets the status of the initial state
@@ -707,7 +373,384 @@ export interface InitialResourceStateBuilder<T> {
      * @returns itself to allow for chaining method calls
      */
     setMetadata: (MetadataRequired) => InitialResourceStateBuilder<T>;
+}
 
+/**
+ * Returns an item of a particular resource item from a Redux store, removing any structure used implicitly.
+ */
+export interface GetItemFunction<T> { (currentState: ResourcesReduxState<T>, params: ItemOrListParameters): ResourcesItem<T> }
+
+/**
+ * Returns an item of a particular resource from a Redux store. If the item is not available in the store,
+ * an empty item is returned immediately and the fetch action creator is called to update the store and
+ * request the resource item from an external API.
+ * @param currentState The current resource Redux store state
+ * @param params The params to serialize to use as the key to find the resource list.
+ * @param actionCreatorOptions The options to pass to the fetch action creator if it's called.
+ * @returns The resource item if it's in the store, or an empty item.
+ */
+export interface GetOrFetchItemFunction<T> { (currentState: ResourcesReduxState<T>, params: ItemOrListParameters, actionCreatorOptions?: RemoteActionCreatorOptions<T>): ResourcesItem<T> }
+
+/**
+ * Returns a list of a particular resource from a Redux store, populating it with the correct items, in
+ * the right order.
+ */
+export interface GetListFunction<T> { (currentState: ResourcesReduxState<T>, params?: ItemOrListParameters): ResourcesList<T> }
+
+/**
+ * Returns an list of a particular resource from a Redux store. If the list is not available in the store,
+ * an empty list is returned immediately and the fetch action creator is called to update the store and
+ * request the resource list from an external API.
+ * @param currentState The current resource Redux store state
+ * @param params The params to serialize to use as the key to find the resource list.
+ * @param actionCreatorOptions The options to pass to the fetch action creator if it's called.
+ * @returns The resource list if it's in the store, or an empty list.
+ */
+export interface GetOrFetchListFunction<T> { (currentState: ResourcesReduxState<T>, params?: ItemOrListParameters, actionCreatorOptions?: FetchListActionCreatorOptions<T>): ResourcesList<T> }
+
+/**
+ * The type of Redux action that is emitted when that action occurs
+ */
+export type ActionType = string;
+
+/**
+ * Mapping between action names and their types
+ */
+export type ActionDictionary = {[key: string]: ActionType };
+
+/**
+ * Function that dispatches an AnyAction or an ThunkAction
+ */
+export interface ActionCreatorFunction { (...args: any[]): ThunkAction<void, any, any, AnyAction> }
+
+/**
+ * A dictionary of ActionCreatorFunctions indexed by their ActionCreatorName
+ */
+export interface ResourcesActionCreatorDictionary<T> {
+    /**
+     * Redux action creator used for fetching a list or resources from an index RESTful API endpoint
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
+     *        of the resource's URL
+     * @param {FetchListActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+     * @returns {ThunkAction} Function to call to dispatch an action
+     */
+    fetchList?: (params?: ItemOrListParameters, actionCreatorOptions?: FetchListActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+
+    /**
+     * Redux action creator used for fetching a single resource item from a fetch RESTful API endpoint
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
+     *        of the resource's URL
+     * @param {RemoteActionCreatorOptionsWithMetadata} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+     * @returns {ThunkAction} Function to call to dispatch an action
+     */
+    fetchItem?: (params?: ItemOrListParameters, actionCreatorOptions?: RemoteActionCreatorOptionsWithMetadata<T>) => ThunkAction<void, any, any, AnyAction>,
+
+    /**
+     * Redux action creator used for adding a new resource item to the Redux store WITHOUT sending it to a remote API
+     * (yet). This action is used for storing a new resource item locally before actually creating it
+     * (which sends the new attributes to the remote API).
+     * @param {ItemOrListParameters | Object} paramsOrValues The first argument which can either a string or object that is serialized
+     *        and used to fill in the dynamic parameters of the resource's URL (params) or the new attribute values
+     *        to merge into the exist ones of the new resource item, or to use to create the resource item for the
+     *        first time.
+     * @param {Object | ActionCreatorOptions} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
+     *        options passed to the action creator when it is called.
+     * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    newItem?: (paramsOrValues: ItemOrListParameters | T, valuesOrActionCreatorOptions?: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
+
+    /**
+     * Redux action creator used for clearing the new resource.
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    clearNewItem?: () => AnyAction,
+
+    /**
+     * Redux action creator used for editing the attributes of a new resource item (one that hasn't been saved to
+     * a remote API yet). This action is used for editing a resource item locally (perhaps across
+     * multiple stages or screens) before actually saving it (which sends the new attributes to the remote API).
+     * @param {ItemOrListParameters | Object} paramsOrValues The first argument which can either a string or object that is serialized
+     *        and used to fill in the dynamic parameters of the resource's URL (params) or the new attribute values
+     *        to merge into the exist ones of the new resource item.
+     * @param {Object|ActionCreatorOptions} valuesOrActionCreatorOptions Either the new attribute values to merge into the exist ones
+     *        of the new resource item, or addition options passed to the action creator when it is called.
+     * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    editNewItem?: (paramsOrValues: ItemOrListParameters | T, valuesOrActionCreatorOptions?: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
+
+    /**
+     * Redux action creator used for sending a CREATE request to a RESTful API endpoint
+     * @param {ItemOrListParameters | Object} paramsOrValues The first argument which can either a string
+     *        or object that is serialized and used to fill in the dynamic parameters of the resource's URL
+     *        (params) or the attribute values to use to create the resource.
+     * @param {Object|CreateItemActionCreatorOptions} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
+     *        options passed to the action creator when it is called.
+     * @param {CreateItemActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
+     * @returns {ThunkAction} Function to call to dispatch an action
+     */
+    createItem?: (paramsOrValues: ItemOrListParameters | T , valuesOrActionCreatorOptions?: T | CreateItemActionCreatorOptions<T>, optionalActionCreatorOptions?: CreateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+
+    /**
+     * Redux action creator used for updating the attributes of a resource item WITHOUT sending those updated
+     * attributes to a remote API (yet). This action is used for editing a resource item locally (perhaps across
+     * multiple stages or screens) before actually updating it (which sends the new attributes to the remote API).
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in
+     *        the dynamic parameters of the resource's URL
+     * @param {Object} values The new attribute values to merge into the exist ones of the resource item.
+     * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    editItem?: (params: ItemOrListParameters, values: T, actionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
+
+    /**
+     * Redux action creator used for clearing the new resource.
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to generate
+     *        the index of the resource item
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    clearItemEdit?: (params: ItemOrListParameters) => AnyAction,
+
+    /**
+     * Redux action creator used for sending an UPDATE request to a RESTful API endpoint
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill
+     *        in the dynamic parameters of the resource's URL
+     * @param {Object} values The attribute values to use to update the resource
+     * @param {UpdateItemActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+     * @returns {ThunkAction} Function to call to dispatch an action
+     */
+    updateItem?: (params: ItemOrListParameters, values: T, actionCreatorOptions?: UpdateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+
+    /**
+     * Redux action creator used for destroying a resource item by making a DELETE request to a RESTful API endpoint
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in
+     *        the dynamic parameters of the resource's URL
+     * @param {DestroyItemActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action
+     *        creator when it is called.
+     * @returns {ThunkAction} Function to call to dispatch an action
+     */
+    destroyItem?: (params: ItemOrListParameters, actionCreatorOptions?: DestroyItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+
+    /**
+     * Redux action creator used for clearing an item from the store
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to find
+     *        the item to clear.
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    clearItem?: (params: ItemOrListParameters) => AnyAction,
+
+    /**
+     * Redux action creator used for clearing a list from the store
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to find
+     *        the item to clear
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    clearList?: (params: ItemOrListParameters) => AnyAction,
+
+    /**
+     * Redux action creator used for resetting a resource back to empty
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    clearResource?: () => AnyAction,
+
+    /**
+     * Redux action creator used for selecting a resource item and replacing any already selected items
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in
+     *        the dynamic parameters of the resource's URL
+     * @param {SelectItemOptions} [actionCreatorOptions={}] The options passed to the action creator when
+     *         it is called.
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    selectItem?: (params: ItemOrListParameters, actionCreatorOptions?: SelectItemOptions) => AnyAction,
+
+    /**
+     * Redux action creator used for selecting a resource item and adding it to those already selected
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
+     *        of the resource's URL
+     * @param {SelectItemOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    selectAnotherItem?: (params: ItemOrListParameters, actionCreatorOptions?: SelectItemOptions) => AnyAction,
+
+    /**
+     * Redux action creator used for deselecting a selected resource item
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
+     *        of the resource's URL
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    deselectItem?: (params: ItemOrListParameters) => AnyAction,
+
+    /**
+     * Redux action creator used for clearing all of the selected resource items
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    clearSelectedItems?: () => AnyAction,
+}
+
+export interface SingularResourceActionCreatorDictionary<T> {
+    /**
+     * Redux action creator used for fetching a single resource item from a fetch RESTful API endpoint
+     * @param {RemoteActionCreatorOptionsWithMetadata} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+     * @returns {ThunkAction} Function to call to dispatch an action
+     */
+    fetchItem?: (actionCreatorOptions?: RemoteActionCreatorOptionsWithMetadata<T>) => ThunkAction<void, any, any, AnyAction>,
+
+    /**
+     * Redux action creator used for adding a new resource item to the Redux store WITHOUT sending it to a remote API
+     * (yet). This action is used for storing a new resource item locally before actually creating it
+     * (which sends the new attributes to the remote API).
+     * @param {Object| ActionCreatorOptions} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
+     *        options passed to the action creator when it is called.
+     * @param {Object} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    newItem?: (valuesOrActionCreatorOptions?: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
+
+    /**
+     * Redux action creator used for clearing the new resource.
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    clearNewItem?: () => AnyAction,
+
+    /**
+     * Redux action creator used for editing the attributes of a new resource item (one that hasn't been saved to
+     * a remote API yet). This action is used for editing a resource item locally (perhaps across
+     * multiple stages or screens) before actually saving it (which sends the new attributes to the remote API).
+     * @param {Object} values The new attribute values to merge into the exist ones of the resource item.
+     * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    editNewItem?: (values: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
+
+    /**
+     * Redux action creator used for sending a CREATE request to a RESTful API endpoint
+     * @param {Object} values The values used by the action creator
+     * @param {CreateItemActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
+     * @returns {ThunkAction} Function to call to dispatch an action
+     */
+    createItem?: (values: T | CreateItemActionCreatorOptions<T>, optionalActionCreatorOptions?: CreateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+
+    /**
+     * Redux action creator used for updating the attributes of a resource item WITHOUT sending those updated
+     * attributes to a remote API (yet). This action is used for editing a resource item locally (perhaps across
+     * multiple stages or screens) before actually updating it (which sends the new attributes to the remote API).
+     * @param {Object} values The new attribute values to merge into the exist ones of the resource item.
+     * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    editItem?: (values: T, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
+
+    /**
+     * Redux action creator used for clearing the new resource.
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    clearItemEdit?: () => AnyAction,
+
+    /**
+     * Redux action creator used for sending an UPDATE request to a RESTful API endpoint
+     * @param {Object} values The attribute values to use to update the resource
+     * @param {UpdateItemActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+     * @returns {ThunkAction} Function to call to dispatch an action
+     */
+    updateItem?: (values: T, actionCreatorOptions?: UpdateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+
+    /**
+     * Redux action creator used for destroying a resource item by making a DELETE request to a RESTful API endpoint
+     * @param {DestroyItemActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+     * @returns {ThunkAction} Function to call to dispatch an action
+     */
+    destroyItem?: (actionCreatorOptions?: DestroyItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+
+    /**
+     * Redux action creator used for clearing an item from the store
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    clearItem?: () => AnyAction,
+
+    /**
+     * Redux action creator used for resetting a resource back to empty
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    clearResource?: () => AnyAction,
+}
+
+interface ActionAndActionCreatorSharedOptions<T> {
+    /**
+     * The request configuration object to be passed to the fetch method, or the new XMLHttpRequest object,
+     * when the progress option is used.
+     */
+    request?: Object,
+}
+
+export interface SelectItemOptions {
+    /**
+     *  The value to store with the selection. By default it's the value, true, but can be any contextually
+     *  significant value.
+     */
+    value?: any
+}
+
+export interface ActionCreatorOptions<T> extends ActionAndActionCreatorSharedOptions<T>{
+
+}
+
+export interface RemoteActionCreatorOptions<T> extends ActionCreatorOptions<T> {
+    /**
+     * Whether to ignore any outstanding requests with the same URL and make the request again, anyway
+     */
+   force?: boolean,
+}
+
+export interface RemoteActionCreatorOptionsWithMetadata<T> extends RemoteActionCreatorOptions<T> {
+    /**
+     * An object of attributes and values that describe the list's metadata. It can be used for
+     * containing information like page numbers, limits, offsets and includes for lists and types
+     * for items (previews, or the complete set of attributes of an item).
+     */
+    metadata?: Object,
+}
+
+export interface FetchListActionCreatorOptions<T> extends RemoteActionCreatorOptionsWithMetadata<T> {
+    /**
+     * Defines the metadata of each item in the list (the metadata is applied to the list).
+     */
+    itemsMetadata?: Object
+}
+
+export interface UpdateItemActionCreatorOptions<T> extends RemoteActionCreatorOptionsWithMetadata<T> {
+    /**
+     * The values of the resource item being updated, to allow more efficiently updating associated
+     * items.
+     */
+    previousValues?: T,
+}
+
+export interface CreateItemActionCreatorOptions<T> extends RemoteActionCreatorOptionsWithMetadata<T> {
+    /**
+     * A An array of list keys to push the new item to the end of.
+     */
+    push?: Array<string>,
+
+    /**
+     * A An array of list keys to add the new item to the beginning of.
+     */
+    unshift?: Array<string>,
+
+    /**
+     * A An array of list keys for which to clear (invalidate). This is useful for when you know the item
+     * that was just created is likely to appear in a list, but you don't know where, so you need to
+     * re-retrieve the whole list from the server.
+     */
+    invalidate?: Array<string>,
+}
+
+export interface DestroyItemActionCreatorOptions<T> extends RemoteActionCreatorOptions<T> {
+    /**
+     * The values of the resource item being destroyed, to allow more efficiently updating associated
+     * items.
+     */
+    previousValues?: T,
 }
 
 interface ResourceDefinitionCommon<T> {
@@ -879,12 +922,23 @@ export interface ResourceOptions<T> extends GlobalConfigurationOptions {
     belongsTo?: AssociationOptions<T>,
 }
 
-interface ActionAndActionCreatorSharedOptions<T> {
+/**
+ * Options used to configure individual resource actions and override any options specified in GlobalOptions
+ * or ResourceOptions.
+ */
+export interface ActionDefinitionOptions<T> extends ActionAndActionCreatorSharedOptions<T>{
     /**
      * The resource attribute used to key/index all items of the current resource type. This will be the value
      * you pass to each action creator to identify the target of each action. By default, 'id' is used.
      */
     keyBy?: string | Array<string>,
+
+    /**
+     * Set to true for resources that should be edited locally, only. The fetch and fetchList actions are disabled
+     * (the fetch* action creators are not exported) and the createItem, updateItem and destroyItem only update the store
+     * locally, without making any HTTP requests.
+     */
+    localOnly?: boolean,
 
     /**
      * A url template that is used for the action. The template string can include required url parameters by
@@ -918,25 +972,6 @@ interface ActionAndActionCreatorSharedOptions<T> {
     requestAdaptor?: (requestBody: T) => Object,
 
     /**
-     * Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the
-     * request only if it's on the same origin.
-     */
-    credentials?: RequestCredentials,
-
-    /**
-     * The request configuration object to be passed to the fetch method, or the new XMLHttpRequest object,
-     * when the progress option is used.
-     */
-    request?: Object,
-
-    /**
-     * A custom reducer function to adapt the resource as it exists in the Redux store. By default, the
-     * standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful
-     * actions.
-     */
-    reducer?: Reducer,
-
-    /**
      * A list of functions to call before passing the resource to the reducer. This is useful if you want to
      * use the default reducer, but provide some additional pre-processing to standardise the resource before
      * it is added to the store.A list of functions to call before passing the resource to the reducer. This
@@ -951,31 +986,19 @@ interface ActionAndActionCreatorSharedOptions<T> {
      * before it is added to the store.
      */
     afterReducers?: Array<Reducer>,
-}
 
-/**
- * Options used to customise behaviour for a specific action creator call
- */
-export interface ActionCreatorOptions<T> extends ActionAndActionCreatorSharedOptions<T>{
     /**
-     * An object of attributes and values that describe the list's metadata. It can be used for
-     * containing information like page numbers, limits, offsets and includes for lists and types
-     * for items (previews, or the complete set of attributes of an item).
+     * A custom reducer function to adapt the resource as it exists in the Redux store. By default, the
+     * standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful
+     * actions.
      */
-    metadata?: Metadata,
-}
+    reducer?: Reducer,
 
-/**
- * Options used to configure individual resource actions and override any options specified in GlobalOptions
- * or ResourceOptions.
- */
-export interface ActionDefinitionOptions<T> extends ActionAndActionCreatorSharedOptions<T>{
     /**
-     * Set to true for resources that should be edited locally, only. The fetch and fetchList actions are disabled
-     * (the fetch* action creators are not exported) and the createItem, updateItem and destroyItem only update the store
-     * locally, without making any HTTP requests.
+     * Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the
+     * request only if it's on the same origin.
      */
-    localOnly?: boolean,
+    credentials?: RequestCredentials,
 }
 
 export type ActionOptionsMap<T> = { [key: string]: ActionDefinitionOptions<T> | Boolean };

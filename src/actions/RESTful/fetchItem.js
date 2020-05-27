@@ -21,7 +21,7 @@ const HTTP_REQUEST_TYPE = 'GET';
  * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
- * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+ * @param {RemoteActionCreatorOptionsWithMetadata} [actionCreatorOptions={}] The options passed to the action creator when it is called.
  * @returns {Thunk} Function to call to dispatch an action
  */
 function actionCreator(options, params, actionCreatorOptions = {}) {
@@ -32,7 +32,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
   const normalizedParams = wrapInObject(params, keyBy);
   const url = generateUrl({ urlTemplate }, normalizedParams);
 
-  if (actionCreatorOptions.force || isRequestInProgress(HTTP_REQUEST_TYPE, url)) {
+  if (!actionCreatorOptions.force && isRequestInProgress(HTTP_REQUEST_TYPE, url)) {
     return nop;
   } else {
     registerRequestStart(HTTP_REQUEST_TYPE, url);
