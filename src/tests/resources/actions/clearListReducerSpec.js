@@ -8,12 +8,12 @@ import EmptyKey from '../../../constants/EmptyKey';
 
 const RESOURCE_NAME = 'users';
 
-describe('Clear collection reducer:', function () {
+describe('Clear list reducer:', function () {
   beforeAll(function () {
-    const { reducers, actionCreators: { clearCollection: clearUsers } } = resources({
+    const { reducers, actionCreators: { clearList: clearUsers } } = resources({
       name: RESOURCE_NAME,
     }, {
-      clearCollection: true
+      clearList: true
     });
 
     this.clearUsers = clearUsers;
@@ -34,7 +34,7 @@ describe('Clear collection reducer:', function () {
           },
         }
       },
-      collections: {
+      lists: {
         [EmptyKey]: {
           positions: [ 1 ],
           status: { type: SUCCESS }
@@ -43,7 +43,7 @@ describe('Clear collection reducer:', function () {
     };
   });
 
-  describe('Given the user attempts to clear a resource collection that isn\'t in the store', function () {
+  describe('Given the user attempts to clear a resource list that isn\'t in the store', function () {
     beforeAll(function () {
       setupInitialState(this, RESOURCE_NAME, this.initialState, 100);
     });
@@ -53,17 +53,17 @@ describe('Clear collection reducer:', function () {
     });
   });
 
-  describe('Given the user attempts to clear a resource collection in the store', function () {
+  describe('Given the user attempts to clear a resource list in the store', function () {
     beforeAll(function () {
       setupInitialState(this, RESOURCE_NAME, this.initialState, EmptyKey);
     });
 
-    it('then clears the collection', function () {
-      expect(resourcesDefinition(this, RESOURCE_NAME).collections[EmptyKey]).toEqual(undefined);
+    it('then clears the list', function () {
+      expect(resourcesDefinition(this, RESOURCE_NAME).lists[EmptyKey]).toEqual(undefined);
     });
   });
 
-  function setupInitialState(context, resourcesName, initialState, collectionId) {
+  function setupInitialState(context, resourcesName, initialState, listId) {
     context.store = buildStore({
       [resourcesName]: {
         ...initialState,
@@ -71,6 +71,6 @@ describe('Clear collection reducer:', function () {
       }
     }, { [resourcesName]: context.reducers } );
 
-    context.store.dispatch(context.clearUsers(collectionId));
+    context.store.dispatch(context.clearUsers(listId));
   }
 });

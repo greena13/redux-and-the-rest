@@ -2,12 +2,12 @@ import fetchMock from 'fetch-mock';
 import { resources, ERROR, FETCHING, SUCCESS, RESOURCES } from '../../../index';
 import nop from '../../../utils/function/nop';
 import {
-  expectToChangeResourceCollectionPositionsTo,
-  expectToChangeResourceCollectionStatusTo,
-  expectToChangeResourcesCollectionStatusErrorOccurredAtToBeSet,
+  expectToChangeResourceListPositionsTo,
+  expectToChangeResourceListStatusTo,
+  expectToChangeResourcesListStatusErrorOccurredAtToBeSet,
   expectToChangeResourcesItemStatusTo,
-  expectToChangeResourcesItemValuesTo, expectToClearResourcesCollectionStatus,
-  expectToNotChangeResourceCollectionPositions,
+  expectToChangeResourcesItemValuesTo, expectToClearResourcesListStatus,
+  expectToNotChangeResourceListPositions,
   expectToNotChangeResourcesItemStatus, expectToNotChangeResourcesItemValues,
   resourcesDefinition,
   setupInitialState
@@ -16,14 +16,14 @@ import EmptyKey from '../../../constants/EmptyKey';
 
 const RESOURCE_NAME = 'users';
 
-describe('fetchCollection reducers:', function () {
+describe('fetchList reducers:', function () {
   beforeAll(function() {
-    const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
+    const { reducers, actionCreators: { fetchList: fetchUsers } } = resources({
       name: 'users',
       url: 'http://test.com/users/:id?',
       keyBy: 'id',
     }, {
-      fetchCollection: true
+      fetchList: true
     });
 
     this.fetchUsers = fetchUsers;
@@ -32,18 +32,18 @@ describe('fetchCollection reducers:', function () {
 
   describe('Given no actions have come before it', () => {
     describe('When the action creator is not passed any params', function(){
-      expectToHandleSuccessAndFailure({ url: 'http://test.com/users', collectionId: EmptyKey });
+      expectToHandleSuccessAndFailure({ url: 'http://test.com/users', listId: EmptyKey });
     });
 
     describe('When the action creator is not passed params', function(){
-      expectToHandleSuccessAndFailure({ url: 'http://test.com/users/newest', params: 'newest', collectionId: 'newest' });
+      expectToHandleSuccessAndFailure({ url: 'http://test.com/users/newest', params: 'newest', listId: 'newest' });
     });
   });
 
   describe('Given an INDEX action has come before it', function() {
     beforeAll(function () {
       this.itemId = 1;
-      this.collectionId = EmptyKey;
+      this.listId = EmptyKey;
 
       this.initialState = {
         items: {
@@ -55,7 +55,7 @@ describe('fetchCollection reducers:', function () {
             status: { type: SUCCESS }
           }
         },
-        collections: {
+        lists: {
           [EmptyKey]: {
             positions: [ this.itemId ],
             status: { type: SUCCESS, itemsInLastResponse: 1 }
@@ -73,15 +73,15 @@ describe('fetchCollection reducers:', function () {
         tearDown(this);
       });
 
-      it('then sets the collection\'s status to fetching', function() {
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, this.collectionId, 'type', FETCHING);
+      it('then sets the list\'s status to fetching', function() {
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, this.listId, 'type', FETCHING);
       });
 
-      it('then does NOT clear the collection\'s positions', function() {
-        expectToNotChangeResourceCollectionPositions(this, RESOURCE_NAME, this.collectionId);
+      it('then does NOT clear the list\'s positions', function() {
+        expectToNotChangeResourceListPositions(this, RESOURCE_NAME, this.listId);
       });
 
-      it('then does NOT clear the collection\'s items', function() {
+      it('then does NOT clear the list\'s items', function() {
         expectToNotChangeResourcesItemStatus(this, RESOURCE_NAME, this.itemId);
         expectToNotChangeResourcesItemValues(this, RESOURCE_NAME, this.itemId);
       });
@@ -98,18 +98,18 @@ describe('fetchCollection reducers:', function () {
         tearDown(this);
       });
 
-      it('then changes the collection\'s status type to SUCCESS', function() {
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, this.collectionId, 'type', SUCCESS);
+      it('then changes the list\'s status type to SUCCESS', function() {
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, this.listId, 'type', SUCCESS);
       });
 
-      it('then replaces the item keys in the collection\'s positions with the new ones', function() {
-        expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, this.collectionId,
+      it('then replaces the item keys in the list\'s positions with the new ones', function() {
+        expectToChangeResourceListPositionsTo(this, RESOURCE_NAME, this.listId,
           this.newValues.map(({ id }) => id)
         );
       });
 
       it('then sets the itemsInLastResponse attribute', function () {
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, this.collectionId, 'itemsInLastResponse', this.newValues.length);
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, this.listId, 'itemsInLastResponse', this.newValues.length);
       });
 
       it('then adds items returned in the response not already in the store', function() {
@@ -139,23 +139,23 @@ describe('fetchCollection reducers:', function () {
         tearDown(this);
       });
 
-      it('then changes the collection\'s status to ERROR', function() {
-        expect(this.store.getState().users.collections[EmptyKey].status.type).toEqual(ERROR);
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, this.collectionId, 'type', ERROR);
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, this.collectionId, 'httpCode', this.options.status);
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, this.collectionId, 'error', { message: this.options.body.error });
+      it('then changes the list\'s status to ERROR', function() {
+        expect(this.store.getState().users.lists[EmptyKey].status.type).toEqual(ERROR);
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, this.listId, 'type', ERROR);
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, this.listId, 'httpCode', this.options.status);
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, this.listId, 'error', { message: this.options.body.error });
       });
 
       it('then sets the syncedAt attribute', function() {
-        expectToChangeResourcesCollectionStatusErrorOccurredAtToBeSet(this, RESOURCE_NAME, this.collectionId);
+        expectToChangeResourcesListStatusErrorOccurredAtToBeSet(this, RESOURCE_NAME, this.listId);
       });
 
       it('then sets the itemsInLastResponse attribute to undefined', function () {
-        expectToClearResourcesCollectionStatus(this, RESOURCE_NAME, this.collectionId, 'itemsInLastResponse');
+        expectToClearResourcesListStatus(this, RESOURCE_NAME, this.listId, 'itemsInLastResponse');
       });
 
-      it('then does NOT change the collection\'s positions', function() {
-        expectToNotChangeResourceCollectionPositions(this, RESOURCE_NAME, this.collectionId);
+      it('then does NOT change the list\'s positions', function() {
+        expectToNotChangeResourceListPositions(this, RESOURCE_NAME, this.listId);
       });
 
       it('then does NOT update any of the items', function() {
@@ -167,7 +167,7 @@ describe('fetchCollection reducers:', function () {
   describe('Given a SHOW action has come before it', function () {
     beforeAll(function () {
       this.itemId = 1;
-      this.collectionId = EmptyKey;
+      this.listId = EmptyKey;
 
       this.initialState = {
         items: {
@@ -179,7 +179,7 @@ describe('fetchCollection reducers:', function () {
             status: { type: SUCCESS }
           }
         },
-        collections: {}
+        lists: {}
       };
     });
 
@@ -192,7 +192,7 @@ describe('fetchCollection reducers:', function () {
         tearDown(this);
       });
 
-      it('then does NOT clear the collection\'s items', function() {
+      it('then does NOT clear the list\'s items', function() {
         expectToNotChangeResourcesItemValues(this, RESOURCE_NAME, this.itemId);
       });
     });
@@ -245,7 +245,7 @@ describe('fetchCollection reducers:', function () {
     });
   });
 
-  describe('Given an fetchCollection action that will succeed with a response that specifies \'error\' at the top level', () => {
+  describe('Given an fetchList action that will succeed with a response that specifies \'error\' at the top level', () => {
     describe('when the request has completed', () => {
       beforeAll(function () {
         this.options = {
@@ -253,7 +253,7 @@ describe('fetchCollection reducers:', function () {
           status: 200
         };
 
-        this.collectionId = EmptyKey;
+        this.listId = EmptyKey;
 
         setUpAfterRequestFailure(this, this.initialState, 'http://test.com/users', undefined, this.options);
       });
@@ -262,14 +262,14 @@ describe('fetchCollection reducers:', function () {
         tearDown(this);
       });
 
-      it('then sets the errors of the collection', function() {
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, this.collectionId, 'error', this.options.body.error);
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, this.collectionId, 'errors', [this.options.body.error]);
+      it('then sets the errors of the list', function() {
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, this.listId, 'error', this.options.body.error);
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, this.listId, 'errors', [this.options.body.error]);
       });
     });
   });
 
-  describe('Given an fetchCollection action that will fail with a response that specifies \'errors\' at the top level', () => {
+  describe('Given an fetchList action that will fail with a response that specifies \'errors\' at the top level', () => {
     describe('when the request has completed', () => {
       beforeAll(function () {
         this.options = {
@@ -277,7 +277,7 @@ describe('fetchCollection reducers:', function () {
           status: 200
         };
 
-        this.collectionId = EmptyKey;
+        this.listId = EmptyKey;
 
         setUpAfterRequestFailure(this, this.initialState, 'http://test.com/users', undefined, this.options);
       });
@@ -286,14 +286,14 @@ describe('fetchCollection reducers:', function () {
         tearDown(this);
       });
 
-      it('then sets the errors of the collection', function() {
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, this.collectionId, 'error', this.options.body.errors[0]);
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, this.collectionId, 'errors', this.options.body.errors);
+      it('then sets the errors of the list', function() {
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, this.listId, 'error', this.options.body.errors[0]);
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, this.listId, 'errors', this.options.body.errors);
       });
     });
   });
 
-  function expectToHandleSuccessAndFailure({ url, initialState = { ...RESOURCES }, params, collectionId }) {
+  function expectToHandleSuccessAndFailure({ url, initialState = { ...RESOURCES }, params, listId }) {
     describe('and is not yet completed', function () {
       beforeAll(function () {
         setUpBeforeRequest(this, initialState, url, params);
@@ -303,13 +303,13 @@ describe('fetchCollection reducers:', function () {
         tearDown(this);
       });
 
-      it('then adds a default collection with a status type of fetching', function () {
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, collectionId, 'type', FETCHING);
+      it('then adds a default list with a status type of fetching', function () {
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, listId, 'type', FETCHING);
       });
 
-      it('then adds a default collection with an empty list of positions', function () {
-        expect(this.store.getState().users.collections[collectionId].positions).toEqual([]);
-        expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, collectionId, []);
+      it('then adds a default list with an empty list of positions', function () {
+        expect(this.store.getState().users.lists[listId].positions).toEqual([]);
+        expectToChangeResourceListPositionsTo(this, RESOURCE_NAME, listId, []);
       });
     });
 
@@ -326,16 +326,16 @@ describe('fetchCollection reducers:', function () {
         tearDown(this);
       });
 
-      it('then changes the collection\'s status type to SUCCESS', function () {
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, collectionId, 'type', SUCCESS);
+      it('then changes the list\'s status type to SUCCESS', function () {
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, listId, 'type', SUCCESS);
       });
 
       it('then sets the itemsInLastResponse attribute', function () {
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, collectionId, 'itemsInLastResponse', this.newValues.length);
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, listId, 'itemsInLastResponse', this.newValues.length);
       });
 
       it('then indexes the returned items according to the keyBy option and places their keys in positions', function () {
-        expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, collectionId, this.newValues.map(({ id }) => id));
+        expectToChangeResourceListPositionsTo(this, RESOURCE_NAME, listId, this.newValues.map(({ id }) => id));
       });
 
       it('then adds the returned items to the resource and keys them according to the keyBy option', function () {
@@ -363,18 +363,18 @@ describe('fetchCollection reducers:', function () {
         tearDown(this);
       });
 
-      it('then changes the collection\'s status', function() {
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, collectionId, 'type', ERROR);
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, collectionId, 'error', { message: this.options.body.error });
-        expectToChangeResourceCollectionStatusTo(this, RESOURCE_NAME, collectionId, 'httpCode', this.options.status);
+      it('then changes the list\'s status', function() {
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, listId, 'type', ERROR);
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, listId, 'error', { message: this.options.body.error });
+        expectToChangeResourceListStatusTo(this, RESOURCE_NAME, listId, 'httpCode', this.options.status);
       });
 
       it('then sets the syncedAt attribute', function() {
-        expectToChangeResourcesCollectionStatusErrorOccurredAtToBeSet(this, RESOURCE_NAME, collectionId);
+        expectToChangeResourcesListStatusErrorOccurredAtToBeSet(this, RESOURCE_NAME, listId);
       });
 
       it('then does not set the positions', function() {
-        expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, collectionId, []);
+        expectToChangeResourceListPositionsTo(this, RESOURCE_NAME, listId, []);
       });
 
       it('then does not add any items', function() {

@@ -64,7 +64,7 @@ describe('Deselect reducer:', function () {
             status: { type: SUCCESS },
           }
         },
-        collections: {},
+        lists: {},
         newItemKey: null,
         selectionMap: before
       }, id);

@@ -1,6 +1,6 @@
-import isEmpty from '../../utils/collection/isEmpty';
+import isEmpty from '../../utils/list/isEmpty';
 import * as queryString from 'query-string';
-import without from '../../utils/collection/without';
+import without from '../../utils/list/without';
 import isObject from '../../utils/object/isObject';
 import arrayFrom from '../../utils/array/arrayFrom';
 
@@ -24,7 +24,7 @@ function generateUrl({ urlTemplate, keyBy, ignoreOptionalParams = false }, param
   if (isObject(paramValues)) {
 
     /**
-     * We exclude the attributes used to index/key resource items and collections from appearing in the query
+     * We exclude the attributes used to index/key resource items and lists from appearing in the query
      * parameters (these are assumed to always appear in the url path itself).
      *
      * We add them to the list of parameters that were "used up" in the url path.

@@ -83,11 +83,11 @@ describe('Request options:', () => {
   });
 
   function defineResources(context) {
-    const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
+    const { reducers, actionCreators: { fetchList: fetchUsers } } = resources({
       name: 'users',
       url: 'http://test.com/users/:id?',
       keyBy: 'id',
-    }, ['fetchCollection']);
+    }, ['fetchList']);
 
     context.fetchUsers = fetchUsers;
     context.reducers = reducers;

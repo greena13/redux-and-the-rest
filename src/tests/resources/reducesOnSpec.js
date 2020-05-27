@@ -18,7 +18,7 @@ describe('reducesOn:', function () {
             status: { type: SUCCESS }
           },
         },
-        collections: {
+        lists: {
           [EmptyKey]: {
             positions: [ 1 ],
             status: { type: SUCCESS }
@@ -87,7 +87,7 @@ describe('reducesOn:', function () {
         }
       ],
     }, {
-      fetchCollection: true,
+      fetchList: true,
       newItem: true,
     });
 

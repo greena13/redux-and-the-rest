@@ -1,20 +1,20 @@
-import without from '../../utils/collection/without';
+import without from '../../utils/list/without';
 import wrapInObject from '../../utils/object/wrapInObject';
-import getCollectionKey from '../../action-creators/helpers/getCollectionKey';
+import getListKey from '../../action-creators/helpers/getListKey';
 
 /** ************************************************************************************************************
  * Action creators
  ***************************************************************************************************************/
 
 /**
- * Redux action creator used for clearing a collection from the store
+ * Redux action creator used for clearing a list from the store
  * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} params A string or object that is serialized and used to find the item to clear
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator({ action, keyBy }, params) {
   const normalizedParams = wrapInObject(params, keyBy);
-  const key = getCollectionKey(normalizedParams);
+  const key = getListKey(normalizedParams);
 
   return { type: action, key };
 }
@@ -24,7 +24,7 @@ function actionCreator({ action, keyBy }, params) {
  ***************************************************************************************************************/
 
 /**
- * Handles clearing the resource collection in a Redux store
+ * Handles clearing the resource list in a Redux store
  * @param {ResourcesReduxState} resources The current state of part of the Redux store that contains
  *        the resources
  * @param {ActionObject} action The action containing the data to update the resource state
@@ -33,16 +33,16 @@ function actionCreator({ action, keyBy }, params) {
 function reducer(resources, action) {
   const { key } = action;
 
-  const { collections } = resources;
+  const { lists } = resources;
 
-  if (collections[key]) {
+  if (lists[key]) {
     return {
       ...resources,
 
       /**
-       * Remove collection with matching key
+       * Remove list with matching key
        */
-      collections: without(collections, key),
+      lists: without(lists, key),
     };
   } else {
     return resources;

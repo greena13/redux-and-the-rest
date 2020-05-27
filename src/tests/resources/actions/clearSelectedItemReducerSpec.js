@@ -1,6 +1,6 @@
 import { resources, SUCCESS } from '../../../index';
 import {
-  expectToNotChangeResourcesCollection,
+  expectToNotChangeResourcesList,
   expectToNotChangeResourcesItem,
   expectToNotChangeSelectionMap, expectToChangeSelectionMapTo,
   setupInitialState
@@ -37,7 +37,7 @@ describe('Clear selected reducer:', function () {
           status: { type: SUCCESS },
         }
       },
-      collections: {
+      lists: {
         [EmptyKey]: {
           positions: [ 1, 2 ],
           status: { type: null }
@@ -79,8 +79,8 @@ describe('Clear selected reducer:', function () {
       expectToNotChangeResourcesItem(this, RESOURCE_NAME, 1);
     });
 
-    it('then DOES NOT remove the selected resources from collections', function() {
-      expectToNotChangeResourcesCollection(this, RESOURCE_NAME, EmptyKey, 'positions', [ 1, 2 ]);
+    it('then DOES NOT remove the selected resources from lists', function() {
+      expectToNotChangeResourcesList(this, RESOURCE_NAME, EmptyKey, 'positions', [ 1, 2 ]);
     });
   });
 });

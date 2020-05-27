@@ -1,11 +1,11 @@
-import InitialCollectionStateBuilder from './InitialCollectionStateBuilder';
+import InitialListStateBuilder from './InitialListStateBuilder';
 import EmptyKey from '../constants/EmptyKey';
 import InitialStateBuilder from './InitialStateBuilder';
-import isEmpty from '../utils/collection/isEmpty';
+import isEmpty from '../utils/list/isEmpty';
 import { RESOURCES } from '../constants/DataStructures';
 import extractVariableArguments from '../utils/extractVariableArguments';
 import getItemKey from '../action-creators/helpers/getItemKey';
-import getCollectionKey from '../action-creators/helpers/getCollectionKey';
+import getListKey from '../action-creators/helpers/getListKey';
 import InitialItemStateBuilder from './InitialItemStateBuilder';
 
 /**
@@ -16,37 +16,37 @@ class InitialResourceStateBuilder extends InitialStateBuilder {
   constructor(options, items = []) {
     super(options);
 
-    this.collections = {};
+    this.lists = {};
     this.items = {};
 
     if (!isEmpty(items)) {
-      this.addCollection(items);
+      this.addList(items);
     }
   }
 
   /**
-   * Adds a new collection to the initial state builder
-   * @param {Object | Object[]} itemsOrParams Either the params to use to index the collection or the list of items that
-   *        make up the collection. If no params are specified, the default unscoped collection is used.
-   * @param {Object} [optionalItems=[]] The list of items in the collection, if they were not specified as
+   * Adds a new list to the initial state builder
+   * @param {Object | Object[]} itemsOrParams Either the params to use to index the list or the list of items that
+   *        make up the list. If no params are specified, the default unscoped list is used.
+   * @param {Object} [optionalItems=[]] The list of items in the list, if they were not specified as
    *        the first argument
-   * @returns {InitialCollectionStateBuilder} A new initial state builder scoped to the new collection
+   * @returns {InitialListStateBuilder} A new initial state builder scoped to the new list
    */
-  addCollection(itemsOrParams, optionalItems) {
+  addList(itemsOrParams, optionalItems) {
     const { items, params = EmptyKey } = extractVariableArguments(['params', 'items'], [itemsOrParams, optionalItems]);
 
-    const collectionStateBuilder = new InitialCollectionStateBuilder(this.options, items);
-    const key = getCollectionKey(params);
+    const listStateBuilder = new InitialListStateBuilder(this.options, items);
+    const key = getListKey(params);
 
-    this.collections[key] = collectionStateBuilder;
+    this.lists[key] = listStateBuilder;
 
-    return collectionStateBuilder;
+    return listStateBuilder;
   }
 
   /**
    * Adds a new item to the initial state builder
    * @param {Object} paramsOrValues Either the values of a new item to add to the initial state, outside of any
-   *        collection, or the params of the item to use to index it.
+   *        list, or the params of the item to use to index it.
    * @param {Object} [optionalValues={}] The values of the item, if the first argument was used to specify params
    * @returns {InitialItemStateBuilder} A new initial state builder scoped to the new item
    */
@@ -68,7 +68,7 @@ class InitialResourceStateBuilder extends InitialStateBuilder {
    * @returns {ResourcesReduxState} The resources' initial state
    */
   build() {
-    const itemsOutsideOfCollections = Object.keys(this.items).reduce((memo, key) => {
+    const itemsOutsideOfLists = Object.keys(this.items).reduce((memo, key) => {
       const item = this.items[key];
 
       memo[key] = item.build({ status: this.status, metadata: this.metadata });
@@ -76,9 +76,9 @@ class InitialResourceStateBuilder extends InitialStateBuilder {
       return memo;
     }, {});
 
-    const itemsFromCollections = Object.values(this.collections).reduce((memo, collection) => ({
+    const itemsFromLists = Object.values(this.lists).reduce((memo, list) => ({
         ...memo,
-        ...collection.buildItems({ status: this.status, metadata: this.metadata })
+        ...list.buildItems({ status: this.status, metadata: this.metadata })
       }), {});
 
     return {
@@ -90,17 +90,17 @@ class InitialResourceStateBuilder extends InitialStateBuilder {
       ...RESOURCES,
 
       /**
-       * We merge the dictionary of items that are in collections with those that are not
+       * We merge the dictionary of items that are in lists with those that are not
        * @type {Object<ResourceItemId, ResourcesItem>}
        */
-      items: { ...itemsOutsideOfCollections, ...itemsFromCollections },
+      items: { ...itemsOutsideOfLists, ...itemsFromLists },
 
       /**
-       * We build the dictionary of collections
+       * We build the dictionary of lists
        */
-      collections: Object.keys(this.collections).reduce((memo, key) => {
-        const collection = this.collections[key];
-        memo[key] = collection.build({ status: this.status, metadata: this.metadata });
+      lists: Object.keys(this.lists).reduce((memo, key) => {
+        const list = this.lists[key];
+        memo[key] = list.build({ status: this.status, metadata: this.metadata });
 
         return memo;
       }, {})

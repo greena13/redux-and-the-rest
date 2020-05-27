@@ -1,5 +1,5 @@
 import { RESOURCES } from '../constants/DataStructures';
-import without from '../utils/collection/without';
+import without from '../utils/list/without';
 import isObject from '../utils/object/isObject';
 import warn from '../utils/dev/warn';
 import arrayFrom from '../utils/array/arrayFrom';
@@ -8,7 +8,7 @@ import resolveOptions from '../action-creators/helpers/resolveOptions';
 import progressReducer from './helpers/progressReducer';
 import { getConfiguration } from '../configuration';
 import standardiseAssociationOptions from '../utils/standardiseAssociationOptions';
-import fetchCollectionAction from '../actions/RESTful/fetchCollection';
+import fetchListAction from '../actions/RESTful/fetchList';
 import fetchItemAction from '../actions/RESTful/fetchItem';
 import newAction from '../actions/RESTful/newItem';
 import clearNewItemAction from '../actions/RESTful/clearNewItem';
@@ -24,7 +24,7 @@ import deselectAction from '../actions/selection/deselectItem';
 import clearSelectedAction from '../actions/selection/clearSelectedItems';
 import clearResourceAction from '../actions/clear/clearResource';
 import clearItemAction from '../actions/clear/clearItem';
-import clearCollectionAction from '../actions/clear/clearCollection';
+import clearListAction from '../actions/clear/clearList';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 import DefaultConfigurationOptions from '../constants/DefaultConfigurationOptions';
 
@@ -36,7 +36,7 @@ const STANDARD_REDUCERS = {
   /**
    * RESTful actions
    */
-  fetchCollection: fetchCollectionAction.reducer,
+  fetchList: fetchListAction.reducer,
   fetchItem: fetchItemAction.reducer,
   newItem: newAction.reducer,
   clearNewItem: clearNewItemAction.reducer,
@@ -52,7 +52,7 @@ const STANDARD_REDUCERS = {
    */
   clearResource: clearResourceAction.reducer,
   clearItem: clearItemAction.reducer,
-  clearCollection: clearCollectionAction.reducer,
+  clearList: clearListAction.reducer,
 
   /**
    * Selection actions
@@ -68,15 +68,15 @@ const STANDARD_REDUCERS = {
  * @type {Object<string, boolean>}
  */
 const PROGRESS_COMPATIBLE_ACTIONS = {
-  fetchCollection: true,
+  fetchList: true,
   fetchItem: true,
   updateItem: true,
   createItem: true
 };
 
 function getProgressReducer(key) {
-  if (key === 'fetchCollection') {
-    return (resources, action) => progressReducer(resources, action, 'collections');
+  if (key === 'fetchList') {
+    return (resources, action) => progressReducer(resources, action, 'lists');
   } else {
     return progressReducer;
   }
@@ -205,7 +205,7 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
       } else {
         const standardReducersList = Object.keys(STANDARD_REDUCERS).join(', ');
 
-        warn(`Action '${key}' must match the collection of standard reducers (${standardReducersList}) or define a 'reducer' option.`);
+        warn(`Action '${key}' must match the list of standard reducers (${standardReducersList}) or define a 'reducer' option.`);
       }
     }
 

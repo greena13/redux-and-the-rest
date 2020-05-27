@@ -4,7 +4,7 @@ import buildReducers from './reducers/buildReducers';
 import buildActionCreators from './action-creators/buildActionCreators';
 import objectFrom from './utils/object/objectFrom';
 import getNewItem from './public-helpers/getNewItem';
-import getCollection from './utils/getCollection';
+import getList from './utils/getList';
 import { getConfiguration } from './configuration';
 import InitialResourceStateBuilder from './initialisation/InitialResourceStateBuilder';
 import DefaultConfigurationOptions from './constants/DefaultConfigurationOptions';
@@ -12,9 +12,9 @@ import resolveOptions from './action-creators/helpers/resolveOptions';
 import getItemWithEmptyFallback from './utils/getItem';
 import getItemKey from './action-creators/helpers/getItemKey';
 import getOrFetch from './utils/getOrFetch';
-import getCollectionKey from './action-creators/helpers/getCollectionKey';
+import getListKey from './action-creators/helpers/getListKey';
 import warn from './utils/dev/warn';
-import without from './utils/collection/without';
+import without from './utils/list/without';
 import EmptyKey from './constants/EmptyKey';
 
 /**
@@ -36,7 +36,7 @@ import EmptyKey from './constants/EmptyKey';
  *           default, 'id' is used.
  *
  * @property {boolean} [localOnly] Set to true for resources that should be edited locally, only. The fetch and
- *           fetchCollection actions are disabled (the fetch* action creators are not exported) and the createItem, updateItem
+ *           fetchList actions are disabled (the fetch* action creators are not exported) and the createItem, updateItem
  *           and destroyItem only update the store locally, without making any HTTP requests.
  * @property {string} [url] A url template that is used for all of the resource's actions. The template string
  *           can include required url parameters by prefixing them with a colon (e.g. :id) and optional
@@ -86,7 +86,7 @@ import EmptyKey from './constants/EmptyKey';
  *           Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this
  *           attribute is required for Non-RESTful actions.
  * @property {boolean} progress Whether the store should emit progress events as the resource is uploaded or
- *           downloaded. This is applicable to the RESTful actions fetchCollection, fetchItem, createItem, updateItem and any
+ *           downloaded. This is applicable to the RESTful actions fetchList, fetchItem, createItem, updateItem and any
  *           custom actions.
  * @property {ResponseAdaptorFunction} responseAdaptor Function used to adapt the response for a particular
  *           request before it is handed over to the reducers. The function must return the results as an object
@@ -124,10 +124,10 @@ import EmptyKey from './constants/EmptyKey';
  * @property {function(string | ?Object, ?Object): ResourcesItem} getOrFetchItem Function that returns
  *           a particular item of a resource type, or calls the fetch action creator to retrieve it in the
  *           background.
- * @property {function(ResourcesReduxState, Object|string): ResourceCollectionWithItems} getCollection Function that
- *          returns a particular collection of resources
- * @property {function(string | ?Object, ?Object): ResourceCollectionWithItems} getOrFetchCollection Function that
- *           returns a particular collection of a resource type, or calls the fetch action creator to
+ * @property {function(ResourcesReduxState, Object|string): ResourceListWithItems} getList Function that
+ *          returns a particular list of resources
+ * @property {function(string | ?Object, ?Object): ResourceListWithItems} getOrFetchList Function that
+ *           returns a particular list of a resource type, or calls the fetch action creator to
  *           retrieve it in the background.
  * @property {function(Object[]): InitialResourceStateBuilder} buildInitialState Creates a new initial
  *           state builder for the resources of this type
@@ -147,21 +147,21 @@ function resources(resourceOptions, actionOptions = {}) {
   /**
    * Standardise the shape of the action options to support all forms:
    *  Array Syntax:
-   *    ['fetchCollection', 'fetch']
+   *    ['fetchList', 'fetch']
    *
    *  Object syntax:
-   *    { fetchCollection: true, fetch: true }
+   *    { fetchList: true, fetch: true }
    *
    *  Extended object syntax:
-   *    { fetchCollection: { keyBy: 'identifier' }, fetch: { keyBy: 'id' } }
+   *    { fetchList: { keyBy: 'identifier' }, fetch: { keyBy: 'id' } }
    *
    * @type {ActionOptionsMap}
    */
   let _actionOptions = objectFrom(actionOptions, {});
 
-  if (singular && _actionOptions.fetchCollection) {
-    warn('resource does not support the fetchCollection action. Ignoring.');
-    _actionOptions = without(actionOptions, 'fetchCollection');
+  if (singular && _actionOptions.fetchList) {
+    warn('resource does not support the fetchList action. Ignoring.');
+    _actionOptions = without(actionOptions, 'fetchList');
   }
 
   const actions = new ActionsDictionary(name, resourceOptions, Object.keys(_actionOptions));
@@ -210,7 +210,7 @@ function resources(resourceOptions, actionOptions = {}) {
      * an empty item is returned immediately and the fetch action creator is called to update the store and
      * request the resource item from an external API.
      * @param {ResourcesReduxState} resourcesState The current resource Redux store state
-     * @param {Object} [params={}] The params to serialize to use as the key to find the resource collection.
+     * @param {Object} [params={}] The params to serialize to use as the key to find the resource list.
      * @param {Object} [actionCreatorOptions={}] The options to pass to the fetch action creator if it's
      *        called.
      * @returns {ResourcesItem} The resource item if it's in the store, or an empty item.
@@ -227,24 +227,24 @@ function resources(resourceOptions, actionOptions = {}) {
       );
     },
 
-    getCollection,
+    getList,
 
     /**
-     * Returns an collection of a particular resource from a Redux store. If the collection is not available in the store,
-     * an empty collection is returned immediately and the fetch action creator is called to update the store and
-     * request the resource collection from an external API.
+     * Returns an list of a particular resource from a Redux store. If the list is not available in the store,
+     * an empty list is returned immediately and the fetch action creator is called to update the store and
+     * request the resource list from an external API.
      * @param {ResourcesReduxState} resourcesState The current resource Redux store state
-     * @param {Object} [params={}] The params to serialize to use as the key to find the resource collection.
+     * @param {Object} [params={}] The params to serialize to use as the key to find the resource list.
      * @param {Object} [actionCreatorOptions={}] The options to pass to the fetch action creator if it's
      *        called.
-     * @returns {ResourceCollectionWithItems} The resource collection if it's in the store, or an empty collection.
+     * @returns {ResourceListWithItems} The resource list if it's in the store, or an empty list.
      */
-    getOrFetchCollection(resourcesState, params, actionCreatorOptions) {
+    getOrFetchList(resourcesState, params, actionCreatorOptions) {
       return getOrFetch({
-          typeKey: 'collections',
-          getFunction: getCollection,
-          fetchFunction: actionCreators.fetchCollection,
-          keyFunction: (_params) => getCollectionKey(_params, { urlOnlyParams: resourceOptions.urlOnlyParams }),
+          typeKey: 'lists',
+          getFunction: getList,
+          fetchFunction: actionCreators.fetchList,
+          keyFunction: (_params) => getListKey(_params, { urlOnlyParams: resourceOptions.urlOnlyParams }),
         },
         resourcesState, params, actionCreatorOptions
       );

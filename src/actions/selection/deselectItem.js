@@ -1,5 +1,5 @@
 import getItemKey from '../../action-creators/helpers/getItemKey';
-import without from '../../utils/collection/without';
+import without from '../../utils/list/without';
 import wrapInObject from '../../utils/object/wrapInObject';
 
 /** ************************************************************************************************************

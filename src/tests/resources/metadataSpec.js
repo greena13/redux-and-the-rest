@@ -9,12 +9,12 @@ describe('metadata:', function () {
   describe('when configuring the INDEX action', function() {
     describe('and the metadata value is NOT set when defining the resource', function () {
       beforeAll(function () {
-        const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
+        const { reducers, actionCreators: { fetchList: fetchUsers } } = resources({
           name: 'users',
           url: 'http://test.com/users',
           keyBy: 'id'
         }, {
-          fetchCollection: true
+          fetchList: true
         });
 
         this.reducers = reducers;
@@ -42,7 +42,7 @@ describe('metadata:', function () {
             });
 
             it('then uses the value passed to the action creator for the item\'s metadata type', function() {
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(PREVIEW);
+              expect(this.store.getState().users.lists[EmptyKey].metadata.type).toEqual(PREVIEW);
             });
           });
 
@@ -68,7 +68,7 @@ describe('metadata:', function () {
 
             it('then uses the value passed to the action creator for the item\'s metadata type', function() {
               expect(this.store.getState().users.items['1'].metadata.type).toEqual(PREVIEW);
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(PREVIEW);
+              expect(this.store.getState().users.lists[EmptyKey].metadata.type).toEqual(PREVIEW);
             });
           });
         });
@@ -92,8 +92,8 @@ describe('metadata:', function () {
               this.store = null;
             });
 
-            it('then the collection\'s metadata type is the value passed to the action creator', function() {
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(PREVIEW);
+            it('then the list\'s metadata type is the value passed to the action creator', function() {
+              expect(this.store.getState().users.lists[EmptyKey].metadata.type).toEqual(PREVIEW);
             });
           });
 
@@ -118,8 +118,8 @@ describe('metadata:', function () {
               this.store = null;
             });
 
-            it('then the collection\'s metadata type is the value passed to the action creator', function() {
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(PREVIEW);
+            it('then the list\'s metadata type is the value passed to the action creator', function() {
+              expect(this.store.getState().users.lists[EmptyKey].metadata.type).toEqual(PREVIEW);
             });
           });
         });
@@ -128,13 +128,13 @@ describe('metadata:', function () {
 
     describe('and the metadata type is set when defining the resource', function () {
       beforeAll(function () {
-        const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
+        const { reducers, actionCreators: { fetchList: fetchUsers } } = resources({
           name: 'users',
           url: 'http://test.com/users',
           keyBy: 'id',
           metadata: { type: 'RESOURCE_METADATA' }
         }, {
-          fetchCollection: true
+          fetchList: true
         });
 
         this.fetchUsers = fetchUsers;
@@ -161,8 +161,8 @@ describe('metadata:', function () {
               this.store = null;
             });
 
-            it('then the item and collection\'s metadata type is the value specified when defining the resource', function() {
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('RESOURCE_METADATA');
+            it('then the item and list\'s metadata type is the value specified when defining the resource', function() {
+              expect(this.store.getState().users.lists[EmptyKey].metadata.type).toEqual('RESOURCE_METADATA');
             });
           });
 
@@ -186,9 +186,9 @@ describe('metadata:', function () {
               this.store = null;
             });
 
-            it('then the item and collection\'s metadata type is the value specified when defining the resource', function() {
+            it('then the item and list\'s metadata type is the value specified when defining the resource', function() {
               expect(this.store.getState().users.items['1'].metadata.type).toEqual('RESOURCE_METADATA');
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('RESOURCE_METADATA');
+              expect(this.store.getState().users.lists[EmptyKey].metadata.type).toEqual('RESOURCE_METADATA');
             });
           });
         });
@@ -212,8 +212,8 @@ describe('metadata:', function () {
               this.store = null;
             });
 
-            it('then the collection\'s metadata type is the value specified when defining the resource', function() {
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('RESOURCE_METADATA');
+            it('then the list\'s metadata type is the value specified when defining the resource', function() {
+              expect(this.store.getState().users.lists[EmptyKey].metadata.type).toEqual('RESOURCE_METADATA');
             });
           });
 
@@ -238,8 +238,8 @@ describe('metadata:', function () {
               this.store = null;
             });
 
-            it('then the collection\'s metadata type is the value specified when defining the resource', function() {
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('RESOURCE_METADATA');
+            it('then the list\'s metadata type is the value specified when defining the resource', function() {
+              expect(this.store.getState().users.lists[EmptyKey].metadata.type).toEqual('RESOURCE_METADATA');
             });
           });
         });
@@ -265,8 +265,8 @@ describe('metadata:', function () {
               this.store = null;
             });
 
-            it('then uses the value passed to the action creator for the collection\'s metadata type', function() {
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('ACTION_CREATOR_METADATA');
+            it('then uses the value passed to the action creator for the list\'s metadata type', function() {
+              expect(this.store.getState().users.lists[EmptyKey].metadata.type).toEqual('ACTION_CREATOR_METADATA');
             });
           });
 
@@ -290,9 +290,9 @@ describe('metadata:', function () {
               this.store = null;
             });
 
-            it('then uses the value passed to the action creator for the item and collection\'s metadata type', function() {
+            it('then uses the value passed to the action creator for the item and list\'s metadata type', function() {
               expect(this.store.getState().users.items['1'].metadata.type).toEqual('ACTION_CREATOR_ITEM_METADATA');
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('ACTION_CREATOR_METADATA');
+              expect(this.store.getState().users.lists[EmptyKey].metadata.type).toEqual('ACTION_CREATOR_METADATA');
             });
           });
         });
@@ -316,8 +316,8 @@ describe('metadata:', function () {
               this.store = null;
             });
 
-            it('then uses the value passed to the action creator for the collection\'s metadata type', function() {
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('ACTION_CREATOR_METADATA');
+            it('then uses the value passed to the action creator for the list\'s metadata type', function() {
+              expect(this.store.getState().users.lists[EmptyKey].metadata.type).toEqual('ACTION_CREATOR_METADATA');
             });
           });
 
@@ -342,8 +342,8 @@ describe('metadata:', function () {
               this.store = null;
             });
 
-            it('then uses the value passed to the action creator for the collection\'s metadata type', function() {
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual('ACTION_CREATOR_METADATA');
+            it('then uses the value passed to the action creator for the list\'s metadata type', function() {
+              expect(this.store.getState().users.lists[EmptyKey].metadata.type).toEqual('ACTION_CREATOR_METADATA');
             });
           });
         });

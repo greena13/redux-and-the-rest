@@ -116,30 +116,30 @@ export function expectToChangeResourcesItemValuesTo(context, resourcesName, id, 
   expectResourcesItemToChangeTo(context, resourcesName, id, 'values', subkeyOrExpectedValue, expectedValue);
 }
 
-export function expectToClearResourcesCollectionStatus(context, resourcesName, id, subkey) {
-  const newValue = resourcesDefinition(context, resourcesName).collections[id].status[subkey];
+export function expectToClearResourcesListStatus(context, resourcesName, id, subkey) {
+  const newValue = resourcesDefinition(context, resourcesName).lists[id].status[subkey];
 
   expect(newValue).toEqual(undefined);
 }
 
-export function expectToChangeResourceCollectionStatusTo(context, resourcesName, id, subkeyOrExpectedValue, expectedValue = undefined) {
-  expectResourcesCollectionToChangeTo(context, resourcesName, id, 'status', subkeyOrExpectedValue, expectedValue);
+export function expectToChangeResourceListStatusTo(context, resourcesName, id, subkeyOrExpectedValue, expectedValue = undefined) {
+  expectResourcesListToChangeTo(context, resourcesName, id, 'status', subkeyOrExpectedValue, expectedValue);
 }
 
-export function expectToChangeResourceCollectionPositionsTo(context, resourcesName, id, expectedValue) {
-  expectResourcesCollectionToChangeTo(context, resourcesName, id, 'positions', expectedValue);
+export function expectToChangeResourceListPositionsTo(context, resourcesName, id, expectedValue) {
+  expectResourcesListToChangeTo(context, resourcesName, id, 'positions', expectedValue);
 }
 
-export function expectToChangeResourcesCollectionStatusErrorOccurredAtToBeSet(context, resourceName, id) {
-  expect(resourcesCollection(context, resourceName, id).status.errorOccurredAt).not.toBeUndefined();
+export function expectToChangeResourcesListStatusErrorOccurredAtToBeSet(context, resourceName, id) {
+  expect(resourcesList(context, resourceName, id).status.errorOccurredAt).not.toBeUndefined();
 }
 
 function expectResourcesItemToChangeTo(context, resourcesName, id, key, subkeyOrExpectedValue, expectedValue = undefined) {
   expectResourcesToChangeTo(context, resourcesName, 'items', id, key, subkeyOrExpectedValue, expectedValue);
 }
 
-function expectResourcesCollectionToChangeTo(context, resourcesName, id, key, subkeyOrExpectedValue, expectedValue = undefined) {
-  expectResourcesToChangeTo(context, resourcesName, 'collections', id, key, subkeyOrExpectedValue, expectedValue);
+function expectResourcesListToChangeTo(context, resourcesName, id, key, subkeyOrExpectedValue, expectedValue = undefined) {
+  expectResourcesToChangeTo(context, resourcesName, 'lists', id, key, subkeyOrExpectedValue, expectedValue);
 }
 
 function expectResourcesToChangeTo(context, resourcesName, type, id, key, subkeyOrExpectedValue, expectedValue = undefined) {
@@ -168,15 +168,15 @@ export function expectToNotChangeResourcesItem(context, resourcesName, id, attri
   expectToNotChangeResources(context, resourcesName, 'items', id, attribute, value);
 }
 
-export function expectToNotChangeResourceCollectionStatus(context, resourcesName, id, subkeyOrExpectedValue) {
-  expectToNotChangeResourcesCollection(context, resourcesName, id, 'status', subkeyOrExpectedValue);
+export function expectToNotChangeResourceListStatus(context, resourcesName, id, subkeyOrExpectedValue) {
+  expectToNotChangeResourcesList(context, resourcesName, id, 'status', subkeyOrExpectedValue);
 }
-export function expectToNotChangeResourceCollectionPositions(context, resourcesName, id) {
-  expectToNotChangeResourcesCollection(context, resourcesName, id, 'positions');
+export function expectToNotChangeResourceListPositions(context, resourcesName, id) {
+  expectToNotChangeResourcesList(context, resourcesName, id, 'positions');
 }
 
-export function expectToNotChangeResourcesCollection(context, resourcesName, id, attribute = undefined, value = undefined) {
-  expectToNotChangeResources(context, resourcesName, 'collections', id, attribute, value);
+export function expectToNotChangeResourcesList(context, resourcesName, id, attribute = undefined, value = undefined) {
+  expectToNotChangeResources(context, resourcesName, 'lists', id, attribute, value);
 }
 
 export function expectToNotChangeResources(context, resourcesName, type, id, attribute = undefined, value = undefined) {
@@ -202,8 +202,8 @@ export function expectToNotChangeResources(context, resourcesName, type, id, att
 export function resourcesItem(context, resourcesName, id) {
   return resourcesDefinition(context, resourcesName).items[id];
 }
-export function resourcesCollection(context, resourcesName, id) {
-  return resourcesDefinition(context, resourcesName).collections[id];
+export function resourcesList(context, resourcesName, id) {
+  return resourcesDefinition(context, resourcesName).lists[id];
 }
 
 export function resourcesDefinition(context, resourceName) {

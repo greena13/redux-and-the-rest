@@ -1,17 +1,17 @@
 import toPlural from '../../utils/string/toPlural';
 import toSingular from '../../utils/string/toSingular';
-import replace from '../../utils/collection/replace';
+import replace from '../../utils/list/replace';
 import assertInDevMode from '../../utils/assertInDevMode';
 import arrayFrom from '../../utils/array/arrayFrom';
 import { CREATING, SUCCESS } from '../../constants/Statuses';
 import valuesAdded from '../../utils/array/valuesAdded';
 import valuesRemoved from '../../utils/array/valuesRemoved';
-import without from '../../utils/collection/without';
+import without from '../../utils/list/without';
 import warn from '../../utils/dev/warn';
 import removeItemsFromResources from './removeItemsFromResources';
-import contains from '../../utils/collection/contains';
+import contains from '../../utils/list/contains';
 import serializeKey from '../../public-helpers/serializeKey';
-import isEmpty from '../../utils/collection/isEmpty';
+import isEmpty from '../../utils/list/isEmpty';
 
 function addCreatedHasManyAssociation(resources, { temporaryKey, key, status, item: associationItem }, { relationType, foreignKeyName, keyName }) {
   const associationValues = associationItem.values;
@@ -181,7 +181,7 @@ function updateHasManyAssociation(resources, { key, type, status, item: associat
   }
 }
 
-function removeDestroyedHasManyAssociation(resources, { key, type, status, previousValues }, { dependent, relationType, foreignKeyName, name, keyName, collectionParameter }) {
+function removeDestroyedHasManyAssociation(resources, { key, type, status, previousValues }, { dependent, relationType, foreignKeyName, name, keyName, listParameter }) {
   if (status === SUCCESS) {
     const _resources = function(){
       if (isEmpty(previousValues)) {
@@ -271,20 +271,20 @@ function removeDestroyedHasManyAssociation(resources, { key, type, status, previ
       }
     }();
 
-    if (collectionParameter === false) {
+    if (listParameter === false) {
 
       /**
-       * Allow disabling removal of matching collections by passing false to the
-       * collectionParameter option
+       * Allow disabling removal of matching lists by passing false to the
+       * listParameter option
        */
       return _resources;
 
     } else {
-      const collectionParameterString = serializeKey({ [collectionParameter || toSingular(keyName)]: key });
+      const listParameterString = serializeKey({ [listParameter || toSingular(keyName)]: key });
 
-      const collections = Object.keys(_resources.collections).reduce((memo, collectionKey) => {
-        if (!contains(collectionKey, collectionParameterString)) {
-          memo[collectionKey] = _resources.collections[collectionKey];
+      const lists = Object.keys(_resources.lists).reduce((memo, listKey) => {
+        if (!contains(listKey, listParameterString)) {
+          memo[listKey] = _resources.lists[listKey];
         }
 
         return memo;
@@ -292,7 +292,7 @@ function removeDestroyedHasManyAssociation(resources, { key, type, status, previ
 
       return {
         ..._resources,
-        collections
+        lists
       };
 
     }
@@ -336,7 +336,7 @@ function getKeyName({ key, relationType, associationName }) {
  *         a suffix of id or ids to derive the foreign key
  * @property {string} dependent When set to 'destroyItem' it removes the associated resource if the current one is
  *        removed from the store.
- * @property {object|string} collectionParameter The key of the collection to add newly created associated
+ * @property {object|string} listParameter The key of the list to add newly created associated
  *        objects to
  */
 
@@ -345,7 +345,7 @@ function addAssociationReducer(
   name,
   relationType,
   associationName,
-  { actions = {}, foreignKey, as, dependent, key, collectionParameter }) {
+  { actions = {}, foreignKey, as, dependent, key, listParameter }) {
 
   const foreignKeyName = getForeignKeyName({ foreignKey, as, name });
   const keyName = getKeyName({ key, relationType, associationName });
@@ -356,7 +356,7 @@ function addAssociationReducer(
     foreignKeyName,
     keyName,
     dependent,
-    collectionParameter
+    listParameter
   };
 
   addAssociationReducersTo(reducersDict, { actions, reducerOptions });

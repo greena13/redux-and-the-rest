@@ -1,5 +1,5 @@
 import arrayFrom from '../../utils/array/arrayFrom';
-import isEmpty from '../../utils/collection/isEmpty';
+import isEmpty from '../../utils/list/isEmpty';
 
 function normalizeErrors(errorOrErrors, errors) {
   if (!isEmpty(errorOrErrors)) {

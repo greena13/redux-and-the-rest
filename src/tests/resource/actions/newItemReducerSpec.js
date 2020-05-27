@@ -82,8 +82,8 @@ describe('New reducer:', () => {
       expectToChangeNewItemKeyTo(this, RESOURCE_NAME, EmptyKey);
     });
 
-    it('then does NOT add the key of the new item to the default collection', function () {
-      expect(resourcesDefinition(this, RESOURCE_NAME).collections).toEqual({});
+    it('then does NOT add the key of the new item to the default list', function () {
+      expect(resourcesDefinition(this, RESOURCE_NAME).lists).toEqual({});
     });
   }
 
@@ -100,7 +100,7 @@ describe('New reducer:', () => {
             status: { type: status }
           }
         },
-        collections: {
+        lists: {
           [EmptyKey]: {
             positions: [ EmptyKey ]
           }

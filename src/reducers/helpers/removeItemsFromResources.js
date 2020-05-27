@@ -1,15 +1,15 @@
-import without from '../../utils/collection/without';
+import without from '../../utils/list/without';
 import arrayFrom from '../../utils/array/arrayFrom';
 
 function removeItemsFromResources(resources, keys) {
   const _keys = arrayFrom(keys);
 
-  const collections = Object.keys(resources.collections).reduce((memo, id) => {
-    const collection = resources.collections[id];
-    const { positions } = collection;
+  const lists = Object.keys(resources.lists).reduce((memo, id) => {
+    const list = resources.lists[id];
+    const { positions } = list;
 
     memo[id] = {
-      ...collection,
+      ...list,
       positions: without(positions, _keys, { stringifyFirst: true })
     };
 
@@ -19,7 +19,7 @@ function removeItemsFromResources(resources, keys) {
   return {
     ...resources,
     items: without(resources.items, _keys),
-    collections,
+    lists,
     selectionMap: without(resources.selectionMap, _keys),
     newItemKey: resources.newItemKey === keys ? null : resources.newItemKey
   };

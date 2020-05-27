@@ -18,7 +18,7 @@ describe('belongsTo:', function () {
             status: { type: SUCCESS }
           },
         },
-        collections: {
+        lists: {
           [EmptyKey]: {
             positions: [ 1 ],
             status: { type: SUCCESS },

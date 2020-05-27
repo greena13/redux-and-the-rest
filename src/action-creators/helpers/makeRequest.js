@@ -1,10 +1,10 @@
 import isObject from '../../utils/object/isObject';
 import requestProgress from '../requestProgress';
 import { DOWN, UP } from '../../constants/ProgressDirections';
-import without from '../../utils/collection/without';
+import without from '../../utils/list/without';
 import { CLIENT_ERROR } from '../../constants/NetworkStatuses';
 import { registerRequestEnd } from '../../utils/RequestManager';
-import pluck from '../../utils/collection/pluck';
+import pluck from '../../utils/list/pluck';
 import normalizeErrors from './normalizeErrors';
 import isString from '../../utils/string/isString';
 
@@ -39,7 +39,7 @@ import isString from '../../utils/string/isString';
  *
  *  CREATE/DELETE request options
  *
- * @param {string|Array<string>} [options.collectionKeys=[]] The keys of the collections that should have the
+ * @param {string|Array<string>} [options.listKeys=[]] The keys of the lists that should have the
  *        resource item added or removed when the item is successfully created or destroyed.
  *
  * @param {Object} [actionCreatorOptions={}] The options passed to the action creator that is making the request,
@@ -69,7 +69,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
     onSuccess,
     onError,
 
-    collectionKeys,
+    listKeys,
     previousValues,
 
     ..._options
@@ -194,7 +194,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
               actionCreatorOptions,
               _json.values,
               _json.metadata,
-              collectionKeys || previousValues,
+              listKeys || previousValues,
             )
           );
         }

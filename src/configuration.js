@@ -13,7 +13,7 @@ let configuration = {};
  *           default, 'id' is used.
  *
  * @property {boolean} localOnly Set to true for resources that should be edited locally, only. The fetch and
- *           fetchCollection actions are disabled (the fetch* action creators are not exported) and the createItem, updateItem
+ *           fetchList actions are disabled (the fetch* action creators are not exported) and the createItem, updateItem
  *           and destroyItem only update the store locally, without making any HTTP requests.
  * @property {string[]} urlOnlyParams The attributes passed to action creators that should be used to create the request URL,
  *           but ignored when storing the request's response.

@@ -1,4 +1,4 @@
-import isEmpty from '../../utils/collection/isEmpty';
+import isEmpty from '../../utils/list/isEmpty';
 
 function applyTransforms(transforms, options, actionCreatorOptions, item) {
   if (isEmpty(transforms)) {

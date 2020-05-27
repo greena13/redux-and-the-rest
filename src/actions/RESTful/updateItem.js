@@ -8,7 +8,7 @@ import { ERROR, NEW, SUCCESS, UPDATING } from '../../constants/Statuses';
 import { ITEM } from '../../constants/DataStructures';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
-import without from '../../utils/collection/without';
+import without from '../../utils/list/without';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
 import nop from '../../utils/function/nop';
 
@@ -27,7 +27,7 @@ const HTTP_REQUEST_TYPE = 'PUT';
  * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is
  *        called.
  * @param {ResourceValues} [actionCreatorOptions.previous={}] The values of the resource item that is being
- *        deleted, used to more efficiently remove the item from any associated resource collections it may
+ *        deleted, used to more efficiently remove the item from any associated resource lists it may
  *        appear in.
  * @returns {Thunk} Function to call to dispatch an action
  */
@@ -143,7 +143,7 @@ function localActionCreator(options, params, values, actionCreatorOptions = {}) 
  * @param {Object} values The values returned by the external API for the newly created resource item
  * @param {Object} [metadata] Metadata extracted from the response, using a responseAdaptor (if applicable)
  * @param {Object} previousValues The values the resource item previously had, which is used to more efficiently
- *        update any associated resource items or collections
+ *        update any associated resource items or lists
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function receiveUpdatedResource(options, actionCreatorOptions, values, metadata, previousValues) {

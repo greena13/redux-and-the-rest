@@ -7,7 +7,7 @@ import warn from '../../utils/dev/warn';
 import { DESTROY_ERROR, DESTROYING, NEW, SUCCESS } from '../../constants/Statuses';
 import { ITEM } from '../../constants/DataStructures';
 import removeItemsFromResources from '../../reducers/helpers/removeItemsFromResources';
-import isEmpty from '../../utils/collection/isEmpty';
+import isEmpty from '../../utils/list/isEmpty';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
@@ -27,7 +27,7 @@ const HTTP_REQUEST_TYPE = 'DELETE';
  * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is
  *        called.
  * @param {ResourceValues} [actionCreatorOptions.previous={}] The values of the resource item that is being
- *        deleted, used to more efficiently remove the item from any associated resource collections it may
+ *        deleted, used to more efficiently remove the item from any associated resource lists it may
  *        appear in.
  * @returns {Thunk} Function to call to dispatch an action
  */
@@ -84,7 +84,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
  * remote API to confirm it's been deleted)
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} values The values of the resource item that is being deleted, used to more efficiently remove
- *        the item from any associated resource collections it may appear in.
+ *        the item from any associated resource lists it may appear in.
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function deleteResourceUpdate(options, values) {
@@ -121,7 +121,7 @@ function localActionCreator(options, params, actionCreatorOptions = {}) {
  * deleted by a remote API
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} previousValues The values of the resource item that is being deleted, used to more
- *        efficiently remove the item from any associated resource collections it may appear in.
+ *        efficiently remove the item from any associated resource lists it may appear in.
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function removeResource(options, previousValues) {
@@ -230,7 +230,7 @@ function reducer(resources, action) {
 
     /**
      * Upon the successful deletion of the resource (as confirmed by the external API) we remove it from the
-     * Redux store, and any collections or associated resources that it may have appeared in.
+     * Redux store, and any lists or associated resources that it may have appeared in.
      */
     return removeItemsFromResources(resources, key);
   } else if (status === DESTROY_ERROR) {

@@ -2,15 +2,15 @@ import fetchMock from 'fetch-mock';
 import { resources, RESOURCES, CREATING, ERROR, NEW, SUCCESS } from '../../../index';
 import nop from '../../../utils/function/nop';
 import {
-  expectToNotChangeResourcesCollection,
+  expectToNotChangeResourcesList,
   expectToChangeNewItemKeyTo,
   expectToChangeResourcesItemStatusErrorOccurredAtToBeSet,
   expectToChangeResourcesItemStatusTo,
   expectToChangeResourcesItemValuesTo,
-  setupInitialState, expectToChangeResourceCollectionPositionsTo,
+  setupInitialState, expectToChangeResourceListPositionsTo,
 } from '../../helpers/resourceAssertions';
 import EmptyKey from '../../../constants/EmptyKey';
-import getCollectionKey from '../../../action-creators/helpers/getCollectionKey';
+import getListKey from '../../../action-creators/helpers/getListKey';
 
 const RESOURCE_NAME = 'users';
 
@@ -46,7 +46,7 @@ describe('Create reducer:', function () {
             status: { type: NEW }
           }
         },
-        collections: {},
+        lists: {},
         newItemKey: 'temp'
       }, { id: 'temp' });
     });
@@ -64,7 +64,7 @@ describe('Create reducer:', function () {
               status: { type: SUCCESS }
             }
           },
-          collections: {
+          lists: {
             [EmptyKey]: {
               positions: [1],
               status: { type: null }
@@ -114,7 +114,7 @@ describe('Create reducer:', function () {
                 status: { type: SUCCESS }
               }
             },
-            collections: {
+            lists: {
               [EmptyKey]: {
                 positions: [1],
                 status: { type: null }
@@ -143,15 +143,15 @@ describe('Create reducer:', function () {
     });
   });
 
-  describe('when the push collections operator is used', () => {
+  describe('when the push lists operator is used', () => {
     expectToCorrectlyApplyOperator('push', ['temp'], [2], [1, 'temp'], [1, 2]);
   });
 
-  describe('when the unshift collections operator is used', () => {
+  describe('when the unshift lists operator is used', () => {
     expectToCorrectlyApplyOperator('unshift', ['temp'], [2], ['temp', 1], [2, 1]);
   });
 
-  describe('when the invalidate collections operator is used', () => {
+  describe('when the invalidate lists operator is used', () => {
     expectToCorrectlyApplyOperator('invalidate', [], [], [], []);
   });
 
@@ -251,8 +251,8 @@ describe('Create reducer:', function () {
       expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, 'temp', 'type', CREATING);
     });
 
-    it('then does NOT add the temporary key to the default collection', function () {
-      expectToNotChangeResourcesCollection(this, RESOURCE_NAME, EmptyKey);
+    it('then does NOT add the temporary key to the default list', function () {
+      expectToNotChangeResourcesList(this, RESOURCE_NAME, EmptyKey);
     });
 
     it('then sets the newItemKey to the temporary key', function () {
@@ -290,14 +290,14 @@ describe('Create reducer:', function () {
     beforeAll(function () {
       this.newValues = { username: 'Bob' };
       this.responseValues = { id: 2, username: 'Bob' };
-      this.collectionKey = { order: 'newest' };
+      this.listKey = { order: 'newest' };
     });
 
-    describe('and there are NO MATCHING collections', () => {
+    describe('and there are NO MATCHING lists', () => {
       beforeAll(function() {
         this.initialState = {
           items: {},
-          collections: {
+          lists: {
             'active=true': {
               positions: [],
               status: { type: SUCCESS }
@@ -309,34 +309,34 @@ describe('Create reducer:', function () {
 
       describe('before the request has completed', function () {
         beforeAll(function () {
-          setUpBeforeRequest(this, this.initialState, 'temp', this.newValues, { [operator]: this.collectionKey });
+          setUpBeforeRequest(this, this.initialState, 'temp', this.newValues, { [operator]: this.listKey });
         });
 
         afterAll(function () {
           tearDown(this);
         });
 
-        it('then creates a new collection with the specified temp key and places the item in it', function () {
-          expectToChangeResourceCollectionPositionsTo(
-            this, RESOURCE_NAME, getCollectionKey(this.collectionKey), expectedIsolatedStateBefore
+        it('then creates a new list with the specified temp key and places the item in it', function () {
+          expectToChangeResourceListPositionsTo(
+            this, RESOURCE_NAME, getListKey(this.listKey), expectedIsolatedStateBefore
           );
         });
 
-        it('then doesn\'t add the new temp key to any other existing collections', function () {
-          expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, 'active=true', []);
+        it('then doesn\'t add the new temp key to any other existing lists', function () {
+          expectToChangeResourceListPositionsTo(this, RESOURCE_NAME, 'active=true', []);
         });
       });
 
-      expectToReplaceTempKeyInCollections(operator, expectedIsolatedStateAfter);
+      expectToReplaceTempKeyInLists(operator, expectedIsolatedStateAfter);
     });
 
-    describe('and there are collections with keys that exactly match', function () {
+    describe('and there are lists with keys that exactly match', function () {
       beforeAll(function() {
         this.initialState = {
           items: {
             1: { id: 1, username: 'Jane' }
           },
-          collections: {
+          lists: {
             'active=true': {
               positions: [],
               status: { type: null }
@@ -352,32 +352,32 @@ describe('Create reducer:', function () {
 
       describe('before the request has completed', function () {
         beforeAll(function () {
-          setUpBeforeRequest(this, this.initialState, 'temp', this.newValues, { [operator]: this.collectionKey });
+          setUpBeforeRequest(this, this.initialState, 'temp', this.newValues, { [operator]: this.listKey });
         });
 
         afterAll(function () {
           tearDown(this);
         });
 
-        it('then adds the new item\'s temp key to the matching collections', function () {
-          expectToChangeResourceCollectionPositionsTo(
-            this, RESOURCE_NAME, getCollectionKey(this.collectionKey), expectedCumulativeStateBefore
+        it('then adds the new item\'s temp key to the matching lists', function () {
+          expectToChangeResourceListPositionsTo(
+            this, RESOURCE_NAME, getListKey(this.listKey), expectedCumulativeStateBefore
           );
         });
 
-        it('then doesn\'t add the new temp key to any other existing collections', function () {
-          expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, 'active=true', []);
+        it('then doesn\'t add the new temp key to any other existing lists', function () {
+          expectToChangeResourceListPositionsTo(this, RESOURCE_NAME, 'active=true', []);
         });
       });
 
-      expectToReplaceTempKeyInCollections(operator, expectedCumulativeStateAfter);
+      expectToReplaceTempKeyInLists(operator, expectedCumulativeStateAfter);
     });
   }
 
-  function expectToReplaceTempKeyInCollections(operator, expectedIsolatedStateAfter) {
+  function expectToReplaceTempKeyInLists(operator, expectedIsolatedStateAfter) {
     describe('when the request has completed', function () {
       beforeAll(function () {
-        setUpAfterRequestSuccess(this, this.initialState, 'temp', this.newValues, this.responseValues, { [operator]: this.collectionKey });
+        setUpAfterRequestSuccess(this, this.initialState, 'temp', this.newValues, this.responseValues, { [operator]: this.listKey });
       });
 
       afterAll(function () {
@@ -385,8 +385,8 @@ describe('Create reducer:', function () {
       });
 
       it('then replaces all references to the temporary key with the new item key', function () {
-        expectToChangeResourceCollectionPositionsTo(
-          this, RESOURCE_NAME, getCollectionKey(this.collectionKey), expectedIsolatedStateAfter
+        expectToChangeResourceListPositionsTo(
+          this, RESOURCE_NAME, getListKey(this.listKey), expectedIsolatedStateAfter
         );
       });
     });

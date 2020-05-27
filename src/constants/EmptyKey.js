@@ -1,5 +1,5 @@
 /**
- * The key used to index collections when no explicit key is defined
+ * The key used to index lists when no explicit key is defined
  */
 const EmptyKey = '';
 

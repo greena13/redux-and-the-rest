@@ -37,7 +37,7 @@ describe('DestroyItem reducer:', function () {
   describe('Given the resources item is NOT in the store', () => {
     expectToHandleSuccessAndFailedRequests({
       items: {},
-      collections: {},
+      lists: {},
       selectionMap: {},
       newItemKey: null
     }, 1, 1, 'Redux and the REST: DESTROY_USER\'s key \'1\' did not match any items in the store. (Destroy request was still sent to the server.)');
@@ -279,7 +279,7 @@ describe('DestroyItem reducer:', function () {
           status: { type: statusType }
         }
       },
-      collections: {},
+      lists: {},
       selectionMap: {},
       newItemKey: null
     };

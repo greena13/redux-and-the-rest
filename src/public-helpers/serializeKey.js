@@ -3,7 +3,7 @@ import EmptyKey from '../constants/EmptyKey';
 
 /**
  * Serializes an object to create a consistent key, no matter the ordering of the attributes, suitable to use
- * as a key for resource items and collections.
+ * as a key for resource items and lists.
  * @param {Object|string} target The object to serialize
  * @returns {string} The serialized key
  */

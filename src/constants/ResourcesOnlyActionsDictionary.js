@@ -2,7 +2,7 @@
  * A dictionary of actions that do NOT make sense for singular reosources
  */
 const ResourcesOnlyActionsDictionary = {
-  fetchCollection: true,
+  fetchList: true,
   selectItem: true,
   selectAnotherItem: true,
   deselectItem: true,

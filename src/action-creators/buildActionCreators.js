@@ -5,7 +5,7 @@ import resolveOptions from './helpers/resolveOptions';
 import { getConfiguration } from '../configuration';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 import fetchItemAction from '../actions/RESTful/fetchItem';
-import fetchCollectionAction from '../actions/RESTful/fetchCollection';
+import fetchListAction from '../actions/RESTful/fetchList';
 import newAction from '../actions/RESTful/newItem';
 import clearNewItemAction from '../actions/RESTful/clearNewItem';
 import editNewItemAction from '../actions/RESTful/editNewItem';
@@ -20,19 +20,19 @@ import deselectAction from '../actions/selection/deselectItem';
 import clearSelectedAction from '../actions/selection/clearSelectedItems';
 import clearResourceAction from '../actions/clear/clearResource';
 import clearItemAction from '../actions/clear/clearItem';
-import clearCollectionAction from '../actions/clear/clearCollection';
-import without from '../utils/collection/without';
+import clearListAction from '../actions/clear/clearList';
+import without from '../utils/list/without';
 import DefaultConfigurationOptions from '../constants/DefaultConfigurationOptions';
 import EmptyKey from '../constants/EmptyKey';
 import ResourcesOnlyActionsDictionary from '../constants/ResourcesOnlyActionsDictionary';
-import pluck from '../utils/collection/pluck';
+import pluck from '../utils/list/pluck';
 
 /**
  * Dictionary of standard action creators that perform a mix of synchronous and asynchronous changes where
  * updates need to be sent to a remote API to synchronise the local data state with the remote one.
  */
 const STANDARD_ACTION_CREATORS = {
-  fetchCollection: fetchCollectionAction.actionCreator,
+  fetchList: fetchListAction.actionCreator,
   fetchItem: fetchItemAction.actionCreator,
   newItem: newAction.actionCreator,
   clearNewItem: clearNewItemAction.actionCreator,
@@ -44,7 +44,7 @@ const STANDARD_ACTION_CREATORS = {
   destroyItem: destroyItemAction.actionCreator,
 
   clearItem: clearItemAction.actionCreator,
-  clearCollection: clearCollectionAction.actionCreator,
+  clearList: clearListAction.actionCreator,
   clearResource: clearResourceAction.actionCreator,
 
   selectItem: selectItemAction.actionCreator,
@@ -102,7 +102,7 @@ const SINGULAR_ACTION_CREATORS = {
  *           Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this
  *           attribute is required for Non-RESTful actions.
  * @property {boolean} progress Whether the store should emit progress events as the resource is uploaded or
- *           downloaded. This is applicable to the RESTful actions fetchCollection, fetchItem, createItem, updateItem and any
+ *           downloaded. This is applicable to the RESTful actions fetchList, fetchItem, createItem, updateItem and any
  *           custom actions.
  * @property {ResponseAdaptorFunction} responseAdaptor Function used to adapt the response for a particular
  *           request before it is handed over to the reducers. The function must return the results as an object
@@ -122,8 +122,8 @@ const SINGULAR_ACTION_CREATORS = {
  *           post-processing to standardise the resource before it is added to the store.
  *
  * @property {Metadata} [metadata] An object of attributes and values that describe the metadata of the
- *           collection. It can be used for containing information like page numbers, limits, offsets and
- *           includes for collections and types for items (previews, or the complete set of attributes of
+ *           list. It can be used for containing information like page numbers, limits, offsets and
+ *           includes for lists and types for items (previews, or the complete set of attributes of
  *           an item).
  */
 
@@ -263,7 +263,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
       };
 
     } else {
-      warn(`'${key}' must match the collection of standard action creators (${Object.keys(STANDARD_ACTION_CREATORS).join(', ')}) or define an 'actionCreator' option. Check the options for ${name}`);
+      warn(`'${key}' must match the list of standard action creators (${Object.keys(STANDARD_ACTION_CREATORS).join(', ')}) or define an 'actionCreator' option. Check the options for ${name}`);
     }
 
     return memo;

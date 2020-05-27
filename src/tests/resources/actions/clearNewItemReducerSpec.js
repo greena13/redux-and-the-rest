@@ -1,10 +1,10 @@
 import { resources, EDITING, NEW, RESOURCES } from '../../../index';
 import {
   expectToNotChangeNewItemKey,
-  expectToNotChangeResourcesCollection,
+  expectToNotChangeResourcesList,
   expectToNotChangeSelectionMap,
   expectToChangeNewItemKeyTo,
-  expectToChangeResourceCollectionPositionsTo,
+  expectToChangeResourceListPositionsTo,
   expectToChangeSelectionMapTo,
   setupInitialState
 } from '../../helpers/resourceAssertions';
@@ -43,7 +43,7 @@ describe('Clear new reducer:', function () {
           status: { type: NEW },
         },
       },
-      collections: {
+      lists: {
         [EmptyKey]: {
           positions: ['temp', 1],
           status: { type: EDITING },
@@ -68,8 +68,8 @@ describe('Clear new reducer:', function () {
       expectToNotChangeSelectionMap(this, RESOURCE_NAME);
     });
 
-    it('then DOES NOT remove the resource\'s key from any collections', function() {
-      expectToNotChangeResourcesCollection(this, RESOURCE_NAME, EmptyKey, 'positions');
+    it('then DOES NOT remove the resource\'s key from any lists', function() {
+      expectToNotChangeResourcesList(this, RESOURCE_NAME, EmptyKey, 'positions');
     });
   });
 
@@ -93,8 +93,8 @@ describe('Clear new reducer:', function () {
       expectToChangeSelectionMapTo(this, RESOURCE_NAME, { 1: true });
     });
 
-    it('then removes the resource\'s key from any collections', function() {
-      expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, EmptyKey, [1]);
+    it('then removes the resource\'s key from any lists', function() {
+      expectToChangeResourceListPositionsTo(this, RESOURCE_NAME, EmptyKey, [1]);
     });
   });
 });

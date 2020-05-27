@@ -2,10 +2,10 @@ import getItemKey from '../../action-creators/helpers/getItemKey';
 import { ITEM } from '../../constants/DataStructures';
 import { NEW } from '../../constants/Statuses';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
-import extractCollectionOperations from '../../action-creators/helpers/extractCollectionOperations';
+import extractListOperations from '../../action-creators/helpers/extractListOperations';
 import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
-import applyCollectionOperators from '../../reducers/helpers/applyCollectionOperators';
+import applyListOperators from '../../reducers/helpers/applyListOperators';
 import processActionCreatorOptions from '../../action-creators/helpers/processActionCreatorOptions';
 import wrapInObject from '../../utils/object/wrapInObject';
 
@@ -56,7 +56,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     type: action,
     status: NEW,
     temporaryKey,
-    collectionOperations: extractCollectionOperations(actionCreatorOptions, urlOnlyParams),
+    listOperations: extractListOperations(actionCreatorOptions, urlOnlyParams),
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
       values,
@@ -77,7 +77,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources, action) {
-  const { type, temporaryKey, item, collectionOperations } = action;
+  const { type, temporaryKey, item, listOperations } = action;
   assertInDevMode(() => {
     const existingItem = resources.items[temporaryKey];
 
@@ -109,7 +109,7 @@ function reducer(resources, action) {
   return {
     ...resources,
     items: newItems,
-    collections: applyCollectionOperators(resources.collections, collectionOperations, temporaryKey),
+    lists: applyListOperators(resources.lists, listOperations, temporaryKey),
     newItemKey: temporaryKey
   };
 }

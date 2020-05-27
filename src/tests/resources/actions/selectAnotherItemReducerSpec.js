@@ -20,7 +20,7 @@ describe('Select another reducer:', function () {
 
     this.resourceBefore = {
 
-      collections: {},
+      lists: {},
       newItemKey: null
     };
   });

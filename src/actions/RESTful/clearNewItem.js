@@ -1,5 +1,5 @@
 import { NEW } from '../../constants/Statuses';
-import without from '../../utils/collection/without';
+import without from '../../utils/list/without';
 
 /** ************************************************************************************************************
  * Action creators
@@ -25,16 +25,16 @@ function actionCreator({ action }) {
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources) {
-  const { newItemKey, items, collections, selectionMap } = resources;
+  const { newItemKey, items, lists, selectionMap } = resources;
 
   if (items[newItemKey] && items[newItemKey].status.type === NEW) {
     return {
       ...resources,
       items: without(items, newItemKey),
-      collections: Object.keys(collections).reduce((memo, key) => {
-        const collection = collections[key];
+      lists: Object.keys(lists).reduce((memo, key) => {
+        const list = lists[key];
 
-        memo[key] = { ...collection, positions: without(collection.positions, newItemKey) };
+        memo[key] = { ...list, positions: without(list.positions, newItemKey) };
 
         return memo;
       }, {}),

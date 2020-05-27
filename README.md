@@ -33,14 +33,14 @@ import Thunk from 'redux-thunk';
 /**
  * Define a users resource
  */
-const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers }, getCollection } = resources(
+const { reducers: usersReducers, actionCreators: { fetchList: fetchUsers }, getList } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
         keyBy: 'id'
     },
     {
-        fetchCollection: true
+        fetchList: true
     }
 );
 
@@ -58,7 +58,7 @@ fetchUsers();
 /**
  * Retrieve the users from the store
  */
-users = getCollection(store.getState().users);
+users = getList(store.getState().users);
 ```
 
 ## Contents
@@ -97,15 +97,15 @@ users = getCollection(store.getState().users);
 * [Store data](#store-data)
    * [Getting items from the store](#getting-items-from-the-store)
    * [Automatically fetching items not in the store](#automatically-fetching-items-not-in-the-store)
-      * [Getting collections from the store](#getting-collections-from-the-store)
-      * [Automatically fetching collections that are not in the store](#automatically-fetching-collections-that-are-not-in-the-store)
+      * [Getting lists from the store](#getting-lists-from-the-store)
+      * [Automatically fetching lists that are not in the store](#automatically-fetching-lists-that-are-not-in-the-store)
    * [Store data schemas](#store-data-schemas)
       * [Nomenclature](#nomenclature)
       * [Use helper methods where possible](#use-helper-methods-where-possible)
       * [Resource schema](#resource-schema)
          * [Top level schema](#top-level-schema)
          * [Item schema](#item-schema)
-         * [Collection schema](#collection-schema)
+         * [List schema](#list-schema)
    * [Data lifecycle](#data-lifecycle)
       * [Client statuses](#client-statuses)
       * [Pending statuses](#pending-statuses)
@@ -117,12 +117,12 @@ users = getCollection(store.getState().users);
       * [Dealing with failed requests](#dealing-with-failed-requests)
       * [Dealing with slow requests](#dealing-with-slow-requests)
       * [Detecting old data](#detecting-old-data)
-   * [Fetch a collection from the server](#fetch-a-collection-from-the-server)
-      * [fetchCollection action creator options](#fetchcollection-action-creator-options)
+   * [Fetch a list from the server](#fetch-a-list-from-the-server)
+      * [fetchList action creator options](#fetchlist-action-creator-options)
    * [Fetch an individual item from the server](#fetch-an-individual-resource-item-from-the-server)
       * [Fetch action creator options](#fetch-action-creator-options)
    * [Create a new item on the server](#create-a-new-resource-item-on-the-server)
-      * [Adding a created item to a collection](#adding-a-created-item-to-a-collection)
+      * [Adding a created item to a list](#adding-a-created-item-to-a-list)
    * [Update a item on the server](#update-a-resource-item-on-the-server)
       * [Update action creator options](#update-action-creator-options)
    * [Destroy a item on the server](#destroy-a-resource-item-on-the-server)
@@ -228,25 +228,25 @@ They both accept two options hashes as arguments:
 The functions return an object containing Redux components necessary to use the resource you have just defined:
 
 * `reducers` - an object of reducers that you can pass to Redux's `combineReducers` function.
-* `actions` - an object of action constants where the keys are the generic action names and the values are the specific action constants (e.g. `{ fetchCollection: 'FETCH_USERS' }`)
+* `actions` - an object of action constants where the keys are the generic action names and the values are the specific action constants (e.g. `{ fetchList: 'FETCH_USERS' }`)
 * `actionCreators` - an object of functions (action creators) you call to interact with the resource which match the actions you specify in `actionOptions` and are passed to Redux's `dispatch` function.
 
 Also returned are 3 helper functions:
-* `getCollection` - for retrieving a collection based on its key parameters
+* `getList` - for retrieving a list based on its key parameters
 * `getItem` - for retrieving an item based on its key parameters
 * `getNewItem` - for retrieving the item currently being created
 
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
+const { reducers, actionCreators: { fetchList: fetchUsers } } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
         keyBy: 'id'
     },
     {
-        fetchCollection: true
+        fetchList: true
     }
 );
 ```     
@@ -259,11 +259,11 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
 An array of action names as strings:
 
 ```javascript
-const { actionCreators: { fetchCollection: fetchUsers } } = resources(
+const { actionCreators: { fetchList: fetchUsers } } = resources(
     {
         // ...
     },
-    [ 'fetchCollection' ]
+    [ 'fetchList' ]
 );
 ```                                
 
@@ -276,11 +276,11 @@ The other format is an object with action names as keys and configuration object
 If you want to use the default configuration for a particular action, you just need to pass a value of `true`, for example:
 
 ```javascript
-const { actionCreators: { fetchCollection: fetchUsers } } = resources(
+const { actionCreators: { fetchList: fetchUsers } } = resources(
     {
         // ...
     },
-    { fetchCollection: true }
+    { fetchList: true }
 );
 ```
 
@@ -289,12 +289,12 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 You can override or extend the default configuration for an action using an options hash instead of `true` when defining your actions:
 
 ```javascript
-const { actionCreators: { fetchCollection: fetchUsers } } = resources(
+const { actionCreators: { fetchList: fetchUsers } } = resources(
     {
         // ...
     },
     {
-        fetchCollection:  {
+        fetchList:  {
             // action options
         }
     }
@@ -329,7 +329,7 @@ When the your application is done with local manipulation of a resource, you can
 
 | Action | Action Creator | Description |
 | ------ | -------------- | ----------- |
-| fetchCollection | fetchCollection() | Fetches a collection of items from a remote API |
+| fetchList | fetchList() | Fetches a list of items from a remote API |
 | fetchItem | fetchItem() | Fetches an item from a remote API |
 | createItem | createItem() | Sends a create request with an item's attributes to a remote API |
 | updateItem | updateItem() | Sends new attributes (an "update") for an item to a remote API |
@@ -344,12 +344,12 @@ It's generally _not_ recommended to use any of the following directly, as there 
 | Action | Action Creator | Description |
 | ------ | -------------- | ----------- |
 | clearItem | clearItem() | Removes an item from the store. |
-| clearCollection | clearCollection() | Removes a collection from the store (but still leaves behind its items). |
-| clearResource | clearResource() | Completely resets a resource to its empty state, clearing all selections, items and collections. |
+| clearList | clearList() | Removes a list from the store (but still leaves behind its items). |
+| clearResource | clearResource() | Completely resets a resource to its empty state, clearing all selections, items and lists. |
 
 Some common situations where you may be tempted to use the above, are:
 
-* Refreshing an item or collection from a remote API: `fetchItem()` or `fetchCollection()` should handle transitioning between the stale and new records more cleanly.
+* Refreshing an item or list from a remote API: `fetchItem()` or `fetchList()` should handle transitioning between the stale and new records more cleanly.
 * Cancelling an edit to an item: Use `clearItemEdit()` to roll back the changes without the need to refetch from the remote API.
 * Clearing a resource when an event occurs, such as when user logs out: use the `clearOn` option to achieve this more efficiently (discussed below).   
 
@@ -513,7 +513,7 @@ const mapDispatchToProps = ((dispatch) => {
 });         
 
 const mergeProps = ((stateProps, dispatchProps, ownProps) => {
-  // The final collection of props passed to your component
+  // The final list of props passed to your component
   return {
     age: stateProps.user.values.age,
     updateAge: (newAge) => dispatchProps.updateAge(stateProps.user.values, newAge),
@@ -566,7 +566,7 @@ configure({
     // ...
 });
 
-const { actionCreators: { fetchCollection: fetchUsers } } = resources(
+const { actionCreators: { fetchList: fetchUsers } } = resources(
     {
         // resourceOptions
         name: 'users',
@@ -574,7 +574,7 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
         keyBy: 'id'
     },
     {
-        fetchCollection: {
+        fetchList: {
             // actionOptions
             // ...
         },
@@ -608,7 +608,7 @@ configure({
 | key | Type | Required or Default Value | Description |
 | --- | ---- | ------------------------- | ----------- |
 | keyBy | string or array of strings | No | The resource attribute used to key/index all items of the current resource type. This will be the value you pass to each action creator to identify the target of each action. By default, 'id' is used. |
-| localOnly | boolean | No | Set to true for resources that should be edited locally, only. The fetchItem and fetchCollection actions are disabled (the fetch* action creators are not exported) and the createItem, updateItem and destroyItem only update the store locally, without making any HTTP requests. |
+| localOnly | boolean | No | Set to true for resources that should be edited locally, only. The fetchItem and fetchList actions are disabled (the fetch* action creators are not exported) and the createItem, updateItem and destroyItem only update the store locally, without making any HTTP requests. |
 | urlOnlyParams | Array of string | No | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
 | responseAdaptor | (responseBody: Object, response: Response) => { values: Object, error?: Object or string, errors?: Array<Object or string> } | No | Function used to adapt the responses for requests before it is handed over to the reducers. The function must return the results as an object with properties values and (optionally) error. |
 | requestAdaptor | (requestBody: Object) => Object | No | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
@@ -616,7 +616,7 @@ configure({
 | request | RequestInit | No | The request configuration object to be passed to the fetch method, or the new XMLHttpRequest object, when the progress option is used. |
 | beforeReducers | Array of reducers | No | A list of functions to call before passing the resource to the reducer. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
 | afterReducers | Array of reducers  | No | A list of functions to call after passing the resource to the reducer. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
-| store | Store | Yes, if you use the mentioned helpers | The Redux store, used to directly invoke dispatch and get state for the getOrFetchItem() and getOrFetchCollection() functions |
+| store | Store | Yes, if you use the mentioned helpers | The Redux store, used to directly invoke dispatch and get state for the getOrFetchItem() and getOrFetchList() functions |
 
 ### Resource Options API
 
@@ -627,7 +627,7 @@ Values passed to `resourceOptions` are used to configure the resource and apply 
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { actionCreators: { fetchCollection: fetchUsers } } = resources(
+const { actionCreators: { fetchList: fetchUsers } } = resources(
     {
         // resourceOptions
     },
@@ -650,7 +650,7 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 
 | key | Type | Required or Default Value | Description |
 | --- | ---- | ------------------------- | ----------- |
-| `localOnly` | boolean | false | Set to true for resources that should be edited locally, only. The `fetchItem` and `fetchCollection` actions are disabled (the `fetch*` action creators are not exported) and the `createItem`, `updateItem` and `destroyItem` only update the store locally, without making any HTTP requests. |
+| `localOnly` | boolean | false | Set to true for resources that should be edited locally, only. The `fetchItem` and `fetchList` actions are disabled (the `fetch*` action creators are not exported) and the `createItem`, `updateItem` and `destroyItem` only update the store locally, without making any HTTP requests. |
 | `url` | string |  Required | A url template that is used for all of the resource's actions. The template string can include required url parameters by prefixing them with a colon (e.g. `:id`) and optional parameters are denoted by adding a question mark at the end (e.g. `:id?`). This will be used as the default url template, but individual actions may override it with their own. |
 | `urlOnlyParams` | string[] | [ ] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. Useful for pagination. |
 | `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error` or `errors`. |
@@ -677,12 +677,12 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { actionCreators: { fetchCollection: fetchUsers } } = resources(
+const { actionCreators: { fetchList: fetchUsers } } = resources(
     {
         // ...
     },
     {
-        fetchCollection: {
+        fetchList: {
             // actionOptions
         },
         fetch: {
@@ -709,9 +709,9 @@ const { actionCreators: { fetchCollection: fetchUsers } } = resources(
 | `responseAdaptor` | Function | Identity function | Function used to adapt the response for a particular request before it is handed over to the reducers. The function must return the results as an object with properties `values` and (optionally) `error` or `errors`. |
 | `requestAdaptor` | Function | Identity function | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
 | `credentials` | string | undefined | Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the request only if it's on the same origin. |
-| `progress` | boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `fetchCollection`, `fetchItem`, `createItem`, `updateItem` and any custom actions. |
-| `metadata` | object | `{ type: 'COMPLETE' }` | An object of attributes and values that describe the collection's metadata. It can be used for containing information like page numbers, limits, offsets and includes for collections and types for items (previews, or the complete set of attributes of an item). |  
-| `itemsMetadata` | object | `{ type: 'COMPLETE' }` | Accepted only by `fetchCollection` and `getOrFetchCollection`, used to define the metadata of each item in the collection (the `metadata` is applied to the collection). |  
+| `progress` | boolean |   false | Whether the store should emit progress events as the resource is uploaded or downloaded. This is applicable to the RESTful actions `fetchList`, `fetchItem`, `createItem`, `updateItem` and any custom actions. |
+| `metadata` | object | `{ type: 'COMPLETE' }` | An object of attributes and values that describe the list's metadata. It can be used for containing information like page numbers, limits, offsets and includes for lists and types for items (previews, or the complete set of attributes of an item). |  
+| `itemsMetadata` | object | `{ type: 'COMPLETE' }` | Accepted only by `fetchList` and `getOrFetchList`, used to define the metadata of each item in the list (the `metadata` is applied to the list). |  
 
 ##### Reducers
 
@@ -734,7 +734,7 @@ It will return an [empty item](#item-schema) (instead of `undefined`) if one wit
 import { serializeKey, ITEM } from `redux-and-the-rest`;
 import { connect } from 'react-redux';
 
-const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers }, getItem } = resources(
+const { reducers: usersReducers, actionCreators: { fetchList: fetchUsers }, getItem } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -752,7 +752,7 @@ function mapStateToProps({ users }, { params: { id } }) {
 
 ### Automatically fetching items not in the store
 
-To get a item or collection from the store and fallback to making a request to the remote API if it's not there, use the `getOrFetchItem()` function returned by `resources()`.
+To get a item or list from the store and fallback to making a request to the remote API if it's not there, use the `getOrFetchItem()` function returned by `resources()`.
 
 If the item is in the store, it will return it. However, if it is not there, it will return an [empty item](#item-schema) (instead of `undefined`) and trigger the action(s) to fetch the resource in the background.
 
@@ -777,7 +777,7 @@ And you must define a `fetchItem` action when defining your resource:
 import { serializeKey, ITEM } from `redux-and-the-rest`;
 import { connect } from 'react-redux';
 
-const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers }, getOrFetchItem } = resources(
+const { reducers: usersReducers, actionCreators: { fetchList: fetchUsers }, getOrFetchItem } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
@@ -789,7 +789,7 @@ const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers }
 );
 ```
 
-`getOrFetchItem()` expects the current resources state (the part of the Redux store that contains your resources data) as its first argument. The second argument is the params object that will be serialized to generate the item or collection's key. The third (optional) argument are options to pass to the action creator, if it's called.
+`getOrFetchItem()` expects the current resources state (the part of the Redux store that contains your resources data) as its first argument. The second argument is the params object that will be serialized to generate the item or list's key. The third (optional) argument are options to pass to the action creator, if it's called.
 
 ```javascript
 function mapStateToProps({ users }, { params: { id } }) {
@@ -798,7 +798,7 @@ function mapStateToProps({ users }, { params: { id } }) {
 }
 ```
 
-The actionCreatorOptions accepts the option `forceFetch`, which accepts a boolean or a function that is passed the current item or collection and is expected to return a boolean value. This provides a way to conditionally ignore the version of the item or collection in the store and to make a fetchItem request anyway:
+The actionCreatorOptions accepts the option `forceFetch`, which accepts a boolean or a function that is passed the current item or list and is expected to return a boolean value. This provides a way to conditionally ignore the version of the item or list in the store and to make a fetchItem request anyway:
 
 ```javascript
 function mapStateToProps({ users }, { params: { id } }) {
@@ -809,37 +809,37 @@ function mapStateToProps({ users }, { params: { id } }) {
 }
 ```
 
-#### Getting collections from the store
+#### Getting lists from the store
 
-To get a collection from a resource, you use the `getCollection()` function returned by `resources()`.
+To get a list from a resource, you use the `getList()` function returned by `resources()`.
 
-It will return an [empty collection](#collection-schema) (instead of `undefined`) if one with the corresponding key does not exist in the store.
+It will return an [empty list](#list-schema) (instead of `undefined`) if one with the corresponding key does not exist in the store.
 
 ```javascript
-import { serializeKey, COLLECTION } from `redux-and-the-rest`;
+import { serializeKey, LIST } from `redux-and-the-rest`;
 import { connect } from 'react-redux';
 
-const { reducers: usersReducers, actionCreators: { fetchCollection: fetchUsers }, getCollection } = resources(
+const { reducers: usersReducers, actionCreators: { fetchList: fetchUsers }, getList } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
         keyBy: 'id'
     },
     {
-        fetchCollection: true
+        fetchList: true
     }
 );
 
 function mapStateToProps({ users: usersResource }, { params: { order } }) {
-  return getCollection(usersResource, { order });
+  return getList(usersResource, { order });
 }
 ```
 
-#### Automatically fetching collections that are not in the store
+#### Automatically fetching lists that are not in the store
 
-Similar to `getOrFetchItem()`, the `resources()` function returns a `getOrFetchCollection()` that accepts the same arguments and performs in the same manner.
+Similar to `getOrFetchItem()`, the `resources()` function returns a `getOrFetchList()` that accepts the same arguments and performs in the same manner.
 
-To use it, you will also need to have configured `redux-and-the-rest` to use your store instance and you'll need to have defined an `fetchCollection` action when defining your `resources()`.
+To use it, you will also need to have configured `redux-and-the-rest` to use your store instance and you'll need to have defined an `fetchList` action when defining your `resources()`.
 
 ### Store data schemas
 
@@ -848,8 +848,8 @@ To use it, you will also need to have configured `redux-and-the-rest` to use you
 It is helpful to first clarify some of the terms used in the next few sections:
 
 * **Resource:** A *type of thing* that is available in your application and you can view or perform actions on. Examples of resources are "users", "posts" or "comments".
-* **Collection:** An ordered list of items of a particular resource. This is generally what is returned from an RESTful index server endpoint. They can be ordered, scoped or filtered. Examples include "the newest users", "the most popular posts", or simply "comments" (collections don't have to have an explicit order - but one will be implied by how they are listed in a server's response).
-* **Item:** Individual resource objects, that can belong to collections or can exist as individual entities. They have a unique primary id when using `resources()` or an implicit id when using `resource()`. For example "user with ID 123" or "post with ID 7".
+* **List:** An ordered list of items of a particular resource. This is generally what is returned from an RESTful index server endpoint. They can be ordered, scoped or filtered. Examples include "the newest users", "the most popular posts", or simply "comments" (lists don't have to have an explicit order - but one will be implied by how they are listed in a server's response).
+* **Item:** Individual resource objects, that can belong to lists or can exist as individual entities. They have a unique primary id when using `resources()` or an implicit id when using `resource()`. For example "user with ID 123" or "post with ID 7".
 
 #### Use helper methods where possible
 
@@ -867,15 +867,15 @@ The top-level schema looks like the following, before it any data is added to yo
 ```javascript
 {
     items: {},
-    collections: {},
+    lists: {},
     selectionMap: {},
     newItemKey: null
 }
 ```
 
 We will now explore each one:
-* `items` - A map of item keys to item objects, from all of the collections currently in the store. This means that collections with a large amount of overlap (i.e. they share many of the same items) only store one copy of each item.
-* `collections` - A map of collections, keyed by their parameters. This allows you to have many collections of the same resource all in the one place (e.g. "newest", "most popular"), without having to re-fetch them if the user moves back and forth between them.
+* `items` - A map of item keys to item objects, from all of the lists currently in the store. This means that lists with a large amount of overlap (i.e. they share many of the same items) only store one copy of each item.
+* `lists` - A map of lists, keyed by their parameters. This allows you to have many lists of the same resource all in the one place (e.g. "newest", "most popular"), without having to re-fetch them if the user moves back and forth between them.
 * `selectionMap` - A dictionary of item keys, representing which of the resources are currently selected in your application (if any). Because it is a map, it is easy to query if any one particular item is currently selected or not, in constant time.
 * `newItemKey` - A value that keeps track of the key assigned to the latest item that was created of this particular resource. This is useful when you are creating a new item with a temporary id (say the current time) and you need to know the new ID the server has assigned it once it has been successfully created there, so you can move from the temporary id to the new server-assigned Id.
 
@@ -899,7 +899,7 @@ A blank item has the following schema:
 Setting the `metadata` when defining the resource:
 
 ```
-const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
+const { reducers, actionCreators: { fetchList: fetchUsers } } = resources({
   name: 'users',
   url: 'http://test.com/users',
   keyBy: 'id',
@@ -916,9 +916,9 @@ Setting the `metadata` when calling the action creator:
 dispatch(fetchUser(1, { metadata: { type: 'PREVIEW' }}));
 ```
 
-##### Collection schema
+##### List schema
 
-A blank collection has the following schema:
+A blank list has the following schema:
 
 ```javascript
 {
@@ -928,19 +928,19 @@ A blank collection has the following schema:
 };
 ```
 
-* `positions`: This is an array of keys of the items that exist in the collection. It stores the order of the items separate from the items themselves, so the items may be efficiently stored (without any duplicates) when we have multiple collections that may share them. It also means that we may update individual item's values, without having to alter all of the collections they are a part of.
-* `status`: This is where status information is stored for the entire collection.
-* `metadata`: This is where information about the nature of the collection is stored. A `type` attribute indicates whether all of the items in the collection have been retrieved (`COMPLETE` by default), or whether only some of them have. Other information can also be stored here, and is configurable when the resource action is defined or when the action creator is called.
+* `positions`: This is an array of keys of the items that exist in the list. It stores the order of the items separate from the items themselves, so the items may be efficiently stored (without any duplicates) when we have multiple lists that may share them. It also means that we may update individual item's values, without having to alter all of the lists they are a part of.
+* `status`: This is where status information is stored for the entire list.
+* `metadata`: This is where information about the nature of the list is stored. A `type` attribute indicates whether all of the items in the list have been retrieved (`COMPLETE` by default), or whether only some of them have. Other information can also be stored here, and is configurable when the resource action is defined or when the action creator is called.
 
 Setting the `metadata` when defining the resource:
 
 ```
-const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
+const { reducers, actionCreators: { fetchList: fetchUsers } } = resources({
   name: 'users',
   url: 'http://test.com/users',
   keyBy: 'id',
 }, {
-  fetchCollection: {
+  fetchList: {
     metadata: { type: 'PAGINATED' }
   }
 });
@@ -954,20 +954,20 @@ dispatch(fetchUsers({}, { metadata: { type: 'PAGINATED', page: 1 }}));
 
 ### Data lifecycle
 
-`redux-and-the-rest` uses the `status.type` attribute of collections and items to indicate what state they are currently in. However, it's recommended to use one of the helper methods to query the status rather than accessing the attribute directly:
+`redux-and-the-rest` uses the `status.type` attribute of lists and items to indicate what state they are currently in. However, it's recommended to use one of the helper methods to query the status rather than accessing the attribute directly:
 
 Checking if resource is out of sync with remote:
 * `isEditing(item)` - Whether the item has been modified since it was last synced with the server
 
-Checking if item or collection is syncing with a remote API:
-* `isSyncingWithRemote(itemOrCollection)` - Whether the item or collection is currently syncing (fetching, creating, updating, destroying, progress) with the remote 
-* `isSyncedWithRemote(itemOrCollection)` - Complement of `isSyncingWithRemote(itemOrCollection)`
-* `isFinishedFetching(itemOrCollection)` - Whether the item or collection has finished being fetched (specifically) from the remote API.
+Checking if item or list is syncing with a remote API:
+* `isSyncingWithRemote(itemOrList)` - Whether the item or list is currently syncing (fetching, creating, updating, destroying, progress) with the remote 
+* `isSyncedWithRemote(itemOrList)` - Complement of `isSyncingWithRemote(itemOrList)`
+* `isFinishedFetching(itemOrList)` - Whether the item or list has finished being fetched (specifically) from the remote API.
  
 
 Checking the status of the latest sync with the remote API:
-* `isSuccessfullyFetched(itemOrCollection)` - Whether the item or collection has finished being successfully fetched
-* `isInAnErrorState(itemOrCollection)` - Whether the item or collection is in an errored state - usually because the last request failed
+* `isSuccessfullyFetched(itemOrList)` - Whether the item or list has finished being successfully fetched
+* `isInAnErrorState(itemOrList)` - Whether the item or list is in an errored state - usually because the last request failed
 
 ```javascript
 import React from 'react';
@@ -1001,7 +1001,7 @@ These statuses are useful for creating behaviour specific to new or changed item
 
 Checking for these statuses is generally useful for displaying loaders or progress indicators:
 
-* `FETCHING`: When an item or collection is being fetched from the server but it has not yet arrived.
+* `FETCHING`: When an item or list is being fetched from the server but it has not yet arrived.
 * `CREATING`: When the request to create a new item has been sent to the server, but the response has not yet arrived.
 * `UPDATING`: When the request to save the changes to an existing item have been sent to the server, but the response has not yet arrived.
 * `DESTROYING`: When the request to destroy an existing item has been sent to the server, but the response has not yet arrived.
@@ -1011,15 +1011,15 @@ Checking for these statuses is generally useful for displaying loaders or progre
 
 Checking for these statuses is useful for displaying success or error messages:
 
-* `SUCCESS`: When the response to the a request to fetch collection or an item has arrived and it was a success. You can now use the contents of the collection or item.
-* `ERROR`: When the response to the a request to fetch collection or an item has arrived and it was an error. You should now check the `status.errors` attribute for details.
+* `SUCCESS`: When the response to the a request to fetch list or an item has arrived and it was a success. You can now use the contents of the list or item.
+* `ERROR`: When the response to the a request to fetch list or an item has arrived and it was an error. You should now check the `status.errors` attribute for details.
 * `DESTROY_ERROR`: When the response to the request to destroy an existing item has arrived, and it's an error. You should now check the `status.errors` attribute for details.
 
 ## Setting initial state
 
 `redux-and-the-rest` provides a Builder for each resource that can be used to define the initial resource state in a minimal fashion. This builder provides a chainable interface for specifying values and a `build()` function for returning the initial state, correctly nested and formatted to work with the resource's reducers.
 
-`resources()` returns a `buildInitialState()` helper function that returns an `InitialResourceStateBuilder` instance. This instance lets you set values that will propagate to all of the resource's collections and items.
+`resources()` returns a `buildInitialState()` helper function that returns an `InitialResourceStateBuilder` instance. This instance lets you set values that will propagate to all of the resource's lists and items.
 
 ```javascript
 const { buildInitialState } = resources({
@@ -1032,28 +1032,28 @@ const stateBuilder = buildInitialState([ { id: 1, username: 'John' }]);
 createStore(reducers, { users: stateBuilder.build() });
 ```
 
-It provides a `addCollection()` function for specifying a collection, which returns a builder scoped to that collection, so you can further specify state and metadata values on that collection and its items. The `addCollection()` function accepts an optional params object, used to create the collection's key and an array of items in the collection, as its arguments.
+It provides a `addList()` function for specifying a list, which returns a builder scoped to that list, so you can further specify state and metadata values on that list and its items. The `addList()` function accepts an optional params object, used to create the list's key and an array of items in the list, as its arguments.
 
 ```javascript
-// The default, unkeyed collection
-const collectionBuilder = stateBuilder.addCollection([ { id: 1, username: 'John' }]);
+// The default, unkeyed list
+const listBuilder = stateBuilder.addList([ { id: 1, username: 'John' }]);
 
-// Collection with a key
-const collectionBuilder = stateBuilder.addCollection('newest', [ { id: 1, username: 'John' }]);
+// List with a key
+const listBuilder = stateBuilder.addList('newest', [ { id: 1, username: 'John' }]);
 ```
 
-The collection builder also provides an `addItem()` function for adding items to the collection after its been instantiated. The `addItem()` function accepts an optional params object to define the object's key, and an object of the item's attributes.
+The list builder also provides an `addItem()` function for adding items to the list after its been instantiated. The `addItem()` function accepts an optional params object to define the object's key, and an object of the item's attributes.
 
 ```javascript
 // Taking the key from the item (using the default of 'id')
-collectionBuilder.addItem({id: 2, username: 'Bob' });
+listBuilder.addItem({id: 2, username: 'Bob' });
 
 // Specifying params to use to generate the key
-collectionBuilder.addItem(3, {username: 'George' }); // OR
-collectionBuilder.addItem({id: 3}, {username: 'George' });
+listBuilder.addItem(3, {username: 'George' }); // OR
+listBuilder.addItem({id: 3}, {username: 'George' });
 ```
 
-`InitialResourceStateBuilder` also provides an `addItem()` function, to add items that are not in any specific collection.
+`InitialResourceStateBuilder` also provides an `addItem()` function, to add items that are not in any specific list.
 
 ```javascript
 const stateBuilder = buildInitialState();
@@ -1068,7 +1068,7 @@ const itemStateBuilder = stateBuilder.addItem({ id: 1, username: 'John'});
 itemStateBuilder.setStatusType(customStatusType).setMetadata({ type: 'CUSTOM' });
 ```
 
-Items inherit the state and metadata of their collection, unless explicitly set. Similarly, collections inherit these values from their resource unless explicitly set.
+Items inherit the state and metadata of their list, unless explicitly set. Similarly, lists inherit these values from their resource unless explicitly set.
 
 **Note** It is strongly recommended that you set the syncedAt value for your initial state, to allow the `canFallbackToOldValues()` helper to function correctly.
 
@@ -1082,14 +1082,14 @@ Given the following resource definition:
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
+const { reducers, actionCreators: { fetchList: fetchUsers } } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
         keyBy: 'id'
     },
     [
-        'fetchCollection', 'fetch', 'createItem', 'updateItem', 'destroyItem'
+        'fetchList', 'fetch', 'createItem', 'updateItem', 'destroyItem'
     ]
 );
 ```
@@ -1098,7 +1098,7 @@ const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
 
 | Action creator | RESTful action | HTTP Request |
 | ---- | :--- | :--- |
-| `fetchCollection()` | #fetchCollection | `GET http://test.com/users` |
+| `fetchList()` | #fetchList | `GET http://test.com/users` |
 | `fetchItem(1)` | #fetchItem | `GET http://test.com/users/1` |
 | `createUser('tempId', {name: 'foo'})` | #createItem | `POST http://test.com/users` |
 | `updateUser(1, {name: 'foo'})` | #updateItem | `PUT http://test.com/users/1` |
@@ -1114,9 +1114,9 @@ This behaviour can be overridden by passing a `force` value of `true` to the `ac
 
 #### Dealing with failed requests
 
-When an error occurs with fetching a collection or resource, you can use the `canFallbackToOldValues()` helper method to determine if there are old versions of the request resource already in the store that can be displayed until a connection is re-established.
+When an error occurs with fetching a list or resource, you can use the `canFallbackToOldValues()` helper method to determine if there are old versions of the request resource already in the store that can be displayed until a connection is re-established.
 
-It accepts an item or a collection.
+It accepts an item or a list.
 
 ```javascript
 import { canFallbackToOldValues } from 'redux-and-the-rest';
@@ -1130,7 +1130,7 @@ if (canFallbackToOldValues(item)) {
 
 You can identify slow requests with the `getTimeSinceFetchStarted()` helper method.
 
-It accepts an item or a collection and returns the time duration in milliseconds.
+It accepts an item or a list and returns the time duration in milliseconds.
 
 ```javascript
 import { getTimeSinceFetchStarted } from 'redux-and-the-rest';
@@ -1144,9 +1144,9 @@ You will likely need to wrap this in a `setInterval` or similar, to ensure the c
 
 #### Detecting old data
 
-You can use the `getTimeSinceLastSync()` helper method to identify an item or collection's age (when its state was last confirmed with a remote API using `fetchItem`, `fetchCollection`, `updateItem` or `createItem`) and establish whether it should be re-requested.
+You can use the `getTimeSinceLastSync()` helper method to identify an item or list's age (when its state was last confirmed with a remote API using `fetchItem`, `fetchList`, `updateItem` or `createItem`) and establish whether it should be re-requested.
 
-It accepts an item or a collection and returns the time duration in milliseconds.
+It accepts an item or a list and returns the time duration in milliseconds.
 
 ```javascript
 import { getTimeSinceLastSync } from 'redux-and-the-rest';
@@ -1156,28 +1156,28 @@ if (getTimeSinceLastSync(item) > 3600000) {
 }
 ```
 
-### Fetch a collection from the server
+### Fetch a list from the server
 
-The fetchCollection action fetches a list or collection of resources from a particular URL. It does not require a primary identifier and instead accepts parameters that may scope, filter or order the collection.
+The fetchList action fetches a list or list of resources from a particular URL. It does not require a primary identifier and instead accepts parameters that may scope, filter or order the list.
 
 | Property | Value |
 | :--- | :--- |
-| Action name for defining with `actionOptions` | `fetchCollection` |
-| Action creator name | `fetchCollection()` |
-| First action creator argument | (Optional) `keys` - See [Getting collections from the store](#getting-collections-from-the-store) and [Configuring the URLs used for a request](configuring-the-urls-used-for-a-request) for more information.|
+| Action name for defining with `actionOptions` | `fetchList` |
+| Action creator name | `fetchList()` |
+| First action creator argument | (Optional) `keys` - See [Getting lists from the store](#getting-lists-from-the-store) and [Configuring the URLs used for a request](configuring-the-urls-used-for-a-request) for more information.|
 | Second action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
 | `status.type` lifecycle |  `FETCHING` -> (`SUCCESS` or `ERROR`) |
 
 
-#### fetchCollection action creator options
+#### fetchList action creator options
 
-The fetchCollection action creator supports the following options as its second argument:
+The fetchList action creator supports the following options as its second argument:
 
 | actionCreatorOptions | Type | Default value or required | Description |
 | :--- | :---: | :---: | :--- |
-| `request` | Object | { } | An object that [configures the HTTP request](#configuring-other-request-properties) made to fetch the collection. |
+| `request` | Object | { } | An object that [configures the HTTP request](#configuring-other-request-properties) made to fetch the list. |
 
-When the collection is successfully fetched, the default fetchCollection reducer expects the server to respond with a JSON object containing an array of items' attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
+When the list is successfully fetched, the default fetchList reducer expects the server to respond with a JSON object containing an array of items' attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 
 ### Fetch an individual item from the server
 
@@ -1187,7 +1187,7 @@ The fetchItem action creator fetches an individual item from the server and adds
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `fetchItem` |
 | Action creator name | `fetchItem()` |
-| First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) and [Configuring the URLs used for a request](configuring-the-urls-used-for-a-request) for more information. |
+| First action creator argument | `keys` - See [Getting lists from the store](#getting-lists-from-the-store) and [Configuring the URLs used for a request](configuring-the-urls-used-for-a-request) for more information. |
 | Second action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
 | `status.type` lifecycle |  `FETCHING` -> (`SUCCESS` or `ERROR`) |
 
@@ -1209,22 +1209,22 @@ The create action creator saves a new item to the server, with a set of specifie
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `createItem` |
 | Action creator name | `createItem()` |
-| First action creator argument | (Optional) `keys` - The temporary id to use to fetchCollection the new resource in the store until a permanent id has been assigned by the server. This temporary id is available as `newItemKey` on the resource, until a new one is returned by the server, and then `newItemKey` is updated to the value assigned by the server. This argument is optional unless used with the `localOnly` option (`localOnly` requires you to specify an id, as there is no external API to assign one). If it is not specified, a temporary key is automatically generated and you can access the item using the `getNewItem()` helper. If you do not want to specify this argument, you can pass the item's `values` as the first parameter.|
+| First action creator argument | (Optional) `keys` - The temporary id to use to fetchList the new resource in the store until a permanent id has been assigned by the server. This temporary id is available as `newItemKey` on the resource, until a new one is returned by the server, and then `newItemKey` is updated to the value assigned by the server. This argument is optional unless used with the `localOnly` option (`localOnly` requires you to specify an id, as there is no external API to assign one). If it is not specified, a temporary key is automatically generated and you can access the item using the `getNewItem()` helper. If you do not want to specify this argument, you can pass the item's `values` as the first parameter.|
 | Second action creator argument | Resource item's attributes - An object of attributes to save to the server |
 | Third action creator argument | (Optional) `actionCreatorOptions` - Options that configure how the request behaves - see below. |
 | `status.type` lifecycle |  `CREATING` -> (`SUCCESS` or `ERROR`) |
 
-#### Adding a created item to a collection
+#### Adding a created item to a list
 
-Often when you create a new item, you want it to appear in a collection immediately (without having to re-fetch the collection from the remote API). You can achieve this with one of the following options:
+Often when you create a new item, you want it to appear in a list immediately (without having to re-fetch the list from the remote API). You can achieve this with one of the following options:
 
 | actionCreatorOptions | Type | Default value or required | Description |
 | :--- | :---: | :---: | :--- |
-| `push` | Array | [ ] | An array of collection keys to push the new item to the end of. |
-| `unshift` | Array | [ ] | An array of collection keys to add the new item to the beginning of. |
-| `invalidate` | Array | [ ] | An array of collection keys for which to clear (invalidate). This is useful for when you know the item that was just created is likely to appear in a collection, but you don't know where so you need to re-retrieve the whole collection from the server. |
+| `push` | Array | [ ] | An array of list keys to push the new item to the end of. |
+| `unshift` | Array | [ ] | An array of list keys to add the new item to the beginning of. |
+| `invalidate` | Array | [ ] | An array of list keys for which to clear (invalidate). This is useful for when you know the item that was just created is likely to appear in a list, but you don't know where so you need to re-retrieve the whole list from the server. |
 
-If you want to add the new item to the default (unspecified) collection, you can use the `UNSPECIFIED_KEY` exported by the package:
+If you want to add the new item to the default (unspecified) list, you can use the `UNSPECIFIED_KEY` exported by the package:
 
 ```javascript
 import { UNSPECIFIED_KEY } from 'redux-and-the-rest';
@@ -1304,9 +1304,9 @@ The new action creator supports the following options as its third argument:
 
 | actionCreatorOptions | Type | Default value or required | Description |
 | :--- | :---: | :---: | :--- |
-| `push` | Array | [ ] | An array of collection keys to push the new item to the end of. |
-| `unshift` | Array | [ ] | An array of collection keys to add the new item to the beginning of. |
-| `invalidate` | Array | [ ] | An array of collection keys for which to clear (invalidate). This is useful for when you know the item that was just created is likely to appear in a collection, but you don't know where, so you need to re-retrieve the whole collection from the server. |
+| `push` | Array | [ ] | An array of list keys to push the new item to the end of. |
+| `unshift` | Array | [ ] | An array of list keys to add the new item to the beginning of. |
+| `invalidate` | Array | [ ] | An array of list keys for which to clear (invalidate). This is useful for when you know the item that was just created is likely to appear in a list, but you don't know where, so you need to re-retrieve the whole list from the server. |
 
 ### Clear the new item from the store
 
@@ -1331,7 +1331,7 @@ This is different from the editItem action creator in that it only allows editin
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `editNewItem` |
 | Action creator name | `editNewItem()` |
-| First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
+| First action creator argument | `keys` - See [Getting lists from the store](#getting-lists-from-the-store) for more information. |
 | Second action creator argument | Resource item's attributes - An object of attributes to save as the item's new values in the store. |
 | `status.type` lifecycle |  `NEW` |
 
@@ -1347,7 +1347,7 @@ It should not be used for editing a new item - user the editNewItem action creat
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `editItem` |
 | Action creator name | `editItem()` |
-| First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
+| First action creator argument | `keys` - See [Getting lists from the store](#getting-lists-from-the-store) for more information. |
 | Second action creator argument | Resource item's attributes - An object of attributes to save as the item's new values in the store. |
 | `status.type` lifecycle |  `EDITING` |
 
@@ -1385,7 +1385,7 @@ It can also be used to clear an edit after an UPDATE request has failed to be su
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `clearItemEdit` |
 | Action creator name | `clearItemEdit()` |
-| First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
+| First action creator argument | `keys` - See [Getting lists from the store](#getting-lists-from-the-store) for more information. |
 | `status.type` lifecycle |  `EDITING` -> `SUCCESS` |
 
 ### Select a item in the store
@@ -1396,7 +1396,7 @@ The selectItem action creator adds an item's key to the `selectionMap` dictionar
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `selectItem` |
 | Action creator name | `selectItem()` |
-| First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
+| First action creator argument | `keys` - See [Getting lists from the store](#getting-lists-from-the-store) for more information. |
 
 ### Select another item in the store
 
@@ -1406,7 +1406,7 @@ The selectAnotherItem action creator adds an item's key to the `selectionMap` di
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `selectAnotherItem` |
 | Action creator name | `selectAnotherItem()` |
-| First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
+| First action creator argument | `keys` - See [Getting lists from the store](#getting-lists-from-the-store) for more information. |
 
 ### Deselect a item in the store
 
@@ -1416,7 +1416,7 @@ The deselectItem action creator removes an item's key from the `selectionMap` di
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `deselectItem` |
 | Action creator name | `deselectItem()` |
-| First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
+| First action creator argument | `keys` - See [Getting lists from the store](#getting-lists-from-the-store) for more information. |
 
 ### Clear all the selected items in the store
 
@@ -1426,7 +1426,7 @@ The clearSelectedItems action creator clears the `selectionMap` dictionary, rese
 | :--- | :--- |
 | Action name for defining with `actionOptions` | `clearSelectedItems` |
 | Action creator name | `clearSelectedItem()` |
-| First action creator argument | `keys` - See [Getting collections from the store](#getting-collections-from-the-store) for more information. |
+| First action creator argument | `keys` - See [Getting lists from the store](#getting-lists-from-the-store) for more information. |
 
 ## Configuring requests
 
@@ -1443,7 +1443,7 @@ const { actionCreators: { fetchItem: fetchUser } } = resources(
     url: 'http://test.com/users/:id?',
     keyBy: 'id'
 }, {
-    fetchCollection: true,
+    fetchList: true,
     fetch: {
       url: 'http://test.com/guests/:id?'
     },
@@ -1469,13 +1469,13 @@ For example, given the following resource definition:
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
+const { reducers, actionCreators: { fetchList: fetchUsers } } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
         keyBy: 'id'
     },
-    [ 'fetchCollection' ]
+    [ 'fetchList' ]
 );
 ```
 
@@ -1509,24 +1509,24 @@ http://test.com/users?order=newest
 
 #### Pagination
 
-For situations where you want to include query parameters that do not change the destination collection in the store (i.e. the collection returned by the server should be merged into values that are already in the store, rather than replacing them), you can use the `urlOnlyParams` option. This is especially useful for pagination.
+For situations where you want to include query parameters that do not change the destination list in the store (i.e. the list returned by the server should be merged into values that are already in the store, rather than replacing them), you can use the `urlOnlyParams` option. This is especially useful for pagination.
 
 For example, if you define a resource using the following actions:
 
 ```javascript
 import { resources } from 'redux-and-the-rest';
 
-const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources(
+const { reducers, actionCreators: { fetchList: fetchUsers } } = resources(
     {
         name: 'users',
         url: 'http://test.com/users/:id?'.
         urlOnlyParams: [ 'page']
     },
-    [ 'fetchCollection' ]
+    [ 'fetchList' ]
 );
 ```
 
-Then calling `fetchUsers({ order: 'newest', page: 1 }, { metadata: { page: 1 } })` will load the first page of results in `store.getState().users.collections['newest']` and calling `fetchUsers({ order: 'newest', { metadata: { page: 1 } })` will add the second page of users to the end of the same collection.
+Then calling `fetchUsers({ order: 'newest', page: 1 }, { metadata: { page: 1 } })` will load the first page of results in `store.getState().users.lists['newest']` and calling `fetchUsers({ order: 'newest', { metadata: { page: 1 } })` will add the second page of users to the end of the same list.
 
 We provide the metadata argument to store what page we are currently on, so it does not have to be retained outside of the Redux store. It can be accessed like so:
 
@@ -1534,18 +1534,18 @@ We provide the metadata argument to store what page we are currently on, so it d
 import { getUsers } from './resources/users';    
 
 const mapStateToProps = ({ users } ) => {
-  const usersCollection = getUsers(users);
+  const usersList = getUsers(users);
  
   return {
-    user: usersCollection,
-    currentPage: usersCollection.metadata.page // Current page is available on the collection's metadata
+    user: usersList,
+    currentPage: usersList.metadata.page // Current page is available on the list's metadata
   }
 };
 
 // ...
 ```  
 
-The `status.itemsInLastResponse` attribute on each collection can be used to indicate when there are no more pages of results available (when it is less than the total page size, you have reached the last page).
+The `status.itemsInLastResponse` attribute on each list can be used to indicate when there are no more pages of results available (when it is less than the total page size, you have reached the last page).
 
 ### Working with Authenticated APIs
 

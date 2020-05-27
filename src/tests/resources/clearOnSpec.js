@@ -24,7 +24,7 @@ describe('clearOn:', function () {
             status: { type: NEW }
           }
         },
-        collections: {
+        lists: {
           [EmptyKey]: {
             positions: [ 1 ],
             status: { type: SUCCESS }
@@ -79,7 +79,7 @@ describe('clearOn:', function () {
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
       }, {
-        fetchCollection: true,
+        fetchList: true,
         newItem: true,
       });
 
@@ -103,7 +103,7 @@ describe('clearOn:', function () {
         keyBy: 'id',
         clearOn: this.sessionActions.destroyItem,
       }, {
-        fetchCollection: true,
+        fetchList: true,
         newItem: true,
       });
 

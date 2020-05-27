@@ -70,8 +70,8 @@ describe('Fetch reducers:', function () {
         expectToNotChangeResourceItemValues(this, RESOURCE_NAME);
       });
 
-      it('then does NOT add the item to the default collection', function() {
-        expect(resourceDefinition(this, RESOURCE_NAME).collections).toEqual({});
+      it('then does NOT add the item to the default list', function() {
+        expect(resourceDefinition(this, RESOURCE_NAME).lists).toEqual({});
       });
     });
 
@@ -123,8 +123,8 @@ describe('Fetch reducers:', function () {
       expectToChangeResourceItemValuesTo(this, RESOURCE_NAME, {});
     });
 
-    it('then does NOT add the item to the default collection', function () {
-      expect(resourcesDefinition(this, RESOURCE_NAME).collections).toEqual({});
+    it('then does NOT add the item to the default list', function () {
+      expect(resourcesDefinition(this, RESOURCE_NAME).lists).toEqual({});
     });
   }
 

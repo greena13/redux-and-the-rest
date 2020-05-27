@@ -5,7 +5,7 @@ import toSingular from '../utils/string/toSingular';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 
 /**
- * @typedef {string} RestfulActionName One of the RESTful action names (fetchCollection, fetchItem, newItem, createItem, editItem, updateItem,
+ * @typedef {string} RestfulActionName One of the RESTful action names (fetchList, fetchItem, newItem, createItem, editItem, updateItem,
  *          destroyItem)
  */
 
@@ -34,7 +34,7 @@ const STANDARD_ACTIONS = {
   /**
    * RESTful actions
    */
-  fetchCollection: 'FETCH_ITEMS',
+  fetchList: 'FETCH_ITEMS',
   fetchItem: 'FETCH_ITEM',
   newItem: 'NEW_ITEM',
   clearNewItem: 'CLEAR_NEW_ITEM',
@@ -49,7 +49,7 @@ const STANDARD_ACTIONS = {
    * Clearing
    */
   clearItem: 'CLEAR_ITEM',
-  clearCollection: 'CLEAR_ITEMS',
+  clearList: 'CLEAR_ITEMS',
   clearResource: 'CLEAR_ALL_ITEMS',
 
   /**

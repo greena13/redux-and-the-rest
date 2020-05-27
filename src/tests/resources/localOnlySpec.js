@@ -15,7 +15,7 @@ describe('localOnly:', function () {
             status: { type: SUCCESS }
           },
         },
-        collections: {
+        lists: {
           [EmptyKey]: {
             positions: [ 1 ],
             status: { type: SUCCESS }
@@ -31,12 +31,12 @@ describe('localOnly:', function () {
     beforeAll(function () {
       const {
         reducers: usersReducers,
-        actionCreators: { fetchItem: fetchUser, fetchCollection: fetchUsers }
+        actionCreators: { fetchItem: fetchUser, fetchList: fetchUsers }
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
-      }, ['fetchCollection', 'fetchItem', 'createItem', 'updateItem', 'destroyItem' ]);
+      }, ['fetchList', 'fetchItem', 'createItem', 'updateItem', 'destroyItem' ]);
 
       this.store = buildStore({ ...this.initialState }, { users: usersReducers });
 
@@ -56,13 +56,13 @@ describe('localOnly:', function () {
 
       const {
         reducers: usersReducers,
-        actionCreators: { fetchItem: fetchUser, fetchCollection: fetchUsers, newItem: newUser, createItem: createUser, editItem: editUser, updateItem: updateUser, destroyItem: destroyUser }
+        actionCreators: { fetchItem: fetchUser, fetchList: fetchUsers, newItem: newUser, createItem: createUser, editItem: editUser, updateItem: updateUser, destroyItem: destroyUser }
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
         localOnly: true,
-      }, ['fetchCollection', 'fetchItem', 'newItem', 'createItem', 'editItem', 'updateItem', 'destroyItem']);
+      }, ['fetchList', 'fetchItem', 'newItem', 'createItem', 'editItem', 'updateItem', 'destroyItem']);
 
       this.store = buildStore({ ...this.initialState }, { users: usersReducers });
 
@@ -82,7 +82,7 @@ describe('localOnly:', function () {
 
     it('then warns about some actions being incompatible with the option', function() {
       expect(console.warn).toHaveBeenCalledWith(
-        'Redux and the REST: Action \'fetchCollection\' is not compatible with the localOnly option.'
+        'Redux and the REST: Action \'fetchList\' is not compatible with the localOnly option.'
       );
 
       expect(console.warn).toHaveBeenCalledWith(

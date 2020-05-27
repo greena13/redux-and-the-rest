@@ -9,13 +9,13 @@ describe('Generating key:', function () {
     beforeAll(function () {
       const {
         reducers,
-        actionCreators: { fetchCollection: fetchUsers }
+        actionCreators: { fetchList: fetchUsers }
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id'
       }, {
-        fetchCollection: true,
+        fetchList: true,
       });
 
       this.fetchUsers = fetchUsers;
@@ -41,10 +41,10 @@ describe('Generating key:', function () {
 
       it('then uses an empty string as the key', function() {
         return this.store.dispatch(this.fetchUsers()).then(() => {
-          const collection = this.store.getState().users.collections[EmptyKey];
+          const list = this.store.getState().users.lists[EmptyKey];
 
-          expect(collection.positions).toEqual([ 1 ]);
-          expect(collection.status.type).toEqual(SUCCESS);
+          expect(list.positions).toEqual([ 1 ]);
+          expect(list.status.type).toEqual(SUCCESS);
         });
       });
     });
@@ -68,10 +68,10 @@ describe('Generating key:', function () {
 
       it('then uses the id as a key', function() {
         return this.store.dispatch(this.fetchUsers({ id: 'newest' })).then(() => {
-          const collection = this.store.getState().users.collections['id=newest'];
+          const list = this.store.getState().users.lists['id=newest'];
 
-          expect(collection.positions).toEqual([ 1 ]);
-          expect(collection.status.type).toEqual(SUCCESS);
+          expect(list.positions).toEqual([ 1 ]);
+          expect(list.status.type).toEqual(SUCCESS);
         });
       });
     });
@@ -95,10 +95,10 @@ describe('Generating key:', function () {
 
       it('then uses a serialised version of the object as a key', function() {
         return this.store.dispatch(this.fetchUsers({ order: 'newest', page: 1 })).then(() => {
-          const collection = this.store.getState().users.collections['order=newest.page=1'];
+          const list = this.store.getState().users.lists['order=newest.page=1'];
 
-          expect(collection.positions).toEqual([ 1 ]);
-          expect(collection.status.type).toEqual(SUCCESS);
+          expect(list.positions).toEqual([ 1 ]);
+          expect(list.status.type).toEqual(SUCCESS);
         });
       });
     });
@@ -108,14 +108,14 @@ describe('Generating key:', function () {
     beforeAll(function () {
       const {
         reducers,
-        actionCreators: { fetchCollection: fetchUsers },
+        actionCreators: { fetchList: fetchUsers },
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
         urlOnlyParams: [ 'page' ]
       }, {
-        fetchCollection: true,
+        fetchList: true,
       });
 
       this.reducers = reducers;
@@ -141,10 +141,10 @@ describe('Generating key:', function () {
 
       it('then does NOT use that attribute in the serialised object used for the key', function() {
         return this.store.dispatch(this.fetchUsers({ order: 'newest', page: 1 })).then(() => {
-          const collection = this.store.getState().users.collections['order=newest'];
+          const list = this.store.getState().users.lists['order=newest'];
 
-          expect(collection.positions).toEqual([ 1 ]);
-          expect(collection.status.type).toEqual(SUCCESS);
+          expect(list.positions).toEqual([ 1 ]);
+          expect(list.status.type).toEqual(SUCCESS);
         });
       });
     });
@@ -171,7 +171,7 @@ describe('Generating key:', function () {
         this.store = null;
       });
 
-      it('then overrides the results for the fetchCollection action', function() {
+      it('then overrides the results for the fetchList action', function() {
         return this.store.dispatch(this.fetchUsers({ order: 'newest', page: 1 })).
                   then(() => this.store.dispatch(this.fetchUsers({ order: 'newest', page: 2 })).
                   then(() => {
@@ -182,7 +182,7 @@ describe('Generating key:', function () {
                     expect(this.users.items['2'].values).toEqual({ id: 2, username: 'Jane' });
                     expect(this.users.items['2'].status.type).toEqual(SUCCESS);
 
-                    expect(this.users.collections['order=newest'].positions).toEqual([ 2 ]);
+                    expect(this.users.lists['order=newest'].positions).toEqual([ 2 ]);
                   }));
       });
     });

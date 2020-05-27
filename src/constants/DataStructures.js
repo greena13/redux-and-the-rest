@@ -1,13 +1,13 @@
 /**
  * @typedef {Object} ResourceStatus An object containing the status information of a particular resource item
- *          or resource collection.
+ *          or resource list.
  * @property {StatusType|null} type The type of the status the resource is in
  */
 
 
 /**
  * @typedef {Object} ResourceMetadata An object containing the metadata information of a particular resource
- *         item or resource collection.
+ *         item or resource list.
  * @property {StatusType|null} type The type of the metadata of the of resource
  */
 
@@ -45,21 +45,21 @@ const RESOURCE = {
 };
 
 /**
- * @typedef {string} CollectionKey The unique key for a particular collection containing resources of a
+ * @typedef {string} ListKey The unique key for a particular list containing resources of a
  *          particular type.
  */
 
 /**
- * @typedef {Object} ResourcesCollection A collection of a particular resource
+ * @typedef {Object} ResourcesList A list of a particular resource
  * @property {Array.<ResourceItemId>} positions A list of ids of resources in the order they appear in that
- *          collection.
- * @property {ResourceStatus} status The status information of the resource collection
+ *          list.
+ * @property {ResourceStatus} status The status information of the resource list
  */
 
 /**
- * @type {ResourcesCollection} An empty resource collection
+ * @type {ResourcesList} An empty resource list
  */
-const COLLECTION = {
+const LIST = {
   positions: [],
   ...SHARED_ATTRIBUTES,
 };
@@ -68,7 +68,7 @@ const COLLECTION = {
  * @typedef {Object} ResourcesReduxState The state of the structure in the Redux store that keeps track of all
  *          instances of the same resource type.
  * @property {Object<ResourceItemId, ResourcesItem>} items The set of items of a particular resource type
- * @property {Object<CollectionKey, ResourcesCollection>} collections The set of collections of a particular
+ * @property {Object<ListKey, ResourcesList>} lists The set of lists of a particular
  *           resource type
  * @property {Object<ResourceItemId, boolean>} selectionMap A dictionary of the resources that are currently
  *           selected.
@@ -82,7 +82,7 @@ const COLLECTION = {
 
 const RESOURCES = {
   items: {},
-  collections: {},
+  lists: {},
   selectionMap: {},
   newItemKey: null,
 };
@@ -90,6 +90,6 @@ const RESOURCES = {
 export {
   RESOURCE,
   RESOURCES,
-  COLLECTION,
+  LIST,
   ITEM,
 };

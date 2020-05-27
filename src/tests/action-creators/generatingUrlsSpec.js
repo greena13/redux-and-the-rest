@@ -10,7 +10,7 @@ describe('Generating URLs:', function() {
         reducers,
         actionCreators: {
           createItem: createUser,
-          fetchCollection: fetchUsers,
+          fetchList: fetchUsers,
           fetchItem: fetchUser,
           updateItem: updateUser,
           destroyItem: destroyUser
@@ -20,7 +20,7 @@ describe('Generating URLs:', function() {
         url: 'http://test.com/users/:id?',
         keyBy: 'id'
       }, {
-        fetchCollection: true,
+        fetchList: true,
         fetchItem: true,
         updateItem: true,
         destroyItem: true,
@@ -160,13 +160,13 @@ describe('Generating URLs:', function() {
     beforeAll(function() {
       const {
         reducers,
-        actionCreators: { fetchCollection: fetchUsers, fetchItem: fetchUser },
+        actionCreators: { fetchList: fetchUsers, fetchItem: fetchUser },
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id'
       }, {
-        fetchCollection: true,
+        fetchList: true,
         fetchItem: {
           url: 'http://test.com/guests/:order?'
         },

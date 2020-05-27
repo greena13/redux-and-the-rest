@@ -1,15 +1,15 @@
 import getItemKey from '../../action-creators/helpers/getItemKey';
 import generateUrl from '../../action-creators/helpers/generateUrl';
 import wrapInObject from '../../utils/object/wrapInObject';
-import extractCollectionOperations from '../../action-creators/helpers/extractCollectionOperations';
+import extractListOperations from '../../action-creators/helpers/extractListOperations';
 import makeRequest from '../../action-creators/helpers/makeRequest';
-import { COLLECTION, ITEM } from '../../constants/DataStructures';
+import { LIST, ITEM } from '../../constants/DataStructures';
 import { CREATING, ERROR, NEW, SUCCESS } from '../../constants/Statuses';
 import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
-import applyCollectionOperators from '../../reducers/helpers/applyCollectionOperators';
-import without from '../../utils/collection/without';
-import replace from '../../utils/collection/replace';
+import applyListOperators from '../../reducers/helpers/applyListOperators';
+import without from '../../utils/list/without';
+import replace from '../../utils/list/replace';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import processActionCreatorOptions from '../../action-creators/helpers/processActionCreatorOptions';
 import getItem from '../../utils/getItem';
@@ -82,18 +82,18 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
   }();
 
   return (dispatch) => {
-    const collectionOperations = extractCollectionOperations(actionCreatorOptions, urlOnlyParams);
+    const listOperations = extractListOperations(actionCreatorOptions, urlOnlyParams);
     const requestedAt = Date.now();
 
     dispatch(
-      submitCreateResource({ action, transforms, key, metadata, requestedAt }, actionCreatorOptions, values, collectionOperations)
+      submitCreateResource({ action, transforms, key, metadata, requestedAt }, actionCreatorOptions, values, listOperations)
     );
 
     return makeRequest({
       ...options,
       key,
       params: normalizedParams,
-      collectionOperations,
+      listOperations,
       url,
       requestedAt,
       dispatch,
@@ -118,11 +118,11 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} [actionCreatorOptions={}] The options passed to the createItem* action creator function
  * @param {Object} values The attributes of the resource currently being created
- * @param {Object} [collectionOperations={}] Options for how the newly created resource should be added to an
- *        existing collections - if any.
+ * @param {Object} [listOperations={}] Options for how the newly created resource should be added to an
+ *        existing lists - if any.
  * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
  */
-function submitCreateResource(options, actionCreatorOptions, values, collectionOperations) {
+function submitCreateResource(options, actionCreatorOptions, values, listOperations) {
   const { transforms, action, key, requestedAt } = options;
 
   /**
@@ -134,7 +134,7 @@ function submitCreateResource(options, actionCreatorOptions, values, collectionO
     type: action,
     status: CREATING,
     temporaryKey: key,
-    collectionOperations,
+    listOperations,
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
       values,
@@ -182,7 +182,7 @@ function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOption
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function receiveCreatedResource(options, actionCreatorOptions, values, metadata) {
-  const { action, keyBy, transforms, params, collectionOperations, localOnly, singular } = options;
+  const { action, keyBy, transforms, params, listOperations, localOnly, singular } = options;
 
   const key = function () {
     const normalizedParams = wrapInObject(params, keyBy);
@@ -213,7 +213,7 @@ function receiveCreatedResource(options, actionCreatorOptions, values, metadata)
     status: SUCCESS,
     key,
     temporaryKey: options.key,
-    collectionOperations,
+    listOperations,
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       values,
       status: { type: SUCCESS, syncedAt: Date.now() },
@@ -264,7 +264,7 @@ function handleCreateResourceError(options, actionCreatorOptions, httpCode, erro
  */
 function reducer(resources, action) {
   const {
-    localOnly, type, temporaryKey, key, collectionOperations = {},
+    localOnly, type, temporaryKey, key, listOperations = {},
     status, item, httpCode, error, errors, errorOccurredAt, metadata
   } = action;
 
@@ -310,7 +310,7 @@ function reducer(resources, action) {
         ...item,
 
         /**
-         * We persist the syncedAt attribute of the collection if it's been fetched in the past, in case
+         * We persist the syncedAt attribute of the list if it's been fetched in the past, in case
          * the request fails, we know the last time it was successfully synced
          */
         status: mergeStatus(currentItem.status, item.status, { onlyPersist: ['syncedAt'] }),
@@ -322,10 +322,10 @@ function reducer(resources, action) {
       items: newItems,
 
       /**
-       * We add the new item (using its temporary id) to any collections that already exist in the store,
-       * that the new item should be a part of - according to the collectionOperations specified.
+       * We add the new item (using its temporary id) to any lists that already exist in the store,
+       * that the new item should be a part of - according to the listOperations specified.
        */
-      collections: applyCollectionOperators(resources.collections, collectionOperations, temporaryKey),
+      lists: applyListOperators(resources.lists, listOperations, temporaryKey),
       newItemKey: temporaryKey
     };
 
@@ -373,19 +373,19 @@ function reducer(resources, action) {
     return {
       ...resources,
       items: newItems,
-      collections: {
-        ...resources.collections,
+      lists: {
+        ...resources.lists,
 
         /**
-         * We update an usage of the temporary id in any of the collections the item appeared in, replacing
+         * We update an usage of the temporary id in any of the lists the item appeared in, replacing
          * them with the new permanent id
          */
-        ...([].concat(...Object.values(collectionOperations))).reduce((memo, id) => {
-          const collection = resources.collections[id] || COLLECTION;
-          const { positions } = collection;
+        ...([].concat(...Object.values(listOperations))).reduce((memo, id) => {
+          const list = resources.lists[id] || LIST;
+          const { positions } = list;
 
           memo[id] = {
-            ...collection,
+            ...list,
             positions: replace(positions, temporaryKey, key)
           };
 

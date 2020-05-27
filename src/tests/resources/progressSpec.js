@@ -819,15 +819,15 @@ describe('progress option', function () {
     });
   });
 
-  describe('for the fetchCollection action:', function () {
+  describe('for the fetchList action:', function () {
     describe('when it is NOT set to a truthy value', function () {
       beforeAll(function () {
-        const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
+        const { reducers, actionCreators: { fetchList: fetchUsers } } = resources({
           name: 'users',
           url: 'http://test.com/users/:id?',
           keyBy: 'id'
         }, {
-          fetchCollection: true
+          fetchList: true
         });
 
         this.reducers = reducers;
@@ -853,12 +853,12 @@ describe('progress option', function () {
             this.store = null;
           });
 
-          it('then the collection\'s status is FETCHING', function() {
-            expect(this.store.getState().users.collections[EmptyKey].status.type).toEqual(FETCHING);
+          it('then the list\'s status is FETCHING', function() {
+            expect(this.store.getState().users.lists[EmptyKey].status.type).toEqual(FETCHING);
           });
 
-          it('then there are no progress attributes on the collection\'s status object', function() {
-            const userStatus = this.store.getState().users.collections[EmptyKey].status;
+          it('then there are no progress attributes on the list\'s status object', function() {
+            const userStatus = this.store.getState().users.lists[EmptyKey].status;
 
             expect(userStatus.progressUp).toEqual(undefined);
             expect(userStatus.progressDown).toEqual(undefined);
@@ -885,22 +885,22 @@ describe('progress option', function () {
             this.store = null;
           });
 
-          it('then the collection\'s status is SUCCESS', function() {
-            expect(this.store.getState().users.collections[EmptyKey].status.type).toEqual(SUCCESS);
+          it('then the list\'s status is SUCCESS', function() {
+            expect(this.store.getState().users.lists[EmptyKey].status.type).toEqual(SUCCESS);
           });
 
-          it('then the collection\'s items\' status is SUCCESS', function() {
+          it('then the list\'s items\' status is SUCCESS', function() {
             expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
           });
 
-          it('then does not set the collection\'s progress status attributes', function() {
-            const collectionStatus = this.store.getState().users.collections[EmptyKey].status;
+          it('then does not set the list\'s progress status attributes', function() {
+            const listStatus = this.store.getState().users.lists[EmptyKey].status;
 
-            expect(collectionStatus.progressUp).toEqual(undefined);
-            expect(collectionStatus.progressDown).toEqual(undefined);
+            expect(listStatus.progressUp).toEqual(undefined);
+            expect(listStatus.progressDown).toEqual(undefined);
           });
 
-          it('then does not set then the collection\'s items\' progress status attributes', function() {
+          it('then does not set then the list\'s items\' progress status attributes', function() {
             const userStatus = this.store.getState().users.items['1'].status;
 
             expect(userStatus.progressUp).toEqual(undefined);
@@ -912,12 +912,12 @@ describe('progress option', function () {
 
     describe('when it is set to a truthy value', function () {
       beforeAll(function () {
-        const { reducers, actionCreators: { fetchCollection: fetchUsers } } = resources({
+        const { reducers, actionCreators: { fetchList: fetchUsers } } = resources({
           name: 'users',
           url: 'http://test.com/users/:id?',
           keyBy: 'id'
         }, {
-          fetchCollection: {
+          fetchList: {
             progress: true
           }
         });
@@ -946,7 +946,7 @@ describe('progress option', function () {
 
           this.store.dispatch(this.fetchUsers());
 
-          this.userCollectionStatus = this.store.getState().users.collections[EmptyKey].status;
+          this.userListStatus = this.store.getState().users.lists[EmptyKey].status;
         });
 
         afterAll(function() {
@@ -954,13 +954,13 @@ describe('progress option', function () {
         });
 
         describe('before the request has completed', function () {
-          it('then the collection\'s status is FETCHING', function() {
-            expect(this.userCollectionStatus.type).toEqual(FETCHING);
+          it('then the list\'s status is FETCHING', function() {
+            expect(this.userListStatus.type).toEqual(FETCHING);
           });
 
-          it('then there are no progress attributes on the collection\'s status object', function() {
-            expect(this.userCollectionStatus.progressUp).toEqual(undefined);
-            expect(this.userCollectionStatus.progressDown).toEqual(undefined);
+          it('then there are no progress attributes on the list\'s status object', function() {
+            expect(this.userListStatus.progressUp).toEqual(undefined);
+            expect(this.userListStatus.progressDown).toEqual(undefined);
           });
         });
 
@@ -972,22 +972,22 @@ describe('progress option', function () {
               total: 24
             });
 
-            this.userCollectionStatus = this.store.getState().users.collections[EmptyKey].status;
+            this.userListStatus = this.store.getState().users.lists[EmptyKey].status;
           });
 
-          it('then the collection\'s status is still FETCHING', function() {
-            expect(this.userCollectionStatus.type).toEqual(FETCHING);
+          it('then the list\'s status is still FETCHING', function() {
+            expect(this.userListStatus.type).toEqual(FETCHING);
           });
 
-          it('then the collection\'s progressUp status is updated with the current values', function() {
-            expect(this.userCollectionStatus.progressUp).toEqual({
+          it('then the list\'s progressUp status is updated with the current values', function() {
+            expect(this.userListStatus.progressUp).toEqual({
               percent: 50,
               loaded: 12,
               total: 24,
               lengthComputable: true,
             });
 
-            expect(this.userCollectionStatus.progressDown).toEqual({
+            expect(this.userListStatus.progressDown).toEqual({
               percent: 0,
               loaded: 0,
               total: undefined,
@@ -1000,23 +1000,23 @@ describe('progress option', function () {
         describe('and the upload has finished', () => {
           beforeAll(function () {
             this.xhrMock.completeUpload({ status: 200 });
-            this.userCollectionStatus = this.store.getState().users.collections[EmptyKey].status;
+            this.userListStatus = this.store.getState().users.lists[EmptyKey].status;
           });
 
-          it('then the collection\'s status is still FETCHING', function() {
-            expect(this.userCollectionStatus.type).toEqual(FETCHING);
+          it('then the list\'s status is still FETCHING', function() {
+            expect(this.userListStatus.type).toEqual(FETCHING);
           });
 
-          it('then the collection\'s progressUp is updated with the current values', function() {
+          it('then the list\'s progressUp is updated with the current values', function() {
 
-            expect(this.userCollectionStatus.progressUp).toEqual({
+            expect(this.userListStatus.progressUp).toEqual({
               percent: 100,
               loaded: 0,
               total: 0,
               lengthComputable: true,
             });
 
-            expect(this.userCollectionStatus.progressDown).toEqual({
+            expect(this.userListStatus.progressDown).toEqual({
               percent: 0,
               loaded: 0,
               total: undefined,
@@ -1032,22 +1032,22 @@ describe('progress option', function () {
                 total: 25
               });
 
-              this.userCollectionStatus = this.store.getState().users.collections[EmptyKey].status;
+              this.userListStatus = this.store.getState().users.lists[EmptyKey].status;
             });
 
-            it('then the collection\'s status is still FETCHING', function() {
-              expect(this.userCollectionStatus.type).toEqual(FETCHING);
+            it('then the list\'s status is still FETCHING', function() {
+              expect(this.userListStatus.type).toEqual(FETCHING);
             });
 
-            it('then the collection\'s progressUp is updated with the current values', function() {
-              expect(this.userCollectionStatus.progressUp).toEqual({
+            it('then the list\'s progressUp is updated with the current values', function() {
+              expect(this.userListStatus.progressUp).toEqual({
                 percent: 100,
                 loaded: 0,
                 total: 0,
                 lengthComputable: true,
               });
 
-              expect(this.userCollectionStatus.progressDown).toEqual({
+              expect(this.userListStatus.progressDown).toEqual({
                 percent: 52,
                 loaded: 13,
                 total: 25,
@@ -1058,29 +1058,29 @@ describe('progress option', function () {
             describe('and downloading the response is complete', () => {
               beforeAll(function () {
                 return this.xhrMock.completeDownload().then(() => {
-                  this.userCollectionStatus = this.store.getState().users.collections[EmptyKey].status;
+                  this.userListStatus = this.store.getState().users.lists[EmptyKey].status;
 
                   this.userStatus = this.store.getState().users.items['1'].status;
                 });
               });
 
-              it('then the collection\'s status type is set to SUCCESS', function() {
-                expect(this.userCollectionStatus.type).toEqual(SUCCESS);
+              it('then the list\'s status type is set to SUCCESS', function() {
+                expect(this.userListStatus.type).toEqual(SUCCESS);
               });
 
-              it('then the collection\'s items\' status is SUCCESS', function() {
+              it('then the list\'s items\' status is SUCCESS', function() {
                 expect(this.userStatus.type).toEqual(SUCCESS);
               });
 
-              it('then the collection\'s progressUp status is updated with the current values', function() {
-                expect(this.userCollectionStatus.progressUp).toEqual({
+              it('then the list\'s progressUp status is updated with the current values', function() {
+                expect(this.userListStatus.progressUp).toEqual({
                   percent: 100,
                   loaded: 0,
                   total: 0,
                   lengthComputable: true,
                 });
 
-                expect(this.userCollectionStatus.progressDown).toEqual({
+                expect(this.userListStatus.progressDown).toEqual({
                   percent: 100,
                   loaded: 25,
                   total: 25,
@@ -1088,7 +1088,7 @@ describe('progress option', function () {
                 });
               });
 
-              it('then does not set then the collection\'s items\' progress status attributes', function() {
+              it('then does not set then the list\'s items\' progress status attributes', function() {
                 expect(this.userStatus.progressUp).toEqual(undefined);
                 expect(this.userStatus.progressDown).toEqual(undefined);
               });

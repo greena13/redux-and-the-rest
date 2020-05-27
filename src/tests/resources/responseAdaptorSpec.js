@@ -11,7 +11,7 @@ describe('Specifying a response adaptor:', function () {
         reducers,
         actionCreators: {
           createItem: createUser,
-          fetchCollection: fetchUsers,
+          fetchList: fetchUsers,
           fetchItem: fetchUser,
           updateItem: updateUser,
           destroyItem: destroyUser
@@ -22,7 +22,7 @@ describe('Specifying a response adaptor:', function () {
         keyBy: 'id',
         responseAdaptor: (body) => ({ values: body.response, error: body.error })
       }, {
-        fetchCollection: true,
+        fetchList: true,
         fetchItem: true,
         updateItem: true,
         destroyItem: true,
@@ -38,7 +38,7 @@ describe('Specifying a response adaptor:', function () {
       this.destroyUser = destroyUser;
     });
 
-    describe('when the fetchCollection request', function () {
+    describe('when the fetchList request', function () {
       describe('succeeds', () => {
         beforeAll(function () {
           this.store = buildStore({ users: RESOURCES }, { users: this.reducers } );
@@ -81,11 +81,11 @@ describe('Specifying a response adaptor:', function () {
 
           it('then uses the response adaptor', function() {
             return this.store.dispatch(this.fetchUsers()).then(() => {
-              const collection = this.store.getState().users.collections[EmptyKey];
+              const list = this.store.getState().users.lists[EmptyKey];
 
-              expect(collection.status.type).toEqual(ERROR);
-              expect(collection.status.error.message).toEqual('NOT_FOUND');
-              expect(collection.status.httpCode).toEqual(404);
+              expect(list.status.type).toEqual(ERROR);
+              expect(list.status.error.message).toEqual('NOT_FOUND');
+              expect(list.status.httpCode).toEqual(404);
             });
           });
 
@@ -110,11 +110,11 @@ describe('Specifying a response adaptor:', function () {
 
           it('then does not use the response adaptor', function() {
             return this.store.dispatch(this.fetchUsers()).then(() => {
-              const collection = this.store.getState().users.collections[EmptyKey];
+              const list = this.store.getState().users.lists[EmptyKey];
 
-              expect(collection.status.type).toEqual(ERROR);
-              expect(collection.status.error.message).toEqual('Long error stack trace');
-              expect(collection.status.httpCode).toEqual(500);
+              expect(list.status.type).toEqual(ERROR);
+              expect(list.status.error.message).toEqual('Long error stack trace');
+              expect(list.status.httpCode).toEqual(500);
             });
           });
 
@@ -197,11 +197,11 @@ describe('Specifying a response adaptor:', function () {
 
           it('then does not use the response adaptor', function() {
             return this.store.dispatch(this.fetchUser(1)).then(() => {
-              const collection = this.store.getState().users.items['1'];
+              const list = this.store.getState().users.items['1'];
 
-              expect(collection.status.type).toEqual(ERROR);
-              expect(collection.status.error.message).toEqual('Long error stack trace');
-              expect(collection.status.httpCode).toEqual(500);
+              expect(list.status.type).toEqual(ERROR);
+              expect(list.status.error.message).toEqual('Long error stack trace');
+              expect(list.status.httpCode).toEqual(500);
             });
           });
 
@@ -551,14 +551,14 @@ describe('Specifying a response adaptor:', function () {
     beforeAll(function() {
       const {
         reducers,
-        actionCreators: { fetchCollection: fetchUsers, fetchItem: fetchUser }
+        actionCreators: { fetchList: fetchUsers, fetchItem: fetchUser }
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
         responseAdaptor: (body) => ({ values: body.response, error: body.error })
       }, {
-        fetchCollection: {
+        fetchList: {
           responseAdaptor: (body) => ({ values: body.items, error: body.error })
         },
         fetchItem: true,

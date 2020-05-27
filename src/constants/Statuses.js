@@ -1,21 +1,21 @@
 /**
- * @typedef {string} StatusType One of the statuses a resource item or resource collection can be in
+ * @typedef {string} StatusType One of the statuses a resource item or resource list can be in
  */
 
 /**
- * The status used when a resource item or collection has been successfully synchronised with an external API
+ * The status used when a resource item or list has been successfully synchronised with an external API
  * @type {string}
  */
 const SUCCESS = 'SUCCESS';
 
 /**
- * The status used when a resource item or collection has is being uploaded or downloaded from an external API
+ * The status used when a resource item or list has is being uploaded or downloaded from an external API
  * @type {string}
  */
 const PROGRESS = 'PROGRESS';
 
 /**
- * The status used when a resource item or collection failed to synchronise with an external API
+ * The status used when a resource item or list failed to synchronise with an external API
  * @type {string}
  */
 const ERROR = 'ERROR';
@@ -27,7 +27,7 @@ const ERROR = 'ERROR';
 const EDITING = 'EDITING';
 
 /**
- * The status used when a resource item or collection is being synchronised with an external API
+ * The status used when a resource item or list is being synchronised with an external API
  * @type {string}
  */
 const FETCHING = 'FETCHING';

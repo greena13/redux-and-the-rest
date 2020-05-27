@@ -35,7 +35,7 @@ describe('belongsTo:', function () {
               status: { type: NEW }
             }
           },
-          collections: {
+          lists: {
             [EmptyKey]: {
               positions: [ 1 ],
               status: { type: SUCCESS }
@@ -84,7 +84,7 @@ describe('belongsTo:', function () {
           address: this.addresses
         }
       }, {
-        fetchCollection: true,
+        fetchList: true,
         newItem: true,
       });
 
@@ -419,7 +419,7 @@ describe('belongsTo:', function () {
               status: { type: NEW }
             }
           },
-          collections: {
+          lists: {
             [EmptyKey]: {
               positions: [ 1 ],
               status: { type: SUCCESS }
@@ -466,7 +466,7 @@ describe('belongsTo:', function () {
           },
         }
       }, {
-        fetchCollection: true,
+        fetchList: true,
         newItem: true,
       });
 

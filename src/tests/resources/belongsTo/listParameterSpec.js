@@ -18,7 +18,7 @@ describe('belongsTo:', function () {
             status: { type: SUCCESS }
           },
         },
-        collections: {
+        lists: {
           [EmptyKey]: {
             positions: [ 1 ],
             status: { type: SUCCESS },
@@ -51,24 +51,24 @@ describe('belongsTo:', function () {
 
   [
     {
-      description: 'when the \'collectionParameter\' option is NOT defined',
-      collectionParameter: undefined,
-      matchingCollectionKey: 'addressId=1',
-      nonMatchingCollectionKey: 'address=1',
+      description: 'when the \'listParameter\' option is NOT defined',
+      listParameter: undefined,
+      matchingListKey: 'addressId=1',
+      nonMatchingListKey: 'address=1',
     },
     {
-      description: 'when the \'collectionParameter\' option is defined',
-      collectionParameter: 'address',
-      matchingCollectionKey: 'address=1',
-      nonMatchingCollectionKey: 'addressId=1',
+      description: 'when the \'listParameter\' option is defined',
+      listParameter: 'address',
+      matchingListKey: 'address=1',
+      nonMatchingListKey: 'addressId=1',
     }
-  ].forEach(function({ description: collectionParameterDescription, collectionParameter, matchingCollectionKey, nonMatchingCollectionKey }) {
-    describe(collectionParameterDescription, function () {
+  ].forEach(function({ description: listParameterDescription, listParameter, matchingListKey, nonMatchingListKey }) {
+    describe(listParameterDescription, function () {
       [
         {
           description: 'and the \'dependent\' option is not defined',
           dependent: undefined,
-          expectedNonMatchingCollection: {
+          expectedNonMatchingList: {
             positions: [ 1 ],
             status: { type: SUCCESS },
           }
@@ -76,12 +76,12 @@ describe('belongsTo:', function () {
         {
           description: 'and the \'dependent\' option is \'destroy\'',
           dependent: 'destroy',
-          expectedNonMatchingCollection: {
+          expectedNonMatchingList: {
             positions: [ ],
             status: { type: SUCCESS },
           }
         }
-      ].forEach(function({ description, dependent, expectedNonMatchingCollection }) {
+      ].forEach(function({ description, dependent, expectedNonMatchingList }) {
 
         describe(description, function () {
           beforeAll(function () {
@@ -105,7 +105,7 @@ describe('belongsTo:', function () {
                 addresses: {
                   ...this.addresses,
                   dependent,
-                  collectionParameter
+                  listParameter
                 },
               }
             }, {
@@ -133,8 +133,8 @@ describe('belongsTo:', function () {
                 this.store = null;
               });
 
-              it('then does NOT remove collections that contain the matching id parameter', function() {
-                expect(this.store.getState().users.collections[matchingCollectionKey]).toEqual(this.initialState.users.collections[matchingCollectionKey]);
+              it('then does NOT remove lists that contain the matching id parameter', function() {
+                expect(this.store.getState().users.lists[matchingListKey]).toEqual(this.initialState.users.lists[matchingListKey]);
               });
             });
 
@@ -161,12 +161,12 @@ describe('belongsTo:', function () {
                 this.store = null;
               });
 
-              it('then removes any collections that contain the matching id parameter', function() {
-                expect(this.store.getState().users.collections[matchingCollectionKey]).toEqual(undefined);
+              it('then removes any lists that contain the matching id parameter', function() {
+                expect(this.store.getState().users.lists[matchingListKey]).toEqual(undefined);
               });
 
-              it('then does NOT remove collections that don\'t match the id parameter', function() {
-                expect(this.store.getState().users.collections[nonMatchingCollectionKey]).toEqual(expectedNonMatchingCollection);
+              it('then does NOT remove lists that don\'t match the id parameter', function() {
+                expect(this.store.getState().users.lists[nonMatchingListKey]).toEqual(expectedNonMatchingList);
               });
 
               it('then does NOT display a warning', function() {
@@ -196,8 +196,8 @@ describe('belongsTo:', function () {
                 this.store = null;
               });
 
-              it('then does NOT remove collections that contain the matching id parameter', function() {
-                expect(this.store.getState().users.collections[matchingCollectionKey]).toEqual(this.initialState.users.collections[matchingCollectionKey]);
+              it('then does NOT remove lists that contain the matching id parameter', function() {
+                expect(this.store.getState().users.lists[matchingListKey]).toEqual(this.initialState.users.lists[matchingListKey]);
               });
             });
 
@@ -222,12 +222,12 @@ describe('belongsTo:', function () {
                 this.store = null;
               });
 
-              it('then removes any collections that contain the matching id parameter', function() {
-                expect(this.store.getState().users.collections[matchingCollectionKey]).toEqual(undefined);
+              it('then removes any lists that contain the matching id parameter', function() {
+                expect(this.store.getState().users.lists[matchingListKey]).toEqual(undefined);
               });
 
-              it('then does NOT remove collections that don\'t match the id parameter', function() {
-                expect(this.store.getState().users.collections[nonMatchingCollectionKey]).toEqual(expectedNonMatchingCollection);
+              it('then does NOT remove lists that don\'t match the id parameter', function() {
+                expect(this.store.getState().users.lists[nonMatchingListKey]).toEqual(expectedNonMatchingList);
               });
 
               it('then displays a warning', function() {

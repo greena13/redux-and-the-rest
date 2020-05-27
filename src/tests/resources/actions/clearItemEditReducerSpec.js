@@ -143,7 +143,7 @@ describe('Clear editItem reducer:', function () {
             }
           }
         },
-        collections: {},
+        lists: {},
         selectionMap: {},
         newItemKey: null
       };

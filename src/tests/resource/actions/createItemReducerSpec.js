@@ -5,7 +5,7 @@ import {
   expectToChangeNewItemKeyTo, expectToChangeResourceItemStatusErrorOccurredAtToBeSet,
   expectToChangeResourceItemStatusTo,
   expectToChangeResourceItemValuesTo,
-  expectToNotChangeResourcesCollection,
+  expectToNotChangeResourcesList,
   setupInitialState
 } from '../../helpers/resourceAssertions';
 import EmptyKey from '../../../constants/EmptyKey';
@@ -41,7 +41,7 @@ describe('Create reducer:', function () {
           status: { type: NEW }
         }
       },
-      collections: { },
+      lists: { },
       newItemKey: EmptyKey
     });
   });
@@ -58,7 +58,7 @@ describe('Create reducer:', function () {
               status: { type: SUCCESS }
             }
           },
-          collections: {
+          lists: {
             [EmptyKey]: {
               positions: [ EmptyKey ],
               status: { type: null }
@@ -101,7 +101,7 @@ describe('Create reducer:', function () {
                 status: { type: SUCCESS }
               }
             },
-            collections: {
+            lists: {
               [EmptyKey]: {
                 positions: [ EmptyKey ],
                 status: { type: null }
@@ -213,8 +213,8 @@ describe('Create reducer:', function () {
       expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'type', CREATING);
     });
 
-    it('then does NOT add the temporary key to the default collection', function() {
-      expectToNotChangeResourcesCollection(this, RESOURCE_NAME, EmptyKey);
+    it('then does NOT add the temporary key to the default list', function() {
+      expectToNotChangeResourcesList(this, RESOURCE_NAME, EmptyKey);
     });
 
     it('then sets the newItemKey to the temporary key', function() {

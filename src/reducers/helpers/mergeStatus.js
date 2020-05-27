@@ -9,7 +9,7 @@
  * @return {Object} The new merged status object
  */
 import resolveOptions from '../../action-creators/helpers/resolveOptions';
-import without from '../../utils/collection/without';
+import without from '../../utils/list/without';
 
 function mergeStatus(oldStatus, newStatus, options = {}) {
   if (options.onlyPersist) {

@@ -1,5 +1,5 @@
 import hasKey from './object/hasKey';
-import isEmpty from './collection/isEmpty';
+import isEmpty from './list/isEmpty';
 
 let requestsMap = {};
 

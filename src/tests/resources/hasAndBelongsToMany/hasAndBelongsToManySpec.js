@@ -35,7 +35,7 @@ describe('hasAndBelongsToMany:', function () {
               status: { type: NEW }
             }
           },
-          collections: {
+          lists: {
             [EmptyKey]: {
               positions: [ 1 ],
               status: { type: SUCCESS }
@@ -80,7 +80,7 @@ describe('hasAndBelongsToMany:', function () {
           posts: this.posts
         }
       }, {
-        fetchCollection: true,
+        fetchList: true,
         newItem: true,
       });
 
@@ -412,7 +412,7 @@ describe('hasAndBelongsToMany:', function () {
               status: { type: NEW }
             }
           },
-          collections: {
+          lists: {
             [EmptyKey]: {
               positions: [ 1 ],
               status: { type: SUCCESS }
@@ -464,7 +464,7 @@ describe('hasAndBelongsToMany:', function () {
           },
         }
       }, {
-        fetchCollection: true,
+        fetchList: true,
         newItem: true,
       });
 

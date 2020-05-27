@@ -3,9 +3,9 @@ import {
   CREATING, DESTROY_ERROR, DESTROYING, EDITING, ERROR, NEW, SUCCESS, UPDATING, RESOURCES
 } from '../../../index';
 import {
-  expectToChangeNewItemKeyTo, expectToChangeResourceCollectionPositionsTo,
+  expectToChangeNewItemKeyTo, expectToChangeResourceListPositionsTo,
   expectToChangeResourcesItemStatusTo,
-  expectToChangeResourcesItemValuesTo, expectToNotChangeResourceCollectionPositions,
+  expectToChangeResourcesItemValuesTo, expectToNotChangeResourceListPositions,
   expectToNotChangeResourcesItemStatus,
   expectToNotChangeResourcesItemValues,
   resourcesDefinition,
@@ -78,16 +78,16 @@ describe('New reducer:', () => {
      expectToChangeToNewItem(DESTROY_ERROR);
   });
 
-  describe('when the push collections operator is used', () => {
-    expectToAddNewItemToCollectionsPositions('push', 1, [1], [2, 1]);
+  describe('when the push lists operator is used', () => {
+    expectToAddNewItemToListsPositions('push', 1, [1], [2, 1]);
   });
 
-  describe('when the unshift collections operator is used', () => {
-    expectToAddNewItemToCollectionsPositions('unshift', 1, [1], [1, 2]);
+  describe('when the unshift lists operator is used', () => {
+    expectToAddNewItemToListsPositions('unshift', 1, [1], [1, 2]);
   });
 
-  describe('when the invalidate collections operator is used', () => {
-    expectToAddNewItemToCollectionsPositions('invalidate', 1, [], []);
+  describe('when the invalidate lists operator is used', () => {
+    expectToAddNewItemToListsPositions('invalidate', 1, [], []);
   });
 
   function expectToAddNewItem(params) {
@@ -110,8 +110,8 @@ describe('New reducer:', () => {
       expectToChangeNewItemKeyTo(this, RESOURCE_NAME, this.id);
     });
 
-    it('then does NOT add the key of the new item to the default collection', function () {
-      expect(resourcesDefinition(this, RESOURCE_NAME).collections).toEqual({});
+    it('then does NOT add the key of the new item to the default list', function () {
+      expect(resourcesDefinition(this, RESOURCE_NAME).lists).toEqual({});
     });
   }
 
@@ -132,7 +132,7 @@ describe('New reducer:', () => {
           }
         },
         newItemKey: this.previousItemId,
-        collections: {
+        lists: {
           [EmptyKey]: {
             positions: [ this.previousItemId ]
           }
@@ -157,8 +157,8 @@ describe('New reducer:', () => {
       expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, this.id, 'type', NEW);
     });
 
-    it('then does NOT add the key of the new item to the default collection', function() {
-      expectToNotChangeResourceCollectionPositions(this, RESOURCE_NAME, EmptyKey);
+    it('then does NOT add the key of the new item to the default list', function() {
+      expectToNotChangeResourceListPositions(this, RESOURCE_NAME, EmptyKey);
     });
   }
 
@@ -176,7 +176,7 @@ describe('New reducer:', () => {
             status: { type: status }
           }
         },
-        collections: {
+        lists: {
           [EmptyKey]: {
             positions: [ this.id ]
           }
@@ -211,28 +211,28 @@ describe('New reducer:', () => {
     });
   }
 
-  function expectToAddNewItemToCollectionsPositions(operator, itemId, expectedIsolatedState, expectedCumulativeState) {
-    describe('and there are NO collections', function () {
+  function expectToAddNewItemToListsPositions(operator, itemId, expectedIsolatedState, expectedCumulativeState) {
+    describe('and there are NO lists', function () {
       beforeAll(function () {
-        this.collectionId = 'order=newest';
+        this.listId = 'order=newest';
 
         setupState(this, { ...RESOURCES }, itemId, this.newValues, { [operator]: { order: 'newest' } });
       });
 
-      it('then creates a new collection with the specified key and places the item in it', function () {
-        expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, this.collectionId, expectedIsolatedState);
+      it('then creates a new list with the specified key and places the item in it', function () {
+        expectToChangeResourceListPositionsTo(this, RESOURCE_NAME, this.listId, expectedIsolatedState);
       });
     });
 
-    describe('and there are NO matching collections', function () {
+    describe('and there are NO matching lists', function () {
       beforeAll(function () {
-        this.collectionId = 'order=newest';
-        this.otherCollectionId = 'active=true';
+        this.listId = 'order=newest';
+        this.otherListId = 'active=true';
 
         setupState(this, {
           ...RESOURCES,
-          collections: {
-            [this.otherCollectionId]: {
+          lists: {
+            [this.otherListId]: {
               positions: [],
               status: { type: SUCCESS },
               metadata: { type: null }
@@ -241,26 +241,26 @@ describe('New reducer:', () => {
         }, itemId, this.newValues, { [operator]: { order: 'newest' } });
       });
 
-      it('then creates a new collection with the specified key and places the item in it', function () {
-        expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, this.collectionId, expectedIsolatedState);
-        expectToNotChangeResourceCollectionPositions(this, RESOURCE_NAME, this.otherCollectionId);
+      it('then creates a new list with the specified key and places the item in it', function () {
+        expectToChangeResourceListPositionsTo(this, RESOURCE_NAME, this.listId, expectedIsolatedState);
+        expectToNotChangeResourceListPositions(this, RESOURCE_NAME, this.otherListId);
       });
     });
 
-    describe('and there are collections with keys that exactly match', function () {
+    describe('and there are lists with keys that exactly match', function () {
       beforeAll(function () {
-        this.collectionId = 'order=newest';
-        this.otherCollectionId = 'active=true';
+        this.listId = 'order=newest';
+        this.otherListId = 'active=true';
 
         setupState(this, {
           ...RESOURCES,
-          collections: {
-            [this.otherCollectionId]: {
+          lists: {
+            [this.otherListId]: {
               positions: [],
               status: { type: SUCCESS },
               metadata: { type: null }
             },
-            [this.collectionId]: {
+            [this.listId]: {
               positions: [2],
               status: { type: null }
             },
@@ -268,9 +268,9 @@ describe('New reducer:', () => {
         }, itemId, this.newValues, { [operator]: { order: 'newest' } });
       });
 
-      it('then adds the new item to the matching collections', function () {
-        expectToChangeResourceCollectionPositionsTo(this, RESOURCE_NAME, this.collectionId, expectedCumulativeState);
-        expectToNotChangeResourceCollectionPositions(this, RESOURCE_NAME, this.otherCollectionId);
+      it('then adds the new item to the matching lists', function () {
+        expectToChangeResourceListPositionsTo(this, RESOURCE_NAME, this.listId, expectedCumulativeState);
+        expectToNotChangeResourceListPositions(this, RESOURCE_NAME, this.otherListId);
       });
     });
   }

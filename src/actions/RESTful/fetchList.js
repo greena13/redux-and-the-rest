@@ -1,7 +1,7 @@
-import { COLLECTION, ITEM } from '../../constants/DataStructures';
+import { LIST, ITEM } from '../../constants/DataStructures';
 import { ERROR, FETCHING, SUCCESS } from '../../constants/Statuses';
 
-import getCollectionKey from '../../action-creators/helpers/getCollectionKey';
+import getListKey from '../../action-creators/helpers/getListKey';
 import generateUrl from '../../action-creators/helpers/generateUrl';
 import makeRequest from '../../action-creators/helpers/makeRequest';
 import getItemKey from '../../action-creators/helpers/getItemKey';
@@ -19,7 +19,7 @@ const HTTP_REQUEST_TYPE = 'GET';
  ***************************************************************************************************************/
 
 /**
- * Redux action creator used for fetching a collection or resources from an index RESTful API endpoint
+ * Redux action creator used for fetching a list or resources from an index RESTful API endpoint
  * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
@@ -31,7 +31,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
     action, url: urlTemplate, keyBy, urlOnlyParams, progress, request = {}
   } = options;
 
-  const key = getCollectionKey(params, { urlOnlyParams });
+  const key = getListKey(params, { urlOnlyParams });
   const url = generateUrl({ urlTemplate }, params);
 
   if (actionCreatorOptions.force || isRequestInProgress(HTTP_REQUEST_TYPE, url)) {
@@ -49,9 +49,9 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
     const metadata = actionCreatorOptions.metadata || options.metadata || {};
 
     /**
-     * Immediately dispatch an action to change the state of the collection to be FETCHING
+     * Immediately dispatch an action to change the state of the list to be FETCHING
      */
-    dispatch(requestCollection({ action, metadata, requestedAt }, key));
+    dispatch(requestList({ action, metadata, requestedAt }, key));
 
     /**
      * Make a request to the external API and dispatch another action when the response is received, populating
@@ -68,8 +68,8 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
         method: HTTP_REQUEST_TYPE,
         ...request,
       },
-      onSuccess: receiveCollection,
-      onError: handleCollectionError,
+      onSuccess: receiveList,
+      onError: handleListError,
       progress
     }, actionCreatorOptions);
   };
@@ -80,19 +80,19 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
  ***************************************************************************************************************/
 
 /**
- * Creates an action object to update the Redux store to list a resource collection as FETCHING
+ * Creates an action object to update the Redux store to list a resource list as FETCHING
  * @param {Object} options Options specified when defining the resource and action
- * @param {string} key Key to use to index the collection in the Redux store
+ * @param {string} key Key to use to index the list in the Redux store
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function requestCollection(options, key) {
+function requestList(options, key) {
   const { action, metadata, requestedAt } = options;
 
   return {
     type: action,
     status: FETCHING,
-    collection: {
-      ...COLLECTION,
+    list: {
+      ...LIST,
       status: { type: FETCHING, requestedAt },
 
       /**
@@ -105,15 +105,15 @@ function requestCollection(options, key) {
 }
 
 /**
- * Creates an action object to update the Redux store to list a resource collection as being successfully
+ * Creates an action object to update the Redux store to list a resource list as being successfully
  * received from an external API
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} actionCreatorOptions Options passed to the action creator
- * @param {Object[]} collection List of resources received from the external API in the response
+ * @param {Object[]} list List of resources received from the external API in the response
  * @param {Object} [metadata] Metadata extracted from the response, using a responseAdaptor (if applicable)
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function receiveCollection(options, actionCreatorOptions, collection, metadata) {
+function receiveList(options, actionCreatorOptions, list, metadata) {
   const { transforms, key, keyBy, action, params, requestedAt, singular } = options;
 
   const positions = [];
@@ -122,10 +122,10 @@ function receiveCollection(options, actionCreatorOptions, collection, metadata) 
 
   /**
    * Build a dictionary or resource items, correctly indexed by their keys and populate a flat list of
-   * what position each item in that collection occupies in the list of resources.
-   * @type {Object<CollectionKey, ResourcesCollection>}
+   * what position each item in that list occupies in the list of resources.
+   * @type {Object<ListKey, ResourcesList>}
    */
-  const items = collection.reduce((memo, values) => {
+  const items = list.reduce((memo, values) => {
     const normalizedParams = wrapInObject(params, keyBy);
     const itemKey = getItemKey([values, normalizedParams], { keyBy, singular });
 
@@ -149,7 +149,7 @@ function receiveCollection(options, actionCreatorOptions, collection, metadata) 
     status: SUCCESS,
     items,
     key,
-    collection: {
+    list: {
       positions,
       status: { type: SUCCESS, syncedAt, itemsInLastResponse: Object.keys(items).length },
 
@@ -162,7 +162,7 @@ function receiveCollection(options, actionCreatorOptions, collection, metadata) 
 }
 
 /**
- * Creates an action object to update the Redux store to mark a resource collection as errored when it was
+ * Creates an action object to update the Redux store to mark a resource list as errored when it was
  * requested from an external API
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} actionCreatorOptions Options passed to the action creator
@@ -171,7 +171,7 @@ function receiveCollection(options, actionCreatorOptions, collection, metadata) 
  * @param {Object} [metadata] Metadata extracted from the response, using errorHandler (if applicable)
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function handleCollectionError(options, actionCreatorOptions, httpCode, errorEnvelope, metadata) {
+function handleListError(options, actionCreatorOptions, httpCode, errorEnvelope, metadata) {
   const { action, key } = options;
 
   return {
@@ -190,15 +190,15 @@ function handleCollectionError(options, actionCreatorOptions, httpCode, errorEnv
  ***************************************************************************************************************/
 
 /**
- * Handles reducing a resource collection in a Redux store as it moves through its lifecycle events
+ * Handles reducing a resource list in a Redux store as it moves through its lifecycle events
  * @param {ResourcesReduxState} resources The current state of part of the Redux store that contains
  *        the resources
  * @param {ActionObject} action The action containing the data to update the resource state
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources, action) {
-  const { status, items, key, httpCode, collection, error, errors, errorOccurredAt, metadata = {} } = action;
-  const currentCollection = resources.collections[key] || COLLECTION;
+  const { status, items, key, httpCode, list, error, errors, errorOccurredAt, metadata = {} } = action;
+  const currentList = resources.lists[key] || LIST;
 
   /**
    * NOTE: FETCHING occurs first and then *either* SUCCESS or ERROR, but FETCHING may also occur after a
@@ -208,83 +208,83 @@ function reducer(resources, action) {
   if (status === FETCHING) {
 
     /**
-     * When a collection is being fetched, we simply update the collection's status and metadata values,
-     * leaving any items in the collection that are already there untouched.
+     * When a list is being fetched, we simply update the list's status and metadata values,
+     * leaving any items in the list that are already there untouched.
      *
      * Note we completely override the metadata object with the new values - we dont' merge it.
      */
     return {
       ...resources,
-      collections: {
-        ...resources.collections,
+      lists: {
+        ...resources.lists,
         [key]: {
-          ...currentCollection,
+          ...currentList,
 
           /**
-           * We persist the syncedAt attribute of the collection if it's been fetched in the past, in case
+           * We persist the syncedAt attribute of the list if it's been fetched in the past, in case
            * the request fails, we know the last time it was successfully retrieved
            */
-          status: mergeStatus(currentCollection.status, collection.status, { onlyPersist: ['syncedAt', 'itemsInLastResponse'] }),
+          status: mergeStatus(currentList.status, list.status, { onlyPersist: ['syncedAt', 'itemsInLastResponse'] }),
 
           /**
            * For metadata specified at the time of the call (usually using actionOptions), it overrides any
            * existing values completely
            */
-          metadata: collection.metadata
+          metadata: list.metadata
         }
       }
     };
   } else if (status === SUCCESS) {
 
     /**
-     * When a collection has been successfully fetched, we merge the items contained in the API's response
+     * When a list has been successfully fetched, we merge the items contained in the API's response
      * body with those already in the store. This allows us to work with pagination and fetch more items on
-     * the next "page" of the collection.
+     * the next "page" of the list.
      */
     const newItems = {
       ...resources.items,
       ...items,
     };
 
-    const newCollection = {
-      ...resources.collections,
+    const newList = {
+      ...resources.lists,
       [key]: {
-        ...collection,
+        ...list,
 
         /**
          * We add all status attributes that were added since the request was started (currently only the
          * syncedAt value).
          */
-        status: mergeStatus(currentCollection.status, collection.status),
+        status: mergeStatus(currentList.status, list.status),
 
         /**
          * For metadata extracted from the response, we merge it with the existing metadata already available
          */
-        metadata: { ...currentCollection.metadata, ...metadata }
+        metadata: { ...currentList.metadata, ...metadata }
       }
     };
 
     return {
       ...resources,
       items: newItems,
-      collections: newCollection,
+      lists: newList,
     };
 
   } else if (status === ERROR) {
 
     /**
-     * When the attempt to fetch a collection from the API results in an error, we leave the current contents
-     * of the collection and update its state and metadata to reflect the details of the error.
+     * When the attempt to fetch a list from the API results in an error, we leave the current contents
+     * of the list and update its state and metadata to reflect the details of the error.
      */
     const newLists = {
-      ...resources.collections,
+      ...resources.lists,
       [key]: {
-        ...currentCollection,
+        ...currentList,
 
         /**
          * We merge in new status attributes about the details of the error.
          */
-        status: mergeStatus(currentCollection.status, {
+        status: mergeStatus(currentList.status, {
           type: status,
           httpCode,
           error, errors, errorOccurredAt
@@ -293,13 +293,13 @@ function reducer(resources, action) {
         /**
          * For metadata extracted from the response, we merge it with the existing metadata already available
          */
-        metadata: { ...currentCollection.metadata, ...metadata }
+        metadata: { ...currentList.metadata, ...metadata }
       }
     };
 
     return {
       ...resources,
-      collections: newLists
+      lists: newLists
     };
 
   } else {

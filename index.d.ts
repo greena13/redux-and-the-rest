@@ -13,7 +13,7 @@ export const NEW: string;
 export const EDITING: string;
 
 /**
- * The status used when a resource item or collection is being synchronised with an external API
+ * The status used when a resource item or list is being synchronised with an external API
  */
 export const FETCHING: string;
 
@@ -38,17 +38,17 @@ export const DESTROYING: string;
 export const DESTROY_ERROR: string;
 
 /**
- * The status used when a resource item or collection has been successfully synchronised with an external API
+ * The status used when a resource item or list has been successfully synchronised with an external API
  */
 export const SUCCESS: string;
 
 /**
- * The status used when a resource item or collection has is being uploaded or downloaded from an external API
+ * The status used when a resource item or list has is being uploaded or downloaded from an external API
  */
 export const PROGRESS: string;
 
 /**
- * The status used when a resource item or collection failed to synchronise with an external API
+ * The status used when a resource item or list failed to synchronise with an external API
  */
 export const ERROR: string;
 
@@ -69,12 +69,12 @@ export const PREVIEW: string;
 export const CLIENT_ERROR: string;
 
 /**
- * The key to use for items and collections when a one hasn't otherwise been specified or applies
+ * The key to use for items and lists when a one hasn't otherwise been specified or applies
  */
 export const UNSPECIFIED_KEY: string;
 
 /**
- * One of the statuses a resource item or resource collection can be in
+ * One of the statuses a resource item or resource list can be in
  */
 export type StatusType = string;
 
@@ -99,13 +99,13 @@ export interface ErrorStatus extends ErrorStatusRequired {
 
 export interface ResourceStatusRequired {
     /**
-     * The type of status of the resource item or collection
+     * The type of status of the resource item or list
      */
     type: StatusType | null;
 }
 
 /**
- * An object containing the status information of a particular resource item or resource collection.
+ * An object containing the status information of a particular resource item or resource list.
  */
 export interface ResourceStatus extends ResourceStatusRequired {
     /**
@@ -129,13 +129,13 @@ export interface ResourceStatus extends ResourceStatusRequired {
     errorOccurredAt: number,
 
     /**
-     * When a request to fetch, create or update the resource item or collection was last made to an external
+     * When a request to fetch, create or update the resource item or list was last made to an external
      * API
      */
     requestedAt?: number,
 
     /**
-     * When a response to fetch, create or update the resource item or collection was last received from an
+     * When a response to fetch, create or update the resource item or list was last received from an
      * external API
      */
     syncedAt?: number,
@@ -158,23 +158,23 @@ interface MetadataRequired {
 }
 
 /**
- * Information about the type of metadata the resource item or collection represents
+ * Information about the type of metadata the resource item or list represents
  */
 export interface Metadata extends MetadataRequired {
     [extraValues: string]: any
 }
 
 /**
- * The generic structure items and collections
+ * The generic structure items and lists
  */
-export interface GenericItemOrCollection {
+export interface GenericItemOrList {
     /**
-     * The status information of the item or collection
+     * The status information of the item or list
      */
     status: ResourceStatus,
 
     /**
-     * The metadata information of the item or collection
+     * The metadata information of the item or list
      */
     metadata: Metadata
 }
@@ -182,7 +182,7 @@ export interface GenericItemOrCollection {
 /**
  * The state and values of a single item of a particular resource
  */
-export interface ResourcesItem<T> extends GenericItemOrCollection {
+export interface ResourcesItem<T> extends GenericItemOrList {
     values: T,
 
     /**
@@ -192,26 +192,26 @@ export interface ResourcesItem<T> extends GenericItemOrCollection {
 }
 
 /**
- * The parameters used to serialize a key to reference an item or collection by
+ * The parameters used to serialize a key to reference an item or list by
  */
-export type ItemOrCollectionParameters = object | string | number;
+export type ItemOrListParameters = object | string | number;
 
 /**
- * The unique identifier of a resource collection
+ * The unique identifier of a resource list
  */
-export type ResourceCollectionId = string;
+export type ResourceListId = string;
 
 /**
- * A collection of a particular resource
+ * A list of a particular resource
  */
-export interface ResourcesCollection<T> extends GenericItemOrCollection {
+export interface ResourcesList<T> extends GenericItemOrList {
     /**
-     * A list of ids of resources in the order they appear in that collection.
+     * A list of ids of resources in the order they appear in that list.
      */
     positions: string[],
 
     /**
-     * The list of items in the collection, in the order that they appear
+     * The list of items in the list, in the order that they appear
      */
     items: Array<ResourcesItem<T>>
 }
@@ -223,9 +223,9 @@ export interface ResourcesReduxState<T> {
     items: { [key: string]: ResourcesItem<T>; },
 
     /**
-     * The set of collections of a particular resource type
+     * The set of lists of a particular resource type
      */
-    collections: { [key: string]: ResourcesCollection<T>; },
+    lists: { [key: string]: ResourcesList<T>; },
 
     /**
      * A dictionary of the resources that are currently selected.
@@ -242,35 +242,35 @@ export interface ResourcesReduxState<T> {
 /**
  * Returns an item of a particular resource item from a Redux store, removing any structure used implicitly.
  */
-export interface GetItemFunction<T> { (currentState: ResourcesReduxState<T>, params: ItemOrCollectionParameters): ResourcesItem<T> }
+export interface GetItemFunction<T> { (currentState: ResourcesReduxState<T>, params: ItemOrListParameters): ResourcesItem<T> }
 
 /**
  * Returns an item of a particular resource from a Redux store. If the item is not available in the store,
  * an empty item is returned immediately and the fetch action creator is called to update the store and
  * request the resource item from an external API.
  * @param currentState The current resource Redux store state
- * @param params The params to serialize to use as the key to find the resource collection.
+ * @param params The params to serialize to use as the key to find the resource list.
  * @param actionCreatorOptions The options to pass to the fetch action creator if it's called.
  * @returns The resource item if it's in the store, or an empty item.
  */
-export interface GetOrFetchItemFunction<T> { (currentState: ResourcesReduxState<T>, params: ItemOrCollectionParameters, actionCreatorOptions?: object): ResourcesItem<T> }
+export interface GetOrFetchItemFunction<T> { (currentState: ResourcesReduxState<T>, params: ItemOrListParameters, actionCreatorOptions?: object): ResourcesItem<T> }
 
 /**
- * Returns a collection of a particular resource from a Redux store, populating it with the correct items, in
+ * Returns a list of a particular resource from a Redux store, populating it with the correct items, in
  * the right order.
  */
-export interface GetCollectionFunction<T> { (currentState: ResourcesReduxState<T>, params?: ItemOrCollectionParameters): ResourcesCollection<T> }
+export interface GetListFunction<T> { (currentState: ResourcesReduxState<T>, params?: ItemOrListParameters): ResourcesList<T> }
 
 /**
- * Returns an collection of a particular resource from a Redux store. If the collection is not available in the store,
- * an empty collection is returned immediately and the fetch action creator is called to update the store and
- * request the resource collection from an external API.
+ * Returns an list of a particular resource from a Redux store. If the list is not available in the store,
+ * an empty list is returned immediately and the fetch action creator is called to update the store and
+ * request the resource list from an external API.
  * @param currentState The current resource Redux store state
- * @param params The params to serialize to use as the key to find the resource collection.
+ * @param params The params to serialize to use as the key to find the resource list.
  * @param actionCreatorOptions The options to pass to the fetch action creator if it's called.
- * @returns The resource collection if it's in the store, or an empty collection.
+ * @returns The resource list if it's in the store, or an empty list.
  */
-export interface GetOrFetchCollectionFunction<T> { (currentState: ResourcesReduxState<T>, params?: ItemOrCollectionParameters, actionCreatorOptions?: object): ResourcesCollection<T> }
+export interface GetOrFetchListFunction<T> { (currentState: ResourcesReduxState<T>, params?: ItemOrListParameters, actionCreatorOptions?: object): ResourcesList<T> }
 
 /**
  * The type of Redux action that is emitted when that action occurs
@@ -292,28 +292,28 @@ export interface ActionCreatorFunction { (...args: any[]): ThunkAction<void, any
  */
 export interface ResourcesActionCreatorDictionary<T> {
     /**
-     * Redux action creator used for fetching a collection or resources from an index RESTful API endpoint
-     * @param {ItemOrCollectionParameters} params A string or object that is serialized and used to fill in the dynamic parameters
+     * Redux action creator used for fetching a list or resources from an index RESTful API endpoint
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
      *        of the resource's URL
      * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
      * @returns {ThunkAction} Function to call to dispatch an action
      */
-    fetchCollection?: (params?: ItemOrCollectionParameters, actionCreatorOptions?: FetchCollectionActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+    fetchList?: (params?: ItemOrListParameters, actionCreatorOptions?: FetchListActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
 
     /**
      * Redux action creator used for fetching a single resource item from a fetch RESTful API endpoint
-     * @param {ItemOrCollectionParameters} params A string or object that is serialized and used to fill in the dynamic parameters
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
      *        of the resource's URL
      * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
      * @returns {ThunkAction} Function to call to dispatch an action
      */
-    fetchItem?: (params?: ItemOrCollectionParameters, actionCreatorOptions?: ActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+    fetchItem?: (params?: ItemOrListParameters, actionCreatorOptions?: ActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
 
     /**
      * Redux action creator used for adding a new resource item to the Redux store WITHOUT sending it to a remote API
      * (yet). This action is used for storing a new resource item locally before actually creating it
      * (which sends the new attributes to the remote API).
-     * @param {ItemOrCollectionParameters | Object} paramsOrValues The first argument which can either a string or object that is serialized
+     * @param {ItemOrListParameters | Object} paramsOrValues The first argument which can either a string or object that is serialized
      *        and used to fill in the dynamic parameters of the resource's URL (params) or the new attribute values
      *        to merge into the exist ones of the new resource item, or to use to create the resource item for the
      *        first time.
@@ -322,7 +322,7 @@ export interface ResourcesActionCreatorDictionary<T> {
      * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
      * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
      */
-    newItem?: (paramsOrValues: ItemOrCollectionParameters | T, valuesOrActionCreatorOptions?: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
+    newItem?: (paramsOrValues: ItemOrListParameters | T, valuesOrActionCreatorOptions?: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
 
     /**
      * Redux action creator used for clearing the new resource.
@@ -334,7 +334,7 @@ export interface ResourcesActionCreatorDictionary<T> {
      * Redux action creator used for editing the attributes of a new resource item (one that hasn't been saved to
      * a remote API yet). This action is used for editing a resource item locally (perhaps across
      * multiple stages or screens) before actually saving it (which sends the new attributes to the remote API).
-     * @param {ItemOrCollectionParameters | Object} paramsOrValues The first argument which can either a string or object that is serialized
+     * @param {ItemOrListParameters | Object} paramsOrValues The first argument which can either a string or object that is serialized
      *        and used to fill in the dynamic parameters of the resource's URL (params) or the new attribute values
      *        to merge into the exist ones of the new resource item.
      * @param {Object|ActionCreatorOptions} valuesOrActionCreatorOptions Either the new attribute values to merge into the exist ones
@@ -342,11 +342,11 @@ export interface ResourcesActionCreatorDictionary<T> {
      * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
      * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
      */
-    editNewItem?: (paramsOrValues: ItemOrCollectionParameters | T, valuesOrActionCreatorOptions?: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
+    editNewItem?: (paramsOrValues: ItemOrListParameters | T, valuesOrActionCreatorOptions?: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
 
     /**
      * Redux action creator used for sending a CREATE request to a RESTful API endpoint
-     * @param {ItemOrCollectionParameters | Object} paramsOrValues The first argument which can either a string
+     * @param {ItemOrListParameters | Object} paramsOrValues The first argument which can either a string
      *        or object that is serialized and used to fill in the dynamic parameters of the resource's URL
      *        (params) or the attribute values to use to create the resource.
      * @param {Object|ActionCreatorOptions} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
@@ -354,63 +354,63 @@ export interface ResourcesActionCreatorDictionary<T> {
      * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
      * @returns {ThunkAction} Function to call to dispatch an action
      */
-    createItem?: (paramsOrValues: ItemOrCollectionParameters | T , valuesOrActionCreatorOptions?: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+    createItem?: (paramsOrValues: ItemOrListParameters | T , valuesOrActionCreatorOptions?: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
 
     /**
      * Redux action creator used for updating the attributes of a resource item WITHOUT sending those updated
      * attributes to a remote API (yet). This action is used for editing a resource item locally (perhaps across
      * multiple stages or screens) before actually updating it (which sends the new attributes to the remote API).
-     * @param {ItemOrCollectionParameters} params A string or object that is serialized and used to fill in
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in
      *        the dynamic parameters of the resource's URL
      * @param {Object} values The new attribute values to merge into the exist ones of the resource item.
      * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
      * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
      */
-    editItem?: (params: ItemOrCollectionParameters, values: T, actionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
+    editItem?: (params: ItemOrListParameters, values: T, actionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
 
     /**
      * Redux action creator used for clearing the new resource.
-     * @param {ItemOrCollectionParameters} params A string or object that is serialized and used to generate
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to generate
      *        the index of the resource item
      * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
      */
-    clearItemEdit?: (params: ItemOrCollectionParameters) => AnyAction,
+    clearItemEdit?: (params: ItemOrListParameters) => AnyAction,
 
     /**
      * Redux action creator used for sending an UPDATE request to a RESTful API endpoint
-     * @param {ItemOrCollectionParameters} params A string or object that is serialized and used to fill
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill
      *        in the dynamic parameters of the resource's URL
      * @param {Object} values The attribute values to use to update the resource
      * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
      * @returns {ThunkAction} Function to call to dispatch an action
      */
-    updateItem?: (params: ItemOrCollectionParameters, values: T, actionCreatorOptions?: UpdateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+    updateItem?: (params: ItemOrListParameters, values: T, actionCreatorOptions?: UpdateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
 
     /**
      * Redux action creator used for destroying a resource item by making a DELETE request to a RESTful API endpoint
-     * @param {ItemOrCollectionParameters} params A string or object that is serialized and used to fill in
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in
      *        the dynamic parameters of the resource's URL
      * @param {UpdateItemActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action
      *        creator when it is called.
      * @returns {ThunkAction} Function to call to dispatch an action
      */
-    destroyItem?: (params: ItemOrCollectionParameters, actionCreatorOptions?: UpdateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+    destroyItem?: (params: ItemOrListParameters, actionCreatorOptions?: UpdateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
 
     /**
      * Redux action creator used for clearing an item from the store
-     * @param {ItemOrCollectionParameters} params A string or object that is serialized and used to find
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to find
      *        the item to clear.
      * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
      */
-    clearItem?: (params: ItemOrCollectionParameters) => AnyAction,
+    clearItem?: (params: ItemOrListParameters) => AnyAction,
 
     /**
-     * Redux action creator used for clearing a collection from the store
-     * @param {ItemOrCollectionParameters} params A string or object that is serialized and used to find
+     * Redux action creator used for clearing a list from the store
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to find
      *        the item to clear
      * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
      */
-    clearCollection?: (params: ItemOrCollectionParameters) => AnyAction,
+    clearList?: (params: ItemOrListParameters) => AnyAction,
 
     /**
      * Redux action creator used for resetting a resource back to empty
@@ -420,30 +420,30 @@ export interface ResourcesActionCreatorDictionary<T> {
 
     /**
      * Redux action creator used for selecting a resource item and replacing any already selected items
-     * @param {ItemOrCollectionParameters} params A string or object that is serialized and used to fill in
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in
      *        the dynamic parameters of the resource's URL
      * @param {SelectItemOptions} [actionCreatorOptions={}] The options passed to the action creator when
      *         it is called.
      * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
      */
-    selectItem?: (params: ItemOrCollectionParameters, actionCreatorOptions?: SelectItemOptions) => AnyAction,
+    selectItem?: (params: ItemOrListParameters, actionCreatorOptions?: SelectItemOptions) => AnyAction,
 
     /**
      * Redux action creator used for selecting a resource item and adding it to those already selected
-     * @param {ItemOrCollectionParameters} params A string or object that is serialized and used to fill in the dynamic parameters
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
      *        of the resource's URL
      * @param {SelectItemOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
      * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
      */
-    selectAnotherItem?: (params: ItemOrCollectionParameters, actionCreatorOptions?: SelectItemOptions) => AnyAction,
+    selectAnotherItem?: (params: ItemOrListParameters, actionCreatorOptions?: SelectItemOptions) => AnyAction,
 
     /**
      * Redux action creator used for deselecting a selected resource item
-     * @param {ItemOrCollectionParameters} params A string or object that is serialized and used to fill in the dynamic parameters
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
      *        of the resource's URL
      * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
      */
-    deselectItem?: (params: ItemOrCollectionParameters) => AnyAction,
+    deselectItem?: (params: ItemOrListParameters) => AnyAction,
 
     /**
      * Redux action creator used for clearing all of the selected resource items
@@ -463,21 +463,21 @@ export interface SelectItemOptions {
 export interface UpdateItemActionCreatorOptions<T> extends ActionCreatorOptions<T> {
     /**
      * The values of the resource item that is being deleted, used to more efficiently remove the item
-     * from any associated resource collections it may appear in.
+     * from any associated resource lists it may appear in.
      */
     previous: T
 }
 
-export interface FetchCollectionActionCreatorOptions<T> extends ActionCreatorOptions<T> {
+export interface FetchListActionCreatorOptions<T> extends ActionCreatorOptions<T> {
     /**
      * The values of the resource item that is being deleted, used to more efficiently remove the item
-     * from any associated resource collections it may appear in.
+     * from any associated resource lists it may appear in.
      */
     previous: T,
 
     /**
-     * Accepted only by fetchCollection and getOrFetchCollection, used to define the metadata of each
-     * item in the collection (the metadata is applied to the collection).
+     * Accepted only by fetchList and getOrFetchList, used to define the metadata of each
+     * item in the list (the metadata is applied to the list).
      */
     itemsMetadata?: Metadata
 }
@@ -570,33 +570,33 @@ export interface SingularResourceActionCreatorDictionary<T> {
 }
 
 /**
- * Object for building and then returning an initial resource collection state that can be passed to a Redux store
+ * Object for building and then returning an initial resource list state that can be passed to a Redux store
  * and work with the reducers returned by the resources() function
  */
-export interface InitialCollectionStateBuilder<T> {
+export interface InitialListStateBuilder<T> {
     /**
-     * Adds a new item to the collection's initial state builder
+     * Adds a new item to the list's initial state builder
      * @param valuesOrParams Either the values of a new item to add to the initial state, outside of any
-     *        collection, or the params of the item to use to index it.
+     *        list, or the params of the item to use to index it.
      * @param optionalValues The values of the item, if the first argument was used to specify params
      * @returns a new initial state builder scoped to the new item
      */
     addItem: (valuesOrParams: object | T, optionalValues?: T) => InitialItemStateBuilder<T>;
 
     /**
-     * Generates the initial collection state the builder has been configured for, in the format suitable to
+     * Generates the initial list state the builder has been configured for, in the format suitable to
      * pass to the Redux store.
-     * @param ResourceStatus The status to use for the collection and all of its items if the collection hasn't
+     * @param ResourceStatus The status to use for the list and all of its items if the list hasn't
      *        set its own.
-     * @param ResourceMetadata The metadata to use for the collection and all of its items if the
-     *        collection hasn't set its own.
+     * @param ResourceMetadata The metadata to use for the list and all of its items if the
+     *        list hasn't set its own.
      */
-    build: ({status: ResourceStatus, metadata: ResourceMetadata}) => ResourcesCollection<T>;
+    build: ({status: ResourceStatus, metadata: ResourceMetadata}) => ResourcesList<T>;
 
     /**
      * Generates a map of items indexed by their correct key
-     * @param ResourceStatus The status to use for the items if the collection or item hasn't set its own.
-     * @param ResourceMetadata The metadata for the items if the collection or item hasn't set its own.
+     * @param ResourceStatus The status to use for the items if the list or item hasn't set its own.
+     * @param ResourceMetadata The metadata for the items if the list or item hasn't set its own.
      */
     buildItems: ({status: ResourceStatus, metadata: ResourceMetadata}) => { [key: string]: ResourcesItem<T>; }
 
@@ -605,21 +605,21 @@ export interface InitialCollectionStateBuilder<T> {
      * @param ResourceStatusRequired The status type to set as the initial state
      * @returns itself to allow for chaining method calls
      */
-    setStatusType: (ResourceStatusRequired) => InitialCollectionStateBuilder<T>;
+    setStatusType: (ResourceStatusRequired) => InitialListStateBuilder<T>;
 
     /**
      * Sets the date the data was synced at
      * @param date The date the data was last synced
      * @returns itself to allow for chaining method calls
      */
-    setSyncedAt: (date) => InitialCollectionStateBuilder<T>;
+    setSyncedAt: (date) => InitialListStateBuilder<T>;
 
     /**
      * Sets the metadata of the initial state
      * @param ResourceStatusRequired The metadata object to set as the initial state
      * @returns itself to allow for chaining method calls
      */
-    setMetadata: (MetadataRequired) => InitialCollectionStateBuilder<T>;
+    setMetadata: (MetadataRequired) => InitialListStateBuilder<T>;
 }
 
 /**
@@ -663,19 +663,19 @@ export interface InitialItemStateBuilder<T> {
  */
 export interface InitialResourceStateBuilder<T> {
     /**
-     * Adds a new collection to the initial state builder
-     * @param itemsOrParams Either the params to use to index the collection or the list of items that
-     *        make up the collection. If no params are specified, the default unscoped collection is used.
-     * @param optionalItems The list of items in the collection, if they were not specified as the first
+     * Adds a new list to the initial state builder
+     * @param itemsOrParams Either the params to use to index the list or the list of items that
+     *        make up the list. If no params are specified, the default unscoped list is used.
+     * @param optionalItems The list of items in the list, if they were not specified as the first
      *        argument
-     * @returns a new initial state builder scoped to the new collection
+     * @returns a new initial state builder scoped to the new list
      */
-    addCollection: (itemsOrParams: object | Array<T>, optionalItems?: Array<T>) => InitialCollectionStateBuilder<T>;
+    addList: (itemsOrParams: object | Array<T>, optionalItems?: Array<T>) => InitialListStateBuilder<T>;
 
     /**
      * Adds a new item to the initial state builder
      * @param paramsOrValues Either the values of a new item to add to the initial state, outside of any
-     *        collection, or the params of the item to use to index it.
+     *        list, or the params of the item to use to index it.
      * @param optionalValues The values of the item, if the first argument was used to specify params
      * @returns a new initial state builder scoped to the new item
      */
@@ -751,15 +751,15 @@ export interface ResourcesDefinition<T> extends ResourceDefinitionCommon<T>{
     actionCreators: ResourcesActionCreatorDictionary<T>,
 
     /**
-     * Function that returns a particular collection of a resource type or calls the fetch action creator if it's
+     * Function that returns a particular list of a resource type or calls the fetch action creator if it's
      * not available in the store
      */
-    getOrFetchCollection: GetOrFetchCollectionFunction<T>,
+    getOrFetchList: GetOrFetchListFunction<T>,
 
     /**
-     * Function that returns a particular collection of resources
+     * Function that returns a particular list of resources
      */
-    getCollection: GetCollectionFunction<T>,
+    getList: GetListFunction<T>,
 }
 
 export interface SingularResourceDefinition<T> extends ResourceDefinitionCommon<T>{
@@ -782,7 +782,7 @@ export interface GlobalConfigurationOptions {
     keyBy?: string | Array<string>,
 
     /**
-     * Set to true for resources that should be edited locally, only. The fetch and fetchCollection actions are disabled
+     * Set to true for resources that should be edited locally, only. The fetch and fetchList actions are disabled
      * (the fetch* action creators are not exported) and the createItem, updateItem and destroyItem only update the store
      * locally, without making any HTTP requests.
      */
@@ -834,7 +834,7 @@ export interface GlobalConfigurationOptions {
 
     /**
      * The Redux store, used to directly invoke dispatch and get state for the getOrFetchItem() and
-     * getOrFetchCollection() functions
+     * getOrFetchList() functions
      */
     store?: Store,
 }
@@ -901,7 +901,7 @@ interface ActionAndActionCreatorSharedOptions<T> {
 
     /**
      * Whether the store should emit progress events as the resource is uploaded or downloaded. This is
-     * applicable to the RESTful actions fetchCollection, fetch, create, updateItem and any custom actions.
+     * applicable to the RESTful actions fetchList, fetch, create, updateItem and any custom actions.
      */
     progress?: boolean,
 
@@ -958,8 +958,8 @@ interface ActionAndActionCreatorSharedOptions<T> {
  */
 export interface ActionCreatorOptions<T> extends ActionAndActionCreatorSharedOptions<T>{
     /**
-     * An object of attributes and values that describe the collection's metadata. It can be used for
-     * containing information like page numbers, limits, offsets and includes for collections and types
+     * An object of attributes and values that describe the list's metadata. It can be used for
+     * containing information like page numbers, limits, offsets and includes for lists and types
      * for items (previews, or the complete set of attributes of an item).
      */
     metadata?: Metadata,
@@ -971,7 +971,7 @@ export interface ActionCreatorOptions<T> extends ActionAndActionCreatorSharedOpt
  */
 export interface ActionDefinitionOptions<T> extends ActionAndActionCreatorSharedOptions<T>{
     /**
-     * Set to true for resources that should be edited locally, only. The fetch and fetchCollection actions are disabled
+     * Set to true for resources that should be edited locally, only. The fetch and fetchList actions are disabled
      * (the fetch* action creators are not exported) and the createItem, updateItem and destroyItem only update the store
      * locally, without making any HTTP requests.
      */
@@ -992,9 +992,9 @@ export function resource<T>(resourceOptions: ResourceOptions<T>, actionOptions: 
 
 /**
  * Serializes an object to create a consistent key, no matter the ordering of the attributes, suitable to use
- * as a key for resource items and collections.
+ * as a key for resource items and lists.
  */
-export function serializeKey(target: any): string | ResourceCollectionId;
+export function serializeKey(target: any): string | ResourceListId;
 
 /**
  * Updates or sets the global configuration options
@@ -1011,29 +1011,29 @@ export function getConfiguration(): GlobalConfigurationOptions;
  * @param item The item to evaluate
  * @returns True if the resource item can be rolled back
  */
-export function hasBeenEdited(item: GenericItemOrCollection): boolean;
+export function hasBeenEdited(item: GenericItemOrList): boolean;
 
 /**
- * Whether the last request for an item or collection errored, but there is still old values in the store that
+ * Whether the last request for an item or list errored, but there is still old values in the store that
  * can be displayed instead.
- * @params itemOrCollection The item or collection to test for old values
- * @returns True if the item or collection has errored but has old values that can be displayed
+ * @params itemOrList The item or list to test for old values
+ * @returns True if the item or list has errored but has old values that can be displayed
  */
-export function canFallbackToOldValues(itemOrCollection: GenericItemOrCollection): boolean;
+export function canFallbackToOldValues(itemOrList: GenericItemOrList): boolean;
 
 /**
- * The time in milliseconds since the item or collection was last requested
- * @param itemOrCollection The item or collection to consider
- * @returns Number of milliseconds since the item or collection was requested
+ * The time in milliseconds since the item or list was last requested
+ * @param itemOrList The item or list to consider
+ * @returns Number of milliseconds since the item or list was requested
  */
-export function getTimeSinceFetchStarted(itemOrCollection: GenericItemOrCollection): number;
+export function getTimeSinceFetchStarted(itemOrList: GenericItemOrList): number;
 
 /**
- * The time in milliseconds since the item or collection was last synchronised with the external API
- * @param itemOrCollection The item or collection to consider
- * @returns Number of milliseconds since the item or collection was last synced with the external API
+ * The time in milliseconds since the item or list was last synchronised with the external API
+ * @param itemOrList The item or list to consider
+ * @returns Number of milliseconds since the item or list was last synced with the external API
  */
-export function getTimeSinceLastSync(itemOrCollection: GenericItemOrCollection): number;
+export function getTimeSinceLastSync(itemOrList: GenericItemOrList): number;
 
 /**
  * The original item values before an edits were performed.
@@ -1043,22 +1043,22 @@ export function getTimeSinceLastSync(itemOrCollection: GenericItemOrCollection):
 export function getValuesBeforeEditing<T>(item: ResourcesItem<T>): number;
 
 /**
- * Whether the item or collection has finished being fetched
- * @param itemOrCollection The item or collection to consider
- * @returns True if the item or collection has finished fetching
+ * Whether the item or list has finished being fetched
+ * @param itemOrList The item or list to consider
+ * @returns True if the item or list has finished fetching
  */
-export function isFinishedFetching(itemOrCollection: GenericItemOrCollection): boolean;
+export function isFinishedFetching(itemOrList: GenericItemOrList): boolean;
 
 /**
- * Whether the item or collection has finished being successfully fetched
- * @param itemOrCollection The item or collection to consider
- * @returns True if the item or collection was successfully fetched
+ * Whether the item or list has finished being successfully fetched
+ * @param itemOrList The item or list to consider
+ * @returns True if the item or list was successfully fetched
  */
-export function isSuccessfullyFetched(itemOrCollection: GenericItemOrCollection): boolean;
+export function isSuccessfullyFetched(itemOrList: GenericItemOrList): boolean;
 
 /**
- * Whether the item or collection is in an errored state - usually because the last request failed
- * @param itemOrCollection The item or collection to consider
- * @returns True if the item or collection is in an errored state
+ * Whether the item or list is in an errored state - usually because the last request failed
+ * @param itemOrList The item or list to consider
+ * @returns True if the item or list is in an errored state
  */
-export function isInAnErrorState(itemOrCollection: GenericItemOrCollection): boolean;
+export function isInAnErrorState(itemOrList: GenericItemOrList): boolean;

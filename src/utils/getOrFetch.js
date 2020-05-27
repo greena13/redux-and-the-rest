@@ -1,14 +1,14 @@
 import { getConfiguration } from '../configuration';
 import assertInDevMode from './assertInDevMode';
 import warn from './dev/warn';
-import without from './collection/without';
+import without from './list/without';
 import isFunction from './object/isFunction';
 
 function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions = {}) {
   const {
 
     /**
-     * Options that change between items and collections
+     * Options that change between items and lists
      */
     typeKey, keyFunction, getFunction, fetchFunction,
   } = options;
@@ -37,18 +37,18 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
   });
 
   /**
-   * Attempt to retrieve the item or collection from the current resources state
+   * Attempt to retrieve the item or list from the current resources state
    */
 
   const key = keyFunction(params);
 
-  const itemOrCollection = resourcesState[typeKey][key];
+  const itemOrList = resourcesState[typeKey][key];
 
-  if (!itemOrCollection || evaluateForceCondition(actionCreatorOptions.forceFetch, itemOrCollection)) {
+  if (!itemOrList || evaluateForceCondition(actionCreatorOptions.forceFetch, itemOrList)) {
 
     /**
      * If the item is not already in the store (or we're forcing the fetch operation), we call the fetch action
-     * creator to retrieve it in the background and return an empty item or collection in the meantime.
+     * creator to retrieve it in the background and return an empty item or list in the meantime.
      */
     store.dispatch(fetchFunction(params, without(actionCreatorOptions, ['forceFetch'])));
   }
@@ -56,8 +56,8 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
   return getFunction(resourcesState, key);
 }
 
-function evaluateForceCondition(forceFetch, itemOrCollection) {
-  return isFunction(forceFetch) ? forceFetch(itemOrCollection) : Boolean(forceFetch);
+function evaluateForceCondition(forceFetch, itemOrList) {
+  return isFunction(forceFetch) ? forceFetch(itemOrList) : Boolean(forceFetch);
 }
 
 export default getOrFetch;
