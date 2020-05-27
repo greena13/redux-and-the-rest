@@ -1,9 +1,10 @@
 let configuration = {};
 
 /**
- * @typedef {function(Object, Response): {values: Object, error: Object = null}} ResponseAdaptorFunction
+ * @typedef {function(Object, Response): {values: Object, error: Object = null, errors: Array.<Object> = [], metadata: Object }}>}} ResponseAdaptorFunction
  * @param {Object} responseBody The body of the JSON response
- * @param {Response} response The response object itself
+ * @param {Response} response The raw Response object
+ * @returns {{values: Object, error: Object = null, errors: Array.<Object> = [], metadata: Object }}}
  */
 
 /**

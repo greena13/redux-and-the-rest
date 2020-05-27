@@ -815,7 +815,68 @@ export interface SingularResourceDefinition<T> extends ResourceDefinitionCommon<
 /**
  * A Mapping between the name of an associated resource, and its definition.
  */
-export type AssociationOptions<T> = { [key: string]: ResourcesDefinition<T>; }
+export type AssociationOptions<T> = {
+    /**
+     * The definition of the associated resource (what's exported by the `resources` or `resource` function)
+     */
+    resource: ResourcesDefinition<T>;
+
+    /**
+     * Name of the attribute that stores the id or ids of the current resource on the associated one. If
+     * unspecified, the `as` attribute (or the resource's `name` value) are appended with the suffix of `id`.
+     */
+    foreignKey?: string;
+
+    /**
+     *  If a foreign key is not specified, this association name is used with a suffix of `id` to derive
+     *  the foreign key
+     */
+    as?: string;
+
+    /**
+     * key The key to use as the foreign key on this resource, to refer to the associated resource. If not
+     * specified, the associationName with a suffix of `id` for `belongsTo` associations and `ids` for
+     * `belongsToAndHasMany` associations is used.
+     */
+    key?: string;
+
+    /**
+     * Whether to remove the associated resource if the current one is removed from the store.
+     */
+    dependent?: boolean;
+}
+
+/**
+ * Function that accepts the raw request response and returns the values that should be passed to the reducers
+ * and saved in the Redux store
+ */
+export type ResponseAdaptorFunction = (responseBody: Object, response: Response) => {
+    /**
+     * The values of the list or item, extracted from the response body
+     */
+    values: Object,
+
+    /**
+     * The error details extracted from the response body (if a singular error)
+     * @deprecated
+     */
+    error?: Object | string,
+
+    /**
+     * The errors' details extracted from the response body
+     */
+    errors?: Array<Object | string>,
+
+    /**
+     * Additional metadata that should be stored with the list or item, but does not form part of its attributes
+     */
+    metadata?: Object
+};
+
+/**
+ * Function that accepts an item's values and returns a JSON-serializable object to be used as a request body
+ */
+export type RequestAdaptorFunction = (requestBody: Object) => Object;
 
 export interface GlobalConfigurationOptions {
     /**
@@ -841,13 +902,13 @@ export interface GlobalConfigurationOptions {
      * Function used to adapt the responses for requests before it is handed over to the reducers. The function
      * must return the results as an object with properties values and (optionally) error.
      */
-    responseAdaptor?: (responseBody: Object, response: Response) => { values: Object, error?: Object | string, errors?: Array<Object | string>, metadata?: Object },
+    responseAdaptor?: ResponseAdaptorFunction,
 
     /**
      * Function used to adapt the JavaScript object before it is handed over to become the body of the request
      * to be sent to an external API.
      */
-    requestAdaptor?: (requestBody: Object) => Object,
+    requestAdaptor?: RequestAdaptorFunction,
 
     /**
      * Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the
@@ -914,12 +975,12 @@ export interface ResourceOptions<T> extends GlobalConfigurationOptions {
     /**
      * An object of associated resources, with a many-to-many relationship with the current one.
      */
-    hasAndBelongsToMany?: AssociationOptions<T>,
+    hasAndBelongsToMany?: ResourcesDefinition<T> | AssociationOptions<T>,
 
     /**
      * An object of associated resources, with a one-to-many relationship with the current one.
      */
-    belongsTo?: AssociationOptions<T>,
+    belongsTo?: ResourcesDefinition<T> | AssociationOptions<T>,
 }
 
 /**
@@ -963,7 +1024,7 @@ export interface ActionDefinitionOptions<T> extends ActionAndActionCreatorShared
      * Function used to adapt the responses for requests before it is handed over to the reducers. The function
      * must return the results as an object with properties values and (optionally) error.
      */
-    responseAdaptor?: (responseBody: Object, response: Response) => { values: T, error?: Object | string, errors?: Array<Object | string>, metadata?: Object },
+    responseAdaptor?: ResponseAdaptorFunction
 
     /**
      * Function used to adapt the JavaScript object before it is handed over to become the body of the request

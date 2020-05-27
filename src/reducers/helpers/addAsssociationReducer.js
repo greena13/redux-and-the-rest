@@ -329,15 +329,21 @@ function getKeyName({ key, relationType, associationName }) {
 /**
  * @typedef AssociationOptions Accepted options when defining an associated resource
  * @property {ActionDictionary} actions Associated resource's actions
- * @property {string} property Name of the primary key the associate resource uses to refer to this one
- * @property {string} foreignKey Name of the attribute that stores the id or ids of the associated resource
- *          on the current one.
- * @property {string} as If a foreign key is not specified, this association name is used as the prefix with
- *         a suffix of id or ids to derive the foreign key
- * @property {string} dependent When set to 'destroyItem' it removes the associated resource if the current one is
- *        removed from the store.
- * @property {object|string} listParameter The key of the list to add newly created associated
- *        objects to
+ * @property {string} name Name of the associated resource type
+ *
+ * @property {string} foreignKey Name of the attribute that stores the id or ids of the current resource on the
+ *           associated one.
+ * @property {string} as If a foreign key is not specified, this association name is used with a suffix of
+ *           `id` to derive the foreign key.
+ *
+ * @property {string} key The key to use as the foreign key on this resource, to refer to the associated resource.
+ *           If not specified, the associationName with a suffix of `id` for `belongsTo` associations and `ids`
+ *           for `belongsToAndHasMany` associations is used.
+ *
+ * @property {string} dependent Whether to remove the associated resource if the current one is removed from
+ *            the store.
+ *
+ * @property {object|string} listParameter The key of the list to add newly created associated objects to
  */
 
 function addAssociationReducer(

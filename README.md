@@ -75,6 +75,9 @@ users = getList(store.getState().users);
          * [Remote API CRUD actions](#remote-api-crud-actions)
       * [Clearing actions](#clearing-actions)
       * [Selection actions](#selection-actions)
+* [Defining associations](#defining-associations)
+   * [One-to-One and One-to-Many relationships](#one-to-one-and-one-to-many-relationships)
+   * [Many-to-Many relationships](#many-to-many-relationships)
 * [Connecting to React](#connecting-to-react)
    * [Usage with react-redux](#usage-with-react-redux)
 * [API Reference](#api-reference)
@@ -119,39 +122,44 @@ users = getList(store.getState().users);
       * [Detecting old data](#detecting-old-data)
    * [Fetch a list from the server](#fetch-a-list-from-the-server)
       * [fetchList action creator options](#fetchlist-action-creator-options)
-   * [Fetch an individual item from the server](#fetch-an-individual-resource-item-from-the-server)
+   * [Fetch an individual item from the server](#fetch-an-individual-item-from-the-server)
       * [Fetch action creator options](#fetch-action-creator-options)
-   * [Create a new item on the server](#create-a-new-resource-item-on-the-server)
+   * [Create a new item on the server](#create-a-new-item-on-the-server)
       * [Adding a created item to a list](#adding-a-created-item-to-a-list)
-   * [Update a item on the server](#update-a-resource-item-on-the-server)
+   * [Update a item on the server](#update-a-item-on-the-server)
       * [Update action creator options](#update-action-creator-options)
-   * [Destroy a item on the server](#destroy-a-resource-item-on-the-server)
+   * [Destroy a item on the server](#destroy-a-item-on-the-server)
       * [DestroyItem action creator options](#destroyitem-action-creator-options)
 * [Local (synchronous) actions](#local-synchronous-actions)
-   * [Add a new item to the store](#add-a-new-resource-item-to-the-store)
+   * [Add a new item to the store](#add-a-new-item-to-the-store)
       * [NewItem action creator options](#newitem-action-creator-options)
-   * [Clear the new item from the store](#clear-the-new-resource-item-from-the-store)
-   * [Edit the new item in the store](#edit-the-new-resource-item-in-the-store)
-   * [Edit an existing item in the store](#edit-an-existing-resource-item-in-the-store)
-   * [Detecting if a item has been edited](#detecting-if-a-resource-item-has-been-edited)
+   * [Clear the new item from the store](#clear-the-new-item-from-the-store)
+   * [Edit the new item in the store](#edit-the-new-item-in-the-store)
+   * [Edit an existing item in the store](#edit-an-existing-item-in-the-store)
+   * [Detecting if a item has been edited](#detecting-if-a-item-has-been-edited)
    * [Accessing values before they were edited](#accessing-values-before-they-were-edited)
    * [Clear local edits](#clear-local-edits)
-   * [Select a item in the store](#select-a-resource-item-in-the-store)
-   * [Select another item in the store](#select-another-resource-item-in-the-store)
-   * [Deselect a item in the store](#deselect-a-resource-item-in-the-store)
+   * [Select a item in the store](#select-a-item-in-the-store)
+   * [Select another item in the store](#select-another-item-in-the-store)
+   * [Deselect a item in the store](#deselect-a-item-in-the-store)
    * [Clear all the selected items in the store](#clear-all-the-selected-items-in-the-store)
+   * [Clearing a resource when a user signs out or other event](#clearing-a-resource-when-a-user-signs-out-or-other-event)
 * [Configuring requests](#configuring-requests)
    * [Configuring the URLs used for a request](#configuring-the-urls-used-for-a-request)
       * [URL Parameters](#url-parameters)
          * [Using string values](#using-string-values)
          * [Using object values](#using-object-values)
          * [Specifying query parameters](#specifying-query-parameters)
+      * [Adapting request bodies](#adapting-request-bodies)
       * [Pagination](#pagination)
    * [Working with Authenticated APIs](#working-with-authenticated-apis)
       * [Auth tokens as headers](#auth-tokens-as-headers)
       * [Auth tokens as query parameters](#auth-tokens-as-query-parameters)
       * [Session cookies](#session-cookies)
    * [Configuring other request properties](#configuring-other-request-properties)
+* [Adapting responses](#adapting-responses)
+   * [Adapting success responses](#adapting-success-responses)
+   * [Handling error responses](#handling-error-responses)
    
 ## Install & Setup
 
@@ -350,7 +358,7 @@ It's generally _not_ recommended to use any of the following directly, as there 
 Some common situations where you may be tempted to use the above, are:
 
 * Refreshing an item or list from a remote API: `fetchItem()` or `fetchList()` should handle transitioning between the stale and new records more cleanly.
-* Cancelling an edit to an item: Use `clearItemEdit()` to roll back the changes without the need to refetch from the remote API.
+* Cancelling an edit to an item: Use `clearItemEdit()` to roll back the changes without the need to re-fetch from the remote API.
 * Clearing a resource when an event occurs, such as when user logs out: use the `clearOn` option to achieve this more efficiently (discussed below).   
 
 #### Selection actions
@@ -364,6 +372,65 @@ In addition to the CRUD functionality, `redux-and-the-rest` provides a number of
 | deselectItem | deselectItem() | Unselects an item that is currently selected |
 | clearSelectedItems | clearSelectedItems() | Unselects all selected items |
 
+
+## Defining associations
+
+You can define associations between resources so that their foreign keys are properly maintained as you add, update and remove related resources.
+
+Once associated, if the associated resource is deleted, it will be removed from the foreign keys of any related items of the current resource.
+
+If a new item  of the associated resource is created with a foreign key pointing at an item of the current resource, it's key will be added to the list of foreign keys.
+
+If an existing associated item is updated and the current resource items are swapped, this will also be handled. 
+
+You define associations on the resources you want to be updated when the associated resource changes. Currently this synchronisation only works in one direction, and because the associated resource must be defined before you declare it as an association, you cannot define an association the reverse direction without creating a cyclic dependency. This will be the focus of future updates.
+
+Association configuration come in two forms: `belongsTo` and `hasAndBelongsTo`. Each expects an object, where the keys are the names of the associated resources, and the values are either the definition of those resources (what's exported by the `resources` or `resource` function), or a configuration object containing the following options:
+
+* `resource` - (ResourceDefinition) The definition of the associated resource (what's exported by the `resources` or `resource` function).
+
+* `foreignKey` -  (string) Name of the attribute that stores the id or ids of the current resource on the associated one. If unspecified, the `as` attribute (or the resource's `name` value) are appended with the suffix of `id`.
+* `as` - (string) If a foreign key is not specified, this association name is used with a suffix of `id` to derive the foreign key.
+
+* `key` - (string) 
+
+* `dependent` - (boolean) Whether to remove the associated resource if the current one is removed from the store. 
+
+### One-to-One and One-to-Many relationships
+
+The `belongsTo` resource option is used to define a one-to-one and one-to-many relationships.
+
+```javascript
+import { resources } from 'redux-and-the-rest';
+
+const addresses = resources({
+  name: 'addresses',
+  url: 'http://test.com/addresses/:id?',
+  keyBy: 'id'
+}, ['createItem', 'updateItem', 'destroyItem']);
+                                     
+
+const users = resources({
+    name: 'users',
+    url: 'http://test.com/users/:id?',
+    keyBy: 'id',
+    belongsTo: {
+      address: addresses
+    }
+  }, {
+    fetchList: true,
+    newItem: true,
+  });     
+                                                                                   
+/**
+ * The following will add 'temp' to 'addressIds' of the user with id '1' (if it exists in the store).
+ */
+addresses.actionCreators.createItem({ id: 'temp' }, { userId: 1, city: 'Boston' });
+``` 
+
+### Many-to-Many relationships
+
+The `hasAndBelongsToMany` resource option is used to define many-to-many relationships. It behaves and accepts the same arguments as `belongsTo`, but correctly maintains an array of foreign keys on items of the current resource, rather than a single id.
 
 ## Connecting to React
 
@@ -1441,6 +1508,36 @@ The clearSelectedItems action creator clears the `selectionMap` dictionary, rese
 | Action creator name | `clearSelectedItem()` |
 | First action creator argument | `keys` - See [Getting lists from the store](#getting-lists-from-the-store) for more information. |
 
+
+### Clearing a resource when a user signs out or other event
+
+Often you will have events that should trigger some sort of cache busting, or clearing or resources. A common situation is clearing all resources related to the current user when that user logs out. This can be achieved with the resource `clearOn` option.
+
+This option accepts a list of, or a single action, that should trigger clearing the resource.
+
+Example:
+
+```javascript
+const { reducers: sessionReducers, actionCreators: { destroyItem: destroySession }, actions } = resources({
+      name: 'session',
+      url: 'http://test.com/session/:id',
+    }, {
+      destroyItem: true
+    });
+
+// ...
+
+const { reducers: usersReducers, } = resources({
+    name: 'users',
+    url: 'http://test.com/users/:id?',
+    keyBy: 'id',
+    clearOn: destroySession,
+  }, {
+    fetchList: true,
+    newItem: true,
+  });
+```
+
 ## Configuring requests
 
 ### Configuring the URLs used for a request
@@ -1520,6 +1617,39 @@ For example, calling `fetchUsers({ order: 'newest' })` will make a request to:
 http://test.com/users?order=newest
 ```
 
+#### Adapting request bodies
+
+If you need to adapt data from the format in which it's stored in the Redux store to one that matches the needs of your remote API, you can do so using the `requestAdaptor` option.
+
+This function is available as global, resource or action level configuration and is only applied to actions that are expected to make requests with bodies: `createItem` and `updateItem`.
+
+It accepts an item's `values` and is expected to return a JSON-serializeable object to form the body of the request.
+
+Example:
+
+```javascript
+import { resources } from 'redux-and-the-rest';
+
+/**
+ * Define a users resource
+ */
+const { reducers: usersReducers, actionCreators: { fetchList: fetchUsers }, getList } = resources(
+    {
+        name: 'users',
+        url: 'http://test.com/users/:id?',
+        keyBy: 'id',
+    },
+    {
+        fetchList: {
+          requestAdaptor: (values) => {
+            return { user: values };   
+          }   
+        }     
+    }
+);
+```
+ 
+ 
 #### Pagination
 
 For situations where you want to include query parameters that do not change the destination list in the store (i.e. the list returned by the server should be merged into values that are already in the store, rather than replacing them), you can use the `urlOnlyParams` option. This is especially useful for pagination.
@@ -1615,3 +1745,98 @@ There are also a few additional options used directly by `redux-and-the-rest` it
 | `cookie` | string | '' | The value to set as the request's `Cookie` header. This is useful for performing requests to authenticated endpoints as part of initial render for server-side rendering. |
 | `credentials` | string | undefined | Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the request only if it's on the same origin. |
 | `errorHandler` | Function | `undefined` | A function to call if the request returns an error response (HTTP status > 400). This function must accept two arguments: the `Response` object and a callback that the `errorHandler` will call once it has finished executing, with a value representing the error(s) that will be placed in the store. This option is useful to "unwrap" error objects from error responses, or to standardise how errors are represented in Redux that come from different endpoints or servers. |
+
+## Adapting responses
+
+### Adapting success responses
+
+All action controllers that make remote requests accept a `responseAdaptor` option (either as a global, resource or action option). This function is used to adapt responses from the server before they are passed to Redux (their output is routed through an internal action creator and used to generate an action object). This is useful if the remote API you're working with doesn't conform to the shape that `redux-and-the-rest` expects.
+
+It accepts two input arguments:
+
+* `responseBody` - The body of the request parsed as a JSON object.
+* `response` - The HTTP Response object, if for whatever reason you need more information than the JSON response parameter provides.
+
+It is expected to return a single object with a number of properties:
+
+* `values` - (Required) For item action creators, this is an object of attributes that will form the list or item's `values` in the store. For list action creators, it is an array of values for each item.
+* `error` - (Optional and Deprecated) error details extracted from the response body (if a singular error) as a string or object
+* `errors` -  (Optional) The errors' details extracted from the response body, as an array of objects or strings
+* `metadata` - (Optional) Additional metadata that should be stored with the list or item, but does not form part of its attributes. These values are (non-recursively) merged with the `metadata` that's already there, to allow compiling metadata of both values known at call time (when you call your action creator) and values know only when the response returns.
+
+This adaptor is called for all requests with a HTTP status below 400. If you need to adapt requests with HTTP status above that, use the `request.errorHandler` option.
+
+Example:
+
+```javascript
+import { resources } from 'redux-and-the-rest';
+
+/**
+ * Define a users resource
+ */
+const { reducers: usersReducers, actionCreators: { fetchList: fetchUsers }, getList } = resources(
+    {
+        name: 'users',
+        url: 'http://test.com/users/:id?',
+        keyBy: 'id',
+    },
+    {
+        fetchList: {
+          responseAdaptor: ({ items, page, errors }) => {
+            if (errors) {
+              return { errors };
+            }     
+            
+            return { values: items, metadata: { page } }
+          }
+        }     
+    }
+);
+```
+
+### Handling error responses
+
+To handle error responses from the remote API, you can use the `request.errorHandler` option (as global, resource, action or actionCreator configuration).
+
+This function is called whenever a response is received with an HTTP status of 400 or above.
+
+It receives two arguments: the first is the HTTP `Response` object, and the second is a function to call when you are done handling or adapting the error, that expects two arguments:
+
+* `errorOrErrors` - Either a single string or object describing the error, or an array of error strings or objects describing multiple errors. (The latter is the preferred option).
+* `metadata` - Additional metadata that should be stored with the list or item, but does not form part of its attributes. These values are (non-recursively) merged with the `metadata` that's already there, to allow compiling metadata of both values known at call time (when you call your action creator) and values know only when the response returns.
+
+A callback is provided because the methods on the `Response` object used for parsing the response are asynchronous.
+
+You *must* call the callback function, otherwise the request will appear to `redux-and-the-rest` as if it never resolved.
+
+Example:
+
+```javascript
+import { resources } from 'redux-and-the-rest';
+
+/**
+ * Define a users resource
+ */
+const { reducers: usersReducers, actionCreators: { fetchList: fetchUsers }, getList } = resources(
+    {
+        name: 'users',
+        url: 'http://test.com/users/:id?',
+        keyBy: 'id',
+    },
+    {
+        fetchList: {
+          request: {
+            errorHandler: (response, callback) => {
+              if (response.status === 500) {
+                callback([{ message: 'Unknown server error' }]);
+              } else {
+                response.text().then((message) => {
+                   callback([{ message }]);
+                });
+              }
+            }             
+          } 
+        }     
+    }
+);
+```

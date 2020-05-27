@@ -74,6 +74,7 @@ describe('belongsTo:', function () {
         keyBy: 'id'
       }, { createItem: true, updateItem: true, destroyItem: true });
 
+
       const {
         reducers,
       } = resources({
@@ -146,7 +147,7 @@ describe('belongsTo:', function () {
             this.store.dispatch(this.addresses.actionCreators.updateItem(1, {
               city: 'City 1',
               userId: 2
-            }, { previous: {
+            }, { previousValues: {
                 city: 'City 1',
                 userId: 1
               }

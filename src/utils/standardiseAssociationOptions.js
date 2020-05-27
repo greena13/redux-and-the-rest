@@ -4,7 +4,7 @@
  *    users: usersResource
  *  }
  *
- *  is implicitly converted the the more expansive:
+ *  to the more expansive:
  *
  *  belongs_to: {
  *    users: {
@@ -17,11 +17,11 @@
 function standardiseAssociationOptions(options) {
   if (options.__isResourcesDefinition) {
     return options;
-  } else {
-    const { resource, ..._options } = options;
-
-return { ...resource, ..._options };
   }
+
+  const { resource, ..._options } = options;
+
+  return { ...resource, ..._options };
 }
 
 export default standardiseAssociationOptions;
