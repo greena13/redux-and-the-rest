@@ -149,9 +149,9 @@ function makeRequest(options, actionCreatorOptions = {}) {
             /**
              * We run the response through the responseAdaptor function, if one has been specified
              */
-            const { values, error, errors } = responseAdaptor(json, response);
+            const { values, error, errors, metadata } = responseAdaptor(json, response);
 
-            return { values, ...normalizeErrors(error, errors) };
+            return { values, ...normalizeErrors(error, errors), metadata };
           } else {
 
             /**
@@ -178,7 +178,8 @@ function makeRequest(options, actionCreatorOptions = {}) {
               _options,
               actionCreatorOptions,
               status,
-              pluck(_json, ['error', 'errors'])
+              pluck(_json, ['error', 'errors']),
+              _json.metadata
             )
           );
         } else {
@@ -192,7 +193,8 @@ function makeRequest(options, actionCreatorOptions = {}) {
               _options,
               actionCreatorOptions,
               _json.values,
-              collectionKeys || previousValues
+              _json.metadata,
+              collectionKeys || previousValues,
             )
           );
         }
@@ -207,13 +209,14 @@ function makeRequest(options, actionCreatorOptions = {}) {
          * We pass that error handler a callback that it is expected to call with an error object that is
          * safe to place in the Redux store.
          */
-        _request.errorHandler(response, (errorOrErrors) => {
+        _request.errorHandler(response, (errorOrErrors, metadata) => {
           dispatch(
             onError(
               _options,
               actionCreatorOptions,
               status,
-              normalizeErrors(errorOrErrors)
+              normalizeErrors(errorOrErrors),
+              metadata
             )
           );
         });

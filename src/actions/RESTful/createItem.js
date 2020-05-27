@@ -52,8 +52,9 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     progress,
     metadata,
     requestAdaptor,
-    request = {}
-, singular } = options;
+    request = {},
+    singular
+  } = options;
 
 
   const normalizedParams = wrapInObject(params, keyBy);
@@ -124,6 +125,11 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
 function submitCreateResource(options, actionCreatorOptions, values, collectionOperations) {
   const { transforms, action, key, requestedAt } = options;
 
+  /**
+   * Action creator options override metadata options that may have been set when defining the resource
+   */
+  const metadata = actionCreatorOptions.metadata || options.metadata;
+
   return {
     type: action,
     status: CREATING,
@@ -132,7 +138,8 @@ function submitCreateResource(options, actionCreatorOptions, values, collectionO
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
       values,
-      status: { type: CREATING, requestedAt }
+      status: { type: CREATING, requestedAt },
+      metadata
     })
   };
 }
@@ -157,7 +164,12 @@ function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOption
     optionalActionCreatorOptions
   );
 
-  return receiveCreatedResource({ ...options, params }, actionCreatorOptions, values);
+  /**
+   * Action creator options override metadata options that may have been set when defining the resource
+   */
+  const metadata = actionCreatorOptions.metadata || options.metadata;
+
+  return receiveCreatedResource({ ...options, params }, actionCreatorOptions, values, metadata);
 }
 
 /**
@@ -166,9 +178,10 @@ function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOption
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} actionCreatorOptions Options passed to the action creator
  * @param {Object} values The values returned by the external API for the newly created resource item
+ * @param {Object} [metadata] Metadata extracted from the response, using a responseAdaptor (if applicable)
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function receiveCreatedResource(options, actionCreatorOptions, values) {
+function receiveCreatedResource(options, actionCreatorOptions, values, metadata) {
   const { action, keyBy, transforms, params, collectionOperations, localOnly, singular } = options;
 
   const key = function () {
@@ -203,7 +216,8 @@ function receiveCreatedResource(options, actionCreatorOptions, values) {
     collectionOperations,
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       values,
-      status: { type: SUCCESS, syncedAt: Date.now() }
+      status: { type: SUCCESS, syncedAt: Date.now() },
+      metadata
     }),
     localOnly
   };
@@ -216,15 +230,21 @@ function receiveCreatedResource(options, actionCreatorOptions, values) {
  * @param {Object} actionCreatorOptions Options passed to the action creator
  * @param {number} httpCode The HTTP status code of the error response
  * @param {object} errorEnvelope An object containing the details of the error
+ * @param {Object} [metadata] Metadata extracted from the response, using a responseAdaptor (if applicable)
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function handleCreateResourceError(options, actionCreatorOptions, httpCode, errorEnvelope) {
+function handleCreateResourceError(options, actionCreatorOptions, httpCode, errorEnvelope, metadata) {
   const { action, key } = options;
 
   return {
     type: action,
     status: ERROR,
     temporaryKey: key,
+
+    /**
+     * metadata from a responseAdaptor (if applicable) to be merged in with the existing metadata
+     */
+    metadata,
     httpCode,
     ...errorEnvelope,
     errorOccurredAt: Date.now()
@@ -243,7 +263,11 @@ function handleCreateResourceError(options, actionCreatorOptions, httpCode, erro
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources, action) {
-  const { localOnly, type, temporaryKey, key, collectionOperations = {}, status, item, httpCode, error, errors, errorOccurredAt } = action;
+  const {
+    localOnly, type, temporaryKey, key, collectionOperations = {},
+    status, item, httpCode, error, errors, errorOccurredAt, metadata
+  } = action;
+
   const { items } = resources;
   const currentItem = items[temporaryKey] || ITEM;
 
@@ -338,6 +362,11 @@ function reducer(resources, action) {
          * syncedAt value).
          */
         status: mergeStatus(currentItem.status, item.status),
+
+        /**
+         * For metadata extracted from the response, we merge it with the existing metadata already available
+         */
+        metadata: { ...currentItem.metadata, ...item.metadata }
       }
     };
 
@@ -387,6 +416,11 @@ function reducer(resources, action) {
             httpCode,
             error, errors, errorOccurredAt
           }),
+
+          /**
+           * For metadata extracted from the response, we merge it with the existing metadata already available
+           */
+          metadata: { ...currentItem.metadata, ...metadata }
         }
       }
     };

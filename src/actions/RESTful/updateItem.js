@@ -94,12 +94,18 @@ function actionCreator(options, params, values, actionCreatorOptions = {}) {
 function submitUpdateResource(options, actionCreatorOptions, values) {
   const { transforms, action, key, requestedAt } = options;
 
+  /**
+   * Action creator options override metadata options that may have been set when defining the resource
+   */
+  const metadata = actionCreatorOptions.metadata || options.metadata;
+
   return {
     type: action,
     status: UPDATING, key,
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       values,
-      status: { type: UPDATING, requestedAt }
+      status: { type: UPDATING, requestedAt },
+      metadata
     }),
     previousValues: actionCreatorOptions.previousValues
   };
@@ -115,10 +121,17 @@ function submitUpdateResource(options, actionCreatorOptions, values) {
  * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
  */
 function localActionCreator(options, params, values, actionCreatorOptions = {}) {
+
+  /**
+   * Action creator options override metadata options that may have been set when defining the resource
+   */
+  const metadata = actionCreatorOptions.metadata || options.metadata;
+
   return receiveUpdatedResource(
     { ...options, params },
     actionCreatorOptions,
     values,
+    metadata,
     actionCreatorOptions.previous
   );
 }
@@ -128,11 +141,12 @@ function localActionCreator(options, params, values, actionCreatorOptions = {}) 
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} actionCreatorOptions Options passed to the action creator
  * @param {Object} values The values returned by the external API for the newly created resource item
+ * @param {Object} [metadata] Metadata extracted from the response, using a responseAdaptor (if applicable)
  * @param {Object} previousValues The values the resource item previously had, which is used to more efficiently
  *        update any associated resource items or collections
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function receiveUpdatedResource(options, actionCreatorOptions, values, previousValues) {
+function receiveUpdatedResource(options, actionCreatorOptions, values, metadata, previousValues) {
   const { transforms, action, params, keyBy, localOnly, singular } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
@@ -143,7 +157,12 @@ function receiveUpdatedResource(options, actionCreatorOptions, values, previousV
     key: getItemKey([values, normalizedParams], { keyBy, singular }),
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       values,
-      status: { type: SUCCESS, syncedAt: Date.now() }
+      status: { type: SUCCESS, syncedAt: Date.now() },
+
+      /**
+       * metadata from a responseAdaptor (if applicable) to be merged in with the existing metadata
+       */
+      metadata,
     }),
     previousValues,
     localOnly
@@ -157,14 +176,20 @@ function receiveUpdatedResource(options, actionCreatorOptions, values, previousV
  * @param {Object} actionCreatorOptions Options passed to the action creator
  * @param {number} httpCode The HTTP status code of the error response
  * @param {object} errorEnvelope An object containing the details of the error
+ * @param {Object} [metadata] Metadata extracted from the response, using a responseAdaptor (if applicable)
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function handleUpdateResourceError(options, actionCreatorOptions, httpCode, errorEnvelope) {
+function handleUpdateResourceError(options, actionCreatorOptions, httpCode, errorEnvelope, metadata) {
   const { action, key } = options;
 
   return {
     type: action,
     status: ERROR, key,
+
+    /**
+     * metadata from a responseAdaptor (if applicable) to be merged in with the existing metadata
+     */
+    metadata,
     httpCode,
     ...errorEnvelope,
     errorOccurredAt: Date.now()
@@ -183,7 +208,7 @@ function handleUpdateResourceError(options, actionCreatorOptions, httpCode, erro
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources, action) {
-  const { type, key, status, item, httpCode, error, errors, errorOccurredAt } = action;
+  const { type, key, status, item, httpCode, error, errors, errorOccurredAt, metadata } = action;
   const { items } = resources;
 
   assertInDevMode(() => {
@@ -228,7 +253,7 @@ function reducer(resources, action) {
          * We persist the syncedAt attribute of the item if it's been fetched in the past, in case
          * the request fails, we know the last time it was successfully retrieved.
          */
-        status: mergeStatus(currentItem.status, item.status, { onlyPersist: ['syncedAt', 'dirty', 'originalValues'] })
+        status: mergeStatus(currentItem.status, item.status, { onlyPersist: ['syncedAt', 'dirty', 'originalValues'] }),
       }
     };
 
@@ -259,6 +284,11 @@ function reducer(resources, action) {
          * syncedAt value).
          */
         status: mergeStatus(without(currentItem.status, ['dirty', 'originalValues']), item.status),
+
+        /**
+         * For metadata extracted from the response, we merge it with the existing metadata already available
+         */
+        metadata: { ...currentItem.metadata, ...item.metadata }
       }
     };
 
@@ -287,6 +317,11 @@ function reducer(resources, action) {
           httpCode,
           error, errors, errorOccurredAt
         }),
+
+        /**
+         * For metadata extracted from the response, we merge it with the existing metadata already available
+         */
+        metadata: { ...currentItem.metadata, ...metadata }
       }
     };
 

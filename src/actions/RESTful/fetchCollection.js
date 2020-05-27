@@ -1,13 +1,11 @@
 import { COLLECTION, ITEM } from '../../constants/DataStructures';
 import { ERROR, FETCHING, SUCCESS } from '../../constants/Statuses';
-import { COMPLETE } from '../../constants/MetadataTypes';
 
 import getCollectionKey from '../../action-creators/helpers/getCollectionKey';
 import generateUrl from '../../action-creators/helpers/generateUrl';
 import makeRequest from '../../action-creators/helpers/makeRequest';
 import getItemKey from '../../action-creators/helpers/getItemKey';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
-import metadataTransform from '../../action-creators/helpers/transforms/metadataTransform';
 import wrapInObject from '../../utils/object/wrapInObject';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
@@ -30,7 +28,7 @@ const HTTP_REQUEST_TYPE = 'GET';
  */
 function actionCreator(options, params, actionCreatorOptions = {}) {
   const {
-    action, url: urlTemplate, keyBy, urlOnlyParams, progress, metadata, request = {}
+    action, url: urlTemplate, keyBy, urlOnlyParams, progress, request = {}
   } = options;
 
   const key = getCollectionKey(params, { urlOnlyParams });
@@ -46,9 +44,14 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
     const requestedAt = Date.now();
 
     /**
+     * Action creator options override metadata options that may have been set when defining the resource
+     */
+    const metadata = actionCreatorOptions.metadata || options.metadata || {};
+
+    /**
      * Immediately dispatch an action to change the state of the collection to be FETCHING
      */
-    dispatch(requestCollection({ action, metadata: actionCreatorOptions.metadata || metadata, requestedAt }, key));
+    dispatch(requestCollection({ action, metadata, requestedAt }, key));
 
     /**
      * Make a request to the external API and dispatch another action when the response is received, populating
@@ -83,7 +86,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function requestCollection(options, key) {
-  const { action, metadata = { type: COMPLETE }, requestedAt } = options;
+  const { action, metadata, requestedAt } = options;
 
   return {
     type: action,
@@ -91,6 +94,10 @@ function requestCollection(options, key) {
     collection: {
       ...COLLECTION,
       status: { type: FETCHING, requestedAt },
+
+      /**
+       * Metadata from action creators or options, to override anything that's currently there
+       */
       metadata
     },
     key,
@@ -103,9 +110,10 @@ function requestCollection(options, key) {
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} actionCreatorOptions Options passed to the action creator
  * @param {Object[]} collection List of resources received from the external API in the response
+ * @param {Object} [metadata] Metadata extracted from the response, using a responseAdaptor (if applicable)
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function receiveCollection(options, actionCreatorOptions, collection) {
+function receiveCollection(options, actionCreatorOptions, collection, metadata) {
   const { transforms, key, keyBy, action, params, requestedAt, singular } = options;
 
   const positions = [];
@@ -126,10 +134,11 @@ function receiveCollection(options, actionCreatorOptions, collection) {
      */
     positions.push(itemKey);
 
-    memo[itemKey] = applyTransforms(transforms, options, { ...actionCreatorOptions, metadata: actionCreatorOptions.itemsMetadata }, {
+    memo[itemKey] = applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
       values,
       status: { type: SUCCESS, requestedAt, syncedAt },
+      metadata: actionCreatorOptions.itemsMetadata || options.metadata || {},
     });
 
     return memo;
@@ -140,10 +149,15 @@ function receiveCollection(options, actionCreatorOptions, collection) {
     status: SUCCESS,
     items,
     key,
-    collection: metadataTransform(options, actionCreatorOptions, {
+    collection: {
       positions,
-      status: { type: SUCCESS, syncedAt, itemsInLastResponse: Object.keys(items).length }
-    })
+      status: { type: SUCCESS, syncedAt, itemsInLastResponse: Object.keys(items).length },
+
+      /**
+       * metadata from a responseAdaptor (if applicable) to be merged in with the existing metadata
+       */
+      metadata
+    }
   };
 }
 
@@ -154,9 +168,10 @@ function receiveCollection(options, actionCreatorOptions, collection) {
  * @param {Object} actionCreatorOptions Options passed to the action creator
  * @param {number} httpCode The HTTP status code of the error response
  * @param {object} errorEnvelope An object containing the details of the error
+ * @param {Object} [metadata] Metadata extracted from the response, using errorHandler (if applicable)
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function handleCollectionError(options, actionCreatorOptions, httpCode, errorEnvelope) {
+function handleCollectionError(options, actionCreatorOptions, httpCode, errorEnvelope, metadata) {
   const { action, key } = options;
 
   return {
@@ -165,7 +180,8 @@ function handleCollectionError(options, actionCreatorOptions, httpCode, errorEnv
     key,
     ...errorEnvelope,
     httpCode,
-    errorOccurredAt: Date.now()
+    errorOccurredAt: Date.now(),
+    metadata
   };
 }
 
@@ -181,8 +197,8 @@ function handleCollectionError(options, actionCreatorOptions, httpCode, errorEnv
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources, action) {
-  const { status, items, key, httpCode, collection, error, errors, errorOccurredAt } = action;
-  const currentList = resources.collections[key] || COLLECTION;
+  const { status, items, key, httpCode, collection, error, errors, errorOccurredAt, metadata = {} } = action;
+  const currentCollection = resources.collections[key] || COLLECTION;
 
   /**
    * NOTE: FETCHING occurs first and then *either* SUCCESS or ERROR, but FETCHING may also occur after a
@@ -202,13 +218,18 @@ function reducer(resources, action) {
       collections: {
         ...resources.collections,
         [key]: {
-          ...currentList,
+          ...currentCollection,
 
           /**
            * We persist the syncedAt attribute of the collection if it's been fetched in the past, in case
            * the request fails, we know the last time it was successfully retrieved
            */
-          status: mergeStatus(currentList.status, collection.status, { onlyPersist: ['syncedAt', 'itemsInLastResponse'] }),
+          status: mergeStatus(currentCollection.status, collection.status, { onlyPersist: ['syncedAt', 'itemsInLastResponse'] }),
+
+          /**
+           * For metadata specified at the time of the call (usually using actionOptions), it overrides any
+           * existing values completely
+           */
           metadata: collection.metadata
         }
       }
@@ -220,13 +241,12 @@ function reducer(resources, action) {
      * body with those already in the store. This allows us to work with pagination and fetch more items on
      * the next "page" of the collection.
      */
-
     const newItems = {
       ...resources.items,
       ...items,
     };
 
-    const newLists = {
+    const newCollection = {
       ...resources.collections,
       [key]: {
         ...collection,
@@ -235,14 +255,19 @@ function reducer(resources, action) {
          * We add all status attributes that were added since the request was started (currently only the
          * syncedAt value).
          */
-        status: mergeStatus(currentList.status, collection.status),
+        status: mergeStatus(currentCollection.status, collection.status),
+
+        /**
+         * For metadata extracted from the response, we merge it with the existing metadata already available
+         */
+        metadata: { ...currentCollection.metadata, ...metadata }
       }
     };
 
     return {
       ...resources,
       items: newItems,
-      collections: newLists,
+      collections: newCollection,
     };
 
   } else if (status === ERROR) {
@@ -254,16 +279,21 @@ function reducer(resources, action) {
     const newLists = {
       ...resources.collections,
       [key]: {
-        ...currentList,
+        ...currentCollection,
 
         /**
          * We merge in new status attributes about the details of the error.
          */
-        status: mergeStatus(currentList.status, {
+        status: mergeStatus(currentCollection.status, {
           type: status,
           httpCode,
           error, errors, errorOccurredAt
         }, { exclude: ['itemsInLastResponse'] }),
+
+        /**
+         * For metadata extracted from the response, we merge it with the existing metadata already available
+         */
+        metadata: { ...currentCollection.metadata, ...metadata }
       }
     };
 

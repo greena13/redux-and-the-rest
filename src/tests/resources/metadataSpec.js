@@ -1,7 +1,7 @@
 import { resources, RESOURCES } from '../../index';
 import buildStore from '../helpers/buildStore';
 import fetchMock from 'fetch-mock';
-import { COMPLETE, PREVIEW } from '../../../index';
+import { PREVIEW } from '../../../index';
 import nop from '../../utils/function/nop';
 import EmptyKey from '../../constants/EmptyKey';
 
@@ -19,110 +19,6 @@ describe('metadata:', function () {
 
         this.reducers = reducers;
         this.fetchUsers = fetchUsers;
-      });
-
-      describe('and the metadata type is NOT set when calling the action creator', function() {
-        describe('and the request succeeds', () => {
-          describe('before the request has completed', function () {
-            beforeAll(function () {
-              this.store = buildStore({
-                users: {
-                  ...RESOURCES
-                }
-              }, { users: this.reducers } );
-
-              fetchMock.get('http://test.com/users', new Promise(nop));
-
-              this.store.dispatch(this.fetchUsers());
-            });
-
-            afterAll(function() {
-              fetchMock.restore();
-              this.store = null;
-            });
-
-            it('then the item and collection\'s metadata type is COMPLETE', function() {
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(COMPLETE);
-            });
-          });
-
-          describe('when the request completes', function() {
-            beforeAll(function () {
-              this.store = buildStore({
-                users: {
-                  ...RESOURCES
-                }
-              }, { users: this.reducers } );
-
-              fetchMock.get('http://test.com/users', {
-                body: [{ id: 1, username: 'Robert' }],
-              });
-
-              this.store.dispatch(this.fetchUsers());
-            });
-
-            afterAll(function() {
-              fetchMock.restore();
-              this.store = null;
-            });
-
-            it('then the item and collection\'s metadata type is COMPLETE', function() {
-              expect(this.store.getState().users.items['1'].metadata.type).toEqual(COMPLETE);
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(COMPLETE);
-            });
-          });
-        });
-
-        describe('and the request errors', () => {
-          describe('before the request has completed', function () {
-            beforeAll(function () {
-              this.store = buildStore({
-                users: {
-                  ...RESOURCES
-                }
-              }, { users: this.reducers } );
-
-              fetchMock.get('http://test.com/users', new Promise(nop));
-
-              this.store.dispatch(this.fetchUsers());
-            });
-
-            afterAll(function() {
-              fetchMock.restore();
-              this.store = null;
-            });
-
-            it('then the collection\'s metadata type is COMPLETE', function() {
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(COMPLETE);
-            });
-          });
-
-          describe('when the request completes', function() {
-            beforeAll(function () {
-              this.store = buildStore({
-                users: {
-                  ...RESOURCES
-                }
-              }, { users: this.reducers } );
-
-              fetchMock.get('http://test.com/users', {
-                body: { error: 'Not Found' },
-                status: 404
-              });
-
-              this.store.dispatch(this.fetchUsers());
-            });
-
-            afterAll(function() {
-              fetchMock.restore();
-              this.store = null;
-            });
-
-            it('then the collection\'s metadata type is COMPLETE', function() {
-              expect(this.store.getState().users.collections[EmptyKey].metadata.type).toEqual(COMPLETE);
-            });
-          });
-        });
       });
 
       describe('and the metadata type is set when calling the action creator', function() {
@@ -468,60 +364,6 @@ describe('metadata:', function () {
 
         this.reducers = reducers;
         this.fetchUser = fetchUser;
-      });
-
-      describe('and the metadata type is NOT set when calling the action creator', function() {
-        describe('before the request has completed', function () {
-          beforeAll(function () {
-            fetchMock.get('http://test.com/users/1', new Promise(nop));
-
-            this.store = buildStore({
-              users: {
-                ...RESOURCES
-              }
-            }, { users: this.reducers } );
-
-            this.store.dispatch(this.fetchUser(1));
-
-            this.user = this.store.getState().users.items['1'];
-          });
-
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
-
-          it('then the item\'s metadata type is COMPLETE', function() {
-            expect(this.user.metadata.type).toEqual(COMPLETE);
-          });
-        });
-
-        describe('when the request completes', function() {
-          beforeAll(function () {
-            fetchMock.get('http://test.com/users/1', {
-              body: { id: 1, username: 'Robert' },
-            });
-
-            this.store = buildStore({
-              users: {
-                ...RESOURCES
-              }
-            }, { users: this.reducers } );
-
-            this.store.dispatch(this.fetchUser(1));
-
-            this.user = this.store.getState().users.items['1'];
-          });
-
-          afterAll(function() {
-            fetchMock.restore();
-            this.store = null;
-          });
-
-          it('then the item\'s metadata type is COMPLETE', function() {
-            expect(this.user.metadata.type).toEqual(COMPLETE);
-          });
-        });
       });
 
       describe('and the metadata type is set when calling the action creator', function() {

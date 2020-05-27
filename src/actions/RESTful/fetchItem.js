@@ -26,7 +26,7 @@ const HTTP_REQUEST_TYPE = 'GET';
  */
 function actionCreator(options, params, actionCreatorOptions = {}) {
   const {
-    action, transforms, url: urlTemplate, keyBy, progress, metadata, request = {}, singular
+    action, transforms, url: urlTemplate, keyBy, progress, request = {}, singular, metadata
   } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
@@ -83,14 +83,21 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
 function requestResource(options, actionCreatorOptions) {
   const { transforms, action, key, requestedAt } = options;
 
+  /**
+   * Action creator options override metadata options that may have been set when defining the resource
+   */
+  const metadata = actionCreatorOptions.metadata || options.metadata || {};
+
   return {
     type: action,
     status: FETCHING,
     key,
+
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
       values: {},
-      status: { type: FETCHING, requestedAt }
+      status: { type: FETCHING, requestedAt },
+      metadata
     })
   };
 }
@@ -101,16 +108,21 @@ function requestResource(options, actionCreatorOptions) {
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} actionCreatorOptions Options passed to the action creator
  * @param {Object} values The attributes of the resource item
+ * @param {Object} [metadata] Metadata extracted from the response, using a responseAdaptor (if applicable)
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function receiveResource(options, actionCreatorOptions, values) {
-  const { transforms, action, params, keyBy, metadata, singular } = options;
+function receiveResource(options, actionCreatorOptions, values, metadata = {}) {
+  const { transforms, action, params, keyBy, singular } = options;
 
   const item = applyTransforms(transforms, options, actionCreatorOptions, {
     ...ITEM,
     values,
     status: { type: SUCCESS, syncedAt: Date.now() },
-    metadata
+
+    /**
+     * metadata from a responseAdaptor (if applicable) to be merged in with the existing metadata
+     */
+    metadata,
   });
 
   const normalizedParams = wrapInObject(params, keyBy);
@@ -119,7 +131,7 @@ function receiveResource(options, actionCreatorOptions, values) {
     type: action,
     status: SUCCESS,
     key: getItemKey([item.values, normalizedParams], { keyBy, singular }),
-    item
+    item,
   };
 }
 
@@ -130,14 +142,19 @@ function receiveResource(options, actionCreatorOptions, values) {
  * @param {Object} actionCreatorOptions Options passed to the action creator
  * @param {number} httpCode The HTTP status code of the error response
  * @param {object} errorEnvelope An object containing the details of the error
+ * @param {Object} [metadata] Metadata extracted from the response, using a responseAdaptor (if applicable)
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function handleResourceError(options, actionCreatorOptions, httpCode, errorEnvelope) {
-  const { action, key, metadata } = options;
+function handleResourceError(options, actionCreatorOptions, httpCode, errorEnvelope, metadata) {
+  const { action, key } = options;
 
   return {
     type: action,
     status: ERROR,
+
+    /**
+     * metadata from a responseAdaptor (if applicable) to be merged in with the existing metadata
+     */
     metadata,
     httpCode,
     key,
@@ -159,7 +176,7 @@ function handleResourceError(options, actionCreatorOptions, httpCode, errorEnvel
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources, action) {
-  const { status, key, httpCode, item, error, errors, errorOccurredAt } = action;
+  const { status, key, httpCode, item, error, errors, errorOccurredAt, metadata } = action;
 
   /**
    * Fetch the current values for the resource if they are already in the store, otherwise fallback to an
@@ -197,7 +214,7 @@ function reducer(resources, action) {
               ...currentItem.values,
               ...item.values
             },
-            status: newStatus
+            status: newStatus,
           }
         }
       };
@@ -216,7 +233,7 @@ function reducer(resources, action) {
           ...resources.items,
           [key]: {
             ...item,
-            status: newStatus
+            status: newStatus,
           }
         }
       };
@@ -242,6 +259,11 @@ function reducer(resources, action) {
            * syncedAt value).
            */
           status: mergeStatus(currentItem.status, item.status),
+
+          /**
+           * For metadata extracted from the response, we merge it with the existing metadata already available
+           */
+          metadata: { ...currentItem.metadata, ...item.metadata }
         }
       }
     };
@@ -263,6 +285,11 @@ function reducer(resources, action) {
             httpCode,
             error, errors, errorOccurredAt
           }),
+
+          /**
+           * For metadata extracted from the response, we merge it with the existing metadata already available
+           */
+          metadata: { ...currentItem.metadata, ...metadata }
         }
       }
     };

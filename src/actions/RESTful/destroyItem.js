@@ -37,8 +37,9 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
     keyBy,
     url: urlTemplate,
     progress,
-    request = {}
-, singular } = options;
+    request = {},
+    singular
+  } = options;
 
   const normalizedParams = wrapInObject(params, keyBy);
   const url = generateUrl({ urlTemplate }, normalizedParams);

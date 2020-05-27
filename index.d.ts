@@ -298,7 +298,7 @@ export interface ResourcesActionCreatorDictionary<T> {
      * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
      * @returns {ThunkAction} Function to call to dispatch an action
      */
-    fetchCollection?: (params?: ItemOrCollectionParameters, actionCreatorOptions?: ActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+    fetchCollection?: (params?: ItemOrCollectionParameters, actionCreatorOptions?: FetchCollectionActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
 
     /**
      * Redux action creator used for fetching a single resource item from a fetch RESTful API endpoint
@@ -466,6 +466,20 @@ export interface UpdateItemActionCreatorOptions<T> extends ActionCreatorOptions<
      * from any associated resource collections it may appear in.
      */
     previous: T
+}
+
+export interface FetchCollectionActionCreatorOptions<T> extends ActionCreatorOptions<T> {
+    /**
+     * The values of the resource item that is being deleted, used to more efficiently remove the item
+     * from any associated resource collections it may appear in.
+     */
+    previous: T,
+
+    /**
+     * Accepted only by fetchCollection and getOrFetchCollection, used to define the metadata of each
+     * item in the collection (the metadata is applied to the collection).
+     */
+    itemsMetadata?: Metadata
 }
 
 export interface SingularResourceActionCreatorDictionary<T> {
@@ -784,7 +798,7 @@ export interface GlobalConfigurationOptions {
      * Function used to adapt the responses for requests before it is handed over to the reducers. The function
      * must return the results as an object with properties values and (optionally) error.
      */
-    responseAdaptor?: (responseBody: Object, response: Response) => { values: Object, error?: Object | string, errors?: Array<Object | string> },
+    responseAdaptor?: (responseBody: Object, response: Response) => { values: Object, error?: Object | string, errors?: Array<Object | string>, metadata?: Object },
 
     /**
      * Function used to adapt the JavaScript object before it is handed over to become the body of the request
@@ -895,7 +909,7 @@ interface ActionAndActionCreatorSharedOptions<T> {
      * Function used to adapt the responses for requests before it is handed over to the reducers. The function
      * must return the results as an object with properties values and (optionally) error.
      */
-    responseAdaptor?: (responseBody: Object, response: Response) => { values: T, error?: Object | string, errors?: Array<Object | string> },
+    responseAdaptor?: (responseBody: Object, response: Response) => { values: T, error?: Object | string, errors?: Array<Object | string>, metadata?: Object },
 
     /**
      * Function used to adapt the JavaScript object before it is handed over to become the body of the request
@@ -949,12 +963,6 @@ export interface ActionCreatorOptions<T> extends ActionAndActionCreatorSharedOpt
      * for items (previews, or the complete set of attributes of an item).
      */
     metadata?: Metadata,
-
-    /**
-     * Accepted only by fetchCollection and getOrFetchCollection, used to define the metadata of each
-     * item in the collection (the metadata is applied to the collection).
-     */
-    itemsMetadata?: Metadata
 }
 
 /**

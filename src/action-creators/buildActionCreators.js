@@ -2,7 +2,6 @@ import warn from '../utils/dev/warn';
 import isObject from '../utils/object/isObject';
 import wrapInObject from '../utils/object/wrapInObject';
 import resolveOptions from './helpers/resolveOptions';
-import metadataTransform from './helpers/transforms/metadataTransform';
 import { getConfiguration } from '../configuration';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 import fetchItemAction from '../actions/RESTful/fetchItem';
@@ -246,8 +245,6 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
         ..._options,
         request: requestOptions
       };
-
-      actionCreatorConfig.transforms.push(metadataTransform);
 
       memo[key] = (arg1, arg2, arg3) => {
         const config = getConfiguration();
