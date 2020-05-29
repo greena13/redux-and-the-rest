@@ -1,4 +1,4 @@
-import ActionsDictionary from './action-objects/ActionsDictionary';
+import buildActions from './action-objects/buildActions';
 
 import buildReducersDictionary from './reducers/buildReducersDictionary';
 import buildActionCreators from './action-creators/buildActionCreators';
@@ -166,7 +166,7 @@ function resources(resourceOptions, actionOptions = {}) {
     _actionOptions = without(actionOptions, 'fetchList');
   }
 
-  const actions = new ActionsDictionary(name, resourceOptions, Object.keys(_actionOptions));
+  const actions = buildActions(name, resourceOptions, Object.keys(_actionOptions));
   const reducersDictionary = buildReducersDictionary(resourceOptions, actions, _actionOptions);
   const actionCreators = buildActionCreators(resourceOptions, actions, _actionOptions);
 
@@ -186,7 +186,7 @@ function resources(resourceOptions, actionOptions = {}) {
     /**
      * @type {ActionDictionary} Mapping between RESTful action names and constant Redux Action names
      */
-    actions: actions.toHash(),
+    actions,
 
     /**
      * @type {ActionCreatorDictionary} Dictionary of available action creators

@@ -100,7 +100,7 @@ const LOCAL_ONLY_REDUCERS = without(STANDARD_REDUCERS, Object.keys(RemoteOnlyAct
  * Creates the reducer function can be used to correctly update a resource's state after every Redux action that
  * is dispatched.
  * @param {ResourceOptions} resourceOptions Hash of actionsOptions for configuring the resource
- * @param {ActionsDictionary} actionsDictionary Dictionary of actions available for the resource
+ * @param {ActionDictionary} actionsDictionary Dictionary of actions available for the resource
  * @param {ActionOptionsMap} actionsOptions Hash of actionsOptions for configuring the actions that be dispatched to
  *        modify the resource
  * @returns {ReducerFunction} Reducer function that will accept the resource's current state and an action
@@ -194,7 +194,7 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
         }
       }();
 
-      memo[actionsDictionary.get(key)] = {
+      memo[actionsDictionary[key]] = {
         options: reducerOptions,
         reducer: _reducer
       };

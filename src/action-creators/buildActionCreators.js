@@ -155,7 +155,7 @@ function getActionCreators({ localOnly, singular }) {
 /**
  * Builds a dictionary of ActionCreatorFunctions based in on resource and action options
  * @param {ResourceOptions} resourceOptions Resource options
- * @param {ActionsDictionary} actions Dictionary of actions
+ * @param {ActionDictionary} actions Dictionary of actions
  * @param {ActionOptionsMap} actionsOptions Options for the action creators
  * @returns {ActionCreatorDictionary} The dictionary of all available ActionCreatorFunctions
  */
@@ -220,7 +220,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
       };
 
       const actionCreatorConfig = {
-        action: actions.get(key),
+        action: actions[key],
         transforms: [],
         name,
         urlOnlyParams: [],

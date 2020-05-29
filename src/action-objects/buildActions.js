@@ -1,4 +1,3 @@
-import warn from '../utils/dev/warn';
 import constantize from '../utils/string/constantize';
 import toPlural from '../utils/string/toPlural';
 import toSingular from '../utils/string/toSingular';
@@ -84,45 +83,31 @@ function getActionName(resourceName, actionAlias) {
 
 /**
  * Dictionary of actions names to action type constants
+ * @param {string} name The name of the resource
+ * @param {ResourceOptions} resourceOptions Options that apply to the whole resource
+ * @param {string[]} actionList List of actions to enable
+ * @returns {ActionDictionary} The dictionary of generic action keys to specific action names
  */
-class ActionsDictionary {
-  constructor (name, resourceOptions, actionList = []) {
-    this.actionsMap = {};
+function buildActions(name, resourceOptions, actionList = []) {
+  const actionsMap = {};
 
-    actionList.forEach((action) => {
+  actionList.forEach((action) => {
 
-      /**
-       * We don't export certain actions when the localOnly option is used (as they don't make sense in
-       * a local context).
-       *
-       * See RemoteOnlyActionsDictionary for a full list of actions that are excluded when the localOnly
-       * option is used.
-       */
-      if (resourceOptions.localOnly && RemoteOnlyActionsDictionary[action]) {
-        return;
-      }
-
-      this.actionsMap[action] = getActionName(name, action);
-    });
-  }
-
-  get(actionKey) {
-    const action = this.actionsMap[actionKey];
-
-    if (!action) {
-      warn(`Action ${actionKey} does not exist.`);
+    /**
+     * We don't export certain actions when the localOnly option is used (as they don't make sense in
+     * a local context).
+     *
+     * See RemoteOnlyActionsDictionary for a full list of actions that are excluded when the localOnly
+     * option is used.
+     */
+    if (resourceOptions.localOnly && RemoteOnlyActionsDictionary[action]) {
+      return;
     }
 
-    return action;
-  }
+    actionsMap[action] = getActionName(name, action);
+  });
 
-  /**
-   * Generates the resource's ActionDictionary
-   * @returns {ActionDictionary} A dictionary of the resource's available actions
-   */
-  toHash() {
-    return this.actionsMap;
-  }
+  return actionsMap;
 }
 
-export default ActionsDictionary;
+export default buildActions;
