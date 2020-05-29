@@ -1,6 +1,6 @@
 import ActionsDictionary from './action-objects/ActionsDictionary';
 
-import buildReducers from './reducers/buildReducers';
+import buildReducersDictionary from './reducers/buildReducersDictionary';
 import buildActionCreators from './action-creators/buildActionCreators';
 import objectFrom from './utils/object/objectFrom';
 import getNewItem from './public-helpers/getNewItem';
@@ -17,6 +17,7 @@ import warn from './utils/dev/warn';
 import without from './utils/list/without';
 import EmptyKey from './constants/EmptyKey';
 import hasKey from './utils/object/hasKey';
+import applyReducers from './reducers/helpers/applyReducers';
 
 /**
  * @typedef {Object<string, ResourcesDefinition>} AssociationOptionsMap A Mapping between the name of an
@@ -166,7 +167,7 @@ function resources(resourceOptions, actionOptions = {}) {
   }
 
   const actions = new ActionsDictionary(name, resourceOptions, Object.keys(_actionOptions));
-  const reducers = buildReducers(resourceOptions, actions, _actionOptions);
+  const reducersDictionary = buildReducersDictionary(resourceOptions, actions, _actionOptions);
   const actionCreators = buildActionCreators(resourceOptions, actions, _actionOptions);
 
   /**
@@ -193,10 +194,13 @@ function resources(resourceOptions, actionOptions = {}) {
     actionCreators,
 
     /**
-     * @type {ReducerFunction} Reducer function that will accept the resource's current state and an
-     *       action and return the new resource state
+     * Reducer function that will accept the resource's current state and an action and return the new resource state
+     * @param {ResourcesReduxState} currentState The current state of the part of the Redux store that contains
+     *        the resources
+     * @param {ActionObject} action The action containing the data to update the resource state
+     * @returns {ResourcesReduxState} The new resource state
      */
-    reducers,
+    reducers: (currentState, action) => applyReducers(reducersDictionary, currentState, action),
 
     /**
      * @type {function(ResourcesReduxState): ResourcesItem} Function that returns the new item of this resource
@@ -245,8 +249,7 @@ function resources(resourceOptions, actionOptions = {}) {
      *        called.
      * @returns {ResourcesItem} The resource item if it's in the store, or an empty item.
      */
-    resourceDefinition.getOrFetchItem = (resourcesState, params, actionCreatorOptions) => {
-      return getOrFetch({
+    resourceDefinition.getOrFetchItem = (resourcesState, params, actionCreatorOptions) => getOrFetch({
           typeKey: 'items',
           fallbackActionName: 'fetchItem',
           getFunction: getItem,
@@ -255,7 +258,6 @@ function resources(resourceOptions, actionOptions = {}) {
         },
         resourcesState, params, actionCreatorOptions
       );
-    };
   }
 
   if (hasKey(actions, 'fetchList')) {

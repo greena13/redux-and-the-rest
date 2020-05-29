@@ -1,4 +1,3 @@
-import { RESOURCES } from '../constants/DataStructures';
 import without from '../utils/list/without';
 import isObject from '../utils/object/isObject';
 import warn from '../utils/dev/warn';
@@ -107,7 +106,7 @@ const LOCAL_ONLY_REDUCERS = without(STANDARD_REDUCERS, Object.keys(RemoteOnlyAct
  * @returns {ReducerFunction} Reducer function that will accept the resource's current state and an action
  *          and return the new resource state
  */
-function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
+function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOptions) {
 
   /**
    * Build the map of actions that should effect the current resource
@@ -261,17 +260,7 @@ function buildReducers(resourceOptions, actionsDictionary, actionsOptions) {
     });
   }
 
-  return (resource = RESOURCES, action = {}) => {
-    const { type } = action;
-
-    const actionReducer = reducersDict[type];
-
-    if (actionReducer) {
-      return actionReducer.reducer(resource, action);
-    } else {
-      return resource;
-    }
-  };
+  return reducersDict;
 }
 
-export default buildReducers;
+export default buildReducersDictionary;
