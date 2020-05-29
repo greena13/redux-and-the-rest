@@ -380,6 +380,8 @@ export interface InitialResourceStateBuilder<T> {
  */
 export interface GetItemFunction<T> { (currentState: ResourcesReduxState<T>, params: ItemOrListParameters): ResourcesItem<T> }
 
+export interface GetSingularResourceItemFunction<T> { (currentState: ResourcesReduxState<T>): ResourcesItem<T> }
+
 /**
  * Returns an item of a particular resource from a Redux store. If the item is not available in the store,
  * an empty item is returned immediately and the fetch action creator is called to update the store and
@@ -390,6 +392,8 @@ export interface GetItemFunction<T> { (currentState: ResourcesReduxState<T>, par
  * @returns The resource item if it's in the store, or an empty item.
  */
 export interface GetOrFetchItemFunction<T> { (currentState: ResourcesReduxState<T>, params: ItemOrListParameters, actionCreatorOptions?: RemoteActionCreatorOptions<T>): ResourcesItem<T> }
+
+export interface GetOrFetchSingularResourceItemFunction<T> { (currentState: ResourcesReduxState<T>, actionCreatorOptions?: RemoteActionCreatorOptions<T>): ResourcesItem<T> }
 
 /**
  * Returns a list of a particular resource from a Redux store, populating it with the correct items, in
@@ -768,18 +772,18 @@ interface ResourceDefinitionCommon<T> {
     /**
      * Function that returns a particular item of a resource type
      */
-    getItem: GetItemFunction<T>,
+    getItem: GetSingularResourceItemFunction<T>,
 
     /**
      * Function that returns a particular item of a resource type or calls the fetch action creator if it's
      * not available in the store
      */
-    getOrFetchItem: GetOrFetchItemFunction<T>,
+    getOrFetchItem: GetOrFetchSingularResourceItemFunction<T>,
 
     /**
      * Function that returns the new item of a resource type
      */
-    getNewItem: GetItemFunction<T>,
+    getNewItem: GetSingularResourceItemFunction<T>,
 
     /**
      * Function to build the initial resource state
