@@ -16,6 +16,7 @@ import getListKey from './action-creators/helpers/getListKey';
 import warn from './utils/dev/warn';
 import without from './utils/list/without';
 import EmptyKey from './constants/EmptyKey';
+import hasKey from './utils/object/hasKey';
 
 /**
  * @typedef {Object<string, ResourcesDefinition>} AssociationOptionsMap A Mapping between the name of an
@@ -179,7 +180,7 @@ function resources(resourceOptions, actionOptions = {}) {
     return getItemWithEmptyFallback(resourcesState, getItemKey(params, resourceOptions));
   }
 
-  return {
+  const resourceDefinition = {
 
     /**
      * @type {ActionDictionary} Mapping between RESTful action names and constant Redux Action names
@@ -205,50 +206,7 @@ function resources(resourceOptions, actionOptions = {}) {
 
     getItem,
 
-    /**
-     * Returns an item of a particular resource from a Redux store. If the item is not available in the store,
-     * an empty item is returned immediately and the fetch action creator is called to update the store and
-     * request the resource item from an external API.
-     * @param {ResourcesReduxState} resourcesState The current resource Redux store state
-     * @param {Object} [params={}] The params to serialize to use as the key to find the resource list.
-     * @param {Object} [actionCreatorOptions={}] The options to pass to the fetch action creator if it's
-     *        called.
-     * @returns {ResourcesItem} The resource item if it's in the store, or an empty item.
-     */
-    getOrFetchItem(resourcesState, params, actionCreatorOptions) {
-      return getOrFetch({
-          typeKey: 'items',
-          fallbackActionName: 'fetchItem',
-          getFunction: getItem,
-          fetchFunction: actionCreators.fetchItem,
-          keyFunction: (_params) => getItemKey(_params, { keyBy: resourceOptions.keyBy, singular }),
-        },
-        resourcesState, params, actionCreatorOptions
-      );
-    },
-
     getList,
-
-    /**
-     * Returns an list of a particular resource from a Redux store. If the list is not available in the store,
-     * an empty list is returned immediately and the fetch action creator is called to update the store and
-     * request the resource list from an external API.
-     * @param {ResourcesReduxState} resourcesState The current resource Redux store state
-     * @param {Object} [params={}] The params to serialize to use as the key to find the resource list.
-     * @param {Object} [actionCreatorOptions={}] The options to pass to the fetch action creator if it's
-     *        called.
-     * @returns {ResourceListWithItems} The resource list if it's in the store, or an empty list.
-     */
-    getOrFetchList(resourcesState, params, actionCreatorOptions) {
-      return getOrFetch({
-          typeKey: 'lists',
-          getFunction: getList,
-          fetchFunction: actionCreators.fetchList,
-          keyFunction: (_params) => getListKey(_params, { urlOnlyParams: resourceOptions.urlOnlyParams }),
-        },
-        resourcesState, params, actionCreatorOptions
-      );
-    },
 
     /**
      * Creates a new initial state builder for the resources of this type, which can be used to build an initial
@@ -274,6 +232,56 @@ function resources(resourceOptions, actionOptions = {}) {
      */
     __isResourcesDefinition: true
   };
+
+  if (hasKey(actions, 'fetchItem')) {
+
+    /**
+     * Returns an item of a particular resource from a Redux store. If the item is not available in the store,
+     * an empty item is returned immediately and the fetch action creator is called to update the store and
+     * request the resource item from an external API.
+     * @param {ResourcesReduxState} resourcesState The current resource Redux store state
+     * @param {Object} [params={}] The params to serialize to use as the key to find the resource list.
+     * @param {Object} [actionCreatorOptions={}] The options to pass to the fetch action creator if it's
+     *        called.
+     * @returns {ResourcesItem} The resource item if it's in the store, or an empty item.
+     */
+    resourceDefinition.getOrFetchItem = (resourcesState, params, actionCreatorOptions) => {
+      return getOrFetch({
+          typeKey: 'items',
+          fallbackActionName: 'fetchItem',
+          getFunction: getItem,
+          fetchFunction: actionCreators.fetchItem,
+          keyFunction: (_params) => getItemKey(_params, { keyBy: resourceOptions.keyBy, singular }),
+        },
+        resourcesState, params, actionCreatorOptions
+      );
+    };
+  }
+
+  if (hasKey(actions, 'fetchList')) {
+
+    /**
+     * Returns an list of a particular resource from a Redux store. If the list is not available in the store,
+     * an empty list is returned immediately and the fetch action creator is called to update the store and
+     * request the resource list from an external API.
+     * @param {ResourcesReduxState} resourcesState The current resource Redux store state
+     * @param {Object} [params={}] The params to serialize to use as the key to find the resource list.
+     * @param {Object} [actionCreatorOptions={}] The options to pass to the fetch action creator if it's
+     *        called.
+     * @returns {ResourceListWithItems} The resource list if it's in the store, or an empty list.
+     */
+    resourceDefinition.getOrFetchList = (resourcesState, params, actionCreatorOptions) =>
+      getOrFetch({
+          typeKey: 'lists',
+          getFunction: getList,
+          fetchFunction: actionCreators.fetchList,
+          keyFunction: (_params) => getListKey(_params, { urlOnlyParams: resourceOptions.urlOnlyParams }),
+        },
+        resourcesState, params, actionCreatorOptions
+      );
+  }
+
+  return resourceDefinition;
 }
 
 
