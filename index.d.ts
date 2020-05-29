@@ -1150,3 +1150,25 @@ export function isSuccessfullyFetched(itemOrList: GenericItemOrList): boolean;
  * @returns True if the item or list is in an errored state
  */
 export function isInAnErrorState(itemOrList: GenericItemOrList): boolean;
+
+/**
+ * Whether the resource item has been modified since it was last synced with the server
+ * @param itemOrList item The item to evaluate
+ * @returns True if the resource item can be rolled back
+ */
+export function isEdited(itemOrList: GenericItemOrList): boolean;
+
+/**
+ * Whether the item or list is currently syncing with the remote
+ * @param itemOrList The item or list to consider
+ * @returns True if the item or list has finished fetching
+ */
+export function isSyncingWithRemote(itemOrList: GenericItemOrList): boolean;
+
+
+/**
+ * Whether the item or list has finished syncing with the remote
+ * @param itemOrList The item or list to consider
+ * @returns True if the item or list has finished fetching
+ */
+export function isSyncedWithRemote(itemOrList: GenericItemOrList): boolean;
