@@ -18,6 +18,7 @@ import without from './utils/list/without';
 import EmptyKey from './constants/EmptyKey';
 import hasKey from './utils/object/hasKey';
 import applyReducers from './reducers/helpers/applyReducers';
+import ResourceRegistry from './utils/ResourceRegistry';
 
 /**
  * @typedef {Object<string, ResourcesDefinition>} AssociationOptionsMap A Mapping between the name of an
@@ -282,6 +283,8 @@ function resources(resourceOptions, actionOptions = {}) {
         resourcesState, params, actionCreatorOptions
       );
   }
+
+  ResourceRegistry.getRegistry().addResource(resourceOptions.name, resourceDefinition);
 
   return resourceDefinition;
 }
