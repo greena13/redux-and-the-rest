@@ -170,8 +170,8 @@ export function expectToNotChangeResourcesItemStatus(context, resourcesName, id,
   expectToNotChangeResourcesItem(context, resourcesName, id, 'status', value);
 }
 
-export function expectToNotChangeResourcesItem(context, resourcesName, id, attribute, value = undefined) {
-  expectToNotChangeResources(context, resourcesName, 'items', id, attribute, value);
+export function expectToNotChangeResourcesItem(context, resourcesName, id, attribute, subkey = undefined) {
+  expectToNotChangeResources(context, resourcesName, 'items', id, attribute, subkey);
 }
 
 export function expectToNotChangeResourceListStatus(context, resourcesName, id, subkeyOrExpectedValue) {
@@ -181,23 +181,23 @@ export function expectToNotChangeResourceListPositions(context, resourcesName, i
   expectToNotChangeResourcesList(context, resourcesName, id, 'positions');
 }
 
-export function expectToNotChangeResourcesList(context, resourcesName, id, attribute = undefined, value = undefined) {
-  expectToNotChangeResources(context, resourcesName, 'lists', id, attribute, value);
+export function expectToNotChangeResourcesList(context, resourcesName, id, attribute = undefined, subkey = undefined) {
+  expectToNotChangeResources(context, resourcesName, 'lists', id, attribute, subkey);
 }
 
-export function expectToNotChangeResources(context, resourcesName, type, id, attribute = undefined, value = undefined) {
+export function expectToNotChangeResources(context, resourcesName, type, id, attribute = undefined, subkey = undefined) {
   let newValue = resourcesDefinition(context, resourcesName)[type][id];
-  let initialValue = context.initialState[type][id];
+  let initialValue = (context.initialState[resourcesName] || context.initialState)[type][id];
 
   if (!isUndefined(attribute)) {
     newValue = newValue[attribute];
     initialValue = initialValue[attribute];
   }
 
-  if (isUndefined(value)) {
+  if (isUndefined(subkey)) {
     expect(newValue).toEqual(initialValue);
   } else {
-    expect(newValue[value]).toEqual(initialValue[value]);
+    expect(newValue[subkey]).toEqual(initialValue[subkey]);
   }
 }
 

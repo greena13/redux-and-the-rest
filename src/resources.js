@@ -68,9 +68,9 @@ import ResourceRegistry from './utils/ResourceRegistry';
  *           the current resource.
  * @property {ActionType|Array.<ActionType>} [clearOn] A single or list of actions for which the current resource
  *           should be cleared.
- * @property {AssociationOptions} [hasAndBelongsToMany] An object of associated resources, with a many-to-many
+ * @property {string[] | AssociationOptions} [hasAndBelongsToMany] An object of associated resources, with a many-to-many
  *           relationship with the current one.
- * @property {AssociationOptions} [belongsTo] An object of associated resources, with a one-to-many relationship
+ * @property {string[] | AssociationOptions} [belongsTo] An object of associated resources, with a one-to-many relationship
  *           with the current one.
  */
 

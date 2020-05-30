@@ -22,7 +22,7 @@ const reporter = new JasmineConsoleReporter({
   colors: 1,
 
   // (0|false)|(1|true)|2|3
-  cleanStack: 1,
+  cleanStack: 0,
 
   // (0|false)|1|2|(3|true)|4|Object
   verbosity: 1,
@@ -40,6 +40,11 @@ const reporter = new JasmineConsoleReporter({
   // boolean or emoji-map object
   emoji: true,
 });
+
+/**
+ * Ensure stack traces aren't truncated after 3 levels
+ */
+Error.stackTraceLimit = Infinity;
 
 // initialize and execute
 jasmine.env.clearReporters();

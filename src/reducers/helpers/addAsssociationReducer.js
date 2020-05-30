@@ -329,7 +329,6 @@ function getKeyName({ key, relationType, associationName }) {
 
 /**
  * @typedef AssociationOptions Accepted options when defining an associated resource
- * @property {ActionDictionary} actions Associated resource's actions
  * @property {string} name Name of the associated resource type
  *
  * @property {string} foreignKey Name of the attribute that stores the id or ids of the current resource on the
