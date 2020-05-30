@@ -50,7 +50,6 @@ describe('belongsTo:', function () {
         keyBy: 'id',
         belongsTo: {
           addresses: {
-            ...this.addresses,
             as: 'resident'
           },
         }

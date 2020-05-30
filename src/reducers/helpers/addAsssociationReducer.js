@@ -349,9 +349,12 @@ function getKeyName({ key, relationType, associationName }) {
 function addAssociationReducer(
   reducersDict,
   name,
+
   relationType,
+
   associationName,
-  { actions = {}, foreignKey, as, dependent, key, listParameter }) {
+  actions = {},
+  { foreignKey, as, dependent, key, listParameter }) {
 
   const foreignKeyName = getForeignKeyName({ foreignKey, as, name });
   const keyName = getKeyName({ key, relationType, associationName });

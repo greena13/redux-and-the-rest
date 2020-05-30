@@ -103,7 +103,6 @@ describe('belongsTo:', function () {
               keyBy: 'id',
               belongsTo: {
                 addresses: {
-                  ...this.addresses,
                   dependent,
                   listParameter
                 },

@@ -62,7 +62,6 @@ describe('hasAndBelongsToMany:', function () {
         keyBy: 'id',
         hasAndBelongsToMany: {
           addresses: {
-            ...this.addresses,
             dependent: 'destroy'
           },
         }

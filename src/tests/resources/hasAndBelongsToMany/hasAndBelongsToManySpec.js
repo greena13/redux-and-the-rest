@@ -76,9 +76,7 @@ describe('hasAndBelongsToMany:', function () {
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
-        hasAndBelongsToMany: {
-          posts: this.posts
-        }
+        hasAndBelongsToMany: ['posts']
       }, {
         fetchList: true,
         newItem: true,
@@ -458,11 +456,7 @@ describe('hasAndBelongsToMany:', function () {
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
-        hasAndBelongsToMany: {
-          posts: {
-            ...this.posts,
-          },
-        }
+        hasAndBelongsToMany: ['posts']
       }, {
         fetchList: true,
         newItem: true,

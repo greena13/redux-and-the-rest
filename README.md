@@ -414,9 +414,7 @@ const users = resources({
     name: 'users',
     url: 'http://test.com/users/:id?',
     keyBy: 'id',
-    belongsTo: {
-      address: addresses
-    }
+    belongsTo: ['addresses']
   }, {
     fetchList: true,
     newItem: true,

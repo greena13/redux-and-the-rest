@@ -2,11 +2,9 @@ import without from '../utils/list/without';
 import isObject from '../utils/object/isObject';
 import warn from '../utils/dev/warn';
 import arrayFrom from '../utils/array/arrayFrom';
-import addAssociationReducer from './helpers/addAsssociationReducer';
 import resolveOptions from '../action-creators/helpers/resolveOptions';
 import progressReducer from './helpers/progressReducer';
 import { getConfiguration } from '../configuration';
-import standardiseAssociationOptions from '../utils/standardiseAssociationOptions';
 import fetchListAction from '../actions/RESTful/fetchList';
 import fetchItemAction from '../actions/RESTful/fetchItem';
 import newAction from '../actions/RESTful/newItem';
@@ -103,8 +101,8 @@ const LOCAL_ONLY_REDUCERS = without(STANDARD_REDUCERS, Object.keys(RemoteOnlyAct
  * @param {ActionDictionary} actionsDictionary Dictionary of actions available for the resource
  * @param {ActionOptionsMap} actionsOptions Hash of actionsOptions for configuring the actions that be dispatched to
  *        modify the resource
- * @returns {ReducerFunction} Reducer function that will accept the resource's current state and an action
- *          and return the new resource state
+ * @returns {Object<string,ReducerFunction>} Reducer dictionary that will accept the resource's current state
+ *        and an action and return the new resource state
  */
 function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOptions) {
 
@@ -224,41 +222,6 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
   arrayFrom(resourceOptions.reducesOn).forEach(({ action, reducer }) => {
     reducersDict[action] = { reducer };
   });
-
-  /**
-   * Add actions that updates this resources' foreign keys
-   */
-  if (resourceOptions.hasAndBelongsToMany) {
-    Object.keys(resourceOptions.hasAndBelongsToMany).forEach((associationName) => {
-      const associationOptions = standardiseAssociationOptions(
-        resourceOptions.hasAndBelongsToMany[associationName]
-      );
-
-      addAssociationReducer(
-        reducersDict,
-        resourceOptions.name,
-        'hasAndBelongsToMany',
-        associationName,
-        associationOptions
-      );
-    });
-  }
-
-  if (resourceOptions.belongsTo) {
-    Object.keys(resourceOptions.belongsTo).forEach((associationName) => {
-      const associationOptions = standardiseAssociationOptions(
-        resourceOptions.belongsTo[associationName]
-      );
-
-      addAssociationReducer(
-        reducersDict,
-        resourceOptions.name,
-        'belongsTo',
-        associationName,
-        associationOptions
-      );
-    });
-  }
 
   return reducersDict;
 }

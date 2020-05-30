@@ -74,16 +74,13 @@ describe('belongsTo:', function () {
         keyBy: 'id'
       }, { createItem: true, updateItem: true, destroyItem: true });
 
-
       const {
         reducers,
       } = resources({
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
-        belongsTo: {
-          address: this.addresses
-        }
+        belongsTo: ['address']
       }, {
         fetchList: true,
         newItem: true,
@@ -461,11 +458,7 @@ describe('belongsTo:', function () {
         name: 'users',
         url: 'http://test.com/users/:id?',
         keyBy: 'id',
-        belongsTo: {
-          addresses: {
-            ...this.addresses,
-          },
-        }
+        belongsTo: ['addresses']
       }, {
         fetchList: true,
         newItem: true,

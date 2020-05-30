@@ -58,7 +58,6 @@ describe('hasAndBelongsToMany:', function () {
         keyBy: 'id',
         hasAndBelongsToMany: {
           posts: {
-            ...this.posts,
             foreignKey: 'authorIdentity'
           },
         }

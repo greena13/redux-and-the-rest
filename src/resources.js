@@ -284,7 +284,7 @@ function resources(resourceOptions, actionOptions = {}) {
       );
   }
 
-  ResourceRegistry.getRegistry().addResource(resourceOptions.name, resourceDefinition);
+  ResourceRegistry.getRegistry().addResource(resourceOptions, resourceDefinition, reducersDictionary);
 
   return resourceDefinition;
 }
