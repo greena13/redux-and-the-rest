@@ -12,7 +12,7 @@ import {
 const RESOURCE_NAME = 'users';
 
 describe('belongsTo:', function () {
-  describe('when the association is one-to-one', function () {
+  describe('Given the association is one-to-one', function () {
     beforeAll(function () {
       this.initialState = {
         users: {
@@ -95,8 +95,8 @@ describe('belongsTo:', function () {
       this.reducers = reducers;
     });
 
-    describe('and the association\'s CREATE action occurs', function () {
-      describe('before the request has completed', function () {
+    describe('when the association\'s CREATE action occurs', function () {
+      describe('and the request has yet to complete', function () {
         beforeAll(function () {
           this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
@@ -139,7 +139,7 @@ describe('belongsTo:', function () {
 
     describe('and the association\'s UPDATE action occurs', function () {
       describe('and the previous values have been specified', () => {
-        describe('before the request has completed', function () {
+        describe('and the request has yet to complete', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
@@ -212,7 +212,7 @@ describe('belongsTo:', function () {
       });
 
       describe('and the previous values have NOT been specified', () => {
-        describe('before the request has completed', function () {
+        describe('and the request has yet to complete', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
@@ -281,7 +281,7 @@ describe('belongsTo:', function () {
 
     describe('and the association\'s DESTROY action occurs', function () {
       describe('and the previous values have been specified', () => {
-        describe('before the request has completed', function () {
+        describe('and the request has yet to complete', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
@@ -289,10 +289,10 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.destroyItem(1, {
+            this.store.dispatch(this.addresses.actionCreators.destroyItem(1, { previousValues: {
               city: 'City 1',
               userId: 1
-            }));
+             } }));
           });
 
           afterAll(function() {
@@ -315,10 +315,10 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.destroyItem(1, {
+            this.store.dispatch(this.addresses.actionCreators.destroyItem(1, { previousValues: {
               city: 'City 1',
               userId: 1
-            }));
+             } }));
           });
 
           afterAll(function() {
@@ -338,7 +338,7 @@ describe('belongsTo:', function () {
       });
 
       describe('and the previous values have NOT been specified', () => {
-        describe('before the request has completed', function () {
+        describe('and the request has yet to complete', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
@@ -474,7 +474,7 @@ describe('belongsTo:', function () {
     });
 
     describe('and the association\'s CREATE action occurs', function () {
-      describe('before the request has completed', function () {
+      describe('and the request has yet to complete', function () {
         beforeAll(function () {
           this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
@@ -517,7 +517,7 @@ describe('belongsTo:', function () {
 
     describe('and the association\'s UPDATE action occurs', function () {
       describe('and the previous values have been specified', () => {
-        describe('before the request has completed', function () {
+        describe('and the request has yet to complete', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
@@ -590,7 +590,7 @@ describe('belongsTo:', function () {
       });
 
       describe('and the previous values have NOT been specified', () => {
-        describe('before the request has completed', function () {
+        describe('and the request has yet to complete', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
@@ -659,7 +659,7 @@ describe('belongsTo:', function () {
 
     describe('and the association\'s DESTROY action occurs', function () {
       describe('and the previous values have been specified', () => {
-        describe('before the request has completed', function () {
+        describe('and the request has yet to complete', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 
@@ -667,9 +667,10 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.destroyItem(1, {
-              city: 'City 1',
-              userIds: [ 1 ]
+            this.store.dispatch(this.addresses.actionCreators.destroyItem(1, { previousValues: {
+                city: 'City 1',
+                userIds: [ 1 ]
+               }
             }));
           });
 
@@ -693,9 +694,10 @@ describe('belongsTo:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.addresses.actionCreators.destroyItem(1, {
-              city: 'City 1',
-              userIds: [ 1 ]
+            this.store.dispatch(this.addresses.actionCreators.destroyItem(1, { previousValues: {
+                city: 'City 1',
+                userIds: [ 1 ]
+               }
             }));
           });
 
@@ -716,7 +718,7 @@ describe('belongsTo:', function () {
       });
 
       describe('and the previous values have NOT been specified', () => {
-        describe('before the request has completed', function () {
+        describe('and the request has yet to complete', function () {
           beforeAll(function () {
             this.store = buildStore({ ...this.initialState }, { users: this.reducers, addresses: this.addresses.reducers });
 

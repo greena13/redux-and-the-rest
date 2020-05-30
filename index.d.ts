@@ -979,12 +979,12 @@ export interface ResourceOptions<T> extends GlobalConfigurationOptions {
     /**
      * An object of associated resources, with a many-to-many relationship with the current one.
      */
-    hasAndBelongsToMany?: ResourcesDefinition<T> | AssociationOptions<T>,
+    hasAndBelongsToMany?: Array<string> | AssociationOptions<T>,
 
     /**
      * An object of associated resources, with a one-to-many relationship with the current one.
      */
-    belongsTo?: ResourcesDefinition<T> | AssociationOptions<T>,
+    belongsTo?: Array<string> | AssociationOptions<T>,
 }
 
 /**

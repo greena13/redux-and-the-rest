@@ -284,10 +284,10 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.destroyItem(1, {
+            this.store.dispatch(this.posts.actionCreators.destroyItem(1, { previousValues: {
               title: 'Post 1',
               userId: 1
-            }));
+             } }));
           });
 
           afterAll(function() {
@@ -310,10 +310,10 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.destroyItem(1, {
+            this.store.dispatch(this.posts.actionCreators.destroyItem(1, { previousValues: {
               title: 'Post 1',
               userId: 1
-            }));
+             } }));
           });
 
           afterAll(function() {
@@ -665,10 +665,10 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.destroyItem(1, {
+            this.store.dispatch(this.posts.actionCreators.destroyItem(1, { previousValues: {
               title: 'Post 1',
               userIds: [ 1 ]
-            }));
+             } }));
           });
 
           afterAll(function() {
@@ -691,10 +691,10 @@ describe('hasAndBelongsToMany:', function () {
 
             spyOn(console, 'warn');
 
-            this.store.dispatch(this.posts.actionCreators.destroyItem(1, {
+            this.store.dispatch(this.posts.actionCreators.destroyItem(1, { previousValues: {
               title: 'Post 1',
               userIds: [ 1 ]
-            }));
+             } }));
           });
 
           afterAll(function() {

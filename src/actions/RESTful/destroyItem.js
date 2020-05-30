@@ -7,7 +7,6 @@ import warn from '../../utils/dev/warn';
 import { DESTROY_ERROR, DESTROYING, NEW, SUCCESS } from '../../constants/Statuses';
 import { ITEM } from '../../constants/DataStructures';
 import removeItemsFromResources from '../../reducers/helpers/removeItemsFromResources';
-import isEmpty from '../../utils/list/isEmpty';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
@@ -94,14 +93,14 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
  *        the item from any associated resource lists it may appear in.
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function deleteResourceUpdate(options, values) {
+function deleteResourceUpdate(options, { previousValues }) {
   const { action, key, requestedAt } = options;
 
   return {
     type: action,
     status: DESTROYING, key,
     requestedAt,
-    previousValues: isEmpty(values) ? null : values
+    previousValues
   };
 }
 
@@ -131,7 +130,7 @@ function localActionCreator(options, params, actionCreatorOptions = {}) {
  *        efficiently remove the item from any associated resource lists it may appear in.
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function removeResource(options, previousValues) {
+function removeResource(options, { previousValues }) {
   const { action, key, localOnly } = options;
 
   return {

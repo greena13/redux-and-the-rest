@@ -182,6 +182,7 @@ function updateHasManyAssociation(resources, { key, type, status, item: associat
 }
 
 function removeDestroyedHasManyAssociation(resources, { key, type, status, previousValues }, { dependent, relationType, foreignKeyName, name, keyName, listParameter }) {
+
   if (status === SUCCESS) {
     const _resources = function(){
       if (isEmpty(previousValues)) {

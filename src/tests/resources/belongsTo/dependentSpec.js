@@ -82,7 +82,7 @@ describe('belongsTo:', function () {
             addresses: this.addresses.reducers
           });
 
-          this.store.dispatch(this.addresses.actionCreators.destroyItem(1, { userId: 1, city: 'City 3' }));
+          this.store.dispatch(this.addresses.actionCreators.destroyItem(1, { previousValues: { userId: 1, city: 'City 3' } }));
         });
 
         afterAll(function() {
@@ -106,7 +106,7 @@ describe('belongsTo:', function () {
             addresses: this.addresses.reducers
           });
 
-          this.store.dispatch(this.addresses.actionCreators.destroyItem(1, { userId: 1, city: 'City 3' }));
+          this.store.dispatch(this.addresses.actionCreators.destroyItem(1, { previousValues: { userId: 1, city: 'City 3' } }));
         });
 
         afterAll(function() {
