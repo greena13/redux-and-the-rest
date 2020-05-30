@@ -116,6 +116,12 @@ export function expectToChangeResourcesItemValuesTo(context, resourcesName, id, 
   expectResourcesItemToChangeTo(context, resourcesName, id, 'values', subkeyOrExpectedValue, expectedValue);
 }
 
+export function expectToClearResourcesItemValues(context, resourcesName, id, subkey) {
+  const newValue = resourcesItem(context, resourcesName, id).values[subkey];
+
+  expect(newValue).toEqual(undefined);
+}
+
 export function expectToClearResourcesListStatus(context, resourcesName, id, subkey) {
   const newValue = resourcesDefinition(context, resourcesName).lists[id].status[subkey];
 

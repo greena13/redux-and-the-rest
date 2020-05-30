@@ -4,6 +4,12 @@ import { resources, NEW, SUCCESS, RESOURCES } from '../../../index';
 import buildStore from '../../helpers/buildStore';
 import nop from '../../../utils/function/nop';
 import EmptyKey from '../../../constants/EmptyKey';
+import {
+  expectToChangeResourcesItemValuesTo,
+  expectToClearResourcesItemValues
+} from '../../helpers/resourceAssertions';
+
+const RESOURCE_NAME = 'users';
 
 describe('hasAndBelongsToMany:', function () {
   describe('when the association is many-to-one', function () {
@@ -101,7 +107,7 @@ describe('hasAndBelongsToMany:', function () {
         });
 
         it('then adds the new association to the default attribute', function() {
-          expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1, 'temp' ]);
+          expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ 1, 'temp' ]);
         });
       });
 
@@ -122,7 +128,7 @@ describe('hasAndBelongsToMany:', function () {
         });
 
         it('then updates the key of the association', function() {
-          expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1, 3 ]);
+          expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ 1, 3 ]);
         });
       });
     });
@@ -153,8 +159,8 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
-            expect(this.store.getState().users.items['2'].values.postIds).toEqual(undefined);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ 1 ]);
+            expectToClearResourcesItemValues(this, RESOURCE_NAME, '2', 'postIds');
           });
         });
 
@@ -192,11 +198,11 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ ]);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.store.getState().users.items['2'].values.postIds).toEqual([ 1 ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '2', 'postIds', [ 1 ]);
           });
         });
       });
@@ -222,7 +228,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ 1 ]);
           });
         });
 
@@ -258,11 +264,11 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ ]);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.store.getState().users.items['2'].values.postIds).toEqual([ 1 ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '2', 'postIds', [ 1 ]);
           });
         });
       });
@@ -290,7 +296,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ 1 ]);
           });
         });
 
@@ -321,7 +327,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ ]);
           });
         });
       });
@@ -344,7 +350,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ 1 ]);
           });
         });
 
@@ -374,7 +380,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ ]);
           });
         });
       });
@@ -481,7 +487,7 @@ describe('hasAndBelongsToMany:', function () {
         });
 
         it('then adds the new association to the default attribute', function() {
-          expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1, 'temp' ]);
+          expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ 1, 'temp' ]);
         });
       });
 
@@ -502,7 +508,7 @@ describe('hasAndBelongsToMany:', function () {
         });
 
         it('then updates the key of the association', function() {
-          expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1, 3 ]);
+          expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ 1, 3 ]);
         });
       });
     });
@@ -533,8 +539,8 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
-            expect(this.store.getState().users.items['2'].values.postIds).toEqual(undefined);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ 1 ]);
+            expectToClearResourcesItemValues(this, RESOURCE_NAME, '2', 'postIds');
           });
         });
 
@@ -572,11 +578,11 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ ]);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.store.getState().users.items['2'].values.postIds).toEqual([ 1 ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '2', 'postIds', [ 1 ]);
           });
         });
       });
@@ -602,7 +608,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ 1 ]);
           });
         });
 
@@ -638,11 +644,11 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item from old associated items', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ ]);
           });
 
           it('then adds the associated item to new associated items', function() {
-            expect(this.store.getState().users.items['2'].values.postIds).toEqual([ 1 ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '2', 'postIds', [ 1 ]);
           });
         });
       });
@@ -671,7 +677,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ 1 ]);
           });
         });
 
@@ -702,7 +708,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ ]);
           });
         });
       });
@@ -725,7 +731,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then does NOT remove the associated item', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1 ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ 1 ]);
           });
         });
 
@@ -755,7 +761,7 @@ describe('hasAndBelongsToMany:', function () {
           });
 
           it('then removes the associated item', function() {
-            expect(this.store.getState().users.items['1'].values.postIds).toEqual([ ]);
+            expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ ]);
           });
         });
       });

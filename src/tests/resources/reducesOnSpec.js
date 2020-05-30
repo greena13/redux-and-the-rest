@@ -3,6 +3,9 @@ import fetchMock from 'fetch-mock';
 import { resources, SUCCESS, RESOURCES } from '../../index';
 import buildStore from '../helpers/buildStore';
 import EmptyKey from '../../constants/EmptyKey';
+import { expectToChangeResourcesItemValuesTo } from '../helpers/resourceAssertions';
+
+const RESOURCE_NAME = 'users';
 
 describe('reducesOn:', function () {
   beforeAll(function () {
@@ -104,10 +107,10 @@ describe('reducesOn:', function () {
   });
 
   it('calls the specified reducer when the specified action occurs', function() {
-    expect(this.store.getState().users.items['1'].values.signedIn).toEqual(true);
+    expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'signedIn', true);
 
     return this.store.dispatch(this.destroySession(1)).then(() => {
-      expect(this.store.getState().users.items['1'].values.signedIn).toEqual(false);
+      expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'signedIn', false);
     });
   });
 

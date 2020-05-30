@@ -3,6 +3,9 @@ import { resources, RESOURCES, SUCCESS } from '../../../index';
 import buildStore from '../../helpers/buildStore';
 import nop from '../../../utils/function/nop';
 import EmptyKey from '../../../constants/EmptyKey';
+import { expectToChangeResourcesItemValuesTo } from '../../helpers/resourceAssertions';
+
+const RESOURCE_NAME = 'users';
 
 describe('belongsTo:', function () {
   describe('when the \'as\' option is used', function () {
@@ -80,7 +83,7 @@ describe('belongsTo:', function () {
       });
 
       it('then uses the value of the \'as\' option to find the foreign key on the associated resource', function() {
-        expect(this.store.getState().users.items['1'].values.addressId).toEqual('temp');
+        expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'addressId', 'temp');
       });
     });
 
@@ -106,7 +109,7 @@ describe('belongsTo:', function () {
       });
 
       it('then uses the value of the \'as\' option to find the foreign key on the associated resource', function() {
-        expect(this.store.getState().users.items['1'].values.addressId).toEqual(3);
+        expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'addressId', 3);
       });
     });
   });

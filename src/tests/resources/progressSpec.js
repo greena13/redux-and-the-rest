@@ -5,6 +5,9 @@ import { resources, RESOURCES, CREATING, FETCHING, SUCCESS, UPDATING } from '../
 import buildStore from '../helpers/buildStore';
 import nop from '../../utils/function/nop';
 import EmptyKey from '../../constants/EmptyKey';
+import { expectToChangeResourcesItemStatusTo } from '../helpers/resourceAssertions';
+
+const RESOURCE_NAME = 'users';
 
 describe('progress option', function () {
   describe('for the createItem action:', function () {
@@ -70,7 +73,7 @@ describe('progress option', function () {
           });
 
           it('then the item\'s status is SUCCESS', function() {
-            expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
+            expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, '1', 'type', SUCCESS);
           });
 
           it('then does not set the item\'s progress status attributes', function() {
@@ -236,7 +239,7 @@ describe('progress option', function () {
             });
 
             it('then the item\'s status type is set to SUCCESS', function() {
-              expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
+              expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, '1', 'type', SUCCESS);
             });
 
             it('then the item\'s progressUp status is updated with the current values', function() {
@@ -309,7 +312,7 @@ describe('progress option', function () {
           });
 
           it('then the item\'s status is UPDATING', function() {
-            expect(this.store.getState().users.items['1'].status.type).toEqual(UPDATING);
+            expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, '1', 'type', UPDATING);
           });
 
           it('then there are no progress attributes on the item\'s status object', function() {
@@ -355,7 +358,7 @@ describe('progress option', function () {
           });
 
           it('then the item\'s status is SUCCESS', function() {
-            expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
+            expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, '1', 'type', SUCCESS);
           });
 
           it('then does not set the item\'s progress status attributes', function() {
@@ -596,7 +599,7 @@ describe('progress option', function () {
           });
 
           it('then the item\'s status is FETCHING', function() {
-            expect(this.store.getState().users.items['1'].status.type).toEqual(FETCHING);
+            expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, '1', 'type', FETCHING);
           });
 
           it('then there are no progress attributes on the item\'s status object', function() {
@@ -628,7 +631,7 @@ describe('progress option', function () {
           });
 
           it('then the item\'s status is SUCCESS', function() {
-            expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
+            expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, '1', 'type', SUCCESS);
           });
 
           it('then does not set the item\'s progress status attributes', function() {
@@ -890,7 +893,7 @@ describe('progress option', function () {
           });
 
           it('then the list\'s items\' status is SUCCESS', function() {
-            expect(this.store.getState().users.items['1'].status.type).toEqual(SUCCESS);
+            expectToChangeResourcesItemStatusTo(this, RESOURCE_NAME, '1', 'type', SUCCESS);
           });
 
           it('then does not set the list\'s progress status attributes', function() {

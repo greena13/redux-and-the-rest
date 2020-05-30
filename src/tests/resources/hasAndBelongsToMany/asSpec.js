@@ -4,6 +4,9 @@ import { resources, RESOURCES, SUCCESS } from '../../../index';
 import buildStore from '../../helpers/buildStore';
 import nop from '../../../utils/function/nop';
 import EmptyKey from '../../../constants/EmptyKey';
+import { expectToChangeResourcesItemValuesTo } from '../../helpers/resourceAssertions';
+
+const RESOURCE_NAME = 'users';
 
 describe('hasAndBelongsToMany:', function () {
   describe('when the \'as\' option is used', function () {
@@ -83,7 +86,7 @@ describe('hasAndBelongsToMany:', function () {
       });
 
       it('then uses the value of the \'as\' option to find the foreign key on the associated resource', function() {
-        expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1, 'temp' ]);
+        expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ 1, 'temp' ]);
       });
     });
 
@@ -104,7 +107,7 @@ describe('hasAndBelongsToMany:', function () {
       });
 
       it('then uses the value of the \'as\' option to find the foreign key on the associated resource', function() {
-        expect(this.store.getState().users.items['1'].values.postIds).toEqual([ 1, 3 ]);
+        expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, '1', 'postIds', [ 1, 3 ]);
       });
     });
 
