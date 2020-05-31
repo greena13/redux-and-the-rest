@@ -1,6 +1,6 @@
 {
   "name": "redux-and-the-rest",
-  "version": "4.0.0-pre1",
+  "version": "4.0.0-pre2",
   "description": "Declarative, flexible Redux integration with your RESTful API",
   "main": "index.js",
   "scripts": {
