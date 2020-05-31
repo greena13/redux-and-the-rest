@@ -821,11 +821,6 @@ export interface SingularResourceDefinition<T> extends ResourceDefinitionCommon<
  */
 export type AssociationOptions<T> = {
     /**
-     * The definition of the associated resource (what's exported by the `resources` or `resource` function)
-     */
-    resource: ResourcesDefinition<T>;
-
-    /**
      * Name of the attribute that stores the id or ids of the current resource on the associated one. If
      * unspecified, the `as` attribute (or the resource's `name` value) are appended with the suffix of `id`.
      */

@@ -383,11 +383,9 @@ If a new item  of the associated resource is created with a foreign key pointing
 
 If an existing associated item is updated and the current resource items are swapped, this will also be handled. 
 
-You define associations on the resources you want to be updated when the associated resource changes. Currently this synchronisation only works in one direction, and because the associated resource must be defined before you declare it as an association, you cannot define an association the reverse direction without creating a cyclic dependency. This will be the focus of future updates.
+You define associations on the resources you want to be updated when the associated resource changes. If you need the updates to work both ways, you'll need to define both sides of the association.
 
-Association configuration come in two forms: `belongsTo` and `hasAndBelongsTo`. Each expects an object, where the keys are the names of the associated resources, and the values are either the definition of those resources (what's exported by the `resources` or `resource` function), or a configuration object containing the following options:
-
-* `resource` - (ResourceDefinition) The definition of the associated resource (what's exported by the `resources` or `resource` function).
+Association configuration come in two forms: `belongsTo` and `hasAndBelongsTo`. Each expects an array of resource names (values that you provide to the `name` attribute when defining those resources), or an object, where the keys are the names of the associated resources, and the values are a configuration object containing the following options:
 
 * `foreignKey` -  (string) Name of the attribute that stores the id or ids of the current resource on the associated one. If unspecified, the `as` attribute (or the resource's `name` value) are appended with the suffix of `id`.
 * `as` - (string) If a foreign key is not specified, this association name is used with a suffix of `id` to derive the foreign key.
@@ -428,7 +426,7 @@ addresses.actionCreators.createItem({ id: 'temp' }, { userId: 1, city: 'Boston' 
 
 ### Many-to-Many relationships
 
-The `hasAndBelongsToMany` resource option is used to define many-to-many relationships. It behaves and accepts the same arguments as `belongsTo`, but correctly maintains an array of foreign keys on items of the current resource, rather than a single id.
+The `hasAndBelongsToMany` resource option is used to define many-to-many relationships. It behaves and accepts the same arguments as `belongsTo`, but correctly maintains an *array* of foreign keys on items of the resource being defined, rather than a single id. For example, if each user item has an `addressId` with a singular value, use `belongsTo`, however if a user item has an `addressesId` with an array if address ids, use `hasAndBelongsToMany`.
 
 ## Connecting to React
 
