@@ -12,11 +12,12 @@ import {
 const RESOURCE_NAME = 'users';
 
 describe('belongsTo:', function () {
-
   describe('Given a one-to-one association between items of two resources', () => {
     const userId = 1;
     const addressId = 1;
     const newUserId = 2;
+
+    const baseUrl = 'http://test.com/addresses';
 
     const initialState = {
       users: {
@@ -71,15 +72,43 @@ describe('belongsTo:', function () {
     const newAddressValues = { userId, city: 'New City 3' };
     const updatedAddressValues = { id: addressId, userId: newUserId, city: 'New City 3' };
 
-    expectToCorrectlySynchroniseItemWhenAssociatedOneChanges({
-      setup: { initialState, userId, addressId, newUserId, newAddressValues, updatedAddressValues }
+    expectToCorrectlyDefineAssociationIrrespectiveOfOrderResourcesAreDefined({
+      setup: {
+        baseUrl, initialState, userId, addressId, newUserId, newAddressValues, updatedAddressValues
+      }
     });
   });
+
+  function expectToCorrectlyDefineAssociationIrrespectiveOfOrderResourcesAreDefined({ setup }) {
+    const { baseUrl, initialState, userId, addressId, newUserId, newAddressValues, updatedAddressValues } = setup;
+
+    describe('and the associated resource is defined first', () => {
+      beforeAll(function () {
+        Reflect.apply(defineAddressesThenUsers, this, [baseUrl]);
+      });
+
+      expectToCorrectlySynchroniseItemWhenAssociatedOneChanges({
+        setup: { initialState, userId, addressId, newUserId, newAddressValues, updatedAddressValues, baseUrl }
+      });
+    });
+
+    describe('and the resource defining the association is defined first', () => {
+      beforeAll(function () {
+        Reflect.apply(defineUsersThenAddresses, this, [baseUrl]);
+      });
+
+      expectToCorrectlySynchroniseItemWhenAssociatedOneChanges({
+        setup: { initialState, userId, addressId, newUserId, newAddressValues, updatedAddressValues, baseUrl }
+      });
+    });
+  }
 
   describe('Given a one-to-many association between items of two resources', () => {
     const userId = 1;
     const addressId = 1;
     const newUserId = 2;
+
+    const baseUrl = 'http://test.com/addresses';
 
     const initialState = {
       users: {
@@ -134,37 +163,15 @@ describe('belongsTo:', function () {
     const newAddressValues = { userIds: [userId], city: 'New City 3' };
     const updatedAddressValues = { addressId, userIds: [newUserId], city: 'New City 3' };
 
-    expectToCorrectlySynchroniseItemWhenAssociatedOneChanges({
-      setup: { initialState, userId, addressId, newUserId, newAddressValues, updatedAddressValues }
+    expectToCorrectlyDefineAssociationIrrespectiveOfOrderResourcesAreDefined({
+      setup: {
+        baseUrl, initialState, userId, addressId, newUserId, newAddressValues, updatedAddressValues
+      }
     });
   });
 
   function expectToCorrectlySynchroniseItemWhenAssociatedOneChanges({ setup }) {
-    const { initialState, userId, addressId, newUserId, newAddressValues, updatedAddressValues } = setup;
-
-    const baseUrl = 'http://test.com/addresses';
-
-    beforeAll(function () {
-      this.addresses = resources({
-        name: 'addresses',
-        url: `${baseUrl}/:id?`,
-        keyBy: 'id'
-      }, ['createItem', 'updateItem', 'destroyItem']);
-
-      const {
-        reducers,
-      } = resources({
-        name: 'users',
-        url: 'http://test.com/users/:id?',
-        keyBy: 'id',
-        belongsTo: ['address']
-      }, {
-        fetchList: true,
-        newItem: true,
-      });
-
-      this.reducers = reducers;
-    });
+    const { initialState, userId, addressId, newUserId, newAddressValues, updatedAddressValues, baseUrl } = setup;
 
     describe('and the createItem action creator is called for the associated resource item', function () {
       const tempAddressId = 'temp';
@@ -178,7 +185,7 @@ describe('belongsTo:', function () {
           );
         });
 
-        it('then sets the new association to the default attribute', function () {
+        fit('then sets the new association to the default attribute', function () {
           expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, userId, 'addressId', tempAddressId);
         });
 
@@ -375,6 +382,50 @@ describe('belongsTo:', function () {
         tearDown(this);
       });
     });
+  }
+
+  function defineUsersThenAddresses(baseUrl) {
+    const {
+      reducers,
+    } = resources({
+      name: 'users',
+      url: 'http://test.com/users/:id?',
+      keyBy: 'id',
+      belongsTo: ['address']
+    }, {
+      fetchList: true,
+      newItem: true,
+    });
+
+    this.addresses = resources({
+      name: 'addresses',
+      url: `${baseUrl}/:id?`,
+      keyBy: 'id'
+    }, ['createItem', 'updateItem', 'destroyItem']);
+
+    this.reducers = reducers;
+  }
+
+  function defineAddressesThenUsers(baseUrl) {
+    this.addresses = resources({
+      name: 'addresses',
+      url: `${baseUrl}/:id?`,
+      keyBy: 'id'
+    }, ['createItem', 'updateItem', 'destroyItem']);
+
+    const {
+      reducers,
+    } = resources({
+      name: 'users',
+      url: 'http://test.com/users/:id?',
+      keyBy: 'id',
+      belongsTo: ['address']
+    }, {
+      fetchList: true,
+      newItem: true,
+    });
+
+    this.reducers = reducers;
   }
 
   function tearDown(context) {

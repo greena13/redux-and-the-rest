@@ -42,7 +42,6 @@ describe('belongsTo:', function () {
   });
 
   describe('when the \'dependent\' option is \'destroy\'', function () {
-
     beforeAll(function () {
 
       /**

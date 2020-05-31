@@ -103,7 +103,7 @@ class ResourceRegistry {
         const {
           options: {
             name: associatedResourceName,
-            [associationType]: { [name]: associationOptions },
+            [associationType]: { [name]: associationOptions = {} },
           },
           reducersDictionary: associatedResourceReducersDict
         } = this.getResource(resourceName);
@@ -121,7 +121,7 @@ class ResourceRegistry {
           /**
            * The associated resource's attributes
            */
-          definition.name,
+          options.name,
           definition.actions,
 
           associationOptions
