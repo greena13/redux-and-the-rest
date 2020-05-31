@@ -26,6 +26,7 @@
     "cjs",
     "package.json",
     "README.md",
+    "images",
     "LICENSE",
     "index.d.ts",
     "index.js"

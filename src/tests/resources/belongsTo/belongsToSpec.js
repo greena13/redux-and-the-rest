@@ -185,7 +185,7 @@ describe('belongsTo:', function () {
           );
         });
 
-        fit('then sets the new association to the default attribute', function () {
+        it('then sets the new association to the default attribute', function () {
           expectToChangeResourcesItemValuesTo(this, RESOURCE_NAME, userId, 'addressId', tempAddressId);
         });
 

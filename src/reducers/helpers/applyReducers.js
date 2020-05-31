@@ -1,6 +1,4 @@
-import { RESOURCES } from '../..';
-
-function applyReducers(reducersDictionary, resource = RESOURCES, action = {}) {
+function applyReducers(reducersDictionary, resource, action = {}) {
   const { type } = action;
 
   const actionReducer = reducersDictionary[type];
