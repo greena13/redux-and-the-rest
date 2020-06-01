@@ -19,7 +19,7 @@ import EmptyKey from './constants/EmptyKey';
 import hasKey from './utils/object/hasKey';
 import applyReducers from './reducers/helpers/applyReducers';
 import ResourceRegistry from './utils/ResourceRegistry';
-import { RESOURCE, RESOURCES } from './constants/DataStructures';
+import { RESOURCES } from './constants/DataStructures';
 
 /**
  * @typedef {Object<string, ResourcesDefinition>} AssociationOptionsMap A Mapping between the name of an
@@ -202,7 +202,7 @@ function resources(resourceOptions, actionOptions = {}) {
      * @param {ActionObject} action The action containing the data to update the resource state
      * @returns {ResourcesReduxState} The new resource state
      */
-    reducers: (currentState, action) => applyReducers(reducersDictionary, currentState || (singular ? RESOURCE : RESOURCES), action),
+    reducers: (currentState, action) => applyReducers(reducersDictionary, currentState || RESOURCES, action),
 
     /**
      * @type {function(ResourcesReduxState): ResourcesItem} Function that returns the new item of this resource
