@@ -775,12 +775,6 @@ interface ResourceDefinitionCommon<T> {
     getItem: GetSingularResourceItemFunction<T>,
 
     /**
-     * Function that returns a particular item of a resource type or calls the fetch action creator if it's
-     * not available in the store
-     */
-    getOrFetchItem: GetOrFetchSingularResourceItemFunction<T>,
-
-    /**
      * Function that returns the new item of a resource type
      */
     getNewItem: GetSingularResourceItemFunction<T>,
@@ -796,6 +790,12 @@ export interface ResourcesDefinition<T> extends ResourceDefinitionCommon<T>{
      * Dictionary of ActionCreatorFunctions indexed by their ActionCreatorName
      */
     actionCreators: ResourcesActionCreatorDictionary<T>,
+
+    /**
+     * Function that returns a particular item of a resource type or calls the fetch action creator if it's
+     * not available in the store
+     */
+    getOrFetchItem: GetOrFetchItemFunction<T>,
 
     /**
      * Function that returns a particular list of a resource type or calls the fetch action creator if it's
@@ -814,6 +814,12 @@ export interface SingularResourceDefinition<T> extends ResourceDefinitionCommon<
      * Dictionary of ActionCreatorFunctions indexed by their ActionCreatorName
      */
     actionCreators: SingularResourceActionCreatorDictionary<T>,
+
+    /**
+     * Function that returns a particular item of a resource type or calls the fetch action creator if it's
+     * not available in the store
+     */
+    getOrFetchItem: GetOrFetchSingularResourceItemFunction<T>,
 }
 
 /**
