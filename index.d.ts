@@ -770,16 +770,6 @@ interface ResourceDefinitionCommon<T> {
     reducers: Reducer,
 
     /**
-     * Function that returns a particular item of a resource type
-     */
-    getItem: GetSingularResourceItemFunction<T>,
-
-    /**
-     * Function that returns the new item of a resource type
-     */
-    getNewItem: GetSingularResourceItemFunction<T>,
-
-    /**
      * Function to build the initial resource state
      */
     buildInitialState: (items: Array<T>) => InitialResourceStateBuilder<T>,
@@ -807,6 +797,16 @@ export interface ResourcesDefinition<T> extends ResourceDefinitionCommon<T>{
      * Function that returns a particular list of resources
      */
     getList: GetListFunction<T>,
+
+    /**
+     * Function that returns a particular item of a resource type
+     */
+    getItem: GetItemFunction<T>,
+
+    /**
+     * Function that returns the new item of a resource type
+     */
+    getNewItem: GetItemFunction<T>,
 }
 
 export interface SingularResourceDefinition<T> extends ResourceDefinitionCommon<T>{
@@ -820,6 +820,16 @@ export interface SingularResourceDefinition<T> extends ResourceDefinitionCommon<
      * not available in the store
      */
     getOrFetchItem: GetOrFetchSingularResourceItemFunction<T>,
+
+    /**
+     * Function that returns a particular item of a resource type
+     */
+    getItem: GetSingularResourceItemFunction<T>,
+
+    /**
+     * Function that returns the new item of a resource type
+     */
+    getNewItem: GetSingularResourceItemFunction<T>,
 }
 
 /**
