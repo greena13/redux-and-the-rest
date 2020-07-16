@@ -77,72 +77,54 @@ function reducer(resources, action) {
 
   const currentItem = items[key] || ITEM;
 
-  if (currentItem.status.type === NEW) {
-    assertInDevMode(() => {
-      if (singular) {
-        warn(
-          'Use a editItem() to edit new items that have not yet been saved to an external API. Update ignored.'
-        );
-      } else {
-        warn(
-          `${type}'s key '${key}' matches a NEW item. Use a editItem() to edit ` +
-          'new items that have not yet been saved to an external API. Update ignored.'
-        );
-      }
-    });
+  /**
+   * We do a shallow merge of the values that already exist in the redux store for the resource item
+   * with the new values being supplied as part of the edit.
+   *
+   * This allows for partial edits - without having to re-specify the entire list of previous attribute values
+   */
+  const newValues = {
+    ...currentItem.values,
+    ...item.values
+  };
 
-    return resources;
-  } else {
+  const newStatus = function () {
+    if (currentItem.status.dirty) {
 
-    /**
-     * We do a shallow merge of the values that already exist in the redux store for the resource item
-     * with the new values being supplied as part of the edit.
-     *
-     * This allows for partial edits - without having to re-specify the entire list of previous attribute values
-     */
-    const newValues = {
-      ...currentItem.values,
-      ...item.values
-    };
+      /**
+       * If dirty already exists, this is not the first call to edit the resource item, so we leave the
+       * original values
+       */
+      return item.status;
+    } else {
 
-    const newStatus = function () {
-      if (currentItem.status.dirty) {
-
-        /**
-         * If dirty already exists, this is not the first call to edit the resource item, so we leave the
-         * original values
-         */
-        return item.status;
-      } else {
-
-        /**
-         * If this is the first edit then we save a reference to the original values (those last retrieved
-         * from an external API) for comparision.
-         *
-         * Note: If it's a subsequent edit, we don't want to override them with the results of the last edit.
-         */
-        return {
-          ...item.status,
-          dirty: true,
-          originalValues: {
-            ...currentItem.values
-          }
-        };
-      }
-    }();
-
-    return {
-      ...resources,
-      items: {
-        ...items,
-        [key]: {
-          ...item,
-          values: newValues,
-          status: newStatus
+      /**
+       * If this is the first edit then we save a reference to the original values (those last retrieved
+       * from an external API) for comparision.
+       *
+       * Note: If it's a subsequent edit, we don't want to override them with the results of the last edit.
+       */
+      return {
+        ...item.status,
+        dirty: true,
+        originalValues: {
+          ...currentItem.values
         }
+      };
+    }
+  }();
+
+  return {
+    ...resources,
+    items: {
+      ...items,
+      [key]: {
+        ...item,
+        values: newValues,
+        status: newStatus
       }
-    };
-  }
+    }
+  };
 }
 
 export default {
