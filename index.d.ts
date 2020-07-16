@@ -1165,6 +1165,13 @@ export function isInAnErrorState(itemOrList: GenericItemOrList): boolean;
 export function isEdited(itemOrList: GenericItemOrList): boolean;
 
 /**
+ * Whether the resource item is new and has yet to be saved to the server
+ * @param item The item to evaluate
+ * @returns True if the resource item is new
+ */
+export function isEdited(item: GenericItemOrList): boolean;
+
+/**
  * Whether the item or list is currently syncing with the remote
  * @param itemOrList The item or list to consider
  * @returns True if the item or list has finished fetching

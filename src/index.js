@@ -8,6 +8,7 @@ export { default as getTimeSinceLastSync } from './public-helpers/getTimeSinceLa
 export { default as getValuesBeforeEditing } from './public-helpers/getValuesBeforeEditing';
 
 export { default as isEdited } from './public-helpers/isEdited';
+export { default as isNew } from './public-helpers/isNew';
 export { default as isFinishedFetching } from './public-helpers/isFinishedFetching';
 export { default as isSuccessfullyFetched } from './public-helpers/isSuccessfullyFetched';
 export { default as isSyncingWithRemote } from './public-helpers/isSyncingWithRemote';
