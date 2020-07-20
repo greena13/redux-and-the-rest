@@ -417,10 +417,32 @@ export interface GetOrFetchListFunction<T> { (currentState: ResourcesReduxState<
  */
 export type ActionType = string;
 
+export interface StandardActionDictionary {
+    fetchList?: string;
+    fetchItem?: string;
+    newItem?: string;
+    clearNewItem?: string;
+    editNewItem?: string;
+    createItem?: string;
+    editItem?: string;
+    clearItemEdit?: string;
+    updateItem?: string;
+    destroyItem?: string;
+    clearResource?: string;
+    clearItem?: string;
+    clearList?: string;
+    selectItem?: string;
+    selectAnotherItem?: string;
+    deselectItem?: string;
+    clearSelectedItems?: string;
+}
+
 /**
  * Mapping between action names and their types
  */
-export type ActionDictionary = {[key: string]: ActionType };
+export interface ActionDictionary extends StandardActionDictionary {
+    [key: string]: ActionType;
+}
 
 /**
  * Function that dispatches an AnyAction or an ThunkAction
@@ -1169,7 +1191,7 @@ export function isEdited(itemOrList: GenericItemOrList): boolean;
  * @param item The item to evaluate
  * @returns True if the resource item is new
  */
-export function isEdited(item: GenericItemOrList): boolean;
+export function isNew(item: GenericItemOrList): boolean;
 
 /**
  * Whether the item or list is currently syncing with the remote
