@@ -1,4 +1,4 @@
-import { NEW } from '..';
+import { NEW } from '../constants/Statuses';
 import isUndefined from '../utils/isUndefined';
 
 /**
