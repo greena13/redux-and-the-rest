@@ -30,6 +30,25 @@ describe('EditItem reducer:', function () {
     expectToStartEditingWithNewValues({ initialStatus: { type: ERROR, error: { code: 'INVALID_RESOURCE' } } });
   });
 
+  describe('Given a new resource item exists in the store and the editItem action controller is called to update it', () => {
+    beforeAll(function () {
+      spyOn(console, 'warn');
+
+      setupState(this, getInitialState({ type: NEW }), this.newValues);
+    });
+
+    it('then warns that the editItem action controller is not intended to edit new resource items', function() {
+      expect(console.warn).toHaveBeenCalledWith(
+        'Redux and the REST: Use a editItem() to edit new items that have not yet been saved to an external API. Update ignored.'
+      );
+    });
+
+    it('then does not update the new resource item\'s values or state', function() {
+      expectToNotChangeResourceItemValues(this, RESOURCE_NAME);
+      expectToNotChangeResourceItemStatus(this, RESOURCE_NAME);
+    });
+  });
+
   function expectToWarnButCreateNewItem() {
     beforeAll(function () {
       spyOn(console, 'warn');

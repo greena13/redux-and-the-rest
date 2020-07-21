@@ -41,6 +41,27 @@ describe('Edit reducer:', function () {
     });
   });
 
+  describe('Given a new resource item exists in the store and the editItem action controller is called to update it', () => {
+    beforeAll(function () {
+      spyOn(console, 'warn');
+
+      this.id = 'temp';
+
+      setupState(this, getInitialState(this.id, { type: NEW }), this.id, this.newValues);
+    });
+
+    it('then warns that the editItem action controller is not intended to edit new resource items', function() {
+      expect(console.warn).toHaveBeenCalledWith(
+        'Redux and the REST: EDIT_USER\'s key \'temp\' matches a NEW item. Use a editItem() to edit new items that have not yet been saved to an external API. Update ignored.'
+      );
+    });
+
+    it('then does not update the new resource item\'s values or state', function() {
+      expectToNotChangeResourcesItemValues(this, RESOURCE_NAME, this.id);
+      expectToNotChangeResourcesItemStatus(this, RESOURCE_NAME, this.id);
+    });
+  });
+
   function getInitialState(id, status) {
     const base = {
       ...RESOURCES,
