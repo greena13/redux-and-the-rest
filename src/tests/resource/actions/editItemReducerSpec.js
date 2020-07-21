@@ -2,6 +2,8 @@ import { resource, EDITING, ERROR, NEW, RESOURCES } from '../../../index';
 import {
   expectToChangeResourceItemStatusTo,
   expectToChangeResourceItemValuesTo,
+  expectToNotChangeResourceItemStatus,
+  expectToNotChangeResourceItemValues,
   setupInitialState
 } from '../../helpers/resourceAssertions';
 import EmptyKey from '../../../constants/EmptyKey';
