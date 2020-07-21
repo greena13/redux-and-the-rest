@@ -425,6 +425,7 @@ export interface StandardActionDictionary {
     editNewItem?: string;
     createItem?: string;
     editItem?: string;
+    editNewOrExistingItem?: string;
     clearItemEdit?: string;
     updateItem?: string;
     destroyItem?: string;
@@ -496,9 +497,9 @@ export interface ResourcesActionCreatorDictionary<T> {
      * Redux action creator used for editing the attributes of a new resource item (one that hasn't been saved to
      * a remote API yet). This action is used for editing a resource item locally (perhaps across
      * multiple stages or screens) before actually saving it (which sends the new attributes to the remote API).
-     * @param {ItemOrListParameters | Object} paramsOrValues The first argument which can either a string or object that is serialized
-     *        and used to fill in the dynamic parameters of the resource's URL (params) or the new attribute values
-     *        to merge into the exist ones of the new resource item.
+     * @param {ItemOrListParameters | Object} paramsOrValues The first argument which can either be a string or object
+     *        that is serialized and used to fill in the dynamic parameters of the resource's URL (params) or the new
+     *        attribute values to merge into the exist ones of the new resource
      * @param {Object|ActionCreatorOptions} valuesOrActionCreatorOptions Either the new attribute values to merge into the exist ones
      *        of the new resource item, or addition options passed to the action creator when it is called.
      * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
@@ -529,6 +530,18 @@ export interface ResourcesActionCreatorDictionary<T> {
      * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
      */
     editItem: (params: ItemOrListParameters, values: T, actionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
+
+    /**
+     * Redux action creator used for updating the attributes of a new or existing resource item WITHOUT sending those updated
+     * attributes to a remote API (yet). This action is used for editing a resource item locally (perhaps across
+     * multiple stages or screens) before actually updating it (which sends the new attributes to the remote API).
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in
+     *        the dynamic parameters of the resource's URL
+     * @param {Object} values The new attribute values to merge into the exist ones of the resource item.
+     * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    editNewOrExistingItem: (params: ItemOrListParameters, values: T, actionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
 
     /**
      * Redux action creator used for clearing the new resource.
@@ -666,6 +679,16 @@ export interface SingularResourceActionCreatorDictionary<T> {
      * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
      */
     editItem: (values: T, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
+
+    /**
+     * Redux action creator used for updating the attributes of a new or existing resource item WITHOUT sending those updated
+     * attributes to a remote API (yet). This action is used for editing a resource item locally (perhaps across
+     * multiple stages or screens) before actually updating it (which sends the new attributes to the remote API).
+     * @param {Object} values The new attribute values to merge into the exist ones of the resource item.
+     * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+     * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
+     */
+    editNewOrExistingItem: (values: T, optionalActionCreatorOptions?: ActionCreatorOptions<T>) => AnyAction,
 
     /**
      * Redux action creator used for clearing the new resource.

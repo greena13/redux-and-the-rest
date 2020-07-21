@@ -9,6 +9,7 @@ import fetchListAction from '../actions/RESTful/fetchList';
 import newAction from '../actions/RESTful/newItem';
 import clearNewItemAction from '../actions/RESTful/clearNewItem';
 import editNewItemAction from '../actions/RESTful/editNewItem';
+import editNewOrExistingItemItemAction from '../actions/RESTful/editNewOrExistingItem';
 import createItemAction from '../actions/RESTful/createItem';
 import editAction from '../actions/RESTful/editItem';
 import clearItemEditAction from '../actions/RESTful/clearItemEdit';
@@ -39,6 +40,7 @@ const STANDARD_ACTION_CREATORS = {
   editNewItem: editNewItemAction.actionCreator,
   createItem: createItemAction.actionCreator,
   editItem: editAction.actionCreator,
+  editNewOrExistingItem: editNewOrExistingItemItemAction.actionCreator,
   clearItemEdit: clearItemEditAction.actionCreator,
   updateItem: updateAction.actionCreator,
   destroyItem: destroyItemAction.actionCreator,

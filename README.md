@@ -136,6 +136,7 @@ users = getList(store.getState().users);
    * [Clear the new item from the store](#clear-the-new-item-from-the-store)
    * [Edit the new item in the store](#edit-the-new-item-in-the-store)
    * [Edit an existing item in the store](#edit-an-existing-item-in-the-store)
+   * [Edit an item without worrying whether it's new or not](#edit-an-item-without-worrying-whether-its-new-or-not)
    * [Detecting if a item has been edited](#detecting-if-a-item-has-been-edited)
    * [Accessing values before they were edited](#accessing-values-before-they-were-edited)
    * [Clear local edits](#clear-local-edits)
@@ -327,6 +328,7 @@ Generally your application will need to perform actions on resources locally, un
 | editNewItem | editNewItem() | Continue to add or modify a new item's attributes until it's ready to be saved. |
 | clearNewItem | clearNewItem() | Discards (removes) the new item fom the Redux store |
 | editItem | editItem() | Replaces an existing (saved) item's attributes in the store with new ones |
+| editNewOrExistingItem | editNewOrExistingItem() | Delegates to editNewItem or editItem depending on the state of the item |
 | clearItemEdit | clearItemEdit() | Reverts an edit, to restore the item's attributes before the edit |
 
 These actions are generally accumulative and reversible, so you can call them successively over multiple screens or stages of a workflow and provide a cancel feature if the user wishes to abort.
@@ -1426,6 +1428,14 @@ It should not be used for editing a new item - user the editNewItem action creat
 | First action creator argument | `keys` - See [Getting lists from the store](#getting-lists-from-the-store) for more information. |
 | Second action creator argument | Resource item's attributes - An object of attributes to save as the item's new values in the store. |
 | `status.type` lifecycle |  `EDITING` |
+
+### Edit an item without worrying whether it's new or not
+
+Often you want to re-use the same forms and components to create an item as you do to edit it, and you would like to re-use as much code as possible.
+
+In these circumstances, you can use the `editNewOrExistingItem` action creator, which delegates to either `editItem` or `editNewItem` based on the current state of the item.
+
+It accepts the same arguments as `editItem` - so you must have manually specified an id for your new item (rather than letting `redux-and-the-rest` manage it internally for you)
 
 ### Detecting if a item has been edited
 

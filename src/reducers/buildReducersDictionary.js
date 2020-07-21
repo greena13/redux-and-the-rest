@@ -12,6 +12,7 @@ import clearNewItemAction from '../actions/RESTful/clearNewItem';
 import editNewItemAction from '../actions/RESTful/editNewItem';
 import createItemAction from '../actions/RESTful/createItem';
 import editAction from '../actions/RESTful/editItem';
+import editNewOrExistingItemAction from '../actions/RESTful/editNewOrExistingItem';
 import clearItemEditAction from '../actions/RESTful/clearItemEdit';
 import updateAction from '../actions/RESTful/updateItem';
 import destroyItemAction from '../actions/RESTful/destroyItem';
@@ -40,6 +41,7 @@ const STANDARD_REDUCERS = {
   editNewItem: editNewItemAction.reducer,
   createItem: createItemAction.reducer,
   editItem: editAction.reducer,
+  editNewOrExistingItem: editNewOrExistingItemAction.reducer,
   clearItemEdit: clearItemEditAction.reducer,
   updateItem: updateAction.reducer,
   destroyItem: destroyItemAction.reducer,
