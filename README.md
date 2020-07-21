@@ -250,7 +250,7 @@ import { resources } from 'redux-and-the-rest';
 const { reducers, actionCreators: { fetchList: fetchUsers } } = resources(
     {
         name: 'users',
-        url: 'http://test.com/users/:id?'.
+        url: 'http://test.com/users/:id?',
         keyBy: 'id'
     },
     {
