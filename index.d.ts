@@ -748,7 +748,7 @@ export interface RemoteActionCreatorOptions<T> extends ActionCreatorOptions<T> {
     /**
      * Whether to ignore any outstanding requests with the same URL and make the request again, anyway
      */
-   force?: boolean,
+   forceFetch?: boolean,
 }
 
 export interface RemoteActionCreatorOptionsWithMetadata<T> extends RemoteActionCreatorOptions<T> {
