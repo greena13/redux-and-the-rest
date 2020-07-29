@@ -972,6 +972,21 @@ export interface GlobalConfigurationOptions {
     credentials?: RequestCredentials,
 
     /**
+     * The Accept header to use with each request. Defaults to the contentType if not defined.
+     */
+    acceptType?: String,
+
+    /**
+     * The Content-Type header to use with each request
+     */
+    contentType?: String,
+
+    /**
+     * The Content-Type of error responses that should be parsed as JSON. Defaults to the contentType if not defined.
+     */
+    errorContentType?: String,
+
+    /**
      * The request configuration object to be passed to the fetch method, or the new XMLHttpRequest object,
      * when the progress option is used.
      */

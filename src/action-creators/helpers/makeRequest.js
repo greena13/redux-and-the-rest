@@ -7,6 +7,7 @@ import { registerRequestEnd } from '../../utils/RequestManager';
 import pluck from '../../utils/list/pluck';
 import normalizeErrors from './normalizeErrors';
 import isString from '../../utils/string/isString';
+import { getConfiguration } from '../../configuration';
 
 /**
  * Performs a HTTP request to an external API endpoint, based on the configuration options provided
@@ -94,6 +95,8 @@ function makeRequest(options, actionCreatorOptions = {}) {
     ...actionCreatorRequestOptions
   };
 
+  const globalConfig = getConfiguration();
+
   const requestOptions = function(){
     const common = {
 
@@ -107,8 +110,8 @@ function makeRequest(options, actionCreatorOptions = {}) {
          * Set default Accept and Content-Type headers, but allow overriding them with options (along with
          * any other headers)
          */
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        'Accept': globalConfig.acceptType || globalConfig.contentType,
+        'Content-Type': globalConfig.contentType,
         ..._request.headers,
         ...(actionCreatorRequestOptions.headers || {})
       }
@@ -225,7 +228,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
         /**
          * If no explicit error handler function has been provided, we fallback to the default error handler.
          */
-        if (response.headers.get('Content-Type').startsWith('application/json')) {
+        if (response.headers.get('Content-Type').startsWith(globalConfig.errorContentType || globalConfig.contentType)) {
 
           /**
            * We first attempt to parse the response as valid JSON, again looking for a error attribute at the

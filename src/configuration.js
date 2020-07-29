@@ -1,4 +1,6 @@
-let configuration = {};
+let configuration = {
+  contentType: 'application/json'
+};
 
 /**
  * @typedef {function(Object, Response): {values: Object, error: Object = null, errors: Array.<Object> = [], metadata: Object }}>}} ResponseAdaptorFunction
@@ -25,6 +27,11 @@ let configuration = {};
  *           become the body of the request to be sent to an external API.
  * @property {RequestCredentials} credentials Whether to include, omit or send cookies that may be stored in
  *           the user agent's cookie jar with the request only if it's on the same origin.
+ * @property {String} acceptType The Accept header to use with each request. Defaults to the contentType if not
+ *            defined.
+ * @property {String} contentType The Content-Type header to use with each request
+ * @property {String} errorContentType The Content-Type of error responses that should be parsed as JSON. Defaults
+ *            to the contentType if not defined.
  * @property {Object.<string,*>} request The request configuration object to be passed to the fetch method, or the
  *           new XMLHttpRequest object, when the progress option is used.
  *
