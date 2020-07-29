@@ -779,19 +779,19 @@ export interface CreateItemActionCreatorOptions<T> extends RemoteActionCreatorOp
     /**
      * A An array of list keys to push the new item to the end of.
      */
-    push?: Array<string>,
+    push?: Array<ItemOrListParameters>,
 
     /**
      * A An array of list keys to add the new item to the beginning of.
      */
-    unshift?: Array<string>,
+    unshift?: Array<ItemOrListParameters>,
 
     /**
      * A An array of list keys for which to clear (invalidate). This is useful for when you know the item
      * that was just created is likely to appear in a list, but you don't know where, so you need to
      * re-retrieve the whole list from the server.
      */
-    invalidate?: Array<string>,
+    invalidate?: Array<ItemOrListParameters>,
 }
 
 export interface DestroyItemActionCreatorOptions<T> extends RemoteActionCreatorOptions<T> {
