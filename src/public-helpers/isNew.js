@@ -1,4 +1,4 @@
-import { NEW } from '../constants/Statuses';
+import { ERROR, NEW } from '../constants/Statuses';
 import isUndefined from '../utils/isUndefined';
 
 /**
@@ -6,8 +6,8 @@ import isUndefined from '../utils/isUndefined';
  * @param {ResourcesItem} item The item to evaluate
  * @returns {boolean} True if the resource item is new
  */
-function isNew({ status: { type } }) {
-  return type === NEW || isUndefined(type);
+function isNew({ status: { type, syncedAt } }) {
+  return type === NEW || isUndefined(type) || (type === ERROR && !syncedAt);
 }
 
 export default isNew;
