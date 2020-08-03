@@ -1,10 +1,15 @@
 import { LIST } from '../../constants/DataStructures';
+import contains from '../../utils/list/contains';
 
 function applyListOperators(lists, listOperations = {}, temporaryKey) {
   const updatedLists = {};
 
   listOperations.push.forEach((listKey) => {
     const existingList = lists[listKey] || LIST;
+
+    if (contains(existingList, temporaryKey)) {
+      return;
+    }
 
     updatedLists[listKey] = {
       ...existingList,
@@ -17,6 +22,10 @@ function applyListOperators(lists, listOperations = {}, temporaryKey) {
 
   listOperations.unshift.forEach((listKey) => {
     const existingList = lists[listKey] || LIST;
+
+    if (contains(existingList, temporaryKey)) {
+      return;
+    }
 
     updatedLists[listKey] = {
       ...existingList,
