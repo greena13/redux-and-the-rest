@@ -7,33 +7,33 @@ function applyListOperators(lists, listOperations = {}, temporaryKey) {
   listOperations.push.forEach((listKey) => {
     const existingList = lists[listKey] || LIST;
 
-    if (contains(existingList, temporaryKey)) {
-      return;
+    if (contains(existingList.positions, temporaryKey)) {
+      updatedLists[listKey] = existingList;
+    } else {
+      updatedLists[listKey] = {
+        ...existingList,
+        positions: [
+          ...existingList.positions,
+          temporaryKey
+        ]
+      };
     }
-
-    updatedLists[listKey] = {
-      ...existingList,
-      positions: [
-        ...existingList.positions,
-        temporaryKey
-      ]
-    };
   });
 
   listOperations.unshift.forEach((listKey) => {
     const existingList = lists[listKey] || LIST;
 
-    if (contains(existingList, temporaryKey)) {
-      return;
+    if (contains(existingList.positions, temporaryKey)) {
+      updatedLists[listKey] = existingList;
+    } else {
+      updatedLists[listKey] = {
+        ...existingList,
+        positions: [
+          temporaryKey,
+          ...existingList.positions
+        ]
+      };
     }
-
-    updatedLists[listKey] = {
-      ...existingList,
-      positions: [
-        temporaryKey,
-        ...existingList.positions
-      ]
-    };
   });
 
   listOperations.invalidate.forEach((listKey) => {

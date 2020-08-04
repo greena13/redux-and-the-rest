@@ -1,9 +1,10 @@
-import { EDITING, NEW } from '../../constants/Statuses';
+import { EDITING } from '../../constants/Statuses';
 import processActionCreatorOptions from '../../action-creators/helpers/processActionCreatorOptions';
 import getItemKey from '../../action-creators/helpers/getItemKey';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
+import { isNew } from '../../index';
 
 /** ************************************************************************************************************
  * Action creators
@@ -84,7 +85,7 @@ function reducer(resources, action) {
 
     return resources;
 
-  } else if (currentItem.status.type === NEW) {
+  } else if (isNew(currentItem)) {
 
     /**
      * We do a shallow merge of the values that already exist in the redux store for the resource item

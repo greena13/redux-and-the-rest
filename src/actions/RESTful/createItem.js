@@ -18,6 +18,7 @@ import mergeStatus from '../../reducers/helpers/mergeStatus';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
 import nop from '../../utils/function/nop';
 import EmptyKey from '../../constants/EmptyKey';
+import { isNew } from '../../index';
 
 const HTTP_REQUEST_TYPE = 'POST';
 
@@ -286,7 +287,7 @@ function reducer(resources, action) {
 
   if (status === CREATING) {
     assertInDevMode(() => {
-      if (currentItem.status.type && currentItem.status.type !== NEW) {
+      if (!isNew(currentItem)) {
         warn(
           `${type} has the same key '${temporaryKey}' as an existing item. ` +
           'Use updateItem() to update an existing item, ' +
