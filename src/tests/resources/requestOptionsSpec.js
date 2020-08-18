@@ -3,6 +3,7 @@ import fetchMock from 'fetch-mock';
 import { resources, configure, getConfiguration } from '../../index';
 import buildStore from '../helpers/buildStore';
 import nop from '../../utils/function/nop';
+import ResourceRegistry from '../../utils/ResourceRegistry';
 
 describe('Request options:', () => {
   afterEach(function () {
@@ -24,6 +25,8 @@ describe('Request options:', () => {
   afterEach(function() {
     fetchMock.restore();
     this.store = null;
+
+    ResourceRegistry.getRegistry().clear();
   });
 
   describe('Given the request options have been globally configured BEFORE a resource has been defined', () => {
