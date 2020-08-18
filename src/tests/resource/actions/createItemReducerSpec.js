@@ -288,14 +288,14 @@ describe('Create reducer:', function () {
     });
   }
 
-  function setUpBeforeRequest(context, initialState, newValues, actionCreatorOptions = {}) {
+  function setUpBeforeRequest(context, initialState, newValues, actionCreatorOptions) {
     fetchMock.post('http://test.com/users', new Promise(nop));
 
     setupState(context, initialState, newValues, actionCreatorOptions);
   }
 
   function setUpAfterRequestSuccess(context, initialState, initialValues,
-                                    responseValues = initialValues, actionCreatorOptions = {}) {
+                                    responseValues = initialValues, actionCreatorOptions) {
     fetchMock.post('http://test.com/users', {
       body: responseValues,
     });
@@ -309,7 +309,7 @@ describe('Create reducer:', function () {
     setupState(context, initialState, newValues);
   }
 
-  function setupState(context, initialState, newValues, actionCreatorOptions = {}) {
+  function setupState(context, initialState, newValues, actionCreatorOptions) {
     setupInitialState(context, RESOURCE_NAME, initialState);
 
     context.store.dispatch(context.createUser(newValues, actionCreatorOptions));

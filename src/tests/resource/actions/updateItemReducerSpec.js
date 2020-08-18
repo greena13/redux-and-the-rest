@@ -216,7 +216,7 @@ describe('Update reducer:', function () {
         tearDown(this);
       });
 
-      it('then changes the items\'s status type to SUCCESS', function () {
+      it('then changes the item\'s status type to SUCCESS', function () {
         expectToChangeResourceItemStatusTo(this, RESOURCE_NAME, 'type', SUCCESS);
       });
 

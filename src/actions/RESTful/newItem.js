@@ -6,8 +6,8 @@ import extractListOperations from '../../action-creators/helpers/extractListOper
 import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
 import applyListOperators from '../../reducers/helpers/applyListOperators';
-import processActionCreatorOptions from '../../action-creators/helpers/processActionCreatorOptions';
 import wrapInObject from '../../utils/object/wrapInObject';
+import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
 
 /** ************************************************************************************************************
  * Action creators
@@ -28,13 +28,13 @@ import wrapInObject from '../../utils/object/wrapInObject';
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
-  const { params, values, actionCreatorOptions } = processActionCreatorOptions(
+  const { action, transforms, keyBy, urlOnlyParams, singular } = options;
+
+  const { params, values, actionCreatorOptions } = adaptOptionsForSingularResource(true, [
     paramsOrValues,
     valuesOrActionCreatorOptions,
     optionalActionCreatorOptions
-  );
-
-  const { action, transforms, keyBy, urlOnlyParams, singular } = options;
+  ]);
 
   const normalizedParams = wrapInObject(params, keyBy);
 

@@ -19,6 +19,7 @@ import { isRequestInProgress, registerRequestStart } from '../../utils/RequestMa
 import nop from '../../utils/function/nop';
 import EmptyKey from '../../constants/EmptyKey';
 import { isNew } from '../../index';
+import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
 
 const HTTP_REQUEST_TYPE = 'POST';
 
@@ -51,11 +52,11 @@ const HTTP_REQUEST_TYPE = 'POST';
  * @returns {Thunk} Function to call to dispatch an action
  */
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
-  const { params, values, actionCreatorOptions } = processActionCreatorOptions(
+  const { params, values, actionCreatorOptions } = adaptOptionsForSingularResource(true, [
     paramsOrValues,
     valuesOrActionCreatorOptions,
     optionalActionCreatorOptions
-  );
+  ]);
 
   const {
     action,

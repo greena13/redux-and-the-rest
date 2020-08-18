@@ -9,6 +9,7 @@ import wrapInObject from '../../utils/object/wrapInObject';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
 import nop from '../../utils/function/nop';
+import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
 
 const HTTP_REQUEST_TYPE = 'GET';
 
@@ -19,15 +20,21 @@ const HTTP_REQUEST_TYPE = 'GET';
 /**
  * Redux action creator used for fetching a single resource item from a fetch RESTful API endpoint
  * @param {Object} options Configuration options built from those provided when the resource was defined
- * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
+ * @param {Object|string} paramsOrActionCreatorOptions A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
- * @param {RemoteActionCreatorOptionsWithMetadata} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+ * @param {RemoteActionCreatorOptionsWithMetadata} [optionalActionCreatorOptions={}] The options passed to the action creator when it is called.
  * @returns {Thunk} Function to call to dispatch an action
  */
-function actionCreator(options, params, actionCreatorOptions = {}) {
+function actionCreator(options, paramsOrActionCreatorOptions, optionalActionCreatorOptions) {
   const {
     action, transforms, url: urlTemplate, keyBy, progress, request = {}, singular, metadata
   } = options;
+
+  const { params, actionCreatorOptions } = adaptOptionsForSingularResource(singular, [
+    paramsOrActionCreatorOptions,
+    undefined,
+    optionalActionCreatorOptions
+  ]);
 
   const normalizedParams = wrapInObject(params, keyBy);
   const url = generateUrl({ urlTemplate }, normalizedParams);

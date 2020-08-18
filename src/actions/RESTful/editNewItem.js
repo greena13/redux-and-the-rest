@@ -1,10 +1,10 @@
 import { EDITING } from '../../constants/Statuses';
-import processActionCreatorOptions from '../../action-creators/helpers/processActionCreatorOptions';
 import getItemKey from '../../action-creators/helpers/getItemKey';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
 import { isNew } from '../../index';
+import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
 
 /** ************************************************************************************************************
  * Action creators
@@ -24,11 +24,11 @@ import { isNew } from '../../index';
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
-  const { params, values, actionCreatorOptions } = processActionCreatorOptions(
+  const { params, values, actionCreatorOptions } = adaptOptionsForSingularResource(true, [
     paramsOrValues,
     valuesOrActionCreatorOptions,
     optionalActionCreatorOptions
-  );
+  ]);
 
   const { action, transforms, keyBy, singular } = options;
 

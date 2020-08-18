@@ -5,6 +5,7 @@ import applyTransforms from '../../reducers/helpers/applyTransforms';
 import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
 import wrapInObject from '../../utils/object/wrapInObject';
+import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
 
 /** ************************************************************************************************************
  * Action creators
@@ -15,15 +16,22 @@ import wrapInObject from '../../utils/object/wrapInObject';
  * attributes to a remote API (yet). This action is used for editing a resource item locally (perhaps across
  * multiple stages or screens) before actually updating it (which sends the new attributes to the remote API).
  * @param {Object} options Configuration options built from those provided when the resource was defined
- * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
- *        of the resource's URL
- * @param {Object} values The new attribute values to merge into the exist ones of the resource item.
- * @param {ActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is
+ * @param {Object|string} paramsOrValues The first argument which can either be a string or object that is
+ *        serialized and used to fill in the dynamic parameters of the resource's URL, or the new attribute values.
+ * @param {Object} [valuesOrActionCreatorOptions=undefined] Either the new attribute values to merge into the
+ *        exist ones of the resource item or
+ * @param {ActionCreatorOptions} [optionalActionCreatorOptions={}] The options passed to the action creator when it is
  *        called.
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function actionCreator(options, params, values, actionCreatorOptions = {}) {
+function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
   const { action, transforms, keyBy, singular } = options;
+
+  const { params, values, actionCreatorOptions } = adaptOptionsForSingularResource(singular, [
+    paramsOrValues,
+    valuesOrActionCreatorOptions,
+    optionalActionCreatorOptions
+  ]);
 
   const normalizedParams = wrapInObject(params, keyBy);
   const key = getItemKey(normalizedParams, { keyBy, singular });

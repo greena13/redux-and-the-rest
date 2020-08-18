@@ -24,7 +24,6 @@ import clearItemAction from '../actions/clear/clearItem';
 import clearListAction from '../actions/clear/clearList';
 import without from '../utils/list/without';
 import DefaultConfigurationOptions from '../constants/DefaultConfigurationOptions';
-import EmptyKey from '../constants/EmptyKey';
 import ResourcesOnlyActionsDictionary from '../constants/ResourcesOnlyActionsDictionary';
 import pluck from '../utils/list/pluck';
 
@@ -238,10 +237,6 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
           ...actionCreatorConfig,
           request: { ...config.request, ...(actionCreatorConfig.request || {}) }
         };
-
-        if (resourceOptions.singular) {
-          return standardActionCreator(reloadedOptions, EmptyKey, arg1, arg2);
-        }
 
         return standardActionCreator(reloadedOptions, arg1, arg2, arg3);
       };

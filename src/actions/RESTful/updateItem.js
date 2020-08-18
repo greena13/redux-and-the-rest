@@ -11,6 +11,7 @@ import mergeStatus from '../../reducers/helpers/mergeStatus';
 import without from '../../utils/list/without';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
 import nop from '../../utils/function/nop';
+import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
 
 const HTTP_REQUEST_TYPE = 'PUT';
 
@@ -29,20 +30,28 @@ const HTTP_REQUEST_TYPE = 'PUT';
 /**
  * Redux action creator used for sending an UPDATE request to a RESTful API endpoint
  * @param {Object} options Configuration options built from those provided when the resource was defined
- * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
- *        of the resource's URL
- * @param {Object} values The attribute values to use to update the resource
- * @param {UpdateItemActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is
+ * @param {Object|string} paramsOrValues The first argument which can either be a  string or object that is
+ *        serialized and used to fill in the dynamic parameters of the resource's URL, or the attributes to use
+ *        to update the resource.
+ * @param {Object} [valuesOrActionCreatorOptions={}] Either the attribute values to use to update the resource or the
+ *        options passed to the action creator.
+ * @param {UpdateItemActionCreatorOptions} [optionalActionCreatorOptions={}] The options passed to the action creator when it is
  *        called.
- * @param {ResourceValues} [actionCreatorOptions.previous={}] The values of the resource item that is being
+ * @param {ResourceValues} [optionalActionCreatorOptions.previous={}] The values of the resource item that is being
  *        deleted, used to more efficiently remove the item from any associated resource lists it may
  *        appear in.
  * @returns {Thunk} Function to call to dispatch an action
  */
-function actionCreator(options, params, values, actionCreatorOptions = {}) {
+function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
   const {
     action, transforms, url: urlTemplate, progress, keyBy, metadata, requestAdaptor, request = {}
 , singular } = options;
+
+  const { params, values, actionCreatorOptions } = adaptOptionsForSingularResource(singular, [
+      paramsOrValues,
+      valuesOrActionCreatorOptions,
+      optionalActionCreatorOptions
+  ]);
 
   const normalizedParams = wrapInObject(params, keyBy);
   const url = generateUrl({ urlTemplate }, wrapInObject(normalizedParams, keyBy));

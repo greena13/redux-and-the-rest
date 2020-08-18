@@ -11,6 +11,7 @@ import applyTransforms from '../../reducers/helpers/applyTransforms';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
 import nop from '../../utils/function/nop';
+import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
 
 const HTTP_REQUEST_TYPE = 'DELETE';
 
@@ -28,16 +29,16 @@ const HTTP_REQUEST_TYPE = 'DELETE';
 /**
  * Redux action creator used for destroying a resource item by making a DELETE request to a RESTful API endpoint
  * @param {Object} options Configuration options built from those provided when the resource was defined
- * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
+ * @param {Object|string} [optionalParams={}] A string or object that is serialized and used to fill in the dynamic parameters
  *        of the resource's URL
- * @param {DestroyItemActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is
+ * @param {DestroyItemActionCreatorOptions} [optionalActionCreatorOptions={}] The options passed to the action creator when it is
  *        called.
- * @param {ResourceValues} [actionCreatorOptions.previousValues={}] The values of the resource item that is being
+ * @param {ResourceValues} [optionalActionCreatorOptions.previousValues={}] The values of the resource item that is being
  *        deleted, used to more efficiently remove the item from any associated resource lists it may
  *        appear in.
  * @returns {Thunk} Function to call to dispatch an action
  */
-function actionCreator(options, params, actionCreatorOptions = {}) {
+function actionCreator(options, optionalParams, optionalActionCreatorOptions) {
   const {
     action,
     keyBy,
@@ -46,6 +47,12 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
     request = {},
     singular
   } = options;
+
+  const { params, actionCreatorOptions } = adaptOptionsForSingularResource(singular, [
+    optionalParams,
+    undefined,
+    optionalActionCreatorOptions
+  ]);
 
   const normalizedParams = wrapInObject(params, keyBy);
   const url = generateUrl({ urlTemplate }, normalizedParams);
