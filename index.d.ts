@@ -630,10 +630,12 @@ export interface ResourcesActionCreatorDictionary<T> {
 export interface SingularResourceActionCreatorDictionary<T> {
     /**
      * Redux action creator used for fetching a single resource item from a fetch RESTful API endpoint
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
+     *        of the resource's URL
      * @param {RemoteActionCreatorOptionsWithMetadata} [actionCreatorOptions={}] The options passed to the action creator when it is called.
      * @returns {ThunkAction} Function to call to dispatch an action
      */
-    fetchItem: (actionCreatorOptions?: RemoteActionCreatorOptionsWithMetadata<T>) => ThunkAction<void, any, any, AnyAction>,
+    fetchItem: (params?: ItemOrListParameters, actionCreatorOptions?: RemoteActionCreatorOptionsWithMetadata<T>) => ThunkAction<void, any, any, AnyAction>,
 
     /**
      * Redux action creator used for adding a new resource item to the Redux store WITHOUT sending it to a remote API
@@ -664,11 +666,15 @@ export interface SingularResourceActionCreatorDictionary<T> {
 
     /**
      * Redux action creator used for sending a CREATE request to a RESTful API endpoint
-     * @param {Object} values The values used by the action creator
+     * @param {ItemOrListParameters | Object} paramsOrValues The first argument which can either a string
+     *        or object that is serialized and used to fill in the dynamic parameters of the resource's URL
+     *        (params) or the attribute values to use to create the resource.
+     * @param {Object|CreateItemActionCreatorOptions} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
+     *        options passed to the action creator when it is called.
      * @param {CreateItemActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
      * @returns {ThunkAction} Function to call to dispatch an action
      */
-    createItem: (values: T | CreateItemActionCreatorOptions<T>, optionalActionCreatorOptions?: CreateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+    createItem: (paramsOrValues: ItemOrListParameters | T , valuesOrActionCreatorOptions?: T | CreateItemActionCreatorOptions<T>, optionalActionCreatorOptions?: CreateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
 
     /**
      * Redux action creator used for updating the attributes of a resource item WITHOUT sending those updated
@@ -698,18 +704,23 @@ export interface SingularResourceActionCreatorDictionary<T> {
 
     /**
      * Redux action creator used for sending an UPDATE request to a RESTful API endpoint
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill
+     *        in the dynamic parameters of the resource's URL
      * @param {Object} values The attribute values to use to update the resource
      * @param {UpdateItemActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
      * @returns {ThunkAction} Function to call to dispatch an action
      */
-    updateItem: (values: T, actionCreatorOptions?: UpdateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+    updateItem: (params: ItemOrListParameters, values: T, actionCreatorOptions?: UpdateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
 
     /**
      * Redux action creator used for destroying a resource item by making a DELETE request to a RESTful API endpoint
-     * @param {DestroyItemActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in
+     *        the dynamic parameters of the resource's URL
+     * @param {DestroyItemActionCreatorOptions} [actionCreatorOptions={}] The options passed to the action
+     *        creator when it is called.
      * @returns {ThunkAction} Function to call to dispatch an action
      */
-    destroyItem: (actionCreatorOptions?: DestroyItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
+    destroyItem: (params: ItemOrListParameters, actionCreatorOptions?: DestroyItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
 
     /**
      * Redux action creator used for clearing an item from the store
