@@ -30,11 +30,12 @@ import adaptOptionsForSingularResource from '../../action-creators/helpers/adapt
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
   const { action, transforms, keyBy, urlOnlyParams, singular } = options;
 
-  const { params, values, actionCreatorOptions } = adaptOptionsForSingularResource(true, [
-    paramsOrValues,
-    valuesOrActionCreatorOptions,
-    optionalActionCreatorOptions
-  ]);
+  const { params, values, actionCreatorOptions } =
+    adaptOptionsForSingularResource({ paramsOptional: true, acceptsValues: true }, [
+      paramsOrValues,
+      valuesOrActionCreatorOptions,
+      optionalActionCreatorOptions
+    ]);
 
   const normalizedParams = wrapInObject(params, keyBy);
 

@@ -48,11 +48,12 @@ function actionCreator(options, optionalParams, optionalActionCreatorOptions) {
     singular
   } = options;
 
-  const { params, actionCreatorOptions } = adaptOptionsForSingularResource(singular, [
-    optionalParams,
-    undefined,
-    optionalActionCreatorOptions
-  ]);
+  const { params, actionCreatorOptions } =
+    adaptOptionsForSingularResource({ paramsOptional: singular, acceptsValues: false }, [
+      optionalParams,
+      optionalActionCreatorOptions
+    ]
+  );
 
   const normalizedParams = wrapInObject(params, keyBy);
   const url = generateUrl({ urlTemplate }, normalizedParams);

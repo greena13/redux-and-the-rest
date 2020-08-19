@@ -44,10 +44,11 @@ const HTTP_REQUEST_TYPE = 'PUT';
  */
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
   const {
-    action, transforms, url: urlTemplate, progress, keyBy, metadata, requestAdaptor, request = {}
-, singular } = options;
+    action, transforms, url: urlTemplate, progress, keyBy, metadata, requestAdaptor, request = {}, singular
+  } = options;
 
-  const { params, values, actionCreatorOptions } = adaptOptionsForSingularResource(singular, [
+  const { params, values, actionCreatorOptions } =
+    adaptOptionsForSingularResource({ paramsOptional: singular, acceptsValues: true }, [
       paramsOrValues,
       valuesOrActionCreatorOptions,
       optionalActionCreatorOptions

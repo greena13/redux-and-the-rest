@@ -24,13 +24,16 @@ import adaptOptionsForSingularResource from '../../action-creators/helpers/adapt
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
-  const { params, values, actionCreatorOptions } = adaptOptionsForSingularResource(true, [
-    paramsOrValues,
-    valuesOrActionCreatorOptions,
-    optionalActionCreatorOptions
-  ]);
-
   const { action, transforms, keyBy, singular } = options;
+
+  const { params, values, actionCreatorOptions } =
+    adaptOptionsForSingularResource({ paramsOptional: true, acceptsValues: true },
+      [
+        paramsOrValues,
+        valuesOrActionCreatorOptions,
+        optionalActionCreatorOptions
+      ]
+    );
 
   const key = getItemKey(params, { keyBy, singular });
 

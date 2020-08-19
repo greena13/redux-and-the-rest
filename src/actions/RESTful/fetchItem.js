@@ -30,11 +30,11 @@ function actionCreator(options, paramsOrActionCreatorOptions, optionalActionCrea
     action, transforms, url: urlTemplate, keyBy, progress, request = {}, singular, metadata
   } = options;
 
-  const { params, actionCreatorOptions } = adaptOptionsForSingularResource(singular, [
-    paramsOrActionCreatorOptions,
-    undefined,
-    optionalActionCreatorOptions
-  ]);
+  const { params, actionCreatorOptions } =
+    adaptOptionsForSingularResource({ paramsOptional: singular, acceptsValues: false }, [
+      paramsOrActionCreatorOptions,
+      optionalActionCreatorOptions
+    ]);
 
   const normalizedParams = wrapInObject(params, keyBy);
   const url = generateUrl({ urlTemplate }, normalizedParams);

@@ -6,7 +6,7 @@ import {
   expectToChangeResourceItemStatusTo,
   expectToChangeResourceItemValuesTo, expectToClearResourceItemStatus,
   expectToNotChangeResourceItemStatus,
-  expectToNotChangeResourceItemValues,
+  expectToNotChangeResourceItemValues, resourceDefinition,
   setupInitialState
 } from '../../helpers/resourceAssertions';
 import EmptyKey from '../../../constants/EmptyKey';
@@ -166,6 +166,7 @@ describe('Update reducer:', function () {
           this,
           initialState,
           'http://test.com/users',
+          this.newValues,
           this.options
         );
       });
@@ -244,6 +245,7 @@ describe('Update reducer:', function () {
           this,
           initialState,
           'http://test.com/users',
+          this.newValues,
           this.options
         );
       });
@@ -278,7 +280,7 @@ describe('Update reducer:', function () {
     });
 
     it('then does not update the values from the response', function () {
-      expectToNotChangeResourceItemValues(this, RESOURCE_NAME);
+      expectToNotChangeResourceItemValues(this, RESOURCE_NAME, 'approved');
     });
 
     it('then sets the status error from the response', function () {
@@ -294,7 +296,7 @@ describe('Update reducer:', function () {
               values: { username: 'Bob', id: 1 },
               status: { type: SUCCESS }
             }
-          }, }, 'http://test.com/users', options);
+          }, }, 'http://test.com/users', this.newValues, options);
       });
 
       afterAll(function () {
@@ -335,10 +337,10 @@ describe('Update reducer:', function () {
     setupState(context, initialState, values);
   }
 
-  function setUpAfterRequestFailure(context, initialState, url, options = { body: { error: 'Not Found' }, status: 404 }) {
+  function setUpAfterRequestFailure(context, initialState, url, values, options = { body: { error: 'Not Found' }, status: 404 }) {
     fetchMock.put(url, options);
 
-    setupState(context, initialState);
+    setupState(context, initialState, values);
   }
 
   function setupState(context, initialState, values) {

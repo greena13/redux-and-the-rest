@@ -11,7 +11,6 @@ import applyListOperators from '../../reducers/helpers/applyListOperators';
 import without from '../../utils/list/without';
 import replace from '../../utils/list/replace';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
-import processActionCreatorOptions from '../../action-creators/helpers/processActionCreatorOptions';
 import getItem from '../../utils/getItem';
 import isUndefined from '../../utils/isUndefined';
 import mergeStatus from '../../reducers/helpers/mergeStatus';
@@ -52,12 +51,6 @@ const HTTP_REQUEST_TYPE = 'POST';
  * @returns {Thunk} Function to call to dispatch an action
  */
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
-  const { params, values, actionCreatorOptions } = adaptOptionsForSingularResource(true, [
-    paramsOrValues,
-    valuesOrActionCreatorOptions,
-    optionalActionCreatorOptions
-  ]);
-
   const {
     action,
     transforms,
@@ -71,6 +64,12 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     singular
   } = options;
 
+  const { params, values, actionCreatorOptions } =
+    adaptOptionsForSingularResource({ paramsOptional: true, acceptsValues: true }, [
+      paramsOrValues,
+      valuesOrActionCreatorOptions,
+      optionalActionCreatorOptions
+    ]);
 
   const normalizedParams = wrapInObject(params, keyBy);
 
@@ -173,10 +172,12 @@ function submitCreateResource(options, actionCreatorOptions, values, listOperati
  * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
  */
 function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
-  const { params, values, actionCreatorOptions } = processActionCreatorOptions(
-    paramsOrValues,
-    valuesOrActionCreatorOptions,
-    optionalActionCreatorOptions
+  const { params, values, actionCreatorOptions } =
+    adaptOptionsForSingularResource({ paramsOptional: true, acceptsValues: true }, [
+      paramsOrValues,
+      valuesOrActionCreatorOptions,
+      optionalActionCreatorOptions
+    ]
   );
 
   /**

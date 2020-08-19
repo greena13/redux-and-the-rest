@@ -27,11 +27,12 @@ import adaptOptionsForSingularResource from '../../action-creators/helpers/adapt
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
   const { action, transforms, keyBy, singular } = options;
 
-  const { params, values, actionCreatorOptions } = adaptOptionsForSingularResource(singular, [
-    paramsOrValues,
-    valuesOrActionCreatorOptions,
-    optionalActionCreatorOptions
-  ]);
+  const { params, values, actionCreatorOptions } =
+    adaptOptionsForSingularResource({ paramsOptional: singular, acceptsValues: true }, [
+      paramsOrValues,
+      valuesOrActionCreatorOptions,
+      optionalActionCreatorOptions
+    ]);
 
   const normalizedParams = wrapInObject(params, keyBy);
   const key = getItemKey(normalizedParams, { keyBy, singular });
