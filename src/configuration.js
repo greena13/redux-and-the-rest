@@ -1,5 +1,49 @@
+/**
+ * The default options to use unless overridden by calling the configure() or resources() functions
+ */
+import DefaultKey from './constants/DefaultKey';
+
+const DefaultConfigurationOptions = {
+
+  /**
+   * Index objects by the DefaultKey unless otherwise specified
+   */
+  keyBy: DefaultKey,
+
+  /**
+   * Don't call any functions before passing response objects back to the reducers, by default
+   */
+  beforeReducers: [],
+
+  /**
+   * Don't call any functions after passing response objects back to the reducers, by default
+   */
+  afterReducers: [],
+
+  /**
+   * The attributes present at the root of responses that indicate an error and/or contain information
+   * about that error
+   */
+  errorAttributes: ['error'],
+
+  /**
+   * Don't perform any transforms on the action objects, by default
+   */
+  transforms: [],
+
+  /**
+   * Don't assume any params are for urls only, by default
+   */
+  urlOnlyParams: [],
+
+  /**
+   * Assume a default content-type of application/json
+   */
+  contentType: 'application/json',
+};
+
 let configuration = {
-  contentType: 'application/json'
+  ...DefaultConfigurationOptions
 };
 
 /**

@@ -23,7 +23,6 @@ import clearResourceAction from '../actions/clear/clearResource';
 import clearItemAction from '../actions/clear/clearItem';
 import clearListAction from '../actions/clear/clearList';
 import without from '../utils/list/without';
-import DefaultConfigurationOptions from '../constants/DefaultConfigurationOptions';
 import ResourcesOnlyActionsDictionary from '../constants/ResourcesOnlyActionsDictionary';
 import pluck from '../utils/list/pluck';
 
@@ -193,8 +192,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
       memo[key] = actionCreator;
 
     } else if (standardActionCreator) {
-      const _options = resolveOptions(
-        DefaultConfigurationOptions,
+      const actionOptionsMergedWithResourcOptions = resolveOptions(
         resourceOptions,
         actionOptions,
         [
@@ -215,27 +213,24 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
        * We process request options separately as they should be recursively merged
        */
       const requestOptions = {
-          ...(DefaultConfigurationOptions.request || {}),
           ...(resourceOptions.request || {}),
           ...(actionOptions.request || {})
       };
 
-      const actionCreatorConfig = {
+      const actionConfiguration = {
         action: actions[key],
-        transforms: [],
         name,
-        urlOnlyParams: [],
-        ..._options,
+        ...actionOptionsMergedWithResourcOptions,
         request: requestOptions
       };
 
       memo[key] = (arg1, arg2, arg3) => {
-        const config = getConfiguration();
+        const globalConfiguration = getConfiguration();
 
         const reloadedOptions = {
-          ...config,
-          ...actionCreatorConfig,
-          request: { ...config.request, ...(actionCreatorConfig.request || {}) }
+          ...globalConfiguration,
+          ...actionConfiguration,
+          request: { ...globalConfiguration.request, ...(actionConfiguration.request || {}) }
         };
 
         return standardActionCreator(reloadedOptions, arg1, arg2, arg3);

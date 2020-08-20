@@ -7,7 +7,6 @@ import getNewItem from './public-helpers/getNewItem';
 import getList from './utils/getList';
 import { getConfiguration } from './configuration';
 import InitialResourceStateBuilder from './initialisation/InitialResourceStateBuilder';
-import DefaultConfigurationOptions from './constants/DefaultConfigurationOptions';
 import resolveOptions from './action-creators/helpers/resolveOptions';
 import getItemWithEmptyFallback from './utils/getItem';
 import getItemKey from './action-creators/helpers/getItemKey';
@@ -224,7 +223,6 @@ function resources(resourceOptions, actionOptions = {}) {
      */
     buildInitialState(items = []) {
       const options = resolveOptions(
-        DefaultConfigurationOptions,
         getConfiguration(),
         resourceOptions,
         ['keyBy']

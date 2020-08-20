@@ -24,7 +24,6 @@ import clearResourceAction from '../actions/clear/clearResource';
 import clearItemAction from '../actions/clear/clearItem';
 import clearListAction from '../actions/clear/clearList';
 import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
-import DefaultConfigurationOptions from '../constants/DefaultConfigurationOptions';
 
 /**
  * Dictionary of standard reducer functions for keeping the local store synchronised with a remote RESTful API.
@@ -111,7 +110,7 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
   /**
    * Build the map of actions that should effect the current resource
    */
-  const configuration = getConfiguration();
+  const globalConfiguration = getConfiguration();
 
   /**
    * We use a different set of reducers when the localOnly option is used (to perform updates synchronously
@@ -147,7 +146,7 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
         /**
          * List of objects to source options from
          */
-        DefaultConfigurationOptions, configuration, resourceOptions, actionOptions,
+        globalConfiguration, resourceOptions, actionOptions,
 
         /**
          * List of options to pluck
