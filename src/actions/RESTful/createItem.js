@@ -19,6 +19,8 @@ import nop from '../../utils/function/nop';
 import EmptyKey from '../../constants/EmptyKey';
 import { isNew } from '../../index';
 import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
+import arrayFrom from '../../utils/array/arrayFrom';
+import toPlural from '../../utils/string/toPlural';
 
 const HTTP_REQUEST_TYPE = 'POST';
 
@@ -268,7 +270,7 @@ function handleCreateResourceError(options, actionCreatorOptions, httpCode, erro
 }
 
 /** ************************************************************************************************************
- * Reducer
+ * Reducers
  ***************************************************************************************************************/
 
 /**
@@ -445,8 +447,54 @@ function reducer(resources, action) {
   }
 }
 
+/**
+ * Handles updating <i>associated</i> resources when one is created
+ */
+function hasManyAssociationsReducer(resources, { temporaryKey, key, status, item: associationItem }, { relationType, foreignKeyName, keyName }) {
+  const associationValues = associationItem.values;
+
+  return {
+    ...resources,
+    items: {
+      ...resources.items,
+      ...(arrayFrom(associationValues[foreignKeyName] || associationValues[toPlural(foreignKeyName)]).reduce((memo, itemKey) => {
+
+        const item = resources.items[itemKey];
+
+        const newKeyValue = function(){
+          const currentKeyValue = item.values[keyName];
+
+          if (relationType === 'hasAndBelongsToMany') {
+            if (status === CREATING) {
+              return [
+                ...(currentKeyValue || []),
+                temporaryKey
+              ];
+            } else if (status === SUCCESS) {
+              return replace(currentKeyValue, temporaryKey, key);
+            }
+          } else {
+            return status === CREATING ? temporaryKey : key;
+          }
+        }();
+
+        memo[itemKey] = {
+          ...item,
+          values: {
+            ...item.values,
+            [keyName]: newKeyValue
+          }
+        };
+
+        return memo;
+      }, {}))
+    }
+  };
+}
+
 export default {
   reducer,
+  hasManyAssociationsReducer,
   actionCreator,
   localActionCreator
 };

@@ -12,6 +12,11 @@ import without from '../../utils/list/without';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
 import nop from '../../utils/function/nop';
 import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
+import arrayFrom from '../../utils/array/arrayFrom';
+import toPlural from '../../utils/string/toPlural';
+import valuesAdded from '../../utils/array/valuesAdded';
+import valuesRemoved from '../../utils/array/valuesRemoved';
+import contains from '../../utils/list/contains';
 
 const HTTP_REQUEST_TYPE = 'PUT';
 
@@ -215,7 +220,7 @@ function handleUpdateResourceError(options, actionCreatorOptions, httpCode, erro
 }
 
 /** ************************************************************************************************************
- * Reducer
+ * Reducers
  ***************************************************************************************************************/
 
 /**
@@ -353,8 +358,138 @@ function reducer(resources, action) {
   }
 }
 
+/**
+ * Handles updating <i>associated</i> resources when the primary one is updated
+ */
+function hasManyAssociationsReducer(resources, { key, type, status, item: associatedItem, previousValues }, { relationType, foreignKeyName, name, keyName }) {
+  if (status === SUCCESS) {
+    const associationValues = associatedItem.values;
+    const newForeignKeys = arrayFrom(associationValues[foreignKeyName] || associationValues[toPlural(foreignKeyName)]);
+
+    if (previousValues) {
+      const previousForeignKeys = arrayFrom(previousValues[foreignKeyName] || previousValues[toPlural(foreignKeyName)]);
+      const addedAssociationKeys = valuesAdded(newForeignKeys, previousForeignKeys);
+      const removedAssociationKeys = valuesRemoved(newForeignKeys, previousForeignKeys);
+
+      return {
+        ...resources,
+        items: {
+          ...resources.items,
+
+          ...(addedAssociationKeys.reduce((memo, addedKey) => {
+            const item = resources.items[addedKey];
+
+            const newKeys = function(){
+              if (relationType === 'hasAndBelongsToMany') {
+                return [
+                  key,
+                  ...without(item.values[keyName] || [], key)
+                ];
+              } else {
+                return key;
+              }
+            }();
+
+            if (item) {
+              memo[addedKey] = {
+                ...item,
+                values: {
+                  ...item.values,
+                  [keyName]: newKeys
+                }
+              };
+            }
+
+            return memo;
+          }, {})),
+
+          ...(removedAssociationKeys.reduce((memo, addedKey) => {
+            const item = resources.items[addedKey];
+
+            const newValues = function(){
+              if (relationType === 'hasAndBelongsToMany') {
+                return {
+                  ...item.values,
+                  [keyName]: without(item.values[keyName] || [], key)
+                };
+              } else {
+                return without(item.values, keyName);
+              }
+            }();
+
+            if (item) {
+              memo[addedKey] = {
+                ...item,
+                values: newValues
+              };
+            }
+
+            return memo;
+          }, {}))
+        }
+      };
+
+    } else {
+      assertInDevMode(() => {
+        warn(
+          `${type} did not specify any previous values. This makes updating '${name}.${keyName}' much ` +
+          'less efficient. Use the previousValues option for updateItem() to specify these values.'
+        );
+      });
+
+      return {
+        ...resources,
+        items: Object.keys(resources.items).reduce((memo, itemKey) => {
+          const item = resources.items[itemKey];
+
+          const newValues = function(){
+            if (contains(newForeignKeys, itemKey, { stringifyFirst: true })) {
+              if (relationType === 'hasAndBelongsToMany') {
+                return {
+                  ...item.values,
+                  [keyName]: [
+                    key,
+                    ...without(item.values[keyName] || [], key)
+                  ]
+                };
+              } else {
+                return {
+                  ...item.values,
+                  [keyName]: key
+                };
+              }
+            } else {
+              if (relationType === 'hasAndBelongsToMany') {
+                return {
+                  ...item.values,
+                  [keyName]: without(item.values[keyName] || [], key)
+                };
+              } else {
+                return without(item.values, keyName);
+              }
+            }
+          }();
+
+          memo[itemKey] = {
+            ...item,
+            values: newValues
+          };
+
+          return memo;
+        }, {})
+      };
+
+    }
+
+  } else {
+    return resources;
+  }
+}
+
+
 export default {
   reducer,
+  hasManyAssociationsReducer,
   actionCreator,
   localActionCreator
 };

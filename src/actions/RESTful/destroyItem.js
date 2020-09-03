@@ -12,6 +12,13 @@ import mergeStatus from '../../reducers/helpers/mergeStatus';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
 import nop from '../../utils/function/nop';
 import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
+import isEmpty from '../../utils/list/isEmpty';
+import contains from '../../utils/list/contains';
+import without from '../../utils/list/without';
+import arrayFrom from '../../utils/array/arrayFrom';
+import toPlural from '../../utils/string/toPlural';
+import serializeKey from '../../public-helpers/serializeKey';
+import toSingular from '../../utils/string/toSingular';
 
 const HTTP_REQUEST_TYPE = 'DELETE';
 
@@ -176,7 +183,7 @@ function handleDestroyItemError(options, actionCreatorOptions, httpCode, errorEn
 }
 
 /** ************************************************************************************************************
- * Reducer
+ * Reducers
  ***************************************************************************************************************/
 
 /**
@@ -264,8 +271,134 @@ function reducer(resources, action) {
   }
 }
 
+/**
+ * Handles updating <i>associated</i> resources when the primary one is destroyed
+ */
+function hasManyAssociationsReducer(resources, { key, type, status, previousValues }, { dependent, relationType, foreignKeyName, name, keyName, listParameter }) {
+
+  if (status === SUCCESS) {
+    const _resources = function(){
+      if (isEmpty(previousValues)) {
+
+        assertInDevMode(() => {
+          warn(
+            `${type} did not specify any previous values. This makes updating '${name}.${keyName}' much less ` +
+            'efficient. Use the previousValues option for destroyItem() to specify these values.'
+          );
+        });
+
+        if (dependent === 'destroy') {
+          const itemKeysWithDeletedAssociation = Object.keys(resources.items).filter((associationKey) => {
+            const item = resources.items[associationKey];
+
+            return contains(item.values[keyName], associationKey, { stringifyFirst: true });
+          });
+
+          return removeItemsFromResources(resources, itemKeysWithDeletedAssociation);
+
+        } else {
+          return {
+            ...resources,
+            items: Object.keys(resources.items).reduce((memo, itemKey) => {
+              const item = resources.items[itemKey];
+
+              const newValues = function () {
+                if (relationType === 'hasAndBelongsToMany') {
+                  return {
+                    ...item.values,
+                    [keyName]: without(item.values[keyName] || [], key)
+                  };
+                } else {
+                  return without(item.values, keyName);
+                }
+              }();
+
+              memo[itemKey] = {
+                ...item,
+                values: newValues
+              };
+
+              return memo;
+            }, {})
+          };
+        }
+
+      } else {
+        const foreignKeys = arrayFrom(previousValues[foreignKeyName] || previousValues[toPlural(foreignKeyName)]);
+
+        if (dependent === 'destroy') {
+          return removeItemsFromResources(resources, foreignKeys);
+        } else {
+
+          return {
+            ...resources,
+            items: {
+              ...resources.items,
+
+              ...(foreignKeys.reduce((memo, addedKey) => {
+                const item = resources.items[addedKey];
+
+                if (item) {
+                  const newValues = function () {
+                    if (relationType === 'hasAndBelongsToMany') {
+                      return {
+                        ...item.values,
+                        [keyName]: without(item.values[keyName] || [], key)
+                      };
+                    } else {
+                      return without(item.values, keyName);
+                    }
+                  }();
+
+                  memo[addedKey] = {
+                    ...item,
+                    values: newValues
+                  };
+                }
+
+                return memo;
+              }, {}))
+            }
+          };
+        }
+
+      }
+    }();
+
+    if (listParameter === false) {
+
+      /**
+       * Allow disabling removal of matching lists by passing false to the
+       * listParameter option
+       */
+      return _resources;
+
+    } else {
+      const listParameterString = serializeKey({ [listParameter || toSingular(keyName)]: key });
+
+      const lists = Object.keys(_resources.lists).reduce((memo, listKey) => {
+        if (!contains(listKey, listParameterString)) {
+          memo[listKey] = _resources.lists[listKey];
+        }
+
+        return memo;
+      }, {});
+
+      return {
+        ..._resources,
+        lists
+      };
+
+    }
+
+  } else {
+    return resources;
+  }
+}
+
 export default {
   reducer,
+  hasManyAssociationsReducer,
   actionCreator,
   localActionCreator
 };
