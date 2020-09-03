@@ -85,17 +85,30 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
     return makeRequest({
       ...options,
 
-      previousValues: actionCreatorOptions.previousValues,
-      url,
-      key, keyBy,
+      /**
+       * Values common/shared with local version of action creator
+       */
       params: normalizedParams,
-      requestedAt,
-      dispatch,
+
+      /**
+       * Values not used by local version of action creator (unique to the async action creator)
+       */
+
+      /**
+       * Note: key is required for failure handler (because server doesn't generate a new id to replace it)
+       */
+      key,
+
+      /**
+       * Values used by makeRequest
+       */
+      url,
       request: {
         method: HTTP_REQUEST_TYPE,
         body: JSON.stringify(requestAdaptor ? requestAdaptor(values) : values),
         ...request
       },
+      dispatch,
       onSuccess: receiveUpdatedResource,
       onError: handleUpdateResourceError,
       progress
@@ -144,14 +157,19 @@ function submitUpdateResource(options, actionCreatorOptions, values) {
  * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
  */
 function localActionCreator(options, params, values, actionCreatorOptions = {}) {
+  const { keyBy } = options;
 
   /**
    * Action creator options override metadata options that may have been set when defining the resource
    */
   const metadata = actionCreatorOptions.metadata || options.metadata;
+  const normalizedParams = wrapInObject(params, keyBy);
 
   return receiveUpdatedResource(
-    { ...options, params },
+    {
+      ...options,
+      params: normalizedParams,
+    },
     actionCreatorOptions,
     values,
     metadata,
@@ -169,15 +187,14 @@ function localActionCreator(options, params, values, actionCreatorOptions = {}) 
  *        update any associated resource items or lists
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function receiveUpdatedResource(options, actionCreatorOptions, values, metadata, previousValues) {
+function receiveUpdatedResource(options, actionCreatorOptions, values, metadata) {
   const { transforms, action, params, keyBy, localOnly, singular } = options;
-
-  const normalizedParams = wrapInObject(params, keyBy);
+  const { previousValues } = actionCreatorOptions;
 
   return {
     type: action,
     status: SUCCESS,
-    key: getItemKey([values, normalizedParams], { keyBy, singular }),
+    key: getItemKey([values, params], { keyBy, singular }),
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       values,
       status: { type: SUCCESS, syncedAt: Date.now() },

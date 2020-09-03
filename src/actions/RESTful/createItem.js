@@ -32,8 +32,6 @@ const HTTP_REQUEST_TYPE = 'POST';
 /**
  * @typedef {RemoteActionCreatorOptionsWithMetadata} CreateItemActionCreatorOptions
  *
- * @property {Object} [previousValues] The values of the resource item being updated, to allow more efficiently
- *          updating associated items.
  * @property {string[]} [push=[]]  An array of list keys to push the new item to the end of.
  * @property {string[]} [unshift=[]]  An array of list keys to add the new item to the beginning of.
  * @property {string[]} [invalidate=[]]  An array of list keys for which to clear (invalidate). This is useful
@@ -107,17 +105,32 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
 
     return makeRequest({
       ...options,
-      key,
+
+      /**
+       * Values common/shared with local version of action creator (used by receiveCreatedResource)
+       */
       params: normalizedParams,
       listOperations,
+
+      /**
+       * Values not used by local version of action creator (unique to the async action creator)
+       */
+
+      /**
+       * Note: key is required for failure handler (because server doesn't generate a new id to replace it)
+       */
+      key,
+
+      /**
+       * Values used by makeRequest
+       */
       url,
-      requestedAt,
-      dispatch,
       request: {
         method: HTTP_REQUEST_TYPE,
         body: JSON.stringify(requestAdaptor ? requestAdaptor(values) : values),
         ...request,
       },
+      dispatch,
       onSuccess: receiveCreatedResource,
       onError: handleCreateResourceError,
       progress
@@ -174,6 +187,8 @@ function submitCreateResource(options, actionCreatorOptions, values, listOperati
  * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
  */
 function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
+  const { urlOnlyParams, keyBy } = options;
+
   const { params, values, actionCreatorOptions } =
     adaptOptionsForSingularResource({ paramsOptional: true, acceptsValues: true }, [
       paramsOrValues,
@@ -182,12 +197,21 @@ function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOption
     ]
   );
 
+  const normalizedParams = wrapInObject(params, keyBy);
+  const listOperations = extractListOperations(actionCreatorOptions, urlOnlyParams);
+
   /**
    * Action creator options override metadata options that may have been set when defining the resource
    */
   const metadata = actionCreatorOptions.metadata || options.metadata;
 
-  return receiveCreatedResource({ ...options, params }, actionCreatorOptions, values, metadata);
+  return receiveCreatedResource({
+    ...options,
+
+    params: normalizedParams,
+    listOperations,
+
+  }, actionCreatorOptions, values, metadata);
 }
 
 /**
@@ -203,9 +227,7 @@ function receiveCreatedResource(options, actionCreatorOptions, values, metadata)
   const { action, keyBy, transforms, params, listOperations, localOnly, singular } = options;
 
   const key = function () {
-    const normalizedParams = wrapInObject(params, keyBy);
-
-    const specifiedKey = getItemKey([values, normalizedParams], { keyBy, singular });
+    const specifiedKey = getItemKey([values, params], { keyBy, singular });
 
     if (isUndefined(specifiedKey)) {
       assertInDevMode(() => {
@@ -388,28 +410,42 @@ function reducer(resources, action) {
       }
     };
 
+    const newLists = function(){
+      if (localOnly) {
+
+        /**
+         * For the local action creator, the CREATING state is skipped and the temporary keys have not been
+         * added to the collection yet, so we're adding them for the first time
+         */
+        return applyListOperators(resources.lists, listOperations, key);
+      } else {
+
+        /**
+         * For non-local action creators, the CREATING state has already added temporary keys to the collection(s)
+         * so we're now substituting them for their permanent ids
+         */
+        return {
+          ...resources.lists,
+
+          ...([].concat(...Object.values(listOperations))).reduce((memo, id) => {
+            const list = resources.lists[id] || LIST;
+            const { positions } = list;
+
+            memo[id] = {
+              ...list,
+              positions: replace(positions, temporaryKey, key)
+            };
+
+            return memo;
+          }, {})
+        };
+      }
+    }();
+
     return {
       ...resources,
       items: newItems,
-      lists: {
-        ...resources.lists,
-
-        /**
-         * We update an usage of the temporary id in any of the lists the item appeared in, replacing
-         * them with the new permanent id
-         */
-        ...([].concat(...Object.values(listOperations))).reduce((memo, id) => {
-          const list = resources.lists[id] || LIST;
-          const { positions } = list;
-
-          memo[id] = {
-            ...list,
-            positions: replace(positions, temporaryKey, key)
-          };
-
-          return memo;
-        }, {})
-      },
+      lists: newLists,
 
       newItemKey: key,
     };

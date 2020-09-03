@@ -81,14 +81,25 @@ function actionCreator(options, optionalParams, optionalActionCreatorOptions) {
     return makeRequest({
       ...options,
 
-      url, key,
-      previousValues: actionCreatorOptions.previousValues,
+      /**
+       * Values common/shared with local version of action creator (used by receiveCreatedResource)
+       */
+
+      /**
+       * Values not used by local version of action creator (unique to the async action creator)
+       */
+      key,
       requestedAt,
-      dispatch,
+
+      /**
+       * Values used by makeRequest
+       */
+      url,
       request: {
         method: HTTP_REQUEST_TYPE,
         ...request
       },
+      dispatch,
       onSuccess: removeResource,
       onError: handleDestroyItemError,
       progress
@@ -101,7 +112,7 @@ function actionCreator(options, optionalParams, optionalActionCreatorOptions) {
  ***************************************************************************************************************/
 
 /**
- * Creates an action object to update the Redux store to list a resource item as DELETING (waiting for the
+ * Creates an action object to update the Redux store to mark a resource item as DELETING (waiting for the
  * remote API to confirm it's been deleted)
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} values The values of the resource item that is being deleted, used to more efficiently remove

@@ -31,18 +31,6 @@ import { getConfiguration } from '../../configuration';
  * @param {function} options.onSuccess The handler function to call when the request succeeds
  * @param {function} options.onError The handler function to call when the request fails
  *
- *  PUT/PATCH request options
- *
- * @param {Object} [options.previousValues={}] The previous values of the resource item that an PUT or PATCH
- *        request is being made for. These values are passed to the success handler after the request succeeds
- *        to aid in more efficiently updating associated resource items that may contain references to resource
- *        item.
- *
- *  CREATE/DELETE request options
- *
- * @param {string|Array<string>} [options.listKeys=[]] The keys of the lists that should have the
- *        resource item added or removed when the item is successfully created or destroyed.
- *
  * @param {Object} [actionCreatorOptions={}] The options passed to the action creator that is making the request,
  *        primarily to be passed to the success and error handlers to further configure their behaviour.
  *
@@ -69,9 +57,6 @@ function makeRequest(options, actionCreatorOptions = {}) {
     dispatch,
     onSuccess,
     onError,
-
-    listKeys,
-    previousValues,
 
     ..._options
   } = options;
@@ -192,13 +177,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
            * handler.
            */
           return dispatch(
-            onSuccess(
-              _options,
-              actionCreatorOptions,
-              _json.values,
-              _json.metadata,
-              listKeys || previousValues,
-            )
+            onSuccess(_options, actionCreatorOptions, _json.values, _json.metadata)
           );
         }
       });
