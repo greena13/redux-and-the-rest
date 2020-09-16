@@ -284,6 +284,9 @@ function reducer(resources, action) {
 
 /**
  * Handles updating <i>associated</i> resources when the primary one is destroyed
+ * @param {ResourcesReduxState} resources The current state of part of the Redux store that contains
+ *        the <i>associated</i> resources item
+ * @returns {ResourcesReduxState} The new resource state
  */
 function hasManyAssociationsReducer(resources, { key, type, status, previousValues }, { dependent, relationType, foreignKeyName, name, keyName, listParameter }) {
 

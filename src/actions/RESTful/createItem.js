@@ -17,7 +17,7 @@ import mergeStatus from '../../reducers/helpers/mergeStatus';
 import { isRequestInProgress, registerRequestStart } from '../../utils/RequestManager';
 import nop from '../../utils/function/nop';
 import EmptyKey from '../../constants/EmptyKey';
-import { isNew } from '../../index';
+import isNew from '../../public-helpers/isNew';
 import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
 import arrayFrom from '../../utils/array/arrayFrom';
 import toPlural from '../../utils/string/toPlural';
@@ -485,6 +485,9 @@ function reducer(resources, action) {
 
 /**
  * Handles updating <i>associated</i> resources when one is created
+ * @param {ResourcesReduxState} resources The current state of part of the Redux store that contains
+ *        the <i>associated</i> resources item
+ * @returns {ResourcesReduxState} The new resource state
  */
 function hasManyAssociationsReducer(resources, { temporaryKey, key, status, item: associationItem }, { relationType, foreignKeyName, keyName }) {
   const associationValues = associationItem.values;

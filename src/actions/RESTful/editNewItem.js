@@ -3,7 +3,7 @@ import getItemKey from '../../action-creators/helpers/getItemKey';
 import applyTransforms from '../../reducers/helpers/applyTransforms';
 import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
-import { isNew } from '../../index';
+import isNew from '../../public-helpers/isNew';
 import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
 
 /** ************************************************************************************************************
