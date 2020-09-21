@@ -1046,17 +1046,23 @@ dispatch(fetchUsers({}, { metadata: { type: 'PAGINATED', page: 1 }}));
 `redux-and-the-rest` uses the `status.type` attribute of lists and items to indicate what state they are currently in. However, it's recommended to use one of the helper methods to query the status rather than accessing the attribute directly:
 
 Checking if resource is out of sync with remote:
+
 * `isEditing(item)` - Whether the item has been modified since it was last synced with the server
 
 Checking if item or list is syncing with a remote API:
+
 * `isSyncingWithRemote(itemOrList)` - Whether the item or list is currently syncing (fetching, creating, updating, destroying, progress) with the remote 
 * `isSyncedWithRemote(itemOrList)` - Complement of `isSyncingWithRemote(itemOrList)`
 * `isFinishedFetching(itemOrList)` - Whether the item or list has finished being fetched (specifically) from the remote API.
  
-
 Checking the status of the latest sync with the remote API:
+
 * `isSyncedSuccessfully(itemOrList)` - Whether the item or list has finished being successfully fetched
 * `isInAnErrorState(itemOrList)` - Whether the item or list is in an errored state - usually because the last request failed
+
+Checking if a value is the same as the new item's temporary key:
+
+* `isNewItemKey(resourceReduxState, key)` - Whether the (internally managed) `newItemKey` for the resource matches the `key` supplied
 
 ```javascript
 import React from 'react';

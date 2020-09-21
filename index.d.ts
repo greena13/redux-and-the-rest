@@ -1272,6 +1272,14 @@ export function isEdited(itemOrList: GenericItemOrList): boolean;
 export function isNew(item: GenericItemOrList): boolean;
 
 /**
+ * Whether the supplied key matches the current new item key
+ * @param resource The current resource state
+ * @param key The key to check for a match against the new item key
+ * @returns True the key matches the new item key
+ */
+export function isNewItemKey(resource: ResourcesReduxState<T>, key: ItemOrListParameters): boolean;
+
+/**
  * Whether the item or list is currently syncing with the remote
  * @param itemOrList The item or list to consider
  * @returns True if the item or list has finished fetching

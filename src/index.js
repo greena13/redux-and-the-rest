@@ -9,6 +9,8 @@ export { default as getValuesBeforeEditing } from './public-helpers/getValuesBef
 
 export { default as isEdited } from './public-helpers/isEdited';
 export { default as isNew } from './public-helpers/isNew';
+export { default as isNewItemKey } from './public-helpers/isNewItemKey';
+export { default as hasFetchStarted } from './public-helpers/hasFetchStarted';
 export { default as isFinishedFetching } from './public-helpers/isFinishedFetching';
 export { default as isSyncedSuccessfully } from './public-helpers/isSyncedSuccessfully';
 export { default as isSyncingWithRemote } from './public-helpers/isSyncingWithRemote';
