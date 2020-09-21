@@ -47,10 +47,20 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
   if (!itemOrList || evaluateForceCondition(actionCreatorOptions.forceFetch, itemOrList)) {
 
     /**
-     * If the item is not already in the store (or we're forcing the fetch operation), we call the fetch action
-     * creator to retrieve it in the background and return an empty item or list in the meantime.
+     * We wrap dispatching the action in setTimeout to defer it until the next render cycle, allowing you to
+     * use the method in a controller's render method, without triggering a warning from React about updating
+     * another component's state while it is rendering
      */
-    store.dispatch(fetchFunction(params, without(actionCreatorOptions, ['forceFetch'])));
+    setTimeout(() => {
+
+      /**
+       * If the item is not already in the store (or we're forcing the fetch operation), we call the fetch action
+       * creator to retrieve it in the background and return an empty item or list in the meantime.
+       */
+      if (store) {
+        store.dispatch(fetchFunction(params, without(actionCreatorOptions, ['forceFetch'])));
+      }
+    }, 0);
   }
 
   return getFunction(resourcesState, key);
