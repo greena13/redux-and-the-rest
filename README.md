@@ -100,7 +100,8 @@ users = getList(store.getState().users);
 * [Store data](#store-data)
    * [Getting items from the store](#getting-items-from-the-store)
    * [Automatically fetching items not in the store](#automatically-fetching-items-not-in-the-store)
-      * [Getting lists from the store](#getting-lists-from-the-store)
+   * [Automatically instantiating new items not in the store](#automatically-instantiating-new-items-not-in-the-store)
+   * [Getting lists from the store](#getting-lists-from-the-store)
       * [Automatically fetching lists that are not in the store](#automatically-fetching-lists-that-are-not-in-the-store)
    * [Store data schemas](#store-data-schemas)
       * [Nomenclature](#nomenclature)
@@ -875,9 +876,29 @@ function mapStateToProps({ users }, { params: { id } }) {
     forceFetch: ({ status: { type } }) => type === 'BOOTSTRAPPED',
   }); 
 }
-```
+```      
 
-#### Getting lists from the store
+### Automatically instantiating new items not in the store
+
+To retrieve a new item form the store, or initialize one if it does not already exist, you can use the `getOrInitializeNewItem()` function.
+
+Similar to `getOrFetchItem()`, it expects the current resources state (the part of the Redux store that contains your resources data) as its first argument. The second argument should be the values to initialize a new resource item with, if it does not exist in the store already. 
+
+This method returns the new item immediately, but it does not update it in the Redux store until after the current render cycle. So it's safet to use in your component's `redner` function.
+
+It does not accept any parameters argument, as it relies on (and sets) the internal pointer to a new item (so this method cannot be used to initialise an existing item).
+
+This method is particularly helpful for ensuring forms have default resource items to edit when a user first accesses them.
+
+It's also memoized, so multiple components can use it in the same render cycle and only one update to the store is made.
+
+```javascript
+function mapStateToProps({ users }, { params: { id } }) {
+  return getOrInitializeNewItem(users, { username: 'DEFAULT', age: 18 }); 
+}
+```  
+
+### Getting lists from the store
 
 To get a list from a resource, you use the `getList()` function returned by `resources()`.
 

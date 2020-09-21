@@ -19,6 +19,7 @@ import hasKey from './utils/object/hasKey';
 import applyReducers from './reducers/helpers/applyReducers';
 import ResourceRegistry from './utils/ResourceRegistry';
 import { RESOURCES } from './constants/DataStructures';
+import getOrInitializeNewItem from './utils/getOrInitializeNewItem';
 
 /**
  * @typedef {Object<string, ResourcesDefinition>} AssociationOptionsMap A Mapping between the name of an
@@ -258,6 +259,12 @@ function resources(resourceOptions, actionOptions = {}) {
         },
         resourcesState, params, actionCreatorOptions
       );
+  }
+
+  if (hasKey(actions, 'newItem')) {
+    resourceDefinition.getOrInitializeNewItem = (resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) => {
+      return getOrInitializeNewItem({ newItem: actionCreators.newItem }, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions);
+    };
   }
 
   if (hasKey(actions, 'fetchList')) {

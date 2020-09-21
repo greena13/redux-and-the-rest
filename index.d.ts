@@ -393,6 +393,20 @@ export interface GetSingularResourceItemFunction<T> { (currentState: ResourcesRe
  */
 export interface GetOrFetchItemFunction<T> { (currentState: ResourcesReduxState<T>, params: ItemOrListParameters, actionCreatorOptions?: RemoteActionCreatorOptions<T>): ResourcesItem<T> }
 
+/**
+ * Returns an item of a particular resource from a Redux store. If the item is not available in the store,
+ * an empty item is returned immediately and the fetch action creator is called to update the store and
+ * request the resource item from an external API.
+ * @param currentState The current resource Redux store state
+ * @param {ItemOrListParameters | Object} paramsOrValues The first argument which can either a string or object that is serialized
+ *        and used to fill in the dynamic parameters of the resource's URL (params) or the attribute values
+ *        to initialize the item with if it is not already in the store.
+ * @param {Object | ActionCreatorOptions} valuesOrActionCreatorOptions Either be the values used for initialization, or additional
+ *        options passed to the action creator when it is called.
+ * @param {ActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
+ */
+export interface GetOrInitializeItemFunction<T> { (currentState: ResourcesReduxState<T>, paramsOrValues: ItemOrListParameters | T, valuesOrActionCreatorOptions?: T | ActionCreatorOptions<T>, optionalActionCreatorOptions?: ActionCreatorOptions<T>): ResourcesItem<T> }
+
 export interface GetOrFetchSingularResourceItemFunction<T> { (currentState: ResourcesReduxState<T>, params?: ItemOrListParameters, actionCreatorOptions?: RemoteActionCreatorOptions<T>): ResourcesItem<T> }
 
 /**
@@ -844,6 +858,11 @@ interface ResourceDefinitionCommon<T> {
      * Function that returns the new item of a resource type
      */
     getNewItem: GetSingularResourceItemFunction<T>,
+
+    /**
+     * Function that returns a particular item of a resource type or initializes it to the specified values
+     */
+    getOrInitializeNewItem: GetOrInitializeItemFunction<T>,
 }
 
 export interface ResourcesDefinition<T> extends ResourceDefinitionCommon<T>{
