@@ -1246,9 +1246,23 @@ export function hasDefinedStatus(itemOrList: GenericItemOrList): boolean;
 /**
  * Whether the item or list is currently being fetched from the remote
  * @param {ResourcesItem|ResourcesList} itemOrList The item or list to consider
- * @returns {boolean} True if the item or list has finished fetching
+ * @returns {boolean} True if the item or list is being fetched from the remote
  */
 export function isFetching(itemOrList: GenericItemOrList): boolean;
+
+/**
+ * Whether the item is currently being updated on the remote
+ * @param item The item to consider
+ * @returns True if the item is currently being updated on the remote
+ */
+export function isUpdating(item: GenericItemOrList): boolean;
+
+/**
+ * Whether the item is currently being destroyed on the remote
+ * @param item The item to consider
+ * @returns True if the item is currently being destroyed on the remote
+ */
+export function isDestroying(item: GenericItemOrList): boolean;
 
 /**
  * Whether the item or list has finished being fetched

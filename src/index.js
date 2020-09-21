@@ -12,6 +12,8 @@ export { default as isNew } from './public-helpers/isNew';
 export { default as isNewItemKey } from './public-helpers/isNewItemKey';
 export { default as hasDefinedStatus } from './public-helpers/hasDefinedStatus';
 export { default as isFetching } from './public-helpers/isFetching';
+export { default as isUpdating } from './public-helpers/isUpdating';
+export { default as isDestroying } from './public-helpers/isDestroying';
 export { default as isFinishedFetching } from './public-helpers/isFinishedFetching';
 export { default as isSyncedSuccessfully } from './public-helpers/isSyncedSuccessfully';
 export { default as isSyncingWithRemote } from './public-helpers/isSyncingWithRemote';
