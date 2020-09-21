@@ -1237,6 +1237,13 @@ export function getTimeSinceLastSync(itemOrList: GenericItemOrList): number;
 export function getValuesBeforeEditing<T>(item: ResourcesItem<T>): number;
 
 /**
+ * Whether the item or list has a defined status (whether that be fetching, new, editing, etc)
+ * @param itemOrList The item or list to consider
+ * @returns True if the resource item or list has started.
+ */
+export function hasDefinedStatus(itemOrList: GenericItemOrList): boolean;
+
+/**
  * Whether the item or list has finished being fetched
  * @param itemOrList The item or list to consider
  * @returns True if the item or list has finished fetching
