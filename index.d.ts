@@ -1244,6 +1244,13 @@ export function getValuesBeforeEditing<T>(item: ResourcesItem<T>): number;
 export function hasDefinedStatus(itemOrList: GenericItemOrList): boolean;
 
 /**
+ * Whether the item or list is currently being fetched from the remote
+ * @param {ResourcesItem|ResourcesList} itemOrList The item or list to consider
+ * @returns {boolean} True if the item or list has finished fetching
+ */
+export function isFetching(itemOrList: GenericItemOrList): boolean;
+
+/**
  * Whether the item or list has finished being fetched
  * @param itemOrList The item or list to consider
  * @returns True if the item or list has finished fetching

@@ -1052,6 +1052,7 @@ Checking if resource is out of sync with remote:
 Checking if item or list is syncing with a remote API:
 
 * `hasDefinedStatus(itemOrList)`- Whether the item or list has a defined status (whether that be fetching, new, editing, etc)
+* `isFetching(itemOrList)` - Whether the item or list is fetching (specifically) from the remote 
 * `isSyncingWithRemote(itemOrList)` - Whether the item or list is currently syncing (fetching, creating, updating, destroying, progress) with the remote 
 * `isSyncedWithRemote(itemOrList)` - Complement of `isSyncingWithRemote(itemOrList)`
 * `isFinishedFetching(itemOrList)` - Whether the item or list has finished being fetched (specifically) from the remote API.
