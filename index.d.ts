@@ -1248,7 +1248,7 @@ export function isFinishedFetching(itemOrList: GenericItemOrList): boolean;
  * @param itemOrList The item or list to consider
  * @returns True if the item or list was successfully fetched
  */
-export function isSuccessfullyFetched(itemOrList: GenericItemOrList): boolean;
+export function isSyncedSuccessfully(itemOrList: GenericItemOrList): boolean;
 
 /**
  * Whether the item or list is in an errored state - usually because the last request failed

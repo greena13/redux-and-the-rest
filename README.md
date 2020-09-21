@@ -1055,18 +1055,18 @@ Checking if item or list is syncing with a remote API:
  
 
 Checking the status of the latest sync with the remote API:
-* `isSuccessfullyFetched(itemOrList)` - Whether the item or list has finished being successfully fetched
+* `isSyncedSuccessfully(itemOrList)` - Whether the item or list has finished being successfully fetched
 * `isInAnErrorState(itemOrList)` - Whether the item or list is in an errored state - usually because the last request failed
 
 ```javascript
 import React from 'react';
-import { isInAnErrorState, isSuccessfullyFetched } from 'redux-and-the-rest';
+import { isInAnErrorState, isSyncedSuccessfully } from 'redux-and-the-rest';
 
 class MyComponent extends Component {
     render() {
         const { item } = this.props;
 
-        if (isSuccessfullyFetched(item)) {
+        if (isSyncedSuccessfully(item)) {
             // item is loaded and ready to display
         } else if (isInAnErrorState(item)) {
            // display error message

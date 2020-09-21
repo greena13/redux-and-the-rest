@@ -5,8 +5,8 @@ import { SUCCESS } from '../constants/Statuses';
  * @param {ResourcesItem|ResourcesList} itemOrList The item or list to consider
  * @returns {boolean} True if the item or list was successfully fetched
  */
-function isSuccessfullyFetched({ status: { type } }) {
+function isSyncedSuccessfully({ status: { type } }) {
   return type === SUCCESS;
 }
 
-export default isSuccessfullyFetched;
+export default isSyncedSuccessfully;
