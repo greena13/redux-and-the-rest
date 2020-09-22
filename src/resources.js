@@ -255,6 +255,7 @@ function resources(resourceOptions, actionOptions = {}) {
           fallbackActionName: 'fetchItem',
           getFunction: getItem,
           fetchFunction: actionCreators.fetchItem,
+          action: actions.fetchItem,
           keyFunction: (_params) => getItemKey(_params, { keyBy: resourceOptions.keyBy, singular }),
         },
         resourcesState, params, actionCreatorOptions
@@ -263,7 +264,7 @@ function resources(resourceOptions, actionOptions = {}) {
 
   if (hasKey(actions, 'newItem')) {
     resourceDefinition.getOrInitializeNewItem = (resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) => {
-      return getOrInitializeNewItem({ newItem: actionCreators.newItem }, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions);
+      return getOrInitializeNewItem({ action: actions.newItem, newItem: actionCreators.newItem }, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions);
     };
   }
 
@@ -284,6 +285,7 @@ function resources(resourceOptions, actionOptions = {}) {
           typeKey: 'lists',
           getFunction: getList,
           fetchFunction: actionCreators.fetchList,
+          action: actions.fetchList,
           keyFunction: (_params) => getListKey(_params, { urlOnlyParams: resourceOptions.urlOnlyParams }),
         },
         resourcesState, params, actionCreatorOptions

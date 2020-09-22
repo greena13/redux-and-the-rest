@@ -4,6 +4,7 @@ import warn from './dev/warn';
 import adaptOptionsForSingularResource from '../action-creators/helpers/adaptOptionsForSingularResource';
 import { ITEM } from '../constants/DataStructures';
 import { NEW } from '../constants/Statuses';
+import { enqueuePendingAction, isActionPending, registerActionEnd } from './ActionQueue';
 
 function getOrInitializeNewItem(options, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
 
@@ -35,17 +36,25 @@ function getOrInitializeNewItem(options, resourcesState, paramsOrValues, valuesO
 
   const _newItem = { ...ITEM, values, status: { ...ITEM.status, type: NEW } };
 
-  /**
-   * We wrap dispatching the action in setTimeout to defer it until the next render cycle, allowing you to
-   * use the method in a controller's render method, without triggering a warning from React about updating
-   * another component's state while it is rendering
-   */
-  setTimeout(() => {
-    if (store) {
-      store.dispatch(options.newItem(values));
-    }
-  }, 0);
+  if (!isActionPending(options.action)) {
+    enqueuePendingAction(options.action);
 
+    /**
+     * We wrap dispatching the action in setTimeout to defer it until the next render cycle, allowing you to
+     * use the method in a controller's render method, without triggering a warning from React about updating
+     * another component's state while it is rendering
+     *
+     * Note: The evaluating of whether an action is queued or not must still be done synchronously in order
+     *       to work.
+     */
+    setTimeout(() => {
+      if (store) {
+        store.dispatch(options.newItem(values));
+      }
+
+      registerActionEnd(options.action);
+    }, 0);
+  }
 
   return _newItem;
 }

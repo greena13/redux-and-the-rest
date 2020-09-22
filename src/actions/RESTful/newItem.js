@@ -8,8 +8,7 @@ import warn from '../../utils/dev/warn';
 import applyListOperators from '../../reducers/helpers/applyListOperators';
 import wrapInObject from '../../utils/object/wrapInObject';
 import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
-import { isActionPending, registerActionEnd } from '../../utils/ActionQueue';
-import nop from '../../utils/function/nop';
+import { registerActionEnd } from '../../utils/ActionQueue';
 
 /** ************************************************************************************************************
  * Action creators
@@ -30,10 +29,6 @@ import nop from '../../utils/function/nop';
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
-  if (isActionPending(NEW)) {
-    return nop;
-  }
-
   const { action, transforms, keyBy, urlOnlyParams, singular } = options;
 
   const { params, values, actionCreatorOptions } =
@@ -58,8 +53,6 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
 
     return Date.now().toString();
   }();
-
-  registerActionEnd(NEW);
 
   return {
     type: action,

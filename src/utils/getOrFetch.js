@@ -3,6 +3,7 @@ import assertInDevMode from './assertInDevMode';
 import warn from './dev/warn';
 import without from './list/without';
 import isFunction from './object/isFunction';
+import { enqueuePendingAction, isActionPending, registerActionEnd } from './ActionQueue';
 
 function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions = {}) {
   const {
@@ -10,7 +11,7 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
     /**
      * Options that change between items and lists
      */
-    typeKey, keyFunction, getFunction, fetchFunction,
+    typeKey, keyFunction, getFunction, fetchFunction, action
   } = options;
 
   /**
@@ -46,21 +47,30 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
 
   if (!itemOrList || evaluateForceCondition(actionCreatorOptions.forceFetch, itemOrList)) {
 
-    /**
-     * We wrap dispatching the action in setTimeout to defer it until the next render cycle, allowing you to
-     * use the method in a controller's render method, without triggering a warning from React about updating
-     * another component's state while it is rendering
-     */
-    setTimeout(() => {
+    if (!isActionPending(action, key)) {
+      enqueuePendingAction(action, key);
 
       /**
-       * If the item is not already in the store (or we're forcing the fetch operation), we call the fetch action
-       * creator to retrieve it in the background and return an empty item or list in the meantime.
+       * We wrap dispatching the action in setTimeout to defer it until the next render cycle, allowing you to
+       * use the method in a controller's render method, without triggering a warning from React about updating
+       * another component's state while it is rendering
+       *
+       * Note: The evaluating of whether an action is queued or not must still be done synchronously in order
+       *       to work.
        */
-      if (store) {
-        store.dispatch(fetchFunction(params, without(actionCreatorOptions, ['forceFetch'])));
-      }
-    }, 0);
+      setTimeout(() => {
+
+        /**
+         * If the item is not already in the store (or we're forcing the fetch operation), we call the fetch action
+         * creator to retrieve it in the background and return an empty item or list in the meantime.
+         */
+        if (store) {
+          store.dispatch(fetchFunction(params, without(actionCreatorOptions, ['forceFetch']))).then(() => {
+            registerActionEnd(action, key);
+          });
+        }
+      }, 0);
+    }
   }
 
   return getFunction(resourcesState, key);
