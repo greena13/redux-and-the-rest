@@ -1077,6 +1077,7 @@ Checking the status of the latest sync with the remote API:
 
 * `isSyncedSuccessfully(itemOrList)` - Whether the item or list has finished being successfully fetched
 * `isInAnErrorState(itemOrList)` - Whether the item or list is in an errored state - usually because the last request failed
+* `getHttpStatusCode(itemOrList)` - The HTTP status code of the last request related to the resource item or list as a number
 
 Checking if a value is the same as the new item's temporary key:
 

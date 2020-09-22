@@ -1247,7 +1247,14 @@ export function getTimeSinceLastSync(itemOrList: GenericItemOrList): number;
  * @param item The item to return the previous values for
  * @returns The previous values
  */
-export function getValuesBeforeEditing<T>(item: ResourcesItem<T>): number;
+export function getValuesBeforeEditing<T>(item: ResourcesItem<T>): T;
+
+/**
+ * The http status code of the last request related to the resource item or list
+ * @param itemOrList The item or list to consider
+ * @returns HTTP status code
+ */
+export function getHttpStatusCode(itemOrList: GenericItemOrList): number;
 
 /**
  * Whether the item or list has a defined status (whether that be fetching, new, editing, etc)

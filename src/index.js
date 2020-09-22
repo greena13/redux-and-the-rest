@@ -6,6 +6,7 @@ export { default as canFallbackToOldValues } from './public-helpers/canFallbackT
 export { default as getTimeSinceFetchStarted } from './public-helpers/getTimeSinceFetchStarted';
 export { default as getTimeSinceLastSync } from './public-helpers/getTimeSinceLastSync';
 export { default as getValuesBeforeEditing } from './public-helpers/getValuesBeforeEditing';
+export { default as getHttpStatusCode } from './public-helpers/getHttpStatusCode';
 
 export { default as isEdited } from './public-helpers/isEdited';
 export { default as isNew } from './public-helpers/isNew';
