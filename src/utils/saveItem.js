@@ -6,8 +6,6 @@ import wrapInObject from './object/wrapInObject';
 import getItemKey from '../action-creators/helpers/getItemKey';
 import isNew from '../public-helpers/isNew';
 import hasDefinedStatus from '../public-helpers/hasDefinedStatus';
-import createItem from '../actions/RESTful/createItem';
-import updateItem from '../actions/RESTful/updateItem';
 
 function saveItem(options, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
   const {
@@ -39,10 +37,10 @@ function saveItem(options, resourcesState, paramsOrValues, valuesOrActionCreator
   const existingItem = getItem(resourcesState, key);
 
   if (!hasDefinedStatus(existingItem) || isNew(existingItem)) {
-    return createItem.actionCreator(options, params, values, actionCreatorOptions);
+    return options.createItem(params, values, actionCreatorOptions);
   }
 
-  return updateItem.actionCreator(options, params, values, actionCreatorOptions);
+  return options.updateItem(params, values, actionCreatorOptions);
 }
 
 export default saveItem;

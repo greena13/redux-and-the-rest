@@ -270,8 +270,8 @@ function resources(resourceOptions, actionOptions = {}) {
   }
 
   if (hasKey(actions, 'createItem') && hasKey(actions, 'updateItem')) {
-    resourceDefinition.saveNewItem = (resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) => {
-      return saveItem(resourceOptions, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions);
+    resourceDefinition.saveItem = (resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) => {
+      return saveItem({ createItem: actionCreators.createItem, updateItem: actionCreators.updateItem }, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions);
     };
   }
 
