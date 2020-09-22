@@ -241,10 +241,24 @@ The functions return an object containing Redux components necessary to use the 
 * `actions` - an object of action constants where the keys are the generic action names and the values are the specific action constants (e.g. `{ fetchList: 'FETCH_USERS' }`)
 * `actionCreators` - an object of functions (action creators) you call to interact with the resource which match the actions you specify in `actionOptions` and are passed to Redux's `dispatch` function.
 
-Also returned are 3 helper functions:
+Also returned are 3 helper functions that are always available:
+
 * `getList` - for retrieving a list based on its key parameters
 * `getItem` - for retrieving an item based on its key parameters
 * `getNewItem` - for retrieving the item currently being created
+
+In addition to these, if you enable the underlying actions, the following helper functions are also exported:
+
+* `getOrFetchItem` - Retrieves an item from the Redux store, or makes a fetch request for it, if it's not available 
+* `getOrFetchList` - Retrieves a list from the Redux store, or makes a fetch request for it, if it's not available 
+* `getOrInitializeItem` - Retrieves the new item from the Redux store, or instantiates it with the provided values, if it's not available
+* `saveItem` - Creates an item (by sending a `POST` request) if it's not already in the store, or has a status of `NEW`, otherwise sends and `UPDATE` request with the values provided.
+
+Each of these can be thought of as helpers that contain common logic to determine which underlying action creator to invoke. They require the `store` option to be used with `configure()`, so they can manually call `dispatch` as appropriate (consequently, these are not action creators and should not have their return values passed to `dispatch`). 
+
+Their first argument must be the current resource's state in the Redux store, and all others are passed to the action creators they wrap.
+
+These methods are asynchronous (they return a value immediately but do not dispatch any actions synchronously to avoid React warnings about updating other component's state during a render cycle when used with `react-redux`) and throttled (so if multiple components on the same React tree call them in the same render cycle, only one action is dispatched), so they are safe to use in component's `render` functions.
 
 ```javascript
 import { resources } from 'redux-and-the-rest';

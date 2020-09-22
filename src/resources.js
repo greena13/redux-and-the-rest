@@ -20,6 +20,7 @@ import applyReducers from './reducers/helpers/applyReducers';
 import ResourceRegistry from './utils/ResourceRegistry';
 import { RESOURCES } from './constants/DataStructures';
 import getOrInitializeNewItem from './utils/getOrInitializeNewItem';
+import saveItem from './utils/saveItem';
 
 /**
  * @typedef {Object<string, ResourcesDefinition>} AssociationOptionsMap A Mapping between the name of an
@@ -265,6 +266,12 @@ function resources(resourceOptions, actionOptions = {}) {
   if (hasKey(actions, 'newItem')) {
     resourceDefinition.getOrInitializeNewItem = (resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) => {
       return getOrInitializeNewItem({ action: actions.newItem, newItem: actionCreators.newItem }, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions);
+    };
+  }
+
+  if (hasKey(actions, 'createItem') && hasKey(actions, 'updateItem')) {
+    resourceDefinition.saveNewItem = (resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) => {
+      return saveItem(resourceOptions, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions);
     };
   }
 

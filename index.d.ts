@@ -863,6 +863,19 @@ interface ResourceDefinitionCommon<T> {
      * Function that returns a particular item of a resource type or initializes it to the specified values
      */
     getOrInitializeNewItem: GetOrInitializeItemFunction<T>,
+
+    /**
+     * Creates a new item if it does not exist in the store, or has a status of NEW, otherwise updates it
+     @param currentState The current resource Redux store state
+     * @param paramsOrValues The second argument which can either be a string
+     *        or object that is serialized and used to fill in the dynamic parameters of the resource's URL
+     *        (params), or the attribute values to use to create or update the resource.
+     * @param valuesOrActionCreatorOptions Either be the values used
+     *        by the action creator, or additional options passed to the action creator when it is called.
+     * @param optionalActionCreatorOptions The additional options passed to the action controller.
+     * @returns {ThunkAction} Function to call to save or update the resource item
+     */
+    saveItem: (currentState: ResourcesReduxState<T>, paramsOrValues: ItemOrListParameters | T, valuesOrActionCreatorOptions?: T | CreateItemActionCreatorOptions<T>, optionalActionCreatorOptions?: CreateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
 }
 
 export interface ResourcesDefinition<T> extends ResourceDefinitionCommon<T>{
