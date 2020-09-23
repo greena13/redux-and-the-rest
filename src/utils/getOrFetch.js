@@ -4,6 +4,7 @@ import warn from './dev/warn';
 import without from './list/without';
 import isFunction from './object/isFunction';
 import { enqueuePendingAction, isActionPending, registerActionEnd } from './ActionQueue';
+import hasDefinedStatus from '../public-helpers/hasDefinedStatus';
 
 function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions = {}) {
   const {
@@ -45,7 +46,7 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
 
   const itemOrList = resourcesState[typeKey][key];
 
-  if (!itemOrList || evaluateForceCondition(actionCreatorOptions.forceFetch, itemOrList)) {
+  if (!itemOrList || !hasDefinedStatus(itemOrList) || evaluateForceCondition(actionCreatorOptions.forceFetch, itemOrList)) {
 
     if (!isActionPending(action, key)) {
       enqueuePendingAction(action, key);
