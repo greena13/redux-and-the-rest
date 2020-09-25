@@ -5,6 +5,7 @@ import without from './list/without';
 import isFunction from './object/isFunction';
 import { enqueuePendingAction, isActionPending, registerActionEnd } from './ActionQueue';
 import hasDefinedStatus from '../public-helpers/hasDefinedStatus';
+import { FETCHING } from '../constants/Statuses';
 
 function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions = {}) {
   const {
@@ -72,6 +73,16 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
         }
       }, 0);
     }
+
+    /**
+     * If the item or list is not already in the store, immediately return an empty one with a status of
+     * fetching (and then shortly thereafter dispatch an action for the FETCHING status) so our calling code
+     * does not immediately get a list or item with an undefined with an undefined status before a FETCHING
+     * one
+     */
+    const emptyItemOrList = getFunction(resourcesState, key);
+
+    return { ...emptyItemOrList, status: { type: FETCHING } };
   }
 
   return getFunction(resourcesState, key);
