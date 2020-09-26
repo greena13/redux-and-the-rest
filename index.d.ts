@@ -850,11 +850,6 @@ interface ResourceDefinitionCommon<T> {
     reducers: Reducer,
 
     /**
-     * Function to build the initial resource state
-     */
-    buildInitialState: (items: Array<T>) => InitialResourceStateBuilder<T>,
-
-    /**
      * Function that returns the new item of a resource type
      */
     getNewItem: GetSingularResourceItemFunction<T>,
@@ -878,7 +873,7 @@ interface ResourceDefinitionCommon<T> {
     saveItem: (currentState: ResourcesReduxState<T>, paramsOrValues: ItemOrListParameters | T, valuesOrActionCreatorOptions?: T | CreateItemActionCreatorOptions<T>, optionalActionCreatorOptions?: CreateItemActionCreatorOptions<T>) => ThunkAction<void, any, any, AnyAction>,
 }
 
-export interface ResourcesDefinition<T> extends ResourceDefinitionCommon<T>{
+export interface ResourcesDefinition<T> extends ResourceDefinitionCommon<T>, ResourcesActionCreatorDictionary<T>{
     /**
      * Dictionary of ActionCreatorFunctions indexed by their ActionCreatorName
      */
@@ -905,9 +900,14 @@ export interface ResourcesDefinition<T> extends ResourceDefinitionCommon<T>{
      * Function that returns a particular item of a resource type
      */
     getItem: GetItemFunction<T>,
+
+    /**
+     * Function to build the initial resource state
+     */
+    buildInitialState: (items: Array<T>) => InitialResourceStateBuilder<T>,
 }
 
-export interface SingularResourceDefinition<T> extends ResourceDefinitionCommon<T>{
+export interface SingularResourceDefinition<T> extends ResourceDefinitionCommon<T>, SingularResourceActionCreatorDictionary<T>{
     /**
      * Dictionary of ActionCreatorFunctions indexed by their ActionCreatorName
      */
@@ -923,6 +923,11 @@ export interface SingularResourceDefinition<T> extends ResourceDefinitionCommon<
      * Function that returns a particular item of a resource type
      */
     getItem: GetSingularResourceItemFunction<T>,
+
+    /**
+     * Function to build the initial resource state
+     */
+    buildInitialState: (items: T) => InitialResourceStateBuilder<T>,
 }
 
 /**

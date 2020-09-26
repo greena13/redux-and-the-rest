@@ -21,6 +21,7 @@ import ResourceRegistry from './utils/ResourceRegistry';
 import { RESOURCES } from './constants/DataStructures';
 import getOrInitializeNewItem from './utils/getOrInitializeNewItem';
 import saveItem from './utils/saveItem';
+import arrayFrom from './utils/array/arrayFrom';
 
 /**
  * @typedef {Object<string, ResourcesDefinition>} AssociationOptionsMap A Mapping between the name of an
@@ -220,17 +221,17 @@ function resources(resourceOptions, actionOptions = {}) {
      * state that is the correct format to work with its reducers and can be passed to the Redux store when it's
      * created.
      *
-     * @param {Object[]} [items=[]] List of resource item values to be built into the initial resources state.
+     * @param {Object|Object[]} [itemOrItems=[]] List of resource item values to be built into the initial resources state.
      * @returns {InitialResourceStateBuilder} Builder that can be used to create the resources' initial state.
      */
-    buildInitialState(items = []) {
+    buildInitialState(itemOrItems = []) {
       const options = resolveOptions(
         getConfiguration(),
         resourceOptions,
         ['keyBy']
       );
 
-      return new InitialResourceStateBuilder(options, items);
+      return new InitialResourceStateBuilder(options, arrayFrom(itemOrItems));
     },
 
     /**
