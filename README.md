@@ -1057,44 +1057,59 @@ dispatch(fetchUsers({}, { metadata: { type: 'PAGINATED', page: 1 }}));
 
 ### Data lifecycle
 
-`redux-and-the-rest` uses the `status.type` attribute of lists and items to indicate what state they are currently in. However, it's recommended to use one of the helper methods to query the status rather than accessing the attribute directly:
+`redux-and-the-rest` uses the `status.type` attribute of lists and items to indicate what state they are currently in. However, it's recommended to use one of the helper methods to query the status rather than accessing the attribute directly.
 
-Checking if resource is out of sync with remote:
-
+* `isNew(item)` - Whether the item is new and has yet to be created on the remote
 * `isEditing(item)` - Whether the item has been modified since it was last synced with the server
-
-Checking if item or list is syncing with a remote API:
-
-* `hasDefinedStatus(itemOrList)`- Whether the item or list has a defined status (whether that be fetching, new, editing, etc)
-* `isFetching(itemOrList)` - Whether the item or list is fetching (specifically) from the remote 
-* `isUpdating(itemOrList)` - Whether the item or list being updated (specifically) on the remote 
-* `isDestroying(itemOrList)` - Whether the item or list being destroyed (specifically) on the remote 
-* `isFinishedFetching(itemOrList)` - Whether the item or list has finished being fetched (specifically) from the remote API.
-* `isSyncingWithRemote(itemOrList)` - Whether the item or list is currently syncing (fetching, creating, updating, destroying, progress) with the remote 
-* `isSyncedWithRemote(itemOrList)` - Complement of `isSyncingWithRemote(itemOrList)`
- 
-Checking the status of the latest sync with the remote API:
-
-* `isSyncedSuccessfully(itemOrList)` - Whether the item or list has finished being successfully fetched
-* `isInAnErrorState(itemOrList)` - Whether the item or list is in an errored state - usually because the last request failed
-* `getHttpStatusCode(itemOrList)` - The HTTP status code of the last request related to the resource item or list as a number
 
 Checking if a value is the same as the new item's temporary key:
 
 * `isNewItemKey(resourceReduxState, key)` - Whether the (internally managed) `newItemKey` for the resource matches the `key` supplied
 
+Checking if an item or list is syncing with a remote API:
+
+There are 3 levels or groups to be aware of:
+
+* Syncing - When any sort of request is in flight to upload or download data in the store to keep the redux store and the remote in sync. This includes fetching, creating, updating or destroying.
+* Saving - When the data in the redux store is being uploaded to the remote. This includes creating or updating. Saving is a subset of syncing.
+* Individual RESTful actions - fetching, creating, updating and destroying (separately)
+
+* `isFetching(itemOrList)` - Whether the item or list is fetching (specifically) from the remote 
+* `isCreating(item)` - Whether the item being created (specifically) on the remote 
+* `isUpdating(item)` - Whether the item being updated (specifically) on the remote 
+* `isDestroying(item)` - Whether the item being destroyed (specifically) on the remote 
+* `isSaving(item)` - Whether the item being saved (created or updated) on the remote 
+* `isSyncing(itemOrList)` - Whether the item or list being synced (fetched, updated, created, destroyed) on the remote 
+ 
+Checking when a sync is finished:
+
+* `isFinishedFetching(itemOrList)` - Whether the request to fetch the item or list is finished 
+* `isFinishedCreating(item)` - Whether the request to create the item is finished 
+* `isFinishedUpdating(item)` - Whether the request to update the item is finished 
+* `isFinishedDestroying(item)` - Whether the request to destroy the item is finished 
+* `isFinishedSaving(item)` - Whether the request to save the item is finished 
+* `isFinishedSyncing(itemOrList)` - Whether the request to sync the item or list is finished 
+
+Checking the result of the latest sync with the remote API:
+
+* `isSucces(itemOrList)` - Whether the item or list was successful in its last sync
+* `isError(itemOrList)` - Whether the item or list was failed in its last sync
+* `getHttpStatusCode(itemOrList)` - The HTTP status code of the last request related to the resource item or list as a number
+
 ```javascript
 import React from 'react';
-import { isInAnErrorState, isSyncedSuccessfully } from 'redux-and-the-rest';
+import { isFinishedSyncing, isSuccess } from 'redux-and-the-rest';
 
 class MyComponent extends Component {
     render() {
         const { item } = this.props;
 
-        if (isSyncedSuccessfully(item)) {
-            // item is loaded and ready to display
-        } else if (isInAnErrorState(item)) {
-           // display error message
+        if (isFinishedSyncing(item)) { 
+            if (isSuccess(item)) {
+              // item is loaded and ready to display
+            } else {
+              // display error message
+            }
         } else {
            // display preloader
         }
@@ -1488,12 +1503,12 @@ It accepts the same arguments as `editItem` - so you must have manually specifie
 
 ### Detecting if a item has been edited
 
-You can use the `hasBeenEdited()` helper function to determine if a item has been edited (but not saved to the server) since it was last synchronised.
+You can use the `isEdited()` helper function to determine if a item has been edited (but not saved to the server) since it was last synchronised.
 
 ```javascript
-import { hasBeenEdited } from 'redux-and-the-rest';
+import { isEdited } from 'redux-and-the-rest';
 
-if (hasBeenEdited(item)) {
+if (isEdited(item)) {
   // ...
 }
 ```

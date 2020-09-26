@@ -7,7 +7,7 @@ import contains from '../utils/list/contains';
  * @returns {boolean} True if the item is currently being updated on the remote
  */
 function isUpdating({ status: { type } }) {
-  return Boolean(type) && contains([UPDATING], type);
+  return contains([UPDATING], type);
 }
 
 export default isUpdating;

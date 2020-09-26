@@ -4,8 +4,7 @@ import adaptOptionsForSingularResource from '../action-creators/helpers/adaptOpt
 import getItem from './getItem';
 import wrapInObject from './object/wrapInObject';
 import getItemKey from '../action-creators/helpers/getItemKey';
-import isNew from '../public-helpers/isNew';
-import hasDefinedStatus from '../public-helpers/hasDefinedStatus';
+import { isCreated } from '../public-helpers/index';
 
 function saveItem(options, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
   const {
@@ -36,11 +35,11 @@ function saveItem(options, resourcesState, paramsOrValues, valuesOrActionCreator
 
   const existingItem = getItem(resourcesState, key);
 
-  if (!hasDefinedStatus(existingItem) || isNew(existingItem)) {
-    return options.createItem(params, values, actionCreatorOptions);
+  if (isCreated(existingItem)) {
+    return options.updateItem(params, values, actionCreatorOptions);
   }
 
-  return options.updateItem(params, values, actionCreatorOptions);
+  return options.createItem(params, values, actionCreatorOptions);
 }
 
 export default saveItem;

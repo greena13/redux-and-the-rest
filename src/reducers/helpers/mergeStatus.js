@@ -11,12 +11,19 @@
 import resolveOptions from '../../action-creators/helpers/resolveOptions';
 import without from '../../utils/list/without';
 
-function mergeStatus(oldStatus, newStatus, options = {}) {
+function mergeStatus(previousStatus, newStatus, options = {}) {
+  return {
+    ..._mergeStatus(previousStatus, newStatus, options),
+    previousStatus: without(previousStatus, ['previousStatus'])
+  };
+}
+
+function _mergeStatus(previousStatus, newStatus, options) {
   if (options.onlyPersist) {
-    return resolveOptions(oldStatus, newStatus, [...options.onlyPersist, ...Object.keys(newStatus)]);
+    return resolveOptions(previousStatus, newStatus, [...options.onlyPersist, ...Object.keys(newStatus)]);
   } else {
     return {
-      ...(options.exclude ? without(oldStatus, options.exclude) : oldStatus),
+      ...(options.exclude ? without(previousStatus, options.exclude) : previousStatus),
       ...newStatus
     };
   }

@@ -1214,13 +1214,6 @@ export function configure(config: GlobalConfigurationOptions): void;
 export function getConfiguration(): GlobalConfigurationOptions;
 
 /**
- * Whether the resource item has been modified since it was last synced with the server
- * @param item The item to evaluate
- * @returns True if the resource item can be rolled back
- */
-export function hasBeenEdited(item: GenericItemOrList): boolean;
-
-/**
  * Whether the last request for an item or list errored, but there is still old values in the store that
  * can be displayed instead.
  * @params itemOrList The item or list to test for old values
@@ -1257,11 +1250,18 @@ export function getValuesBeforeEditing<T>(item: ResourcesItem<T>): T;
 export function getHttpStatusCode(itemOrList: GenericItemOrList): number;
 
 /**
- * Whether the item or list has a defined status (whether that be fetching, new, editing, etc)
- * @param itemOrList The item or list to consider
- * @returns True if the resource item or list has started.
+ * Whether the resource item is new and has yet to be saved to the server
+ * @param item The item to evaluate
+ * @returns True if the resource item is new
  */
-export function hasDefinedStatus(itemOrList: GenericItemOrList): boolean;
+export function isNew(item: GenericItemOrList): boolean;
+
+/**
+ * Whether the resource item has been modified since it was last synced with the server
+ * @param itemOrList item The item to evaluate
+ * @returns True if the resource item can be rolled back
+ */
+export function isEdited(itemOrList: GenericItemOrList): boolean;
 
 /**
  * Whether the item or list is currently being fetched from the remote
@@ -1269,6 +1269,13 @@ export function hasDefinedStatus(itemOrList: GenericItemOrList): boolean;
  * @returns {boolean} True if the item or list is being fetched from the remote
  */
 export function isFetching(itemOrList: GenericItemOrList): boolean;
+
+/**
+ * Whether the item is currently being created on the remote
+ * @param {ResourcesItem|ResourcesList} item The item to consider
+ * @returns {boolean} True if the item is being created from the remote
+ */
+export function isCreating(item: GenericItemOrList): boolean;
 
 /**
  * Whether the item is currently being updated on the remote
@@ -1285,39 +1292,75 @@ export function isUpdating(item: GenericItemOrList): boolean;
 export function isDestroying(item: GenericItemOrList): boolean;
 
 /**
- * Whether the item or list has finished being fetched
- * @param itemOrList The item or list to consider
- * @returns True if the item or list has finished fetching
+ * Whether the item is currently being saved (created or updated) on the remote
+ * @param item The item to consider
+ * @returns True if the item is currently being saved on the remote
+ */
+export function isSaving(item: GenericItemOrList): boolean;
+
+/**
+ * Whether the item is currently being synced (fetched, created, updated or destroyed) from or on the remote
+ * @param item The item to consider
+ * @returns True if the item is currently being synced with the remote
+ */
+export function isSyncing(item: GenericItemOrList): boolean;
+
+/**
+ * Whether the request to fetch the item or list has finished and is now in a success or error state
+ * @param {ResourcesItem|ResourcesList} itemOrList The item or list to consider
+ * @returns {boolean} True if the item or list is being fetched from the remote
  */
 export function isFinishedFetching(itemOrList: GenericItemOrList): boolean;
 
 /**
- * Whether the item or list has finished being successfully fetched
- * @param itemOrList The item or list to consider
- * @returns True if the item or list was successfully fetched
+ * Whether the request to create the item has finished and is now in a success or error state
+ * @param {ResourcesItem|ResourcesList} item The item to consider
+ * @returns {boolean} True if the item is being created from the remote
  */
-export function isSyncedSuccessfully(itemOrList: GenericItemOrList): boolean;
+export function isFinishedCreating(item: GenericItemOrList): boolean;
 
 /**
- * Whether the item or list is in an errored state - usually because the last request failed
+ * Whether the request to update the item has finished and is now in a success or error state
+ * @param item The item to consider
+ * @returns True if the item is currently being updated on the remote
+ */
+export function isFinishedUpdating(item: GenericItemOrList): boolean;
+
+/**
+ * Whether the request to destroy the item has finished and is now in a success or error state
+ * @param item The item to consider
+ * @returns True if the item is currently being destroyed on the remote
+ */
+export function isFinishedDestroying(item: GenericItemOrList): boolean;
+
+/**
+ * Whether the request to save the item has finished and is now in a success or error state
+ * @param item The item to consider
+ * @returns True if the item is currently being saved on the remote
+ */
+export function isFinishedSaving(item: GenericItemOrList): boolean;
+
+/**
+ * Whether the request to sync the item is has finished and is now in a success or error state
+ * @param item The item to consider
+ * @returns True if the item is currently being synced with the remote
+ */
+export function isFinishedSyncing(item: GenericItemOrList): boolean;
+
+
+/**
+ * Whether the item or list has successfully synced
+ * @param itemOrList The item or list to consider
+ * @returns True if the item or list was successfully synced
+ */
+export function isSuccess(itemOrList: GenericItemOrList): boolean;
+
+/**
+ * Whether the item or list is in an errored state - usually because the last sync failed
  * @param itemOrList The item or list to consider
  * @returns True if the item or list is in an errored state
  */
-export function isInAnErrorState(itemOrList: GenericItemOrList): boolean;
-
-/**
- * Whether the resource item has been modified since it was last synced with the server
- * @param itemOrList item The item to evaluate
- * @returns True if the resource item can be rolled back
- */
-export function isEdited(itemOrList: GenericItemOrList): boolean;
-
-/**
- * Whether the resource item is new and has yet to be saved to the server
- * @param item The item to evaluate
- * @returns True if the resource item is new
- */
-export function isNew(item: GenericItemOrList): boolean;
+export function isError(itemOrList: GenericItemOrList): boolean;
 
 /**
  * Whether the supplied key matches the current new item key
@@ -1326,18 +1369,3 @@ export function isNew(item: GenericItemOrList): boolean;
  * @returns True the key matches the new item key
  */
 export function isNewItemKey(resource: ResourcesReduxState<T>, key: ItemOrListParameters): boolean;
-
-/**
- * Whether the item or list is currently syncing with the remote
- * @param itemOrList The item or list to consider
- * @returns True if the item or list has finished fetching
- */
-export function isSyncingWithRemote(itemOrList: GenericItemOrList): boolean;
-
-
-/**
- * Whether the item or list has finished syncing with the remote
- * @param itemOrList The item or list to consider
- * @returns True if the item or list has finished fetching
- */
-export function isSyncedWithRemote(itemOrList: GenericItemOrList): boolean;

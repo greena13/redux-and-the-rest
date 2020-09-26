@@ -7,7 +7,7 @@ import contains from '../utils/list/contains';
  * @returns {boolean} True if the item is currently being destroyed on the remote
  */
 function isDestroying({ status: { type } }) {
-  return Boolean(type) && contains([DESTROYING], type);
+  return contains([DESTROYING], type);
 }
 
 export default isDestroying;

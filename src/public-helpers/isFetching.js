@@ -7,7 +7,7 @@ import contains from '../utils/list/contains';
  * @returns {boolean} True if the item or list is currently being fetched
  */
 function isFetching({ status: { type } }) {
-  return Boolean(type) && contains([FETCHING], type);
+  return contains([FETCHING], type);
 }
 
 export default isFetching;
