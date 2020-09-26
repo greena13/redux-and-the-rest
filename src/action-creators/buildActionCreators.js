@@ -129,7 +129,7 @@ function getActionCreators({ localOnly, singular }) {
        * If both the localOnly and singular options have been specified, then we need to use only the subset
        * of action creators that make sense for a singular resource, with their localOnly equivalents
        */
-      return pluck(LOCAL_ONLY_ACTION_CREATORS, SINGULAR_ACTION_CREATORS);
+      return pluck(LOCAL_ONLY_ACTION_CREATORS, Object.keys(SINGULAR_ACTION_CREATORS));
     }
 
     /**

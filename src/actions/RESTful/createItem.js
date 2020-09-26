@@ -178,24 +178,21 @@ function submitCreateResource(options, actionCreatorOptions, values, listOperati
  * external API
  * @param {Object} options Configuration options built from those provided when the resource was defined
  * @param {Object|string} paramsOrValues The first argument which can either a string or object that is serialized
- *        and used to fill in the dynamic parameters of the resource's URL (params) or the attribute values to
- *        use to create the resource.
- * @param {Object} valuesOrActionCreatorOptions Either be the values used by the action creator, or addition
- *        options passed to the action creator when it is called.
- * @param {Object} [optionalActionCreatorOptions=undefined] The optional additional options passed to the
- *        action controller.
- * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
+ *        and used to create the id of the created item
+ * @param {Object|CreateItemActionCreatorOptions} valuesOrActionCreatorOptions Either be the values used by the action
+ *        creator, or addition options passed to the action creator when it is called.
+ * @param {CreateItemActionCreatorOptions} [optionalActionCreatorOptions=undefined] The optional additional options passed to the action controller.
+ * @returns {Thunk} Function to call to dispatch an action
  */
 function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
-  const { urlOnlyParams, keyBy } = options;
+  const { urlOnlyParams, keyBy, } = options;
 
   const { params, values, actionCreatorOptions } =
     adaptOptionsForSingularResource({ paramsOptional: true, acceptsValues: true }, [
       paramsOrValues,
       valuesOrActionCreatorOptions,
       optionalActionCreatorOptions
-    ]
-  );
+    ]);
 
   const normalizedParams = wrapInObject(params, keyBy);
   const listOperations = extractListOperations(actionCreatorOptions, urlOnlyParams);

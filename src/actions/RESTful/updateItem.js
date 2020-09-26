@@ -150,19 +150,32 @@ function submitUpdateResource(options, actionCreatorOptions, values) {
 /**
  * Redux action creator used for updating a resource locally (without making any requests to a RESTful API endpoint)
  * @param {Object} options Configuration options built from those provided when the resource was defined
- * @param {Object|string} params A string or object that is serialized and used to fill in the dynamic parameters
- *        of the resource's URL
- * @param {Object} values The attribute values to use to update the resource
- * @param {Object} [actionCreatorOptions={}] The options passed to the action creator when it is called.
+ * @param {Object|string} paramsOrValues The first argument which can either be a string or object that is
+ *        serialized and used to find the item to update.
+ * @param {Object} [valuesOrActionCreatorOptions={}] Either the attribute values to use to update the resource or the
+ *        options passed to the action creator.
+ * @param {UpdateItemActionCreatorOptions} [optionalActionCreatorOptions={}] The options passed to the action creator when it is
+ *        called.
+ * @param {ResourceValues} [optionalActionCreatorOptions.previous={}] The values of the resource item that is being
+ *        deleted, used to more efficiently remove the item from any associated resource lists it may
+ *        appear in.
  * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
  */
-function localActionCreator(options, params, values, actionCreatorOptions = {}) {
-  const { keyBy } = options;
+function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
+  const { keyBy, singular } = options;
+
+  const { params, values, actionCreatorOptions } =
+    adaptOptionsForSingularResource({ paramsOptional: singular, acceptsValues: true }, [
+      paramsOrValues,
+      valuesOrActionCreatorOptions,
+      optionalActionCreatorOptions
+    ]);
 
   /**
    * Action creator options override metadata options that may have been set when defining the resource
    */
   const metadata = actionCreatorOptions.metadata || options.metadata;
+
   const normalizedParams = wrapInObject(params, keyBy);
 
   return receiveUpdatedResource(
