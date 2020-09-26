@@ -3,7 +3,6 @@ import isObject from '../utils/object/isObject';
 import wrapInObject from '../utils/object/wrapInObject';
 import resolveOptions from './helpers/resolveOptions';
 import { getConfiguration } from '../configuration';
-import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 import fetchItemAction from '../actions/RESTful/fetchItem';
 import fetchListAction from '../actions/RESTful/fetchList';
 import newAction from '../actions/RESTful/newItem';
@@ -58,7 +57,9 @@ const STANDARD_ACTION_CREATORS = {
  * requests to a remote RESTful API and instead perform the changes locally and synchronously.
  */
 const LOCAL_ONLY_ACTION_CREATORS = {
-  ...without(STANDARD_ACTION_CREATORS, Object.keys(RemoteOnlyActionsDictionary)),
+  ...STANDARD_ACTION_CREATORS,
+  fetchList: fetchListAction.localActionCreator,
+  fetchItem: fetchItemAction.localActionCreator,
   createItem: createItemAction.localActionCreator,
   updateItem: updateAction.localActionCreator,
   destroyItem: destroyItemAction.localActionCreator,
@@ -166,15 +167,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
 
   return Object.keys(actionsOptions).reduce((memo, key) => {
 
-    /**
-     * We don't export certain action creators when the localOnly option is used (as they don't make sense in
-     * a local context).
-     *
-     * See RemoteOnlyActionsDictionary for a full list of actions that are excluded when the localOnly option is
-     * used.
-     */
-    if ((resourceOptions.localOnly && RemoteOnlyActionsDictionary[key]) ||
-          (resourceOptions.singular && ResourcesOnlyActionsDictionary[key])) {
+    if ((resourceOptions.singular && ResourcesOnlyActionsDictionary[key])) {
       return memo;
     }
 

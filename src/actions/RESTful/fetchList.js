@@ -84,6 +84,10 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
   };
 }
 
+function localActionCreator(options, paramsOrActionCreatorOptions, optionalActionCreatorOptions) {
+  throw 'fetchList is not supported with the localOnly option. User getOrFetchList instead.';
+}
+
 /** ************************************************************************************************************
  * Action creators
  ***************************************************************************************************************/
@@ -318,5 +322,6 @@ function reducer(resources, action) {
 
 export default {
   reducer,
-  actionCreator
+  actionCreator,
+  localActionCreator
 };

@@ -1,4 +1,3 @@
-import without from '../utils/list/without';
 import isObject from '../utils/object/isObject';
 import warn from '../utils/dev/warn';
 import arrayFrom from '../utils/array/arrayFrom';
@@ -23,7 +22,6 @@ import clearSelectedAction from '../actions/selection/clearSelectedItems';
 import clearResourceAction from '../actions/clear/clearResource';
 import clearItemAction from '../actions/clear/clearItem';
 import clearListAction from '../actions/clear/clearList';
-import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 
 /**
  * Dictionary of standard reducer functions for keeping the local store synchronised with a remote RESTful API.
@@ -81,12 +79,6 @@ function getProgressReducer(key) {
 }
 
 /**
- * Dictionary or reducer functions to use when the localOnly option is set, causing changes to be performed
- * synchronously, without any requests being made to an external API.
- */
-const LOCAL_ONLY_REDUCERS = without(STANDARD_REDUCERS, Object.keys(RemoteOnlyActionsDictionary));
-
-/**
  * Function that accepts the current state and Redux action and returns the correct new state.
  * @callback ReducerFunction
  * @param {ResourcesReduxState} currentState The current state of the part of the Redux store that contains
@@ -113,12 +105,6 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
   const globalConfiguration = getConfiguration();
 
   /**
-   * We use a different set of reducers when the localOnly option is used (to perform updates synchronously
-   * without making any requests to a remote API).
-   */
-  const effectiveReducers = resourceOptions.localOnly ? LOCAL_ONLY_REDUCERS : STANDARD_REDUCERS;
-
-  /**
    * Iterate over the list of defined actions, creating the corresponding reducer and storing it in a map to
    * be retrieved and called each time the action occurs
    */
@@ -129,7 +115,7 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
      * Allow overriding the default reducer (or specifying a reducer for a custom action) otherwise default
      * to the standard reducer
      */
-    const reducer = (isObject(actionOptions) && actionOptions.reducer) || effectiveReducers[key];
+    const reducer = (isObject(actionOptions) && actionOptions.reducer) || STANDARD_REDUCERS[key];
 
     if (reducer) {
 

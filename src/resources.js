@@ -147,7 +147,7 @@ import saveItem from './utils/saveItem';
  * @returns {ResourcesDefinition} The resources definition
  */
 function resources(resourceOptions, actionOptions = {}) {
-  const { name, singular, keyBy } = resourceOptions;
+  const { name, singular, keyBy, localOnly } = resourceOptions;
 
   /**
    * Standardise the shape of the action options to support all forms:
@@ -257,6 +257,7 @@ function resources(resourceOptions, actionOptions = {}) {
           getFunction: getItem,
           fetchFunction: actionCreators.fetchItem,
           action: actions.fetchItem,
+          localOnly,
           keyFunction: (_params) => getItemKey(_params, { keyBy: resourceOptions.keyBy, singular }),
         },
         resourcesState, params, actionCreatorOptions
@@ -299,6 +300,7 @@ function resources(resourceOptions, actionOptions = {}) {
           getFunction: getList,
           fetchFunction: actionCreators.fetchList,
           action: actions.fetchList,
+          localOnly,
           keyFunction: (_params) => getListKey(_params, { urlOnlyParams: resourceOptions.urlOnlyParams }),
         },
         resourcesState, params, actionCreatorOptions

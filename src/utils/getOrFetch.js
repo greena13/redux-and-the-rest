@@ -13,7 +13,7 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
     /**
      * Options that change between items and lists
      */
-    typeKey, keyFunction, getFunction, fetchFunction, action
+    typeKey, keyFunction, getFunction, fetchFunction, action, localOnly
   } = options;
 
   /**
@@ -45,10 +45,9 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
 
   const key = keyFunction(params);
 
-  const itemOrList = resourcesState[typeKey][key];
+  const itemOrList = getFunction(resourcesState, key);
 
-  if (!itemOrList || !hasDefinedStatus(itemOrList) || evaluateForceCondition(actionCreatorOptions.forceFetch, itemOrList)) {
-
+  if (!localOnly && (!hasDefinedStatus(itemOrList) || evaluateForceCondition(actionCreatorOptions.forceFetch, itemOrList))) {
     if (!isActionPending(action, key)) {
       enqueuePendingAction(action, key);
 
@@ -80,12 +79,10 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
      * does not immediately get a list or item with an undefined with an undefined status before a FETCHING
      * one
      */
-    const emptyItemOrList = getFunction(resourcesState, key);
-
-    return { ...emptyItemOrList, status: { type: FETCHING } };
+    return { ...itemOrList, status: { type: FETCHING } };
   }
 
-  return getFunction(resourcesState, key);
+  return itemOrList;
 }
 
 function evaluateForceCondition(forceFetch, itemOrList) {

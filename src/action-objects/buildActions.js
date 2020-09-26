@@ -1,7 +1,6 @@
 import constantize from '../utils/string/constantize';
 import toPlural from '../utils/string/toPlural';
 import toSingular from '../utils/string/toSingular';
-import RemoteOnlyActionsDictionary from '../constants/RemoteOnlyActionsDictionary';
 
 /**
  * @typedef {string} RestfulActionName One of the RESTful action names (fetchList, fetchItem, newItem, createItem, editItem, updateItem,
@@ -93,18 +92,6 @@ function buildActions(name, resourceOptions, actionList = []) {
   const actionsMap = {};
 
   actionList.forEach((action) => {
-
-    /**
-     * We don't export certain actions when the localOnly option is used (as they don't make sense in
-     * a local context).
-     *
-     * See RemoteOnlyActionsDictionary for a full list of actions that are excluded when the localOnly
-     * option is used.
-     */
-    if (resourceOptions.localOnly && RemoteOnlyActionsDictionary[action]) {
-      return;
-    }
-
     actionsMap[action] = getActionName(name, action);
   });
 

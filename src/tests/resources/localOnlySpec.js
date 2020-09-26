@@ -75,21 +75,6 @@ describe('localOnly:', function () {
       this.destroyUser = destroyUser;
     });
 
-    it('then does NOT export the fetchItem action creators', function() {
-      expect(typeof this.fetchUser).not.toEqual('function');
-      expect(typeof this.fetchUsers).not.toEqual('function');
-    });
-
-    it('then warns about some actions being incompatible with the option', function() {
-      expect(console.warn).toHaveBeenCalledWith(
-        'Redux and the REST: Action \'fetchList\' is not compatible with the localOnly option.'
-      );
-
-      expect(console.warn).toHaveBeenCalledWith(
-        'Redux and the REST: Action \'fetchItem\' is not compatible with the localOnly option.'
-      );
-    });
-
     describe('and the resource\'s CREATE action occurs WITHOUT a preceding NEW action', function () {
       beforeEach(function () {
         this.newValues = { username: 'Joseph' };
