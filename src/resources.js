@@ -147,7 +147,7 @@ import saveItem from './utils/saveItem';
  * @returns {ResourcesDefinition} The resources definition
  */
 function resources(resourceOptions, actionOptions = {}) {
-  const { name, singular } = resourceOptions;
+  const { name, singular, keyBy } = resourceOptions;
 
   /**
    * Standardise the shape of the action options to support all forms:
@@ -271,7 +271,13 @@ function resources(resourceOptions, actionOptions = {}) {
 
   if (hasKey(actions, 'createItem') && hasKey(actions, 'updateItem')) {
     resourceDefinition.saveItem = (resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) => {
-      return saveItem({ createItem: actionCreators.createItem, updateItem: actionCreators.updateItem }, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions);
+      return saveItem({
+        createItem: actionCreators.createItem,
+        updateItem: actionCreators.updateItem,
+
+        // Resource options required by handler
+        keyBy, singular
+      }, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions);
     };
   }
 
