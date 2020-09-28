@@ -75,6 +75,7 @@ users = getList(store.getState().users);
          * [Remote API CRUD actions](#remote-api-crud-actions)
       * [Clearing actions](#clearing-actions)
       * [Selection actions](#selection-actions)
+   * [Dispatchers](#dispatchers)
 * [Defining associations](#defining-associations)
    * [One-to-One and One-to-Many relationships](#one-to-one-and-one-to-many-relationships)
    * [Many-to-Many relationships](#many-to-many-relationships)
@@ -389,6 +390,26 @@ In addition to the CRUD functionality, `redux-and-the-rest` provides a number of
 | deselectItem | deselectItem() | Unselects an item that is currently selected |
 | clearSelectedItems | clearSelectedItems() | Unselects all selected items |
 
+### Dispatchers
+
+`redux-and-the-rest` exports action creators in the `actionCreators` object of every resource definition, which return objects (actions) that are ready to be passed to redux's `dispatch` function (as users of redux are accustom to doing). 
+
+However, for convenience, `redux-and-the-rest` also exports _dispatchers_, which are functions that call `dispatch` for you, and are useful in circumstances where the `dispatch` function is not readily available. They have the same name as their action creator counterparts, accept the same arguments, and are enabled with the same configuration when defining your `resource` or `resources`.
+
+They are available directly off the exported object:
+
+```javascript
+const { actionCreators: { fetchList: fetchUsersActionCreator }, fetchList: fetchUsersDispatcher } = resources(
+    {
+        // ...
+    },
+    {
+        fetchList:  {
+            // action options
+        }
+    }
+);
+```
 
 ## Defining associations
 

@@ -310,6 +310,16 @@ function resources(resourceOptions, actionOptions = {}) {
 
   ResourceRegistry.getRegistry().addResource(resourceOptions, resourceDefinition, reducersDictionary);
 
+  Object.keys(actionCreators).forEach((key) => {
+    const actionCreator = actionCreators[key];
+
+    resourceDefinition[key] = (arg1, arg2, arg3) => {
+      const { store } = getConfiguration();
+
+      store.dispatch(actionCreator(arg1, arg2, arg3));
+    };
+  });
+
   return resourceDefinition;
 }
 
