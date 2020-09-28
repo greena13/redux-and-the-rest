@@ -240,6 +240,19 @@ function resources(resourceOptions, actionOptions = {}) {
     __isResourcesDefinition: true
   };
 
+  /**
+   * Define dispatchers
+   */
+  Object.keys(actionCreators).forEach((key) => {
+    const actionCreator = actionCreators[key];
+
+    resourceDefinition[key] = (arg1, arg2, arg3) => {
+      const { store } = getConfiguration();
+
+      return store.dispatch(actionCreator(arg1, arg2, arg3));
+    };
+  });
+
   if (hasKey(actions, 'fetchItem')) {
 
     /**
@@ -256,7 +269,7 @@ function resources(resourceOptions, actionOptions = {}) {
           typeKey: 'items',
           fallbackActionName: 'fetchItem',
           getFunction: getItem,
-          fetchFunction: actionCreators.fetchItem,
+          fetchFunction: resourceDefinition.fetchItem,
           action: actions.fetchItem,
           localOnly,
           keyFunction: (_params) => getItemKey(_params, { keyBy: resourceOptions.keyBy, singular }),
@@ -267,15 +280,15 @@ function resources(resourceOptions, actionOptions = {}) {
 
   if (hasKey(actions, 'newItem')) {
     resourceDefinition.getOrInitializeNewItem = (resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) => {
-      return getOrInitializeNewItem({ action: actions.newItem, newItem: actionCreators.newItem }, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions);
+      return getOrInitializeNewItem({ action: actions.newItem, newItem: resourceDefinition.newItem }, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions);
     };
   }
 
   if (hasKey(actions, 'createItem') && hasKey(actions, 'updateItem')) {
     resourceDefinition.saveItem = (resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) => {
       return saveItem({
-        createItem: actionCreators.createItem,
-        updateItem: actionCreators.updateItem,
+        createItem: resourceDefinition.createItem,
+        updateItem: resourceDefinition.updateItem,
 
         // Resource options required by handler
         keyBy, singular
@@ -299,7 +312,7 @@ function resources(resourceOptions, actionOptions = {}) {
       getOrFetch({
           typeKey: 'lists',
           getFunction: getList,
-          fetchFunction: actionCreators.fetchList,
+          fetchFunction: resourceDefinition.fetchList,
           action: actions.fetchList,
           localOnly,
           keyFunction: (_params) => getListKey(_params, { urlOnlyParams: resourceOptions.urlOnlyParams }),
@@ -309,16 +322,6 @@ function resources(resourceOptions, actionOptions = {}) {
   }
 
   ResourceRegistry.getRegistry().addResource(resourceOptions, resourceDefinition, reducersDictionary);
-
-  Object.keys(actionCreators).forEach((key) => {
-    const actionCreator = actionCreators[key];
-
-    resourceDefinition[key] = (arg1, arg2, arg3) => {
-      const { store } = getConfiguration();
-
-      store.dispatch(actionCreator(arg1, arg2, arg3));
-    };
-  });
 
   return resourceDefinition;
 }

@@ -1,24 +1,9 @@
-import { getConfiguration } from '../configuration';
-import assertInDevMode from './assertInDevMode';
-import warn from './dev/warn';
 import adaptOptionsForSingularResource from '../action-creators/helpers/adaptOptionsForSingularResource';
 import { ITEM } from '../constants/DataStructures';
 import { NEW } from '../constants/Statuses';
 import { enqueuePendingAction, isActionPending, registerActionEnd } from './ActionQueue';
 
 function getOrInitializeNewItem(options, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
-
-  /**
-   * Retrieve the direct connection to the Redux store the user is expected to set using the configure() function
-   */
-  const { store } = getConfiguration();
-
-  assertInDevMode(() => {
-    if (!store) {
-      warn('Cannot use getOrInitializeItem() without setting the store instance using the configure() function.');
-    }
-  });
-
   const { values } =
     adaptOptionsForSingularResource({ paramsOptional: true, acceptsValues: true }, [
       paramsOrValues,
@@ -48,9 +33,7 @@ function getOrInitializeNewItem(options, resourcesState, paramsOrValues, valuesO
      *       to work.
      */
     setTimeout(() => {
-      if (store) {
-        store.dispatch(options.newItem(values));
-      }
+      options.newItem(values);
 
       registerActionEnd(options.action);
     }, 0);

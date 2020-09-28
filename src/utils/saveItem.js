@@ -1,5 +1,3 @@
-import { getConfiguration } from '../configuration';
-import assertInDevMode from './assertInDevMode';
 import adaptOptionsForSingularResource from '../action-creators/helpers/adaptOptionsForSingularResource';
 import getItem from './getItem';
 import wrapInObject from './object/wrapInObject';
@@ -14,14 +12,6 @@ function saveItem(options, resourcesState, paramsOrValues, valuesOrActionCreator
   /**
    * Retrieve the direct connection to the Redux store the user is expected to set using the configure() function
    */
-
-  const { store } = getConfiguration();
-
-  assertInDevMode(() => {
-    if (!store) {
-      throw 'Cannot use saveItem() without setting the store instance using the configure() function. Falling back to returning an empty item.';
-    }
-  });
 
   const { values, params, actionCreatorOptions } =
     adaptOptionsForSingularResource({ paramsOptional: false, acceptsValues: true }, [

@@ -13,7 +13,7 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
     /**
      * Options that change between items and lists
      */
-    typeKey, keyFunction, getFunction, fetchFunction, action, localOnly
+    keyFunction, getFunction, fetchFunction, action, localOnly
   } = options;
 
   /**
@@ -65,11 +65,9 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
          * If the item is not already in the store (or we're forcing the fetch operation), we call the fetch action
          * creator to retrieve it in the background and return an empty item or list in the meantime.
          */
-        if (store) {
-          store.dispatch(fetchFunction(params, without(actionCreatorOptions, ['forceFetch']))).then(() => {
-            registerActionEnd(action, key);
-          });
-        }
+        fetchFunction(params, without(actionCreatorOptions, ['forceFetch'])).then(() => {
+          registerActionEnd(action, key);
+        });
       }, 0);
     }
 
