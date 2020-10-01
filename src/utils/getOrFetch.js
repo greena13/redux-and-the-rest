@@ -47,13 +47,15 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
 
   const itemOrList = getFunction(resourcesState, key);
 
-  if (!localOnly && (!hasDefinedStatus(itemOrList) || evaluateForceCondition(actionCreatorOptions.forceFetch, itemOrList))) {
-    if (!isActionPending(action, key)) {
+  const forceAction = evaluateForceCondition(actionCreatorOptions.forceFetch, itemOrList);
+
+  if (!localOnly && (!hasDefinedStatus(itemOrList) || forceAction)) {
+    if (!isActionPending(action, key) || forceAction) {
       enqueuePendingAction(action, key);
 
       /**
        * We wrap dispatching the action in setTimeout to defer it until the next render cycle, allowing you to
-       * use the method in a controller's render method, without triggering a warning from React about updating
+       * use the method in a component's render method, without triggering a warning from React about updating
        * another component's state while it is rendering
        *
        * Note: The evaluating of whether an action is queued or not must still be done synchronously in order
