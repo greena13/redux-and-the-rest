@@ -8,6 +8,7 @@ import pluck from '../../utils/list/pluck';
 import normalizeErrors from './normalizeErrors';
 import isString from '../../utils/string/isString';
 import { getConfiguration } from '../../configuration';
+import isEmpty from '../../utils/list/isEmpty';
 
 /**
  * Performs a HTTP request to an external API endpoint, based on the configuration options provided
@@ -130,57 +131,59 @@ function makeRequest(options, actionCreatorOptions = {}) {
        *
        * In any case, we go ahead an attempt to parse it as a JSON object.
        */
-      return response.json().then((json) => {
-        const _json = function () {
-          if (responseAdaptor) {
+      return response.text().then((text) => {
+          const json = text.length ? JSON.parse(text) : {};
+
+          const _json = function () {
+            if (responseAdaptor) {
+
+              /**
+               * We run the response through the responseAdaptor function, if one has been specified
+               */
+              const { values, error, errors, metadata } = responseAdaptor(json, response);
+
+              return { values, ...normalizeErrors(error, errors), metadata };
+            } else {
+
+              /**
+               * If a responseAdaptor hasn't been specified, we fallback to the default behaviour of looking for
+               * an error on the top level of the response and separating it out for the rest of the response.
+               */
+              if (isObject(json) && !isEmpty(json)) {
+                const { error, errors, ...values } = json;
+
+                return { values, ...normalizeErrors(error, errors) };
+              } else {
+                return { values: json };
+              }
+            }
+          }();
+
+          if (_json.error || _json.errors) {
 
             /**
-             * We run the response through the responseAdaptor function, if one has been specified
+             * If there was an error object on the top level of the response, we call the error handler
              */
-            const { values, error, errors, metadata } = responseAdaptor(json, response);
-
-            return { values, ...normalizeErrors(error, errors), metadata };
+            return dispatch(
+              onError(
+                _options,
+                actionCreatorOptions,
+                status,
+                pluck(_json, ['error', 'errors']),
+                _json.metadata
+              )
+            );
           } else {
 
             /**
-             * If a responseAdaptor hasn't been specified, we fallback to the default behaviour of looking for
-             * an error on the top level of the response and separating it out for the rest of the response.
+             * If the response had a HTTP status code below 400 and no error at its root, we call the success
+             * handler.
              */
-            if (isObject(json)) {
-              const { error, errors, ...values } = json;
-
-              return { values, ...normalizeErrors(error, errors) };
-            } else {
-              return { values: json };
-            }
+            return dispatch(
+              onSuccess(_options, actionCreatorOptions, _json.values, _json.metadata)
+            );
           }
-        }();
-
-        if (_json.error || _json.errors) {
-
-          /**
-           * If there was an error object on the top level of the response, we call the error handler
-           */
-          return dispatch(
-            onError(
-              _options,
-              actionCreatorOptions,
-              status,
-              pluck(_json, ['error', 'errors']),
-              _json.metadata
-            )
-          );
-        } else {
-
-          /**
-           * If the response had a HTTP status code below 400 and no error at its root, we call the success
-           * handler.
-           */
-          return dispatch(
-            onSuccess(_options, actionCreatorOptions, _json.values, _json.metadata)
-          );
-        }
-      });
+        });
     } else {
       if (_request.errorHandler) {
 
@@ -214,7 +217,9 @@ function makeRequest(options, actionCreatorOptions = {}) {
            * top level. If one if found, it's used to create an error object that can be stored in the Redux
            * store.
            */
-          return response.json().then((json) => {
+          return response.text().then((text) => {
+            const json = text.length ? JSON.parse(text) : {};
+
             const normalizedError = isString(json.error) ? { message: json.error } : json.error;
 
             return dispatch(
