@@ -1040,6 +1040,11 @@ export interface GlobalConfigurationOptions {
     contentType?: String,
 
     /**
+     * The key to use use as a wildcard to mean all lists
+     */
+    listWildcard?: String,
+
+    /**
      * The Content-Type of error responses that should be parsed as JSON. Defaults to the contentType if not defined.
      */
     errorContentType?: String,

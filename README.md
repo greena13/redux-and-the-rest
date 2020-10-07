@@ -717,6 +717,7 @@ configure({
 | acceptType | String | No | The `Accept` header to use with each request. Defaults to the contentType if not defined. |
 | contentType | String | No | The `Content-Type` header to use with each request |
 | errorContentType | String | No | The `Content-Type` of error responses that should be parsed as JSON. Defaults to the `contentType` if not defined. |
+| listWildcard | String | '*' | The list key used to reference all lists for action creator's option's list operations |
 | request | RequestInit | No | The request configuration object to be passed to the fetch method, or the new XMLHttpRequest object, when the progress option is used. |
 | beforeReducers | Array of reducers | No | A list of functions to call before passing the resource to the reducer. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
 | afterReducers | Array of reducers  | No | A list of functions to call after passing the resource to the reducer. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
@@ -1388,6 +1389,14 @@ import { UNSPECIFIED_KEY } from 'redux-and-the-rest';
 
 createUser(userAttributes, { push: [UNSPECIFIED_KEY] })
 ```          
+
+If you want to perform a list operation on all other lists whose key has not been explicitly referenced, you can use the `getConfiguration().listWildcard` value (`'*'` by default).
+
+For example the following will unshift an item to the `newest` list and invalidate all others:
+
+```javascript 
+createTodoItem({ title: 'Pick up milk'}, { unshift: ['newest'], invalidate: ['*'] });
+``` 
 
 When the item is successfully created, the default createItem reducer expects the server to respond with a JSON object containing the item's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 

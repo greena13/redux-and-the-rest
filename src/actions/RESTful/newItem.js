@@ -8,7 +8,6 @@ import warn from '../../utils/dev/warn';
 import applyListOperators from '../../reducers/helpers/applyListOperators';
 import wrapInObject from '../../utils/object/wrapInObject';
 import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
-import { registerActionEnd } from '../../utils/ActionQueue';
 
 /** ************************************************************************************************************
  * Action creators

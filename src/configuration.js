@@ -40,6 +40,11 @@ const DefaultConfigurationOptions = {
    * Assume a default content-type of application/json
    */
   contentType: 'application/json',
+
+  /**
+   * The key to use use as a wildcard to mean all lists
+   */
+  listWildcard: '*',
 };
 
 let configuration = {
