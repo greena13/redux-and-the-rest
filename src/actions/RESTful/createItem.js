@@ -21,6 +21,7 @@ import isNew from '../../public-helpers/isNew';
 import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
 import arrayFrom from '../../utils/array/arrayFrom';
 import toPlural from '../../utils/string/toPlural';
+import listKeysForItemKeySubstitution from '../../reducers/helpers/listKeysForItemKeySubstitution';
 
 const HTTP_REQUEST_TYPE = 'POST';
 
@@ -37,6 +38,8 @@ const HTTP_REQUEST_TYPE = 'POST';
  * @property {string[]} [invalidate=[]]  An array of list keys for which to clear (invalidate). This is useful
  *           for when you know the item that was just created is likely to appear in a list, but you don't know
  *           where, so you need to re-retrieve the whole list from the server.
+ * @property {Array<string[], function>} [merge=[]] An array of tuples where the first element is an array of list keys
+ *           and the second is a merger function that accepts
  */
 
 /**
@@ -354,6 +357,8 @@ function reducer(resources, action) {
       }
     };
 
+    const newLists = applyListOperators(resources, listOperations, temporaryKey);
+
     return {
       ...resources,
       items: newItems,
@@ -362,7 +367,7 @@ function reducer(resources, action) {
        * We add the new item (using its temporary id) to any lists that already exist in the store,
        * that the new item should be a part of - according to the listOperations specified.
        */
-      lists: applyListOperators(resources.lists, listOperations, temporaryKey),
+      lists: newLists,
       newItemKey: temporaryKey
     };
 
@@ -414,7 +419,7 @@ function reducer(resources, action) {
          * For the local action creator, the CREATING state is skipped and the temporary keys have not been
          * added to the collection yet, so we're adding them for the first time
          */
-        return applyListOperators(resources.lists, listOperations, key);
+        return applyListOperators(resources, listOperations, key);
       } else {
 
         /**
@@ -424,7 +429,7 @@ function reducer(resources, action) {
         return {
           ...resources.lists,
 
-          ...([].concat(...Object.values(listOperations))).reduce((memo, id) => {
+          ...(listKeysForItemKeySubstitution(listOperations, resources.lists)).reduce((memo, id) => {
             const list = resources.lists[id] || LIST;
             const { positions } = list;
 

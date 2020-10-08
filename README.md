@@ -1379,6 +1379,7 @@ Often when you create a new item, you want it to appear in a list immediately (w
 | `push` | Array | [ ] | An array of list keys to push the new item to the end of. |
 | `unshift` | Array | [ ] | An array of list keys to add the new item to the beginning of. |
 | `invalidate` | Array | [ ] | An array of list keys for which to clear (invalidate). This is useful for when you know the item that was just created is likely to appear in a list, but you don't know where so you need to re-retrieve the whole list from the server. |
+| `merge` | Array | [ ] | An array of tuples, where the first element is an array of list keys to run the custom merger on (the second element). See below for details |
 
 If you want to add the new item to the default (unspecified) list, you can use the `UNSPECIFIED_KEY` exported by the package:
 
@@ -1396,7 +1397,31 @@ For example the following will unshift an item to the `newest` list and invalida
 
 ```javascript 
 createTodoItem({ title: 'Pick up milk'}, { unshift: ['newest'], invalidate: ['*'] });
-``` 
+```                                                                           
+
+If the `push`, `unshift` or `invalidate` list operations do not do what you need, you can use the `merge` option to provide a custom function of your own.
+
+The merger function accepts two arguments:
+
+* An array of items in their current order
+* The new item to merge into its correct position
+
+The merger function and the collection of list keys that is should operate on are specified as tuples (to allow specifying multiple custom mergers in the same action).
+
+The merger function must return an array of item keys in the correct order for the corresponding items (rather than an array of the the full item objects passed as arguments).
+
+For example, the following will sort the list of items with the key `'important'` by priority:
+
+```javascript
+const sortListItemsByImportance = (items, newItem) => {
+  return itemsSortedByPriority([...items, newItem]).map(({ values: { id }}) => id);
+}      
+
+createTodoItem(
+    { title: 'Pick up milk'}, 
+    { merge: [['important'], sortListItemsByImportance ]}
+);
+```
 
 When the item is successfully created, the default createItem reducer expects the server to respond with a JSON object containing the item's attributes. If the request fails, it expects the server to respond with a JSON object containing an error.
 

@@ -6,12 +6,17 @@ function getListKeys(listKeys, urlOnlyParams) {
 }
 
 function extractListOperations(actionCreatorOptions, urlOnlyParams) {
-  const { push, unshift, invalidate } = actionCreatorOptions;
+  const { push, unshift, invalidate, merge = [] } = actionCreatorOptions;
 
   return {
     push: getListKeys(push, urlOnlyParams),
     unshift: getListKeys(unshift, urlOnlyParams),
     invalidate: getListKeys(invalidate, urlOnlyParams),
+    merge: merge.map((mergerKeyPair) => {
+      const [keys, merger] = mergerKeyPair;
+
+      return [getListKeys(keys), merger];
+    })
   };
 }
 

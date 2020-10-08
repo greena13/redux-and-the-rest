@@ -3,8 +3,8 @@
  * @param {ResourcesItem|ResourcesList} itemOrList The item or list to consider
  * @returns {boolean} True if the resource item or list has started.
  */
-function hasDefinedStatus({ status: { type } }) {
-  return type !== null;
+function hasDefinedStatus(itemOrList) {
+  return itemOrList.status && itemOrList.status.type !== null;
 }
 
 export default hasDefinedStatus;

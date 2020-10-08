@@ -110,7 +110,7 @@ function reducer(resources, action) {
   return {
     ...resources,
     items: newItems,
-    lists: applyListOperators(resources.lists, listOperations, temporaryKey),
+    lists: applyListOperators(resources, listOperations, temporaryKey),
     newItemKey: temporaryKey
   };
 }

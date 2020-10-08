@@ -810,7 +810,15 @@ export interface UpdateItemActionCreatorOptions<T> extends RemoteActionCreatorOp
     previousValues?: T,
 }
 
-export interface CreateItemActionCreatorOptions<T> extends RemoteActionCreatorOptionsWithMetadata<T> {
+/**
+ * Function responsible for merging a new item into a list of existing ones by returning the list new item
+ * keys in the correct order
+ */
+export interface ListPositionsMerger<T> { (existingItems: Array<ResourcesItem<T>>, newItem: ResourcesItem<T>): string[] }
+
+export type MergerAndListParameterTuple<T> =  [Array<ItemOrListParameters>, ListPositionsMerger<T>];
+
+export interface ListOperations {
     /**
      * A An array of list keys to push the new item to the end of.
      */
@@ -822,11 +830,20 @@ export interface CreateItemActionCreatorOptions<T> extends RemoteActionCreatorOp
     unshift?: Array<ItemOrListParameters>,
 
     /**
-     * A An array of list keys for which to clear (invalidate). This is useful for when you know the item
+     * An array of list keys for which to clear (invalidate). This is useful for when you know the item
      * that was just created is likely to appear in a list, but you don't know where, so you need to
      * re-retrieve the whole list from the server.
      */
     invalidate?: Array<ItemOrListParameters>,
+
+    /**
+     * An array of tuples where the first element is an array of list keys and the second is a merger
+     * function that accepts
+     */
+    merge?: Array<MergerAndListParameterTuple<T>>,
+}
+
+export interface CreateItemActionCreatorOptions<T> extends RemoteActionCreatorOptionsWithMetadata<T>, ListOperations {
 }
 
 export interface DestroyItemActionCreatorOptions<T> extends RemoteActionCreatorOptions<T> {
