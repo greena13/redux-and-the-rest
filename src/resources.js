@@ -279,21 +279,17 @@ function resources(resourceOptions, actionOptions = {}) {
   }
 
   if (hasKey(actions, 'newItem')) {
-    resourceDefinition.getOrInitializeNewItem = (resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) => {
-      return getOrInitializeNewItem({ action: actions.newItem, newItem: resourceDefinition.newItem }, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions);
-    };
+    resourceDefinition.getOrInitializeNewItem = (resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) => getOrInitializeNewItem({ action: actions.newItem, newItem: resourceDefinition.newItem }, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions);
   }
 
   if (hasKey(actions, 'createItem') && hasKey(actions, 'updateItem')) {
-    resourceDefinition.saveItem = (resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) => {
-      return saveItem({
+    resourceDefinition.saveItem = (resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) => saveItem({
         createItem: resourceDefinition.createItem,
         updateItem: resourceDefinition.updateItem,
 
         // Resource options required by handler
         keyBy, singular
       }, resourcesState, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions);
-    };
   }
 
   if (hasKey(actions, 'fetchList')) {

@@ -84,8 +84,8 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
   };
 }
 
-function localActionCreator(options, paramsOrActionCreatorOptions, optionalActionCreatorOptions) {
-  throw 'fetchList is not supported with the localOnly option. User getOrFetchList instead.';
+function localActionCreator() {
+  throw new Error('fetchList is not supported with the localOnly option. User getOrFetchList instead.');
 }
 
 /** ************************************************************************************************************

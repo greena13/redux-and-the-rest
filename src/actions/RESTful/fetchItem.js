@@ -77,8 +77,8 @@ function actionCreator(options, paramsOrActionCreatorOptions, optionalActionCrea
   };
 }
 
-function localActionCreator(options, paramsOrActionCreatorOptions, optionalActionCreatorOptions) {
-  throw 'fetchItem is not supported with the localOnly option. User getOrFetchItem instead.';
+function localActionCreator() {
+  throw new Error('fetchItem is not supported with the localOnly option. User getOrFetchItem instead.');
 }
 
 /** ************************************************************************************************************
