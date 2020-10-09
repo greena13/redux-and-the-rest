@@ -18,8 +18,8 @@ function getList(resources, parameters = {}) {
   const items = list.positions.map((key) => resources.items[key]);
 
   return {
-    items,
-    ...list
+    ...list,
+    items
   };
 }
 

@@ -338,6 +338,17 @@ function reducer(resources, action) {
       }
     }();
 
+    const newItem = {
+      ...currentItem,
+      ...item,
+
+      /**
+       * We persist the syncedAt attribute of the list if it's been fetched in the past, in case
+       * the request fails, we know the last time it was successfully synced
+       */
+      status: mergeStatus(currentItem.status, item.status, { onlyPersist: ['syncedAt'] }),
+    };
+
     /**
      * If a new resource is being added to the store as CREATING (we're waiting for a remote API to confirm its
      * creation), we add it to the repository of items with a temporary id until a permanent one can assigned
@@ -345,19 +356,10 @@ function reducer(resources, action) {
      */
     const newItems = {
       ...itemsToPersist,
-      [temporaryKey]: {
-        ...currentItem,
-        ...item,
-
-        /**
-         * We persist the syncedAt attribute of the list if it's been fetched in the past, in case
-         * the request fails, we know the last time it was successfully synced
-         */
-        status: mergeStatus(currentItem.status, item.status, { onlyPersist: ['syncedAt'] }),
-      }
+      [temporaryKey]: newItem
     };
 
-    const newLists = applyListOperators(resources, listOperations, temporaryKey);
+    const newLists = applyListOperators(resources, listOperations, temporaryKey, newItem);
 
     return {
       ...resources,
@@ -394,22 +396,24 @@ function reducer(resources, action) {
       }
     }();
 
+    const newItem = {
+      ...item,
+
+      /**
+       * We add all status attributes that were added since the request was started (currently only the
+       * syncedAt value).
+       */
+      status: mergeStatus(currentItem.status, item.status),
+
+      /**
+       * For metadata extracted from the response, we merge it with the existing metadata already available
+       */
+      metadata: { ...currentItem.metadata, ...item.metadata }
+    };
+
     const newItems = {
       ...itemsToPersist,
-      [key]: {
-        ...item,
-
-        /**
-         * We add all status attributes that were added since the request was started (currently only the
-         * syncedAt value).
-         */
-        status: mergeStatus(currentItem.status, item.status),
-
-        /**
-         * For metadata extracted from the response, we merge it with the existing metadata already available
-         */
-        metadata: { ...currentItem.metadata, ...item.metadata }
-      }
+      [key]: newItem
     };
 
     const newLists = function(){
@@ -419,7 +423,7 @@ function reducer(resources, action) {
          * For the local action creator, the CREATING state is skipped and the temporary keys have not been
          * added to the collection yet, so we're adding them for the first time
          */
-        return applyListOperators(resources, listOperations, key);
+        return applyListOperators(resources, listOperations, key, newItem);
       } else {
 
         /**

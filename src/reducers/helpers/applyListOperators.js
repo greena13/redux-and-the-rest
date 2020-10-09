@@ -2,13 +2,12 @@ import { LIST } from '../../constants/DataStructures';
 import contains from '../../utils/list/contains';
 import { getConfiguration } from '../../configuration';
 import without from '../../utils/list/without';
-import getList from '../../utils/getList';
-import getItem from '../../utils/getItem';
 import keysExplicitlyReferencedByListOperations from './keysExplicitlyReferencedByListOperations';
 import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
+import getList from '../../utils/getList';
 
-function applyListOperators(resources, listOperations = {}, temporaryKey) {
+function applyListOperators(resources, listOperations = {}, newItemKey, newItem) {
   const updatedLists = {};
 
   const { listWildcard } = getConfiguration();
@@ -16,31 +15,39 @@ function applyListOperators(resources, listOperations = {}, temporaryKey) {
   const keysExplicitlyReferenced = keysExplicitlyReferencedByListOperations(listOperations);
 
   function pushPosition(listKey) {
-    const existingList = resources.lists[listKey] || LIST;
+    const existingList = resources.lists[listKey];
 
-    if (contains(existingList.positions, temporaryKey)) {
+    if (!existingList) {
+      return;
+    }
+
+    if (contains(existingList.positions, newItemKey)) {
       updatedLists[listKey] = existingList;
     } else {
       updatedLists[listKey] = {
         ...existingList,
         positions: [
           ...existingList.positions,
-          temporaryKey
+          newItemKey
         ]
       };
     }
   }
 
   function unshiftPosition(listKey) {
-    const existingList = resources.lists[listKey] || LIST;
+    const existingList = resources.lists[listKey];
 
-    if (contains(existingList.positions, temporaryKey)) {
+    if (!existingList) {
+      return;
+    }
+
+    if (contains(existingList.positions, newItemKey)) {
       updatedLists[listKey] = existingList;
     } else {
       updatedLists[listKey] = {
         ...existingList,
         positions: [
-          temporaryKey,
+          newItemKey,
           ...existingList.positions
         ]
       };
@@ -52,10 +59,15 @@ function applyListOperators(resources, listOperations = {}, temporaryKey) {
   }
 
   function applyCustomReducer(listKey, customMerger) {
-    const newItem = getItem(resources, temporaryKey);
-    const currentList = getList(resources, listKey).items;
+    const existingList = resources.lists[listKey];
 
-    const positions = customMerger([...currentList], newItem);
+    if (!existingList) {
+      return;
+    }
+
+    const listWithItems = getList(resources, listKey);
+
+    const positions = customMerger(listWithItems.items, newItem);
 
     assertInDevMode(() => {
       if (!Array.isArray(positions)) {
@@ -67,7 +79,7 @@ function applyListOperators(resources, listOperations = {}, temporaryKey) {
     });
 
     updatedLists[listKey] = {
-      ...currentList,
+      ...existingList,
       positions
     };
   }
