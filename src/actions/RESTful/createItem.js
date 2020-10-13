@@ -39,7 +39,8 @@ const HTTP_REQUEST_TYPE = 'POST';
  *           for when you know the item that was just created is likely to appear in a list, but you don't know
  *           where, so you need to re-retrieve the whole list from the server.
  * @property {Array<string[], function>} [merge=[]] An array of tuples where the first element is an array of list keys
- *           and the second is a merger function that accepts
+ *           and the second is a merger function that accepts an array of items in their current order, and the
+ *           new item, as arguments.
  */
 
 /**
@@ -359,7 +360,7 @@ function reducer(resources, action) {
       [temporaryKey]: newItem
     };
 
-    const newLists = applyListOperators(resources, listOperations, temporaryKey, newItem);
+    const newLists = applyListOperators({ ...resources, items: newItems }, listOperations, temporaryKey);
 
     return {
       ...resources,
@@ -423,7 +424,7 @@ function reducer(resources, action) {
          * For the local action creator, the CREATING state is skipped and the temporary keys have not been
          * added to the collection yet, so we're adding them for the first time
          */
-        return applyListOperators(resources, listOperations, key, newItem);
+        return applyListOperators({ ...resources, items: newItems }, listOperations, key);
       } else {
 
         /**

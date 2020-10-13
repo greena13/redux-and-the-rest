@@ -816,7 +816,15 @@ export interface UpdateItemActionCreatorOptions<T> extends RemoteActionCreatorOp
  */
 export interface ListPositionsMerger<T> { (existingItems: Array<ResourcesItem<T>>, newItem: ResourcesItem<T>): string[] }
 
+/**
+ * Function responsible for sorting list of existing items by returning the list's item keys in the correct
+ * order
+ */
+export interface ListPositionsSorter<T> { (existingItems: Array<ResourcesItem<T>>): string[] }
+
 export type MergerAndListParameterTuple<T> =  [Array<ItemOrListParameters>, ListPositionsMerger<T>];
+
+export type SorterAndListParameterTuple<T> =  [Array<ItemOrListParameters>, ListPositionsSorter<T>];
 
 export interface ListOperations {
     /**
@@ -838,9 +846,15 @@ export interface ListOperations {
 
     /**
      * An array of tuples where the first element is an array of list keys and the second is a merger
-     * function that accepts
+     * function that accepts an array of items in their current order, and the new item, as arguments.
      */
     merge?: Array<MergerAndListParameterTuple<T>>,
+
+    /**
+     * An array of tuples where the first element is an array of list keys and the second is a sorter
+     * function that accepts an array of items in their current order.
+     */
+    sort?: Array<SorterAndListParameterTuple<T>>,
 }
 
 export interface CreateItemActionCreatorOptions<T> extends RemoteActionCreatorOptionsWithMetadata<T>, ListOperations {

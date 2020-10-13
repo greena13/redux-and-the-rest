@@ -16,6 +16,11 @@ function extractListOperations(actionCreatorOptions, urlOnlyParams) {
       const [keys, merger] = mergerKeyPair;
 
       return [getListKeys(keys), merger];
+    }),
+    sort: merge.map((sorterKeyPair) => {
+      const [keys, sorter] = sorterKeyPair;
+
+      return [getListKeys(keys), sorter];
     })
   };
 }

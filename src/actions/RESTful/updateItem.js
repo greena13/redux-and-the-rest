@@ -17,6 +17,8 @@ import toPlural from '../../utils/string/toPlural';
 import valuesAdded from '../../utils/array/valuesAdded';
 import valuesRemoved from '../../utils/array/valuesRemoved';
 import contains from '../../utils/list/contains';
+import extractListOperations from '../../action-creators/helpers/extractListOperations';
+import applyListOperators from '../../reducers/helpers/applyListOperators';
 
 const HTTP_REQUEST_TYPE = 'PUT';
 
@@ -30,6 +32,8 @@ const HTTP_REQUEST_TYPE = 'PUT';
  *
  * @property {Object} [previousValues] The values of the resource item being updated, to allow more efficiently
  *          updating associated items.
+ * * @property {Array<string[], function>} [sort=[]] An array of tuples where the first element is an array of list keys
+ *           and the second is a sorter function that accepts an array of items in their current order
  */
 
 /**
@@ -49,7 +53,9 @@ const HTTP_REQUEST_TYPE = 'PUT';
  */
 function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
   const {
-    action, transforms, url: urlTemplate, progress, keyBy, metadata, requestAdaptor, request = {}, singular
+    action, transforms, url: urlTemplate, progress, keyBy,
+    metadata, requestAdaptor, request = {}, singular,
+    urlOnlyParams
   } = options;
 
   const { params, values, actionCreatorOptions } =
@@ -71,6 +77,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
   const key = getItemKey(normalizedParams, { keyBy, singular });
 
   return (dispatch) => {
+    const listOperations = extractListOperations(actionCreatorOptions, urlOnlyParams);
     const requestedAt = Date.now();
 
     dispatch(
@@ -78,7 +85,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
         { transforms, action, key, metadata, requestedAt },
         actionCreatorOptions,
         values,
-        actionCreatorOptions
+        listOperations
       )
     );
 
@@ -89,6 +96,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
        * Values common/shared with local version of action creator
        */
       params: normalizedParams,
+      listOperations,
 
       /**
        * Values not used by local version of action creator (unique to the async action creator)
@@ -125,9 +133,10 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
  * @param {Object} options Options specified when defining the resource and action
  * @param {Object} [actionCreatorOptions={}] The options passed to the update* action creator function
  * @param {Object} values The attributes of the resource currently being created
+ * @param {Object} [listOperations={}] Options for how the lists containing the updated item should be updated
  * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
  */
-function submitUpdateResource(options, actionCreatorOptions, values) {
+function submitUpdateResource(options, actionCreatorOptions, values, listOperations) {
   const { transforms, action, key, requestedAt } = options;
 
   /**
@@ -138,6 +147,7 @@ function submitUpdateResource(options, actionCreatorOptions, values) {
   return {
     type: action,
     status: UPDATING, key,
+    listOperations,
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       values,
       status: { type: UPDATING, requestedAt },
@@ -162,7 +172,7 @@ function submitUpdateResource(options, actionCreatorOptions, values) {
  * @returns {Object} Action Object that will be passed to the reducers to update the Redux state
  */
 function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, optionalActionCreatorOptions) {
-  const { keyBy, singular } = options;
+  const { urlOnlyParams, keyBy, singular } = options;
 
   const { params, values, actionCreatorOptions } =
     adaptOptionsForSingularResource({ paramsOptional: singular, acceptsValues: true }, [
@@ -177,11 +187,13 @@ function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOption
   const metadata = actionCreatorOptions.metadata || options.metadata;
 
   const normalizedParams = wrapInObject(params, keyBy);
+  const listOperations = extractListOperations(actionCreatorOptions, urlOnlyParams);
 
   return receiveUpdatedResource(
     {
       ...options,
       params: normalizedParams,
+      listOperations,
     },
     actionCreatorOptions,
     values,
@@ -201,13 +213,14 @@ function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOption
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function receiveUpdatedResource(options, actionCreatorOptions, values, metadata) {
-  const { transforms, action, params, keyBy, localOnly, singular } = options;
+  const { transforms, action, params, listOperations, keyBy, localOnly, singular } = options;
   const { previousValues } = actionCreatorOptions;
 
   return {
     type: action,
     status: SUCCESS,
     key: getItemKey([values, params], { keyBy, singular }),
+    listOperations,
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       values,
       status: { type: SUCCESS, syncedAt: Date.now() },
@@ -233,7 +246,7 @@ function receiveUpdatedResource(options, actionCreatorOptions, values, metadata)
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function handleUpdateResourceError(options, actionCreatorOptions, httpCode, errorEnvelope, metadata) {
-  const { action, key } = options;
+  const { action, key, localOnly } = options;
 
   return {
     type: action,
@@ -245,7 +258,8 @@ function handleUpdateResourceError(options, actionCreatorOptions, httpCode, erro
     metadata,
     httpCode,
     ...errorEnvelope,
-    errorOccurredAt: Date.now()
+    errorOccurredAt: Date.now(),
+    localOnly
   };
 }
 
@@ -261,7 +275,7 @@ function handleUpdateResourceError(options, actionCreatorOptions, httpCode, erro
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources, action) {
-  const { type, key, status, item, httpCode, error, errors, errorOccurredAt, metadata } = action;
+  const { localOnly, type, key, listOperations = {}, status, item, httpCode, error, errors, errorOccurredAt, metadata } = action;
   const { items } = resources;
 
   assertInDevMode(() => {
@@ -296,23 +310,28 @@ function reducer(resources, action) {
       ...item.values
     };
 
+    const updatedItem = {
+      ...item,
+      values: newValues,
+
+      /**
+       * We persist the syncedAt attribute of the item if it's been fetched in the past, in case
+       * the request fails, we know the last time it was successfully retrieved.
+       */
+      status: mergeStatus(currentItem.status, item.status, { onlyPersist: ['syncedAt', 'dirty', 'originalValues'] }),
+    };
+
     const newItems = {
       ...items,
-      [key]: {
-        ...item,
-        values: newValues,
-
-        /**
-         * We persist the syncedAt attribute of the item if it's been fetched in the past, in case
-         * the request fails, we know the last time it was successfully retrieved.
-         */
-        status: mergeStatus(currentItem.status, item.status, { onlyPersist: ['syncedAt', 'dirty', 'originalValues'] }),
-      }
+      [key]: updatedItem
     };
+
+    const newLists = applyListOperators({ ...resources, items: newItems }, listOperations, key);
 
     return {
       ...resources,
       items: newItems,
+      lists: newLists
     };
 
   } else if (status === SUCCESS) {
@@ -326,27 +345,44 @@ function reducer(resources, action) {
       ...item.values
     };
 
+    const updatedItem = {
+      ...item,
+      values: newValues,
+
+      /**
+       * We add all status attributes that were added since the request was started (currently only the
+       * syncedAt value).
+       */
+      status: mergeStatus(without(currentItem.status, ['dirty', 'originalValues']), item.status),
+
+      /**
+       * For metadata extracted from the response, we merge it with the existing metadata already available
+       */
+      metadata: { ...currentItem.metadata, ...item.metadata }
+    };
+
     const newItems = {
       ...items,
-      [key]: {
-        ...item,
-        values: newValues,
-
-        /**
-         * We add all status attributes that were added since the request was started (currently only the
-         * syncedAt value).
-         */
-        status: mergeStatus(without(currentItem.status, ['dirty', 'originalValues']), item.status),
-
-        /**
-         * For metadata extracted from the response, we merge it with the existing metadata already available
-         */
-        metadata: { ...currentItem.metadata, ...item.metadata }
-      }
+      [key]: updatedItem
     };
+
+    const newLists = function(){
+      if (localOnly) {
+
+        /**
+         * For the local action creator, the UPDATING state is skipped and the list operations have not been
+         * performed, so we're doing them for the first time.
+         */
+        return applyListOperators({ ...resources, items: newItems }, listOperations, key);
+      } else {
+        return resources.lists;
+      }
+    }();
+
 
     return {
       ...resources,
+      lists: newLists,
       items: newItems,
     };
 
