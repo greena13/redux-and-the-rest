@@ -22,6 +22,7 @@ import { RESOURCES } from './constants/DataStructures';
 import getOrInitializeNewItem from './utils/getOrInitializeNewItem';
 import saveItem from './utils/saveItem';
 import arrayFrom from './utils/array/arrayFrom';
+import isFunction from './utils/object/isFunction';
 
 /**
  * @typedef {Object<string, ResourcesDefinition>} AssociationOptionsMap A Mapping between the name of an

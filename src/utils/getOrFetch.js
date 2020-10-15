@@ -6,6 +6,8 @@ import isFunction from './object/isFunction';
 import { enqueuePendingAction, isActionPending, registerActionEnd } from './ActionQueue';
 import hasDefinedStatus from '../public-helpers/hasDefinedStatus';
 import { FETCHING } from '../constants/Statuses';
+import nop from './function/nop';
+import isUndefined from './isUndefined';
 
 function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions = {}) {
   const {
@@ -67,9 +69,24 @@ function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions =
          * If the item is not already in the store (or we're forcing the fetch operation), we call the fetch action
          * creator to retrieve it in the background and return an empty item or list in the meantime.
          */
-        fetchFunction(params, without(actionCreatorOptions, ['forceFetch'])).then(() => {
+        const fetcher = fetchFunction(params, without(actionCreatorOptions, ['forceFetch']));
+
+        if (isUndefined(fetcher)) {
+
+          /**
+           * When action creators return a nop, the fetcher is undefined, so we immediately register the
+           * action as ended (it never actually started)
+           */
           registerActionEnd(action, key);
-        });
+        } else {
+
+          /**
+           * If the action creator is not a no-operation, we wait until the promise it returns resolves and
+           * then mark the action as ended
+           */
+          fetcher.then(() => registerActionEnd(action, key));
+        }
+
       }, 0);
     }
 
