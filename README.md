@@ -713,6 +713,7 @@ configure({
 | urlOnlyParams | Array of string | [] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
 | method | String | No | The HTTP method to use for the request. Defaults to the standard method used for the particular RESTful action |
 | actionName | String | No | The type value to give the action(s) dispatched. If this value is not specified, RESTful actions will use a standard default that includes the resource name and the action name, while custom actions will use the key of the action configuration object, attempting to substitute 'Item' for the resource name, or fallback to a name with the action and resource name concatenated together. |
+| actionCreator | Function | Required only for custom actions | A custom action creator function that returns an action or thunk action that can then be passed to Redux's dispatch function |
 | responseAdaptor | (responseBody: Object, response: Response) => { values: Object, error?: Object or string, errors?: Array<Object or string> } | No | Function used to adapt the responses for requests before it is handed over to the reducers. The function must return the results as an object with properties values and (optionally) error. |
 | requestAdaptor | (requestBody: Object) => Object | No | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
 | credentials | RequestCredentials | No | Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the request only if it's on the same origin. |
@@ -721,6 +722,7 @@ configure({
 | errorContentType | String | No | The `Content-Type` of error responses that should be parsed as JSON. Defaults to the `contentType` if not defined. |
 | listWildcard | String | '*' | The list key used to reference all lists for action creator's option's list operations |
 | request | RequestInit | No | The request configuration object to be passed to the fetch method, or the new XMLHttpRequest object, when the progress option is used. |
+| reducer | Function | Required for custom actions | A custom reducer function to adapt the resource as it exists in the Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful actions. |
 | beforeReducers | Array of reducers | No | A list of functions to call before passing the resource to the reducer. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
 | afterReducers | Array of reducers  | No | A list of functions to call after passing the resource to the reducer. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
 | store | Store | Yes, if you use the mentioned helpers | The Redux store, used to directly invoke dispatch and get state for the getOrFetchItem() and getOrFetchList() functions |

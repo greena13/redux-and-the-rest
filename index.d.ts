@@ -1232,6 +1232,12 @@ export interface ActionDefinitionOptions<T> extends ActionAndActionCreatorShared
     afterReducers?: Array<Reducer>,
 
     /**
+     * A custom action creator function that returns an action or thunk action that can then be passed to
+     * Redux's dispatch function
+     */
+    actionCreator?: (...args: any[]) => AnyAction | ThunkAction<void, any, any, AnyAction>,
+
+    /**
      * A custom reducer function to adapt the resource as it exists in the Redux store. By default, the
      * standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful
      * actions.
