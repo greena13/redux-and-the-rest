@@ -197,6 +197,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
           'progress',
           'requestErrorHandler',
           'metadata',
+          'method',
           'localOnly',
           'singular'
         ]

@@ -709,8 +709,9 @@ configure({
 | key | Type | Required or Default Value | Description |
 | --- | ---- | ------------------------- | ----------- |
 | keyBy | string or array of strings | No | The resource attribute used to key/index all items of the current resource type. This will be the value you pass to each action creator to identify the target of each action. By default, 'id' is used. |
-| localOnly | boolean | No | Set to true for resources that should be edited locally, only. The fetchItem and fetchList actions are disabled (use `getOrFetchItem` and `getOrFetchList` instead) and the createItem, updateItem and destroyItem only update the store locally, without making any HTTP requests. |
-| urlOnlyParams | Array of string | No | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
+| localOnly | boolean | False | Set to true for resources that should be edited locally, only. The fetchItem and fetchList actions are disabled (use `getOrFetchItem` and `getOrFetchList` instead) and the createItem, updateItem and destroyItem only update the store locally, without making any HTTP requests. |
+| urlOnlyParams | Array of string | [] | The attributes passed to action creators that should be used to create the request URL, but ignored when storing the request's response. |
+| method | String | No | The HTTP method to use for the request. Defaults to the standard method used for the particular RESTful action |
 | responseAdaptor | (responseBody: Object, response: Response) => { values: Object, error?: Object or string, errors?: Array<Object or string> } | No | Function used to adapt the responses for requests before it is handed over to the reducers. The function must return the results as an object with properties values and (optionally) error. |
 | requestAdaptor | (requestBody: Object) => Object | No | Function used to adapt the JavaScript object before it is handed over to become the body of the request to be sent to an external API. |
 | credentials | RequestCredentials | No | Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the request only if it's on the same origin. |

@@ -52,7 +52,8 @@ function actionCreator(options, optionalParams, optionalActionCreatorOptions) {
     url: urlTemplate,
     progress,
     request = {},
-    singular
+    singular,
+    method = HTTP_REQUEST_TYPE
   } = options;
 
   const { params, actionCreatorOptions } =
@@ -65,10 +66,10 @@ function actionCreator(options, optionalParams, optionalActionCreatorOptions) {
   const normalizedParams = wrapInObject(params, keyBy);
   const url = generateUrl({ urlTemplate }, normalizedParams);
 
-  if (actionCreatorOptions.force || isRequestInProgress(HTTP_REQUEST_TYPE, url)) {
+  if (actionCreatorOptions.force || isRequestInProgress(method, url)) {
     return nop;
   } else {
-    registerRequestStart(HTTP_REQUEST_TYPE, url);
+    registerRequestStart(method, url);
   }
 
   const key = getItemKey(normalizedParams, { keyBy, singular });
@@ -96,7 +97,7 @@ function actionCreator(options, optionalParams, optionalActionCreatorOptions) {
        */
       url,
       request: {
-        method: HTTP_REQUEST_TYPE,
+        method,
         ...request
       },
       dispatch,

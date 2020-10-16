@@ -1184,6 +1184,12 @@ export interface ActionDefinitionOptions<T> extends ActionAndActionCreatorShared
     urlOnlyParams?: Array<string>,
 
     /**
+     * The HTTP method to use for the request. Defaults to the standard method used for the particular RESTful
+     * action.
+     */
+    method?: string,
+
+    /**
      * Whether the store should emit progress events as the resource is uploaded or downloaded. This is
      * applicable to the RESTful actions fetchList, fetch, create, updateItem and any custom actions.
      */

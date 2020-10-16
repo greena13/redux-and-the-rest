@@ -55,7 +55,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
   const {
     action, transforms, url: urlTemplate, progress, keyBy,
     metadata, requestAdaptor, request = {}, singular,
-    urlOnlyParams
+    urlOnlyParams, method = HTTP_REQUEST_TYPE
   } = options;
 
   const { params, values, actionCreatorOptions } =
@@ -68,10 +68,10 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
   const normalizedParams = wrapInObject(params, keyBy);
   const url = generateUrl({ urlTemplate }, wrapInObject(normalizedParams, keyBy));
 
-  if (actionCreatorOptions.force || isRequestInProgress(HTTP_REQUEST_TYPE, url)) {
+  if (actionCreatorOptions.force || isRequestInProgress(method, url)) {
     return nop;
   } else {
-    registerRequestStart(HTTP_REQUEST_TYPE, url);
+    registerRequestStart(method, url);
   }
 
   const key = getItemKey(normalizedParams, { keyBy, singular });
@@ -112,7 +112,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
        */
       url,
       request: {
-        method: HTTP_REQUEST_TYPE,
+        method,
         body: JSON.stringify(requestAdaptor ? requestAdaptor(values) : values),
         ...request
       },

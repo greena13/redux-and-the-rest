@@ -37,16 +37,16 @@ const HTTP_REQUEST_TYPE = 'GET';
  */
 function actionCreator(options, params, actionCreatorOptions = {}) {
   const {
-    action, url: urlTemplate, keyBy, urlOnlyParams, progress, request = {}
+    action, url: urlTemplate, keyBy, urlOnlyParams, progress, request = {}, method = HTTP_REQUEST_TYPE
   } = options;
 
   const key = getListKey(params, { urlOnlyParams });
   const url = generateUrl({ urlTemplate }, params);
 
-  if (!actionCreatorOptions.force && isRequestInProgress(HTTP_REQUEST_TYPE, url)) {
+  if (!actionCreatorOptions.force && isRequestInProgress(method, url)) {
     return nop;
   } else {
-    registerRequestStart(HTTP_REQUEST_TYPE, url);
+    registerRequestStart(method, url);
   }
 
   return (dispatch) => {
@@ -74,7 +74,7 @@ function actionCreator(options, params, actionCreatorOptions = {}) {
       requestedAt,
       dispatch,
       request: {
-        method: HTTP_REQUEST_TYPE,
+        method,
         ...request,
       },
       onSuccess: receiveList,
