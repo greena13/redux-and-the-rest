@@ -1190,6 +1190,14 @@ export interface ActionDefinitionOptions<T> extends ActionAndActionCreatorShared
     method?: string,
 
     /**
+     * The type value to give the actions dispatched. If this value is not specified, RESTful actions will
+     * use a standard default that includes the resource name and the action name, while custom actions
+     * will use the key of the action configuration object, attempting to substitute 'Item' for the resource
+     * name, or fallback to a name with the action and resource name concatenated together.
+     */
+    actionName?: string,
+
+    /**
      * Whether the store should emit progress events as the resource is uploaded or downloaded. This is
      * applicable to the RESTful actions fetchList, fetch, create, updateItem and any custom actions.
      */

@@ -171,7 +171,7 @@ function resources(resourceOptions, actionOptions = {}) {
     _actionOptions = without(actionOptions, 'fetchList');
   }
 
-  const actions = buildActions(name, resourceOptions, Object.keys(_actionOptions));
+  const actions = buildActions(name, resourceOptions, _actionOptions);
   const reducersDictionary = buildReducersDictionary(resourceOptions, actions, _actionOptions);
   const actionCreators = buildActionCreators(resourceOptions, actions, _actionOptions);
 

@@ -61,6 +61,14 @@ const STANDARD_ACTIONS = {
 };
 
 
+function replaceItem(actionName, resourceName) {
+  if (actionName.indexOf('ITEMS') !== -1) {
+    return actionName.replace('ITEMS', constantize(toPlural(resourceName)));
+  } else if (actionName.indexOf('ITEM') !== -1) {
+    return actionName.replace('ITEM', constantize(toSingular(resourceName)));
+  }
+}
+
 /**
  * Generates the name of an action, substituting the name of a resource into a generalized template string
  * @param {string} resourceName The name of the resource
@@ -71,13 +79,20 @@ function getActionName(resourceName, actionAlias) {
   const standardAction = STANDARD_ACTIONS[actionAlias];
 
   if (standardAction) {
-    if (standardAction.indexOf('ITEMS') === -1) {
-      return standardAction.replace('ITEM', constantize(toSingular(resourceName)));
-    } else {
-      return standardAction.replace('ITEMS', constantize(toPlural(resourceName)));
-    }
+    return replaceItem(standardAction, resourceName);
   } else {
-    return `${constantize(actionAlias)}_${constantize(resourceName)}`;
+
+    /**
+     * Generate an action name for a custom action
+     */
+    const constantizeActionName = constantize(actionAlias);
+    const actionNameSubstitutingResourceNameForItem = replaceItem(constantizeActionName, resourceName);
+
+    if (actionNameSubstitutingResourceNameForItem) {
+      return actionNameSubstitutingResourceNameForItem;
+    }
+
+    return `${constantizeActionName}_${constantize(resourceName)}`;
   }
 }
 
@@ -85,14 +100,15 @@ function getActionName(resourceName, actionAlias) {
  * Dictionary of actions names to action type constants
  * @param {string} name The name of the resource
  * @param {ResourceOptions} resourceOptions Options that apply to the whole resource
- * @param {string[]} actionList List of actions to enable
+ * @param {Object} actionsConfiguration Configuration object for actions
  * @returns {ActionDictionary} The dictionary of generic action keys to specific action names
  */
-function buildActions(name, resourceOptions, actionList = []) {
+function buildActions(name, resourceOptions, actionsConfiguration = {}) {
   const actionsMap = {};
 
-  actionList.forEach((action) => {
-    actionsMap[action] = getActionName(name, action);
+  Object.keys(actionsConfiguration).forEach((action) => {
+    const actionConfiguration = actionsConfiguration[action];
+    actionsMap[action] = (actionConfiguration && actionConfiguration.actionName) || getActionName(name, action);
   });
 
   return actionsMap;
