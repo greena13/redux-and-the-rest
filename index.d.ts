@@ -831,7 +831,7 @@ export type MergerAndListParameterTuple<T> =  [Array<ItemOrListParameters>, List
 
 export type SorterAndListParameterTuple<T> =  [Array<ItemOrListParameters>, ListPositionsSorter<T>];
 
-export interface ListOperations {
+export interface ListOperations<T> {
     /**
      * A An array of list keys to push the new item to the end of.
      */
@@ -862,7 +862,7 @@ export interface ListOperations {
     sort?: Array<SorterAndListParameterTuple<T>>,
 }
 
-export interface CreateItemActionCreatorOptions<T> extends RemoteActionCreatorOptionsWithMetadata<T>, ListOperations {
+export interface CreateItemActionCreatorOptions<T> extends RemoteActionCreatorOptionsWithMetadata<T>, ListOperations<T> {
 }
 
 export interface DestroyItemActionCreatorOptions<T> extends RemoteActionCreatorOptions<T> {
