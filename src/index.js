@@ -3,7 +3,7 @@ export * from './public-helpers/index.js';
 export { RESOURCE, RESOURCES, LIST, ITEM } from './constants/DataStructures';
 export { COMPLETE, PREVIEW } from './constants/MetadataTypes';
 
-export { NEW, EDITING, FETCHING, CREATING, UPDATING, DESTROYING, DESTROY_ERROR, SUCCESS, PROGRESS, ERROR } from './constants/Statuses';
+export { NEW, EDITING, FETCHING, CREATING, UPDATING, DESTROYING, DESTROY_ERROR, SYNCING, SUCCESS, PROGRESS, ERROR } from './constants/Statuses';
 
 export { CLIENT_ERROR } from './constants/NetworkStatuses';
 

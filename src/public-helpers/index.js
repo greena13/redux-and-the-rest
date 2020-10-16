@@ -1,6 +1,6 @@
-import { CREATING, DESTROYING, FETCHING, PROGRESS, UPDATING } from '../constants/Statuses';
-import isStatus from './isStatus';
-import isFinished from './isFinished';
+import { CREATING, DESTROYING, FETCHING, PROGRESS, SYNCING, UPDATING } from '../constants/Statuses';
+import { default as isStatus } from './isStatus';
+import { default as isFinished } from './isFinished';
 import isNew from './isNew';
 
 export { default as serializeKey } from './serializeKey';
@@ -25,14 +25,14 @@ export const isCreating = ((itemOrList) => isStatus(itemOrList, CREATING));
 export const isUpdating = ((itemOrList) => isStatus(itemOrList, UPDATING));
 export const isDestroying = ((itemOrList) => isStatus(itemOrList, DESTROYING));
 export const isSaving = ((itemOrList) => isStatus(itemOrList, [CREATING, UPDATING]));
-export const isSyncing = ((itemOrList) => isStatus(itemOrList, [FETCHING, CREATING, UPDATING, DESTROYING, PROGRESS]));
+export const isSyncing = ((itemOrList) => isStatus(itemOrList, [FETCHING, CREATING, UPDATING, DESTROYING, SYNCING, PROGRESS]));
 
 export const isFinishedFetching = ((itemOrList) => isFinished(itemOrList, FETCHING));
 export const isFinishedCreating = ((itemOrList) => isFinished(itemOrList, CREATING));
 export const isFinishedUpdating = ((itemOrList) => isFinished(itemOrList, UPDATING));
 export const isFinishedDestroying = ((itemOrList) => isFinished(itemOrList, DESTROYING));
 export const isFinishedSaving = ((itemOrList) => isFinished(itemOrList, [CREATING, UPDATING]));
-export const isFinishedSyncing = ((itemOrList) => isFinished(itemOrList, [FETCHING, CREATING, UPDATING, DESTROYING, PROGRESS]));
+export const isFinishedSyncing = ((itemOrList) => isFinished(itemOrList, [FETCHING, CREATING, UPDATING, DESTROYING, SYNCING, PROGRESS]));
 
 export { default as isSuccess } from './isSuccess';
 export { default as isError } from './isError';

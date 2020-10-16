@@ -38,6 +38,11 @@ export const DESTROYING: string;
 export const DESTROY_ERROR: string;
 
 /**
+ * The generic status used when a resource item is being synced with an external API
+ */
+export const SYNCING: string;
+
+/**
  * The status used when a resource item or list has been successfully synchronised with an external API
  */
 export const SUCCESS: string;
@@ -1291,6 +1296,14 @@ export function getValuesBeforeEditing<T>(item: ResourcesItem<T>): T;
 export function getHttpStatusCode(itemOrList: GenericItemOrList): number;
 
 /**
+ * Whether the resource item currently has a particular status
+ * @param item The item to evaluate
+ * @param status The single status or array of statuses to check against
+ * @returns True if the resource item currently has any of the statuses in the list
+ */
+export function isStatus(item: GenericItemOrList, status: string | Array<string>): boolean;
+
+/**
  * Whether the resource item is new and has yet to be saved to the server
  * @param item The item to evaluate
  * @returns True if the resource item is new
@@ -1345,6 +1358,15 @@ export function isSaving(item: GenericItemOrList): boolean;
  * @returns True if the item is currently being synced with the remote
  */
 export function isSyncing(item: GenericItemOrList): boolean;
+
+/**
+ * Whether a resource item or list has exited the provided status and is now in a success or error state
+ * @param item The item to evaluate
+ * @param status The single status or array of statuses to check against
+ * @returns True if the resource item or list has a previous status in the list and is now in either a success
+ *          or error status
+ */
+export function isFinished(item: GenericItemOrList, status: string | Array<string>): boolean;
 
 /**
  * Whether the request to fetch the item or list has finished and is now in a success or error state

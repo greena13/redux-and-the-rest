@@ -57,6 +57,12 @@ const DESTROYING = 'DESTROYING';
 const DESTROY_ERROR = 'DESTROY_ERROR';
 
 /**
+ * The generic status used when a resource item is being synced with an external API
+ * @type {string}
+ */
+const SYNCING = 'SYNCING';
+
+/**
  * The status used when a new resource item has not yet been saved to an external API
  * @type {string}
  */
@@ -72,6 +78,8 @@ export {
 
   DESTROYING,
   DESTROY_ERROR,
+
+  SYNCING,
 
   SUCCESS,
   PROGRESS,

@@ -1103,6 +1103,10 @@ There are 3 levels or groups to be aware of:
 * `isSaving(item)` - Whether the item being saved (created or updated) on the remote 
 * `isSyncing(itemOrList)` - Whether the item or list being synced (fetched, updated, created, destroyed) on the remote 
  
+To check against custom statuses, you can use the more generic:
+
+* `isStatus(itemOrList, statusList)` - Whether the resource item currently has a particular status - statusList is either a single value or an array of values (a match on any of which will return true).  
+ 
 Checking when a sync is finished:
 
 * `isFinishedFetching(itemOrList)` - Whether the request to fetch the item or list is finished 
@@ -1111,6 +1115,10 @@ Checking when a sync is finished:
 * `isFinishedDestroying(item)` - Whether the request to destroy the item is finished 
 * `isFinishedSaving(item)` - Whether the request to save the item is finished 
 * `isFinishedSyncing(itemOrList)` - Whether the request to sync the item or list is finished 
+
+To check against custom statuses, you can use the more generic:
+
+* `isFinished(itemOrList, statusList)` - Whether a resource item or list has exited the provided status (or any value in the status list) and is now in a success or error state  
 
 Checking the result of the latest sync with the remote API:
 
