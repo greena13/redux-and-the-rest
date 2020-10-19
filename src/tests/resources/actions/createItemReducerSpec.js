@@ -7,7 +7,7 @@ import {
   expectToChangeResourcesItemStatusErrorOccurredAtToBeSet,
   expectToChangeResourcesItemStatusTo,
   expectToChangeResourcesItemValuesTo,
-  setupInitialState, expectToChangeResourceListPositionsTo,
+  setupInitialState, expectToChangeResourceListPositionsTo, resourcesDefinition,
 } from '../../helpers/resourceAssertions';
 import EmptyKey from '../../../constants/EmptyKey';
 import getListKey from '../../../action-creators/helpers/getListKey';
@@ -316,18 +316,14 @@ describe('Create reducer:', function () {
           tearDown(this);
         });
 
-        it('then creates a new list with the specified temp key and places the item in it', function () {
-          expectToChangeResourceListPositionsTo(
-            this, RESOURCE_NAME, getListKey(this.listKey), expectedIsolatedStateBefore
-          );
+        it('then does not create any new lists', function () {
+          expect(resourcesDefinition(this, RESOURCE_NAME).lists).toEqual(this.initialState.lists);
         });
 
         it('then doesn\'t add the new temp key to any other existing lists', function () {
           expectToChangeResourceListPositionsTo(this, RESOURCE_NAME, 'active=true', []);
         });
       });
-
-      expectToReplaceTempKeyInLists(operator, expectedIsolatedStateAfter);
     });
 
     describe('and there are lists with keys that exactly match', function () {
@@ -339,11 +335,11 @@ describe('Create reducer:', function () {
           lists: {
             'active=true': {
               positions: [],
-              status: { type: null }
+              status: { type: SUCCESS }
             },
             'order=newest': {
               positions: [1],
-              status: { type: null }
+              status: { type: SUCCESS }
             },
           },
           newItemKey: null

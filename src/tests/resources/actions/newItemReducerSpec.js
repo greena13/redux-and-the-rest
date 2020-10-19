@@ -12,6 +12,7 @@ import {
   setupInitialState
 } from '../../helpers/resourceAssertions';
 import EmptyKey from '../../../constants/EmptyKey';
+import without from '../../../utils/list/without';
 
 const RESOURCE_NAME = 'users';
 
@@ -87,7 +88,69 @@ describe('New reducer:', () => {
   });
 
   describe('when the invalidate lists operator is used', () => {
-    expectToAddNewItemToListsPositions('invalidate', 1, [], []);
+    describe('and there are NO lists', function () {
+      beforeAll(function () {
+        this.listId = 'order=newest';
+
+        setupState(this, { ...RESOURCES }, 1, this.newValues, { invalidate: { order: 'newest' } });
+      });
+
+      it('then does not create any lists', function () {
+        expect(resourcesDefinition(this, RESOURCE_NAME).lists).toEqual({ });
+      });
+    });
+
+    describe('and there are NO matching lists', function () {
+      beforeAll(function () {
+        this.listId = 'order=newest';
+        this.otherListId = 'active=true';
+
+        this.initialState = {
+          ...RESOURCES,
+          lists: {
+            [this.otherListId]: {
+              positions: [],
+              status: { type: SUCCESS },
+              metadata: { type: null }
+            }
+          }
+        };
+
+        setupState(this, this.initialState, 1, this.newValues, { invalidate: { order: 'newest' } });
+      });
+
+      it('then does not create any lists', function () {
+        expect(resourcesDefinition(this, RESOURCE_NAME).lists).toEqual(this.initialState.lists);
+      });
+    });
+
+    describe('and there are lists with keys that exactly match', function () {
+      beforeAll(function () {
+        this.listId = 'order=newest';
+        this.otherListId = 'active=true';
+
+        this.initialState = {
+          ...RESOURCES,
+          lists: {
+            [this.otherListId]: {
+              positions: [],
+              status: { type: SUCCESS },
+              metadata: { type: null }
+            },
+            [this.listId]: {
+              positions: [2],
+              status: { type: SUCCESS }
+            },
+          }
+        };
+
+        setupState(this, this.initialState, 1, this.newValues, { invalidate: { order: 'newest' } });
+      });
+
+      it('then clears the positions of the matching lists', function () {
+        expectToChangeResourceListPositionsTo(this, RESOURCE_NAME, this.listId, []);
+      });
+    });
   });
 
   function expectToAddNewItem(params) {
@@ -220,7 +283,7 @@ describe('New reducer:', () => {
       });
 
       it('then creates a new list with the specified key and places the item in it', function () {
-        expectToChangeResourceListPositionsTo(this, RESOURCE_NAME, this.listId, expectedIsolatedState);
+        expect(resourcesDefinition(this, RESOURCE_NAME).lists).toEqual(this.initialState.lists);
       });
     });
 
@@ -229,7 +292,7 @@ describe('New reducer:', () => {
         this.listId = 'order=newest';
         this.otherListId = 'active=true';
 
-        setupState(this, {
+        this.initialState = {
           ...RESOURCES,
           lists: {
             [this.otherListId]: {
@@ -238,12 +301,13 @@ describe('New reducer:', () => {
               metadata: { type: null }
             }
           }
-        }, itemId, this.newValues, { [operator]: { order: 'newest' } });
+        };
+
+        setupState(this, this.initialState, itemId, this.newValues, { [operator]: { order: 'newest' } });
       });
 
-      it('then creates a new list with the specified key and places the item in it', function () {
-        expectToChangeResourceListPositionsTo(this, RESOURCE_NAME, this.listId, expectedIsolatedState);
-        expectToNotChangeResourceListPositions(this, RESOURCE_NAME, this.otherListId);
+      it('then does not create any new lists', function () {
+        expect(resourcesDefinition(this, RESOURCE_NAME).lists).toEqual(this.initialState.lists);
       });
     });
 
@@ -262,7 +326,7 @@ describe('New reducer:', () => {
             },
             [this.listId]: {
               positions: [2],
-              status: { type: null }
+              status: { type: SUCCESS }
             },
           }
         }, itemId, this.newValues, { [operator]: { order: 'newest' } });
