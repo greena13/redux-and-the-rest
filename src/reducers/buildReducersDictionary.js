@@ -22,6 +22,7 @@ import clearSelectedAction from '../actions/selection/clearSelectedItems';
 import clearResourceAction from '../actions/clear/clearResource';
 import clearItemAction from '../actions/clear/clearItem';
 import clearListAction from '../actions/clear/clearList';
+import isFunction from '../utils/object/isFunction';
 
 /**
  * Dictionary of standard reducer functions for keeping the local store synchronised with a remote RESTful API.
@@ -115,7 +116,17 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
      * Allow overriding the default reducer (or specifying a reducer for a custom action) otherwise default
      * to the standard reducer
      */
-    const reducer = (isObject(actionOptions) && actionOptions.reducer) || STANDARD_REDUCERS[key];
+    const reducer = function(){
+      if (isObject(actionOptions)) {
+        if (isFunction(actionOptions.reducer)) {
+          return actionOptions.reducer;
+        }
+
+        return STANDARD_REDUCERS[actionOptions.reducer];
+      }
+
+      return STANDARD_REDUCERS[key];
+    }();
 
     if (reducer) {
 

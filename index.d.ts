@@ -1099,6 +1099,16 @@ export interface GlobalConfigurationOptions {
     beforeReducers?: Array<Reducer>,
 
     /**
+     * A custom reducer function to use for the action. Either a Reducer function (accepting the current
+     * resource state and the next action as arguments), or the name of one of an action (e.g. 'fetchItem',
+     * 'createItem') if you want to re-use one of the standard reducers.
+     *
+     * By default, the standard RESTful reducer is used for RESTful actions, but this attribute is
+     * required for Non-RESTful actions.
+     */
+    reducer?: keyof StandardActionDictionary | Reducer;
+
+    /**
      * A list of functions to call after passing the resource to the reducer. This is useful if you want to use
      * the default reducer, but provide some additional post-processing to standardise the resource before it
      * is added to the store.

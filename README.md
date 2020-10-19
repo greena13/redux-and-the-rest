@@ -826,7 +826,7 @@ const { actionCreators: { fetchList: fetchUsers } } = resources(
 
 | key | Type | Required or Default Value | Description |
 | --- | ---- | ------------------------- | ----------- |
-| `reducer` | Function | RESTFUL actions: a sensible default; non-RESTFUL: Required | A custom reducer function to adapt the resource as it exists in the Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful actions. |
+| `reducer` | Function or String name of action | RESTFUL actions: a sensible default; non-RESTFUL: Required | A custom reducer function to use for the action. Either a Reducer function (accepting the current resource state and the next action as arguments), or the name of one of an action (e.g. 'fetchItem', 'createItem') if you want to re-use one of the standard reducers. By default, the standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful actions. |
 | `beforeReducers` | Function[] | [ ] | A list of functions to call before passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
 | `afterReducers` | Function[] | [ ] | A list of functions to call after passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
 
