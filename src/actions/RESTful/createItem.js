@@ -22,6 +22,7 @@ import adaptOptionsForSingularResource from '../../action-creators/helpers/adapt
 import arrayFrom from '../../utils/array/arrayFrom';
 import toPlural from '../../utils/string/toPlural';
 import listKeysForItemKeySubstitution from '../../reducers/helpers/listKeysForItemKeySubstitution';
+import getHttpStatusCode from '../../public-helpers/getHttpStatusCode';
 
 const HTTP_REQUEST_TYPE = 'POST';
 
@@ -400,6 +401,12 @@ function reducer(resources, action) {
 
     const newItem = {
       ...item,
+
+      /**
+       * For 204 No Content responses, we stick with the current item values rather than overwriting them with
+       * the empty ones from the remote API
+       */
+      values: getHttpStatusCode(item) === 204 ? currentItem.values : item.values,
 
       /**
        * We add all status attributes that were added since the request was started (currently only the

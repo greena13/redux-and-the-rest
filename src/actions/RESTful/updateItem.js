@@ -19,6 +19,7 @@ import valuesRemoved from '../../utils/array/valuesRemoved';
 import contains from '../../utils/list/contains';
 import extractListOperations from '../../action-creators/helpers/extractListOperations';
 import applyListOperators from '../../reducers/helpers/applyListOperators';
+import getHttpStatusCode from '../../public-helpers/getHttpStatusCode';
 
 const HTTP_REQUEST_TYPE = 'PUT';
 
@@ -347,7 +348,12 @@ function reducer(resources, action) {
 
     const updatedItem = {
       ...item,
-      values: newValues,
+
+      /**
+       * For 204 No Content responses, we stick with the current item values rather than overwriting them with
+       * the empty ones from the remote API
+       */
+      values: getHttpStatusCode(item) === 204 ? currentItem.values : newValues,
 
       /**
        * We add all status attributes that were added since the request was started (currently only the
