@@ -772,7 +772,7 @@ const { actionCreators: { fetchList: fetchUsers } } = resources(
 | --- | ---- | ------------------------- | ----------- |
 | `beforeReducers` | Function[] | [ ] | A list of functions to call before passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
 | `afterReducers` | Function[] | [ ] |A list of functions to call after passing the resource to the `reducer`. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |
-| `reducesOn` | {action: Action, reducer: function} | [ ] | A single or list of objects with an action and a reducer, used to specify custom reducers in response to actions external to the current resource. The keys of the objects are action types from other resources, your own custom actions outside of redux-and-the-rest, or the name of the action you're enabling on this resource (e.g. `fetchItem`). The values are the reducer functions (see below). |
+| `reducesOn` | Object | {} | An object that specifies custom reducers in response to actions external to the current resource. The keys of the objects are action types from other resources, your own custom actions outside of redux-and-the-rest, or the name of the action you're enabling on this resource (e.g. fetchItem). The values are the reducer functions. |
 | `clearOn` | Action or Action[] | [ ] | A single or list of actions for which the current resource should be cleared. |
 | `hasAndBelongsToMany` | {\[associationName\]: Resource } | { } | An object of associated resources, with a many-to-many relationship with the current one. |
 | `belongsTo` | {\[associationName\]: Resource } | { } | An object of associated resources, with a one-to-many relationship with the current one. |
@@ -803,6 +803,7 @@ The helper object contains the following methods:
 * `mergeListStatus(state, params, newStatus)`: Returns a copy of current resource's redux state with an list's status merged with new values
 
 * `getListPositions(state, params)`: Returns the positions of an list by providing its params
+* `removeItemFromListPositions(state, listParams, itemParams)`: Returns a copy of current resource's redux state with item's key removed from the list specified
 * `replaceListPositions(state, params, positions)`: Returns a copy of current resource's redux state with an list's positions replaced by new positions
 
 * `getListMetadata(state, params)`: Returns the metadata of an list by providing its params

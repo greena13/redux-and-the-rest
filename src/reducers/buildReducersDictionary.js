@@ -42,6 +42,10 @@ import getListStatus from '../public-reducers/getListStatus';
 import getListPositions from '../public-reducers/getListPositions';
 import getListMetadata from '../public-reducers/getListMetadata';
 import isString from '../utils/string/isString';
+import without from '../utils/list/without';
+import getItemKey from '../action-creators/helpers/getItemKey';
+import wrapInObject from '../utils/object/wrapInObject';
+import removeItemFromListPositions from '../public-reducers/removeItemFromListPositions';
 
 /**
  * Dictionary of standard reducer functions for keeping the local store synchronised with a remote RESTful API.
@@ -245,6 +249,15 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
     getListPositions: (state, params) => getListPositions(resourceOptions, state, params),
 
     /**
+     * Returns a copy of current resource's redux state with item's key removed from the list specified
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} listParams The parameters to serialize to generate the list's key
+     * @param {ItemOrListParameters} itemParams The parameters to serialize to generate the item's key
+     * @returns {ResourcesReduxState} The resource's redux state with the item removed from the list
+     */
+    removeItemFromListPositions: (state, listParams, itemParams) => removeItemFromListPositions(resourceOptions, state, listParams, itemParams),
+
+    /**
      * Returns a copy of current resource's redux state with an list's positions replaced by new positions
      * @param {ResourcesReduxState} state The current resource redux state
      * @param {ItemOrListParameters} params The parameters to serialize to generate the list's key
@@ -422,7 +435,9 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
   /**
    * Add actions for which the current resource should call a reducer function
    */
-  arrayFrom(resourceOptions.reducesOn).forEach(({ action: actionName, reducer }) => {
+  Object.keys(resourceOptions.reducesOn || {}).forEach((actionName) => {
+    const reducer = resourceOptions.reducesOn[actionName];
+
     reducersDict[actionsDictionary[actionName] || actionName] = {
       reducer: (resources, action) => reducer(resources, action, reducerHelpers)
     };

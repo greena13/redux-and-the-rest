@@ -24,6 +24,8 @@ import clearListAction from '../actions/clear/clearList';
 import without from '../utils/list/without';
 import ResourcesOnlyActionsDictionary from '../constants/ResourcesOnlyActionsDictionary';
 import pluck from '../utils/list/pluck';
+import isFunction from '../utils/object/isFunction';
+import isString from '../utils/string/isString';
 
 /**
  * Dictionary of standard action creators that perform a mix of synchronous and asynchronous changes where
@@ -178,14 +180,14 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
 
     const actionCreator = isObject(actionOptions) && actionOptions.actionCreator;
 
-    const standardActionCreator = effectiveActionCreators[key];
+    const standardActionCreator = isString(actionCreator) ? effectiveActionCreators[actionCreator] : effectiveActionCreators[key];
 
-    if (actionCreator) {
+    if (isFunction(actionCreator)) {
 
       memo[key] = actionCreator;
 
     } else if (standardActionCreator) {
-      const actionOptionsMergedWithResourcOptions = resolveOptions(
+      const actionOptionsMergedWithResourceOptions = resolveOptions(
         resourceOptions,
         actionOptions,
         [
@@ -214,7 +216,7 @@ function buildActionCreators(resourceOptions, actions, actionsOptions) {
       const actionConfiguration = {
         action: actions[key],
         name,
-        ...actionOptionsMergedWithResourcOptions,
+        ...actionOptionsMergedWithResourceOptions,
         request: requestOptions
       };
 

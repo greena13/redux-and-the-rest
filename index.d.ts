@@ -472,7 +472,7 @@ export interface ActionCreatorFunction { (...args: any[]): ThunkAction<void, any
 /**
  * A dictionary of ActionCreatorFunctions indexed by their ActionCreatorName
  */
-export interface ResourcesActionCreatorDictionary<T> {
+export interface StandardResourcesActionCreatorDictionary<T> {
     /**
      * Redux action creator used for fetching a list or resources from an index RESTful API endpoint
      * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
@@ -646,7 +646,11 @@ export interface ResourcesActionCreatorDictionary<T> {
     clearSelectedItems: () => AnyAction,
 }
 
-export interface SingularResourceActionCreatorDictionary<T> {
+export interface ResourcesActionCreatorDictionary<T> extends StandardResourcesActionCreatorDictionary<T> {
+    [key: string]: any;
+}
+
+export interface StandardSingularResourceActionCreatorDictionary<T> {
     /**
      * Redux action creator used for fetching a single resource item from a fetch RESTful API endpoint
      * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
@@ -762,6 +766,10 @@ export interface SingularResourceActionCreatorDictionary<T> {
      * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
      */
     clearResource: () => AnyAction,
+}
+
+export interface SingularResourceActionCreatorDictionary<T> extends StandardSingularResourceActionCreatorDictionary<T> {
+    [key: string]: any;
 }
 
 interface ActionAndActionCreatorSharedOptions<T> {
@@ -1242,7 +1250,16 @@ export interface CustomReducerHelpers<T> {
     getListPositions: (state: ResourcesReduxState<T>, params: ItemOrListParameters) => Array<ItemOrListParameters>;
 
     /**
-     * Returns a copy of current resource's redux state with an list's values replaced by new positions
+     * Returns a copy of current resource's redux state with item's key removed from the list specified
+     * @param state The current resource redux state
+     * @param listParams The parameters to serialize to generate the list's key
+     * @param itemParams The parameters to serialize to generate the item's key
+     * @returns The resource's redux state with the item removed from the list
+     */
+    removeItemFromListPositions: (state: ResourcesReduxState<T>, listParams: ItemOrListParameters, itemParams: ItemOrListParameters) => Array<ItemOrListParameters>;
+
+    /**
+     * Returns a copy of current resource's redux state with an list's positions replaced by new positions
      * @param state The current resource redux state
      * @param params The parameters to serialize to generate the list's key
      * @param positions An object of positions to replace the list's current positions object
@@ -1305,9 +1322,9 @@ export interface CustomReducerHelpers<T> {
     clearResource: () => ResourcesReduxState<T>
 }
 
-export type CustomReducerFunction<T, A extends Action = AnyAction> = (state: T, action: A, helpers: CustomReducerHelpers<T>) => T
+export type CustomReducerFunction<T> = (state: ResourcesReduxState<T>, action: AnyAction, helpers: CustomReducerHelpers<T>) => ResourcesReduxState<T>
 
-export interface CustomReducersMapObject<T, A extends Action = Action> {
+export interface CustomReducersMapObject<T> {
     [key: string]: CustomReducerFunction<T>;
 }
 
@@ -1330,12 +1347,12 @@ export interface ResourceOptions<T> extends GlobalConfigurationOptions {
     url?: string,
 
     /**
-     * A single or list of objects with an action and a reducer, used to specify custom reducers in response to
-     * actions external to the current resource. The keys of the objects are action types from other resources,
-     * your own custom actions outside of redux-and-the-rest, or the name of the action you're enabling on
-     * this resource (e.g. fetchItem). The values are the reducer functions.
+     * An object that specifies custom reducers in response to actions external to the current resource.
+     * The keys of the objects are action types from other resources, your own custom actions outside of
+     * redux-and-the-rest, or the name of the action you're enabling on this resource (e.g. fetchItem).
+     * The values are the reducer functions.
      */
-    reducesOn?: CustomReducersMapObject<T> | Array<CustomReducersMapObject<T>>,
+    reducesOn?: CustomReducersMapObject<T>,
 
     /**
      * A single or list of actions for which the current resource should be cleared.
@@ -1352,6 +1369,10 @@ export interface ResourceOptions<T> extends GlobalConfigurationOptions {
      */
     belongsTo?: Array<string> | AssociationOptions<T>,
 }
+
+type ActionCreatorKey = keyof StandardActionDictionary;
+
+export type CustomActionCreatorFunction = (...args: any[]) => AnyAction | ThunkAction<void, any, any, AnyAction>;
 
 /**
  * Options used to configure individual resource actions and override any options specified in GlobalOptions
@@ -1436,14 +1457,14 @@ export interface ActionDefinitionOptions<T> extends ActionAndActionCreatorShared
      * A custom action creator function that returns an action or thunk action that can then be passed to
      * Redux's dispatch function
      */
-    actionCreator?: (...args: any[]) => AnyAction | ThunkAction<void, any, any, AnyAction>,
+    actionCreator?: ActionCreatorKey | CustomActionCreatorFunction,
 
     /**
      * A custom reducer function to adapt the resource as it exists in the Redux store. By default, the
      * standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful
      * actions.
      */
-    reducer?: Reducer,
+    reducer?: ActionCreatorKey | Reducer,
 
     /**
      * Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the
