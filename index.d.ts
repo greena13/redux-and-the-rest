@@ -1331,7 +1331,9 @@ export interface ResourceOptions<T> extends GlobalConfigurationOptions {
 
     /**
      * A single or list of objects with an action and a reducer, used to specify custom reducers in response to
-     * actions external to the current resource.
+     * actions external to the current resource. The keys of the objects are action types from other resources,
+     * your own custom actions outside of redux-and-the-rest, or the name of the action you're enabling on
+     * this resource (e.g. fetchItem). The values are the reducer functions.
      */
     reducesOn?: CustomReducersMapObject<T> | Array<CustomReducersMapObject<T>>,
 
