@@ -23,6 +23,24 @@ import clearResourceAction from '../actions/clear/clearResource';
 import clearItemAction from '../actions/clear/clearItem';
 import clearListAction from '../actions/clear/clearList';
 import isFunction from '../utils/object/isFunction';
+import mergeItemStatus from '../public-reducers/mergeItemStatus';
+import mergeItemValues from '../public-reducers/mergeItemValues';
+import mergeListStatus from '../public-reducers/mergeListStatus';
+import replaceListPositions from '../public-reducers/replaceListPositions';
+import replaceListMetadata from '../public-reducers/replaceListMetadata';
+import replaceItemMetadata from '../public-reducers/replaceItemMetadata';
+import mergeItemMetadata from '../public-reducers/mergeItemMetadata';
+import mergeListMetadata from '../public-reducers/mergeListMetadata';
+import clearItem from '../public-reducers/clearItem';
+import clearList from '../public-reducers/clearList';
+import clearResources from '../public-reducers/clearResources';
+import replaceItemValues from '../public-reducers/replaceItemValues';
+import getItemStatus from '../public-reducers/getItemStatus';
+import getItemValues from '../public-reducers/getItemValues';
+import getItemMetadata from '../public-reducers/getItemMetadata';
+import getListStatus from '../public-reducers/getListStatus';
+import getListPositions from '../public-reducers/getListPositions';
+import getListMetadata from '../public-reducers/getListMetadata';
 
 /**
  * Dictionary of standard reducer functions for keeping the local store synchronised with a remote RESTful API.
@@ -105,6 +123,190 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
    */
   const globalConfiguration = getConfiguration();
 
+  const reducerHelpers = {
+
+    /**
+     * Returns the status of an item by providing its params
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the item's key
+     * @returns {ResourceStatus} The item's status object
+     */
+    getItemStatus: (state, params) => getItemStatus(resourceOptions, state, params),
+
+    /**
+     * Returns a copy of current resource's redux state with an item's status merged with new values
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the item's key
+     * @param {Object} newStatus An object of values to merge into the item's current status object
+     * @returns {ResourcesReduxState} The resource's redux state with the item's new status values
+     */
+    mergeItemStatus: (state, params, newStatus) => mergeItemStatus(resourceOptions, state, params, newStatus),
+
+    /**
+     * Returns the values of an item by providing its params
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the item's key
+     * @returns {ResourceStatus} The item's values object
+     */
+    getItemValues: (state, params) => getItemValues(resourceOptions, state, params),
+
+    /**
+     * Returns a copy of current resource's redux state with an item's values merged with new values
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the item's key
+     * @param {Object} newValues An object of values to merge into the item's current values object
+     * @returns {ResourcesReduxState} The resource's redux state with the item's new values
+     */
+    mergeItemValues: (state, params, newValues) => mergeItemValues(resourceOptions, state, params, newValues),
+
+    /**
+     * Returns a copy of current resource's redux state with an item's values replaced by new values
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the item's key
+     * @param {Object} values An object of values to replace the item's current values object
+     * @returns {ResourcesReduxState} The resource's redux state with the item's new values
+     */
+    replaceItemValues: (state, params, values) => replaceItemValues(resourceOptions, state, params, values),
+
+    /**
+     * Returns a copy of current resource's redux state with an item's values cleared
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the item's key
+     * @returns {ResourcesReduxState} The resource's redux state with the item's new values
+     */
+    clearItemValues: (state, params) => replaceItemValues(resourceOptions, state, params, {}),
+
+    /**
+     * Returns a copy of current resource's redux state with an item omitted
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the item's key
+     * @returns {ResourcesReduxState} The resource's redux state with the item's new values
+     */
+    clearItem: (state, params) => clearItem(resourceOptions, state, params),
+
+    /**
+     * Returns the metadata of an item by providing its params
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the item's key
+     * @returns {Metadata} The item's metadata object
+     */
+    getItemMetadata: (state, params) => getItemMetadata(resourceOptions, state, params),
+
+    /**
+     * Returns a copy of current resource's redux state with an item's metadata merged with new metadata
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the item's key
+     * @param {Object} metadata An object of metadata to merge into the item's current metadata object
+     * @returns {ResourcesReduxState} The resource's redux state with the item's new metadata
+     */
+    mergeItemMetadata: (state, params, metadata) => mergeItemMetadata(resourceOptions, state, params, metadata),
+
+    /**
+     * Returns a copy of current resource's redux state with an item's metadata replaced by new metadata
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the item's key
+     * @param {Object} metadata An object of metadata to replace item's current metadata object
+     * @returns {ResourcesReduxState} The resource's redux state with the item's new metadata
+     */
+    replaceItemMetadata: (state, params, metadata) => replaceItemMetadata(resourceOptions, state, params, metadata),
+
+    /**
+     * Returns a copy of current resource's redux state with an item's metadata cleared
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the item's key
+     * @returns {ResourcesReduxState} The resource's redux state with the item's new metadata
+     */
+    clearItemMetadata: (state, params) => replaceItemMetadata(resourceOptions, state, params, {}),
+
+    /**
+     * Returns the status of an list by providing its params
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the list's key
+     * @returns {ResourceStatus} The list's status object
+     */
+    getListStatus: (state, params) => getListStatus(resourceOptions, state, params),
+
+    /**
+     * Returns a copy of current resource's redux state with an list's status merged with new values
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the list's key
+     * @param {Object} newStatus An object of values to merge into the list's current status object
+     * @returns {ResourcesReduxState} The resource's redux state with the list's new status values
+     */
+    mergeListStatus: (state, params, newStatus) => mergeListStatus(resourceOptions, state, params, newStatus),
+
+    /**
+     * Returns the positions of an list by providing its params
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the list's key
+     * @returns {Array<ItemOrListParameters>} The list's positions array
+     */
+    getListPositions: (state, params) => getListPositions(resourceOptions, state, params),
+
+    /**
+     * Returns a copy of current resource's redux state with an list's positions replaced by new positions
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the list's key
+     * @param {Object} positions An object of positions to replace the list's current positions object
+     * @returns {ResourcesReduxState} The resource's redux state with the list's new positions
+     */
+    replaceListPositions: (state, params, positions) => replaceListPositions(resourceOptions, state, params, positions),
+
+    /**
+     * Returns the metadata of an list by providing its params
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the list's key
+     * @returns {Metadata} The list's metadata object
+     */
+    getListMetadata: (state, params) => getListMetadata(resourceOptions, state, params),
+
+    /**
+     * Returns a copy of current resource's redux state with a list's metadata merged with new metadata
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the list's key
+     * @param {Object} metadata An object of metadata to merge into the list's current metadata object
+     * @returns {ResourcesReduxState} The resource's redux state with the list's new metadata
+     */
+    mergeListMetadata: (state, params, metadata) => mergeListMetadata(resourceOptions, state, params, metadata),
+
+    /**
+     * Returns a copy of current resource's redux state with a list's metadata replaced by new metadata
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the list's key
+     * @param {Object} metadata An object of metadata to replace list's current metadata object
+     * @returns {ResourcesReduxState} The resource's redux state with the list's new metadata
+     */
+    replaceListMetadata: (state, params, metadata) => replaceListMetadata(resourceOptions, state, params, metadata),
+
+    /**
+     * Returns a copy of current resource's redux state with a list's metadata cleared
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the list's key
+     * @returns {ResourcesReduxState} The resource's redux state with the list's new metadata
+     */
+    clearListMetadata: (state, params) => replaceListMetadata(resourceOptions, state, params, {}),
+
+    /**
+     * Returns a copy of current resource's redux state with a list omitted
+     * @param {ResourcesReduxState} state The current resource redux state
+     * @param {ItemOrListParameters} params The parameters to serialize to generate the list's key
+     * @returns {ResourcesReduxState} The resource's redux state with the list's new values
+     */
+    clearList: (state, params) => clearList(resourceOptions, state, params),
+
+    /**
+     * Returns an empty resources state, for clearing the entire resources
+     * @returns {ResourcesReduxState} An empty resources state
+     */
+    clearResources,
+
+    /**
+     * Returns an empty singular resource state, for clearing the entire resource
+     * @returns {ResourcesReduxState} An empty resource state
+     */
+    clearResource: clearResources,
+  };
+
   /**
    * Iterate over the list of defined actions, creating the corresponding reducer and storing it in a map to
    * be retrieved and called each time the action occurs
@@ -119,7 +321,7 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
     const reducer = function(){
       if (isObject(actionOptions)) {
         if (isFunction(actionOptions.reducer)) {
-          return actionOptions.reducer;
+          return (resources, action) => actionOptions.reducer(resources, action, reducerHelpers);
         }
 
         return STANDARD_REDUCERS[actionOptions.reducer];
@@ -174,13 +376,13 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
             let _resources = resources;
 
             reducerOptions.beforeReducers.forEach((beforeReducer) => {
-              _resources = beforeReducer(_resources, action);
+              _resources = beforeReducer(_resources, action, reducerHelpers);
             });
 
             _resources = reducer(_resources, action);
 
             reducerOptions.afterReducers.forEach((afterReducer) => {
-              _resources = afterReducer(_resources, action);
+              _resources = afterReducer(_resources, action, reducerHelpers);
             });
 
             return _resources;
@@ -217,8 +419,10 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
   /**
    * Add actions for which the current resource should call a reducer function
    */
-  arrayFrom(resourceOptions.reducesOn).forEach(({ action, reducer }) => {
-    reducersDict[action] = { reducer };
+  arrayFrom(resourceOptions.reducesOn).forEach(({ action: actionName, reducer }) => {
+    reducersDict[actionName] = {
+      reducer: (resources, action) => reducer(resources, action, reducerHelpers)
+    };
   });
 
   return reducersDict;

@@ -777,6 +777,44 @@ const { actionCreators: { fetchList: fetchUsers } } = resources(
 | `hasAndBelongsToMany` | {\[associationName\]: Resource } | { } | An object of associated resources, with a many-to-many relationship with the current one. |
 | `belongsTo` | {\[associationName\]: Resource } | { } | An object of associated resources, with a one-to-many relationship with the current one. |
 
+The reducer functions used in the `beforeReducers`, `afterReducers` and `reducesOn` options accept 3 arguments:
+
+* The current resource(s) Redux state (not the entire Redux state)
+* The current action being dispatch (not restricted to only those defined on the current resource being defined)
+* An object of getter and reducer helper functions (to avoid having to manipulate the internal structure directly)
+
+The helper object contains the following methods:
+
+* `getItemStatus(state, params)`: Returns the status of an item by providing its params
+* `mergeItemStatus(state, params, newStatus)`: Returns a copy of current resource's redux state with an item's status merged with new values 
+
+* `getItemValues(state, params)`: Returns the values of an item by providing its params
+* `mergeItemValues(state, params, newValues)`: Returns a copy of current resource's redux state with an item's values merged with new values
+* `replaceItemValues(state, params, values)`: Returns a copy of current resource's redux state with an item's values replaced by new values
+* `clearItemValues(state, params)`: Returns a copy of current resource's redux state with an item's values cleared
+* `clearItem(state, params)`: Returns a copy of current resource's redux state with an item omitted
+
+* `getItemMetadata(state, params)`: Returns the metadata of an item by providing its params
+* `mergeItemMetadata(state, params, metadata)`: Returns a copy of current resource's redux state with an item's metadata merged with new metadata
+* `replaceItemMetadata(state, params, metadata)`: Returns a copy of current resource's redux state with an item's metadata replaced by new metadata
+* `clearItemMetadata(state, params)`: Returns a copy of current resource's redux state with an item's metadata cleared
+
+* `getListStatus(state, params)`: Returns the status of an list by providing its params
+* `mergeListStatus(state, params, newStatus)`: Returns a copy of current resource's redux state with an list's status merged with new values
+
+* `getListPositions(state, params)`: Returns the positions of an list by providing its params
+* `replaceListPositions(state, params, positions)`: Returns a copy of current resource's redux state with an list's positions replaced by new positions
+
+* `getListMetadata(state, params)`: Returns the metadata of an list by providing its params
+* `mergeListMetadata(state, params, metadata)`: Returns a copy of current resource's redux state with a list's metadata merged with new metadata
+* `replaceListMetadata(state, params, metadata)`: Returns a copy of current resource's redux state with a list's metadata replaced by new metadata
+* `clearListMetadata(state, params)`: Returns a copy of current resource's redux state with a list's metadata cleared
+
+* `clearList(state, params)`: Returns a copy of current resource's redux state with a list omitted
+
+* `clearResource()`: Returns an empty singular resource state, for clearing the entire resources
+* `clearResources()`: Returns an empty resource state, for clearing the entire resource
+
 ### Action Options API
 
 `actionOptions` are used to configure individual resource actions and override any options specified in `globalOptions` or `resourceOptions`. They are the most specific level of options available at the time that resources are defined and can only be superseded by options provided to action creators when they are called.

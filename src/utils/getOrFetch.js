@@ -6,7 +6,6 @@ import isFunction from './object/isFunction';
 import { enqueuePendingAction, isActionPending, registerActionEnd } from './ActionQueue';
 import hasDefinedStatus from '../public-helpers/hasDefinedStatus';
 import { FETCHING } from '../constants/Statuses';
-import nop from './function/nop';
 import isUndefined from './isUndefined';
 
 function getOrFetch(options, resourcesState, params = {}, actionCreatorOptions = {}) {
