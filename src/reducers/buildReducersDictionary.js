@@ -41,6 +41,7 @@ import getItemMetadata from '../public-reducers/getItemMetadata';
 import getListStatus from '../public-reducers/getListStatus';
 import getListPositions from '../public-reducers/getListPositions';
 import getListMetadata from '../public-reducers/getListMetadata';
+import isString from '../utils/string/isString';
 
 /**
  * Dictionary of standard reducer functions for keeping the local store synchronised with a remote RESTful API.
@@ -320,11 +321,13 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
      */
     const reducer = function(){
       if (isObject(actionOptions)) {
-        if (isFunction(actionOptions.reducer)) {
-          return (resources, action) => actionOptions.reducer(resources, action, reducerHelpers);
-        }
+        const { reducer: customReducer } = actionOptions;
 
-        return STANDARD_REDUCERS[actionOptions.reducer];
+        if (isFunction(customReducer)) {
+          return (resources, action) => customReducer(resources, action, reducerHelpers);
+        } else if (isString(customReducer)) {
+          return STANDARD_REDUCERS[customReducer];
+        }
       }
 
       return STANDARD_REDUCERS[key];
@@ -420,7 +423,7 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
    * Add actions for which the current resource should call a reducer function
    */
   arrayFrom(resourceOptions.reducesOn).forEach(({ action: actionName, reducer }) => {
-    reducersDict[actionName] = {
+    reducersDict[actionsDictionary[actionName] || actionName] = {
       reducer: (resources, action) => reducer(resources, action, reducerHelpers)
     };
   });
