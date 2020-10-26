@@ -1104,7 +1104,7 @@ export interface GlobalConfigurationOptions {
      * use the default reducer, but provide some additional pre-processing to standardise the resource before
      * it is added to the store.
      */
-    beforeReducers?: Array<Reducer>,
+    beforeReducers?: Array<CustomReducerFunction<never>> | CustomReducerFunction<never>,
 
     /**
      * A custom reducer function to use for the action. Either a Reducer function (accepting the current
@@ -1114,14 +1114,14 @@ export interface GlobalConfigurationOptions {
      * By default, the standard RESTful reducer is used for RESTful actions, but this attribute is
      * required for Non-RESTful actions.
      */
-    reducer?: keyof StandardActionDictionary | Reducer;
+    reducer?: keyof StandardActionDictionary | CustomReducerFunction<T>;
 
     /**
      * A list of functions to call after passing the resource to the reducer. This is useful if you want to use
      * the default reducer, but provide some additional post-processing to standardise the resource before it
      * is added to the store.
      */
-    afterReducers?: Array<Reducer>,
+    afterReducers?: Array<CustomReducerFunction<never>> | CustomReducerFunction<never>,
 
     /**
      * The Redux store, used to directly invoke dispatch and get state for the getOrFetchItem() and
@@ -1444,14 +1444,14 @@ export interface ActionDefinitionOptions<T> extends ActionAndActionCreatorShared
      * is useful if you want to use the default reducer, but provide some additional pre-processing to
      * standardise the resource before it is added to the store.
      */
-    beforeReducers?: Array<Reducer>,
+    beforeReducers?: Array<CustomReducerFunction<T>> | CustomReducerFunction<T>,
 
     /**
      * A list of functions to call after passing the resource to the reducer. This is useful if you want to
      * use the default reducer, but provide some additional post-processing to standardise the resource
      * before it is added to the store.
      */
-    afterReducers?: Array<Reducer>,
+    afterReducers?: Array<CustomReducerFunction<T>> | CustomReducerFunction<T>,
 
     /**
      * A custom action creator function that returns an action or thunk action that can then be passed to
@@ -1464,7 +1464,7 @@ export interface ActionDefinitionOptions<T> extends ActionAndActionCreatorShared
      * standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful
      * actions.
      */
-    reducer?: ActionCreatorKey | Reducer,
+    reducer?: ActionCreatorKey | CustomReducerFunction<T>,
 
     /**
      * Whether to include, omit or send cookies that may be stored in the user agent's cookie jar with the

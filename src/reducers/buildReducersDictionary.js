@@ -373,9 +373,11 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
        * Set up the additional transform functions required to process progress updates if the progress
        * actions have been enabled.
        */
+      const beforeReducers = arrayFrom(reducerOptions.beforeReducers);
+
       if (reducerOptions.progress && (!STANDARD_REDUCERS[key] || PROGRESS_COMPATIBLE_ACTIONS[key])) {
         reducerOptions.beforeReducers = [
-          ...reducerOptions.beforeReducers,
+          ...beforeReducers,
           getProgressReducer(key)
         ];
       }
@@ -387,17 +389,19 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
          * enqueue them to run in sequence, passing the result of each to the next
          */
 
-        if (reducerOptions.beforeReducers.length > 0 || reducerOptions.afterReducers.length > 0) {
+        const afterReducers = arrayFrom(reducerOptions.afterReducers);
+
+        if (beforeReducers.length > 0 || afterReducers.length > 0) {
           return (resources, action) => {
             let _resources = resources;
 
-            reducerOptions.beforeReducers.forEach((beforeReducer) => {
+            beforeReducers.forEach((beforeReducer) => {
               _resources = beforeReducer(_resources, action, reducerHelpers);
             });
 
-            _resources = reducer(_resources, action);
+            _resources = reducer(_resources, action, reducerHelpers);
 
-            reducerOptions.afterReducers.forEach((afterReducer) => {
+            afterReducers.forEach((afterReducer) => {
               _resources = afterReducer(_resources, action, reducerHelpers);
             });
 
