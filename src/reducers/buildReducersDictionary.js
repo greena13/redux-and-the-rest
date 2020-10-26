@@ -442,9 +442,27 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
   Object.keys(resourceOptions.reducesOn || {}).forEach((actionName) => {
     const reducer = resourceOptions.reducesOn[actionName];
 
-    reducersDict[actionsDictionary[actionName] || actionName] = {
-      reducer: (resources, action) => reducer(resources, action, reducerHelpers)
-    };
+    if (actionsDictionary[actionName]) {
+
+      /**
+       * Support using an actions alias, (e.g. 'editItem') rather than the action's full type (e.g 'EDIT_USER')
+       *
+       * In this case, we need to wrap the existing reducer and call it first, to ensure it doesn't get
+       * skipped. This is effectively equivalent to defining an afterReducers option for the action.
+       */
+
+      const existingReducerKey = actionsDictionary[actionName];
+      const existingReducer = reducersDict[existingReducerKey];
+
+      reducersDict[existingReducerKey] = {
+        reducer: (resources, action) => reducer(existingReducer.reducer(resources, action), action, reducerHelpers)
+      };
+    } else {
+      reducersDict[actionName] = {
+        reducer: (resources, action) => reducer(resources, action, reducerHelpers)
+      };
+    }
+
   });
 
   return reducersDict;
