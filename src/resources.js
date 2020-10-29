@@ -23,6 +23,7 @@ import { RESOURCES } from './constants/DataStructures';
 import getOrInitializeNewItem from './utils/getOrInitializeNewItem';
 import saveItem from './utils/saveItem';
 import arrayFrom from './utils/array/arrayFrom';
+import mergeWithLatestGlobalConfig from './mergeWithLatestGlobalConfig';
 
 /**
  * @typedef {Object<string, ResourcesDefinition>} AssociationOptionsMap A Mapping between the name of an
@@ -226,7 +227,7 @@ function resources(resourceOptions, actionOptions = {}) {
 
     getItem,
     getNewOrExistingItem,
-    getList,
+    getList: (currentState, params) => getList(currentState, getListKey(params, mergeWithLatestGlobalConfig(resourceOptions))),
 
     /**
      * Creates a new initial state builder for the resources of this type, which can be used to build an initial
@@ -323,7 +324,12 @@ function resources(resourceOptions, actionOptions = {}) {
           fetchFunction: resourceDefinition.fetchList,
           action: actions.fetchList,
           localOnly,
-          keyFunction: (_params) => getListKey(_params, { urlOnlyParams: resourceOptions.urlOnlyParams }),
+          keyFunction: (_params) => {
+            return getListKey(
+              _params,
+              mergeWithLatestGlobalConfig({ ...resourceOptions, ...actionCreatorOptions })
+            );
+          },
         },
         resourcesState, params, actionCreatorOptions
       );

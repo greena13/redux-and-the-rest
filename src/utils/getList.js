@@ -1,5 +1,5 @@
 import { LIST } from '../constants/DataStructures';
-import serializeKey from '../public-helpers/serializeKey';
+import EmptyKey from '../constants/EmptyKey';
 
 /**
  * @typedef {Object} ResourceListWithItems List of resources, with its items in an array
@@ -9,11 +9,12 @@ import serializeKey from '../public-helpers/serializeKey';
 /**
  * Returns a resource list
  * @param {ResourcesReduxState} resources The resources redux state
- * @param {Object|any} [parameters={}] The parameters to use to generate a key to use to retrieve the list
+ * @param {Object|any} [listKey=''] The (already parsed) key for the list (this function does not perform
+ *        key serialization)
  * @returns {ResourceListWithItems} the resource list with items
  */
-function getList(resources, parameters = {}) {
-  const list = resources.lists[serializeKey(parameters)] || LIST;
+function getList(resources, listKey = EmptyKey) {
+  const list = resources.lists[listKey] || LIST;
 
   const items = list.positions.map((key) => resources.items[key]);
 
