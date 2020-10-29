@@ -946,6 +946,12 @@ export interface ResourcesDefinition<T> extends ResourceDefinitionCommon<T>, Res
     getItem: GetItemFunction<T>,
 
     /**
+     * First attempts to retrieve an exiting item using the provided params and then falls back to trying to
+     * get the new item
+     */
+    getNewOrExistingItem: GetItemFunction<T>,
+
+    /**
      * Function to build the initial resource state
      */
     buildInitialState: (items: Array<T>) => InitialResourceStateBuilder<T>,

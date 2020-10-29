@@ -9,6 +9,7 @@ import { getConfiguration } from './configuration';
 import InitialResourceStateBuilder from './initialisation/InitialResourceStateBuilder';
 import resolveOptions from './action-creators/helpers/resolveOptions';
 import getItemWithEmptyFallback from './utils/getItem';
+import getNewOrExistingItemWithEmptyFallback from './utils/getNewOrExistingItem';
 import getItemKey from './action-creators/helpers/getItemKey';
 import getOrFetch from './utils/getOrFetch';
 import getListKey from './action-creators/helpers/getListKey';
@@ -22,7 +23,6 @@ import { RESOURCES } from './constants/DataStructures';
 import getOrInitializeNewItem from './utils/getOrInitializeNewItem';
 import saveItem from './utils/saveItem';
 import arrayFrom from './utils/array/arrayFrom';
-import isFunction from './utils/object/isFunction';
 
 /**
  * @typedef {Object<string, ResourcesDefinition>} AssociationOptionsMap A Mapping between the name of an
@@ -186,6 +186,17 @@ function resources(resourceOptions, actionOptions = {}) {
     return getItemWithEmptyFallback(resourcesState, getItemKey(params, resourceOptions));
   }
 
+  /**
+   * First attempts to retrieve an exiting item using the provided params and then falls back to trying to
+   * get the new item
+   * @param {ResourcesReduxState} resourcesState The current resource Redux store state
+   * @param {Object|string} params Params to use to find the existing item
+   * @returns {ResourcesItem} The resource item
+   */
+  function getNewOrExistingItem(resourcesState, params = EmptyKey) {
+    return getNewOrExistingItemWithEmptyFallback(resourcesState, getItemKey(params, resourceOptions));
+  }
+
   const resourceDefinition = {
 
     /**
@@ -214,7 +225,7 @@ function resources(resourceOptions, actionOptions = {}) {
     getNewItem: singular ? getItem : getNewItem,
 
     getItem,
-
+    getNewOrExistingItem,
     getList,
 
     /**

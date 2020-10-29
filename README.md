@@ -247,6 +247,7 @@ Also returned are 3 helper functions that are always available:
 * `getList` - for retrieving a list based on its key parameters
 * `getItem` - for retrieving an item based on its key parameters
 * `getNewItem` - for retrieving the item currently being created
+* `getNewOrExistingItem` - for first attempting to retrieve and existing item and then falling back to returning the new item currently being created
 
 In addition to these, if you enable the underlying actions, the following helper functions are also exported:
 
