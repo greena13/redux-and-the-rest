@@ -61,6 +61,10 @@ fetchUsers();
 users = getList(store.getState().users);
 ```
 
+## Quick Reference
+
+You can find more examples and a walk-through style introduction of how to make the most of `redux-and-the-rest` in the [Quick Reference](QuickReference.md).
+
 ## Contents
 
 * [Install &amp; Setup](#install--setup)
