@@ -614,7 +614,7 @@ export interface StandardResourcesActionCreatorDictionary<T> {
 
     /**
      * Redux action creator used for selecting a resource item and replacing any already selected items
-     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in
+     * @param {ItemOrListParameters|ItemOrListParameters[]} params A string or object that is serialized and used to fill in
      *        the dynamic parameters of the resource's URL
      * @param {SelectItemOptions} [actionCreatorOptions={}] The options passed to the action creator when
      *         it is called.
@@ -624,7 +624,7 @@ export interface StandardResourcesActionCreatorDictionary<T> {
 
     /**
      * Redux action creator used for selecting a resource item and adding it to those already selected
-     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
+     * @param {ItemOrListParameters|ItemOrListParameters[]} params A string or object that is serialized and used to fill in the dynamic parameters
      *        of the resource's URL
      * @param {SelectItemOptions} [actionCreatorOptions={}] The options passed to the action creator when it is called.
      * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
@@ -633,7 +633,7 @@ export interface StandardResourcesActionCreatorDictionary<T> {
 
     /**
      * Redux action creator used for deselecting a selected resource item
-     * @param {ItemOrListParameters} params A string or object that is serialized and used to fill in the dynamic parameters
+     * @param {ItemOrListParameters|ItemOrListParameters[]} params A string or object that is serialized and used to fill in the dynamic parameters
      *        of the resource's URL
      * @returns {AnyAction} Action Object that will be passed to the reducers to update the Redux state
      */

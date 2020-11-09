@@ -1,6 +1,7 @@
 import getItemKey from '../../action-creators/helpers/getItemKey';
 import without from '../../utils/list/without';
 import wrapInObject from '../../utils/object/wrapInObject';
+import arrayFrom from '../../utils/array/arrayFrom';
 
 /** ************************************************************************************************************
  * Action creators
@@ -14,12 +15,11 @@ import wrapInObject from '../../utils/object/wrapInObject';
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
 function actionCreator({ action, keyBy, singular }, params) {
-  const normalizedParams = wrapInObject(params, keyBy);
-  const key = getItemKey(normalizedParams, { keyBy, singular });
+  const keys = arrayFrom(params).map((itemParams) => getItemKey(wrapInObject(itemParams, keyBy), { keyBy, singular }));
 
   return {
     type: action,
-    key
+    keys
   };
 }
 
@@ -35,11 +35,11 @@ function actionCreator({ action, keyBy, singular }, params) {
  * @returns {ResourcesReduxState} The new resource state
  */
 function reducer(resources, action) {
-  const { key } = action;
+  const { keys } = action;
 
   return {
     ...resources,
-    selectionMap: without(resources.selectionMap, key)
+    selectionMap: without(resources.selectionMap, keys)
   };
 }
 
