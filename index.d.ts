@@ -1110,7 +1110,7 @@ export interface GlobalConfigurationOptions {
      * use the default reducer, but provide some additional pre-processing to standardise the resource before
      * it is added to the store.
      */
-    beforeReducers?: Array<CustomReducerFunction<never>> | CustomReducerFunction<never>,
+    beforeReducers?: Array<CustomReducerFunction<unknown>> | CustomReducerFunction<unknown>,
 
     /**
      * A custom reducer function to use for the action. Either a Reducer function (accepting the current
@@ -1120,14 +1120,14 @@ export interface GlobalConfigurationOptions {
      * By default, the standard RESTful reducer is used for RESTful actions, but this attribute is
      * required for Non-RESTful actions.
      */
-    reducer?: keyof StandardActionDictionary | CustomReducerFunction<T>;
+    reducer?: keyof StandardActionDictionary | CustomReducerFunction<unknown>;
 
     /**
      * A list of functions to call after passing the resource to the reducer. This is useful if you want to use
      * the default reducer, but provide some additional post-processing to standardise the resource before it
      * is added to the store.
      */
-    afterReducers?: Array<CustomReducerFunction<never>> | CustomReducerFunction<never>,
+    afterReducers?: Array<CustomReducerFunction<unknown>> | CustomReducerFunction<unknown>,
 
     /**
      * The Redux store, used to directly invoke dispatch and get state for the getOrFetchItem() and
@@ -1374,6 +1374,12 @@ export interface ResourceOptions<T> extends GlobalConfigurationOptions {
      * An object of associated resources, with a one-to-many relationship with the current one.
      */
     belongsTo?: Array<string> | AssociationOptions<T>,
+
+    beforeReducers?: Array<CustomReducerFunction<T>> | CustomReducerFunction<T>,
+
+    reducer?: keyof StandardActionDictionary | CustomReducerFunction<never>;
+
+    afterReducers?: Array<CustomReducerFunction<T>> | CustomReducerFunction<T>,
 }
 
 type ActionCreatorKey = keyof StandardActionDictionary;
