@@ -20,7 +20,7 @@ function actionCreator({ action, keyBy, singular }, params, actionCreatorOptions
   const keys = arrayFrom(params).map((itemParams) => getItemKey(wrapInObject(itemParams, keyBy), { keyBy, singular }));
 
   return {
-    type: action, keys, values: arrayFrom(actionCreatorOptions.value || actionCreatorOptions.values || true)
+    type: action, keys, values: arrayFrom(actionCreatorOptions.value || actionCreatorOptions.values || Array(keys.length).fill(true))
   };
 }
 
