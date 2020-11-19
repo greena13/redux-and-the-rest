@@ -224,9 +224,10 @@ function localActionCreator(options, paramsOrValues, valuesOrActionCreatorOption
  * @param {Object} actionCreatorOptions Options passed to the action creator
  * @param {Object} values The values returned by the external API for the newly created resource item
  * @param {Object} [metadata] Metadata extracted from the response, using a responseAdaptor (if applicable)
+ * @param {Number} httpCode The HTTP status code of the response
  * @returns {ActionObject} Action Object that will be passed to the reducers to update the Redux state
  */
-function receiveCreatedResource(options, actionCreatorOptions, values, metadata) {
+function receiveCreatedResource(options, actionCreatorOptions, values, metadata, httpCode) {
   const { action, keyBy, transforms, params, listOperations, localOnly, singular } = options;
 
   const key = function () {
@@ -259,7 +260,7 @@ function receiveCreatedResource(options, actionCreatorOptions, values, metadata)
     listOperations,
     item: applyTransforms(transforms, options, actionCreatorOptions, {
       values,
-      status: { type: SUCCESS, syncedAt: Date.now() },
+      status: { type: SUCCESS, syncedAt: Date.now(), httpCode },
       metadata
     }),
     localOnly

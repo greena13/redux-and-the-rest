@@ -180,7 +180,7 @@ function makeRequest(options, actionCreatorOptions = {}) {
              * handler.
              */
             return dispatch(
-              onSuccess(_options, actionCreatorOptions, _json.values, _json.metadata)
+              onSuccess(_options, actionCreatorOptions, _json.values, _json.metadata, status)
             );
           }
         });
