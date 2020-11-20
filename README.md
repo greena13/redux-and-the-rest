@@ -725,8 +725,9 @@ configure({
 | acceptType | String | No | The `Accept` header to use with each request. Defaults to the contentType if not defined. |
 | contentType | String | No | The `Content-Type` header to use with each request |
 | errorContentType | String | No | The `Content-Type` of error responses that should be parsed as JSON. Defaults to the `contentType` if not defined. |
-| listWildcard | String | '*' | The list key used to reference all lists for action creator's option's list operations |
+| queryStringOptions | Object | {} | Set of options passed to query-string when serializing query strings. (See https://www.npmjs.com/package/query-string) |  
 | request | RequestInit | No | The request configuration object to be passed to the fetch method, or the new XMLHttpRequest object, when the progress option is used. |
+| listWildcard | String | '*' | The list key used to reference all lists for action creator's option's list operations |
 | reducer | Function | Required for custom actions | A custom reducer function to adapt the resource as it exists in the Redux store. By default, the standard RESTful reducer is used for RESTful actions, but this attribute is required for Non-RESTful actions. |
 | beforeReducers | Array of reducers | No | A list of functions to call before passing the resource to the reducer. This is useful if you want to use the default reducer, but provide some additional pre-processing to standardise the resource before it is added to the store. |
 | afterReducers | Array of reducers  | No | A list of functions to call after passing the resource to the reducer. This is useful if you want to use the default reducer, but provide some additional post-processing to standardise the resource before it is added to the store. |

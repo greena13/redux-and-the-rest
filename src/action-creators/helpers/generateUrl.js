@@ -3,6 +3,7 @@ import * as queryString from 'query-string';
 import without from '../../utils/list/without';
 import isObject from '../../utils/object/isObject';
 import arrayFrom from '../../utils/array/arrayFrom';
+import { getConfiguration } from '../../configuration';
 
 /**
  * Takes a url template and substitutes in the correct values at each url parameter location, from a list of parameter
@@ -40,7 +41,7 @@ function generateUrl({ urlTemplate, keyBy, ignoreOptionalParams = false }, param
     if (isEmpty(queryParams)) {
       return urlBase;
     } else {
-      return `${urlBase}?${queryString.stringify(queryParams)}`;
+      return `${urlBase}?${queryString.stringify(queryParams, getConfiguration().queryStringOptions)}`;
     }
   } else {
     return urlBase;
@@ -107,7 +108,7 @@ function insertTemplateParameters(evaluatedUrl, paramValues, ignoreOptionalParam
         /**
          * We warn when a required parameter in the template url is absent from the paramValues
          */
-        throw Error(`Required url parameter '${paramKey}' is missing from ${JSON.stringify(paramValues)}.`);
+        throw Error(`Required url parameter '${paramKey}' is missing from ${JSON.stringify(paramValues, getConfiguration().queryStringOptions)}.`);
       } else {
         return '';
       }

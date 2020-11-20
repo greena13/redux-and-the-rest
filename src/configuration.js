@@ -42,6 +42,12 @@ const DefaultConfigurationOptions = {
   contentType: 'application/json',
 
   /**
+   * Set of options passed to query-string when serializing query strings
+   * @see https://www.npmjs.com/package/query-string
+   */
+  queryStringOptions: {},
+
+  /**
    * The key to use use as a wildcard to mean all lists
    */
   listWildcard: '*',
@@ -81,8 +87,11 @@ let configuration = {
  * @property {String} contentType The Content-Type header to use with each request
  * @property {String} errorContentType The Content-Type of error responses that should be parsed as JSON. Defaults
  *            to the contentType if not defined.
+ * @property {Object} queryStringOptions Set of options passed to query-string when serializing query strings
  * @property {Object.<string,*>} request The request configuration object to be passed to the fetch method, or the
  *           new XMLHttpRequest object, when the progress option is used.
+ *
+ * @property {String} listWildcard The key to use use as a wildcard to mean all lists
  *
  * @property {Array.<ReducerFunction>} beforeReducers A list of functions to call before passing the resource to
  *           the reducer. This is useful if you want to use the default reducer, but provide some additional

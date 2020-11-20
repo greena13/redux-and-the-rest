@@ -1090,20 +1090,26 @@ export interface GlobalConfigurationOptions {
     contentType?: String,
 
     /**
-     * The key to use use as a wildcard to mean all lists
-     */
-    listWildcard?: String,
-
-    /**
      * The Content-Type of error responses that should be parsed as JSON. Defaults to the contentType if not defined.
      */
     errorContentType?: String,
+
+    /**
+     * Set of options passed to query-string when serializing query strings
+     * @see https://www.npmjs.com/package/query-string
+     */
+    queryStringOptions?: Object,
 
     /**
      * The request configuration object to be passed to the fetch method, or the new XMLHttpRequest object,
      * when the progress option is used.
      */
     request?: RequestInit,
+
+    /**
+     * The key to use use as a wildcard to mean all lists
+     */
+    listWildcard?: String,
 
     /**
      * A list of functions to call before passing the resource to the reducer. This is useful if you want to
