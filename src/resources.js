@@ -324,12 +324,10 @@ function resources(resourceOptions, actionOptions = {}) {
           fetchFunction: resourceDefinition.fetchList,
           action: actions.fetchList,
           localOnly,
-          keyFunction: (_params) => {
-            return getListKey(
+          keyFunction: (_params) => getListKey(
               _params,
               mergeWithLatestGlobalConfig({ ...resourceOptions, ...actionCreatorOptions })
-            );
-          },
+            ),
         },
         resourcesState, params, actionCreatorOptions
       );

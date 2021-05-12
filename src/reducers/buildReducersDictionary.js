@@ -42,9 +42,6 @@ import getListStatus from '../public-reducers/getListStatus';
 import getListPositions from '../public-reducers/getListPositions';
 import getListMetadata from '../public-reducers/getListMetadata';
 import isString from '../utils/string/isString';
-import without from '../utils/list/without';
-import getItemKey from '../action-creators/helpers/getItemKey';
-import wrapInObject from '../utils/object/wrapInObject';
 import removeItemFromListPositions from '../public-reducers/removeItemFromListPositions';
 
 /**
