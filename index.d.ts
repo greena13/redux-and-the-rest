@@ -131,7 +131,7 @@ export interface ResourceStatus extends ResourceStatusRequired {
     /**
      * When the error occurred
      */
-    errorOccurredAt: number,
+    errorOccurredAt?: number,
 
     /**
      * When a request to fetch, create or update the resource item or list was last made to an external
