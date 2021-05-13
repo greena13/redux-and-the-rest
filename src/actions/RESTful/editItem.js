@@ -114,6 +114,8 @@ function reducer(resources, action) {
       ...item.values
     };
 
+    persistStatus(currentItem, item);
+
     const newStatus = function () {
       if (currentItem.status.dirty) {
 
@@ -152,6 +154,22 @@ function reducer(resources, action) {
       }
     };
   }
+}
+
+/**
+ * Helper function used to update the a new item to persist relevant status properties.
+ * @param {ITEM} currentItem 
+ * @param {ITEM} newItem
+ * @returns void
+ */
+function persistStatus(currentItem, newItem) {
+  const { syncedAt, requestedAt } = currentItem.status;
+
+  newItem.status = {
+    ...newItem.status,
+    syncedAt,
+    requestedAt,
+  };
 }
 
 export default {
