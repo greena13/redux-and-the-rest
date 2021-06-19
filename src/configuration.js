@@ -51,6 +51,12 @@ const DefaultConfigurationOptions = {
    * The key to use use as a wildcard to mean all lists
    */
   listWildcard: '*',
+
+  /**
+   * Function to generate ids for new resource items
+   * @returns {string} A new resource id
+   */
+  generateId: () => Date.now().toString()
 };
 
 let configuration = {

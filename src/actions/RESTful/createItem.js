@@ -23,6 +23,7 @@ import arrayFrom from '../../utils/array/arrayFrom';
 import toPlural from '../../utils/string/toPlural';
 import listKeysForItemKeySubstitution from '../../reducers/helpers/listKeysForItemKeySubstitution';
 import getHttpStatusCode from '../../public-helpers/getHttpStatusCode';
+import { getConfiguration } from '../../configuration';
 
 const HTTP_REQUEST_TYPE = 'POST';
 
@@ -97,7 +98,7 @@ function actionCreator(options, paramsOrValues, valuesOrActionCreatorOptions, op
       /**
        * We automatically generate a new temporary Id if one is not specified
        */
-      return Date.now().toString();
+      return getConfiguration().generateId();
     }
   }();
 
@@ -246,7 +247,7 @@ function receiveCreatedResource(options, actionCreatorOptions, values, metadata,
       /**
        * We automatically generate a new temporary Id if one is not specified
        */
-      return Date.now().toString();
+      return getConfiguration().generateId();
     } else {
       return specifiedKey;
     }

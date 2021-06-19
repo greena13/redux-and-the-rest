@@ -1112,6 +1112,12 @@ export interface GlobalConfigurationOptions {
     listWildcard?: String,
 
     /**
+     * Function to generate ids for new resource items
+     * @returns A new resource id
+     */
+    generateId?: () => String,
+
+    /**
      * A list of functions to call before passing the resource to the reducer. This is useful if you want to
      * use the default reducer, but provide some additional pre-processing to standardise the resource before
      * it is added to the store.
