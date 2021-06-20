@@ -1328,16 +1328,49 @@ export interface CustomReducerHelpers<T> {
     clearList: (state: ResourcesReduxState<T>, params: ItemOrListParameters) => ResourcesReduxState<T>;
 
     /**
+     * Returns a copy of current resource's redux state an item no longer selected
+     * @param state The current resource redux state
+     * @param params The parameters to serialize to generate the key of the item to deselect
+     * @returns The resource's redux state with the item no longer selected
+     */
+    deselectItem: (state: ResourcesReduxState<T>, params: ItemOrListParameters) => ResourcesReduxState<T>;
+    deselectItems: (state: ResourcesReduxState<T>, params: Array<ItemOrListParameters>) => ResourcesReduxState<T>;
+
+    /**
+     * Returns a copy of current resource's redux state with an item added to those already selected
+     * @param state The current resource redux state
+     * @param params The parameters to serialize to generate the key of the item to select
+     * @returns The resource's redux state with the item selected
+     */
+    selectAnotherItem: (state: ResourcesReduxState<T>, params: ItemOrListParameters) => ResourcesReduxState<T>;
+    selectMoreItems: (state: ResourcesReduxState<T>, params: Array<ItemOrListParameters>) => ResourcesReduxState<T>;
+
+    /**
+     * Returns a copy of current resource's redux state with only the specified item selected
+     * @param state The current resource redux state
+     * @param params The parameters to serialize to generate the key of the item to select
+     * @returns The resource's redux state with the item selected
+     */
+    selectItem: (state: ResourcesReduxState<T>, params: ItemOrListParameters) => ResourcesReduxState<T>;
+    selectItems: (state: ResourcesReduxState<T>, params: Array<ItemOrListParameters>) => ResourcesReduxState<T>;
+
+    /**
+     * Returns a copy of current resource's redux state no items selected
+     * @returns The resource's redux state with the selection cleared
+     */
+    clearSelectedItems: () => ResourcesReduxState<T>;
+
+    /**
      * Returns an empty resources state, for clearing the entire resource
      * @returns An empty resources state
      */
-    clearResources: () => ResourcesReduxState<T>,
+    clearResources: () => ResourcesReduxState<T>;
 
     /**
      * Returns an empty singular resource state, for clearing the entire resource
      * @returns An empty resource state
      */
-    clearResource: () => ResourcesReduxState<T>
+    clearResource: () => ResourcesReduxState<T>;
 }
 
 export type CustomReducerFunction<T> = (state: ResourcesReduxState<T>, action: AnyAction, helpers: CustomReducerHelpers<T>) => ResourcesReduxState<T>

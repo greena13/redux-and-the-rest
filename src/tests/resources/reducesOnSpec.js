@@ -66,33 +66,12 @@ describe('reducesOn:', function () {
       name: 'users',
       url: 'http://test.com/users/:id?',
       keyBy: 'id',
-      reducesOn: [
-        {
-          action: this.sessionActions.destroyItem,
-          reducer: (users, { key }) => {
-
-            const item = users.items[key];
-
-            return {
-              resources: users,
-              items: {
-                ...users.items,
-                [key]: {
-                  ...item,
-                  values: {
-                    ...item.values,
-                    signedIn: false
-                  }
-                }
-              }
-            };
-          }
+      reducesOn: {
+        [this.sessionActions.destroyItem]: (users, { key }, { mergeItemValues }) => {
+          return mergeItemValues(users, key, { signedIn: false });
         }
-      ],
-    }, {
-      fetchList: true,
-      newItem: true,
-    });
+      }
+    }, { fetchList: true, newItem: true, });
 
     this.store = buildStore({
       ...this.initialState

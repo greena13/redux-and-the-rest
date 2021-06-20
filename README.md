@@ -819,6 +819,14 @@ The helper object contains the following methods:
 * `clearListMetadata(state, params)`: Returns a copy of current resource's redux state with a list's metadata cleared
 
 * `clearList(state, params)`: Returns a copy of current resource's redux state with a list omitted
+                        
+* `deselectItem(state, params)`: Returns a copy of current resource's redux state with the item no longer selected
+* `deselectItems(state, params[])`: Returns a copy of current resource's redux state with the items specified no longer selected
+* `selectAnotherItem(state, params)`: Returns a copy of current resource's redux state with an item selected (without clearing those already selected)
+* `selectMoreItems(state, params[])`: Returns a copy of current resource's redux state with the items selected (without clearing those already selected)
+* `selectItem(state, params)`: Returns a copy of current resource's redux state with only a single item selected
+* `selectItems(state, params[])`: Returns a copy of current resource's redux state with only the listed items selected
+* `clearSelectedItems(state, params)`: Returns a copy of current resource's redux state with no items selected
 
 * `clearResource()`: Returns an empty singular resource state, for clearing the entire resources
 * `clearResources()`: Returns an empty resource state, for clearing the entire resource
