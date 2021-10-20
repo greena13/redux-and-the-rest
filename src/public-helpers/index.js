@@ -30,7 +30,7 @@ export const isSyncing = ((itemOrList) => isStatus(itemOrList, [FETCHING, CREATI
 export const isFinishedFetching = ((itemOrList) => isFinished(itemOrList, FETCHING));
 export const isFinishedCreating = ((itemOrList) => isFinished(itemOrList, CREATING));
 export const isFinishedUpdating = ((itemOrList) => isFinished(itemOrList, UPDATING));
-export const isFinishedDestroying = ((itemOrList) => isFinished(itemOrList, DESTROYING));
+export const isNotAvailableLocally = ((itemOrList) => isStatus(itemOrList, null));
 export const isFinishedSaving = ((itemOrList) => isFinished(itemOrList, [CREATING, UPDATING]));
 export const isFinishedSyncing = ((itemOrList) => isFinished(itemOrList, [FETCHING, CREATING, UPDATING, DESTROYING, SYNCING, PROGRESS]));
 

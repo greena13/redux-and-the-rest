@@ -1170,9 +1170,9 @@ Checking when a sync is finished:
 * `isFinishedFetching(itemOrList)` - Whether the request to fetch the item or list is finished 
 * `isFinishedCreating(item)` - Whether the request to create the item is finished 
 * `isFinishedUpdating(item)` - Whether the request to update the item is finished 
-* `isFinishedDestroying(item)` - Whether the request to destroy the item is finished 
 * `isFinishedSaving(item)` - Whether the request to save the item is finished 
 * `isFinishedSyncing(itemOrList)` - Whether the request to sync the item or list is finished 
+* `isNotAvailableLocally(itemOrList)` - Whether a list or item is `undefined`, `null` or an empty schema, indicating it was not in the store when it was retrieved.
 
 To check against custom statuses, you can use the more generic:
 

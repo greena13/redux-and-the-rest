@@ -1689,11 +1689,12 @@ export function isFinishedCreating(item: GenericItemOrList): boolean;
 export function isFinishedUpdating(item: GenericItemOrList): boolean;
 
 /**
- * Whether the request to destroy the item has finished and is now in a success or error state
+ * Whether a list or item is `undefined`, `null` or an empty schema, indicating it was not in the store
+ * when it was retrieved. This function is intended to be used with the result of getItem()
  * @param item The item to consider
- * @returns True if the item is currently being destroyed on the remote
+ * @returns True If the item is not available in the Redux store
  */
-export function isFinishedDestroying(item: GenericItemOrList): boolean;
+export function isNotAvailableLocally(item: GenericItemOrList): boolean;
 
 /**
  * Whether the request to save the item has finished and is now in a success or error state
