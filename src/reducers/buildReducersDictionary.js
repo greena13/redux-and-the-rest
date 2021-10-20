@@ -43,10 +43,6 @@ import getListPositions from '../public-reducers/getListPositions';
 import getListMetadata from '../public-reducers/getListMetadata';
 import isString from '../utils/string/isString';
 import removeItemFromListPositions from '../public-reducers/removeItemFromListPositions';
-import clearSelectedItems from '../actions/selection/clearSelectedItems';
-import deselectItem from '../actions/selection/deselectItem';
-import selectAnotherItem from '../actions/selection/selectAnotherItem';
-import selectItem from '../actions/selection/selectItem';
 
 /**
  * Dictionary of standard reducer functions for keeping the local store synchronised with a remote RESTful API.
@@ -315,9 +311,9 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
      * @param {ItemOrListParameters} params The parameters to serialize to generate the key of the item to deselect
      * @returns {ResourcesReduxState} The resource's redux state with the item no longer selected
      */
-    deselectItem: (state, params) => deselectItem.reducer(
+    deselectItem: (state, params) => deselectAction.reducer(
         state,
-        deselectItem.actionCreator(resourceOptions, params)
+        deselectAction.actionCreator(resourceOptions, params)
       ),
 
     /**
@@ -326,9 +322,9 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
      * @param {ItemOrListParameters} params The parameters to serialize to generate the key of the item to select
      * @returns {ResourcesReduxState} The resource's redux state with the item selected
      */
-    selectAnotherItem: (state, params) => selectAnotherItem.reducer(
+    selectAnotherItem: (state, params) => selectAnotherAction.reducer(
         state,
-        selectAnotherItem.actionCreator(resourceOptions, params)
+        selectAnotherAction.actionCreator(resourceOptions, params)
       ),
 
     /**
@@ -337,16 +333,16 @@ function buildReducersDictionary(resourceOptions, actionsDictionary, actionsOpti
      * @param {ItemOrListParameters} params The parameters to serialize to generate the key of the item to select
      * @returns {ResourcesReduxState} The resource's redux state with the item selected
      */
-    selectItem: (state, params) => selectItem.reducer(
+    selectItem: (state, params) => selectItemAction.reducer(
         state,
-        selectItem.actionCreator(resourceOptions, params)
+        selectItemAction.actionCreator(resourceOptions, params)
       ),
 
     /**
      * Returns a copy of current resource's redux state no items selected
      * @returns {ResourcesReduxState} The resource's redux state with the selection cleared
      */
-    clearSelectedItems: clearSelectedItems.reducer,
+    clearSelectedItems: clearSelectedAction.reducer,
 
     /**
      * Returns an empty singular resource state, for clearing the entire resource

@@ -67,9 +67,7 @@ describe('reducesOn:', function () {
       url: 'http://test.com/users/:id?',
       keyBy: 'id',
       reducesOn: {
-        [this.sessionActions.destroyItem]: (users, { key }, { mergeItemValues }) => {
-          return mergeItemValues(users, key, { signedIn: false });
-        }
+        [this.sessionActions.destroyItem]: (users, { key }, { mergeItemValues }) => mergeItemValues(users, key, { signedIn: false })
       }
     }, { fetchList: true, newItem: true, });
 

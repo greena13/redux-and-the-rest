@@ -12,7 +12,6 @@ import {
   setupInitialState
 } from '../../helpers/resourceAssertions';
 import EmptyKey from '../../../constants/EmptyKey';
-import without from '../../../utils/list/without';
 
 const RESOURCE_NAME = 'users';
 
