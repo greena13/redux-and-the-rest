@@ -6,6 +6,7 @@ import assertInDevMode from '../../utils/assertInDevMode';
 import warn from '../../utils/dev/warn';
 import wrapInObject from '../../utils/object/wrapInObject';
 import adaptOptionsForSingularResource from '../../action-creators/helpers/adaptOptionsForSingularResource';
+import mergeStatus from '../../reducers/helpers/mergeStatus';
 
 /** ************************************************************************************************************
  * Action creators
@@ -111,10 +112,9 @@ function reducer(resources, action) {
      */
     const newValues = {
       ...currentItem.values,
-      ...item.values
+      ...item.values,
+      status: mergeStatus(currentItem.status, item.status),
     };
-
-    persistStatus(currentItem, item);
 
     const newStatus = function () {
       if (currentItem.status.dirty) {
@@ -154,22 +154,6 @@ function reducer(resources, action) {
       }
     };
   }
-}
-
-/**
- * Helper function used to update the a new item to persist relevant status properties.
- * @param {ITEM} currentItem 
- * @param {ITEM} newItem
- * @returns void
- */
-function persistStatus(currentItem, newItem) {
-  const { syncedAt, requestedAt } = currentItem.status;
-
-  newItem.status = {
-    ...newItem.status,
-    syncedAt,
-    requestedAt,
-  };
 }
 
 export default {
