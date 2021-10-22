@@ -2,6 +2,7 @@ import { CREATING, DESTROYING, FETCHING, PROGRESS, SYNCING, UPDATING } from '../
 import { default as isStatus } from './isStatus';
 import { default as isFinished } from './isFinished';
 import isNew from './isNew';
+import isUndefined from '../utils/isUndefined';
 
 export { default as serializeKey } from './serializeKey';
 export { setConfiguration as configure, getConfiguration } from '../configuration';
@@ -30,7 +31,7 @@ export const isSyncing = ((itemOrList) => isStatus(itemOrList, [FETCHING, CREATI
 export const isFinishedFetching = ((itemOrList) => isFinished(itemOrList, FETCHING));
 export const isFinishedCreating = ((itemOrList) => isFinished(itemOrList, CREATING));
 export const isFinishedUpdating = ((itemOrList) => isFinished(itemOrList, UPDATING));
-export const isNotAvailableLocally = ((itemOrList) => isStatus(itemOrList, null));
+export const isNotAvailableLocally = ((itemOrList) => isUndefined(itemOrList) || itemOrList === null || isStatus(itemOrList, null));
 export const isFinishedSaving = ((itemOrList) => isFinished(itemOrList, [CREATING, UPDATING]));
 export const isFinishedSyncing = ((itemOrList) => isFinished(itemOrList, [FETCHING, CREATING, UPDATING, DESTROYING, SYNCING, PROGRESS]));
 
