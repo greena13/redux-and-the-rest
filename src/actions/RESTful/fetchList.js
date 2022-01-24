@@ -273,7 +273,7 @@ function reducer(resources, action) {
         /**
          * For metadata extracted from the response, we merge it with the existing metadata already available
          */
-        metadata: { ...currentList.metadata, ...metadata }
+        metadata: { ...currentList.metadata, ...list.metadata }
       }
     };
 
