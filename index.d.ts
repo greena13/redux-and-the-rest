@@ -792,13 +792,11 @@ export interface ActionCreatorOptions<T> extends ActionAndActionCreatorSharedOpt
 
 }
 
-export interface ForceFetchFunction<T>  { (itemOrList: ResourcesItem<T> | ResourcesList<T>): boolean }
-
 export interface RemoteActionCreatorOptions<T> extends ActionCreatorOptions<T> {
     /**
      * Whether to ignore any outstanding requests with the same URL and make the request again, anyway
      */
-   forceFetch?: boolean | ForceFetchFunction<T>;
+   forceFetch?: boolean | ((itemOrList: ResourcesItem<T> | ResourcesList<T>) => boolean);
 }
 
 export interface RemoteActionCreatorOptionsWithMetadata<T> extends RemoteActionCreatorOptions<T> {
