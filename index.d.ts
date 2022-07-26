@@ -192,6 +192,8 @@ export interface ResourcesItem<T> extends GenericItemOrList {
     status: ResourceItemStatus<T>;
 }
 
+export type ResourceItemOrList<T> = ResourcesItem<T> | ResourcesList<T>;
+
 /**
  * The parameters used to serialize a key to reference an item or list by
  */
@@ -796,7 +798,7 @@ export interface RemoteActionCreatorOptions<T> extends ActionCreatorOptions<T> {
     /**
      * Whether to ignore any outstanding requests with the same URL and make the request again, anyway
      */
-   forceFetch?: boolean | ((itemOrList: ResourcesItem<T> | ResourcesList<T>) => boolean);
+   forceFetch?: boolean | ((itemOrList: ResourceItemOrList<T>) => boolean);
 }
 
 export interface RemoteActionCreatorOptionsWithMetadata<T> extends RemoteActionCreatorOptions<T> {
