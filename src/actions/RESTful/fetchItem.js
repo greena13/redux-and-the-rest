@@ -125,15 +125,20 @@ function requestResource(options, actionCreatorOptions) {
 function receiveResource(options, actionCreatorOptions, values, metadata = {}) {
   const { transforms, action, params, keyBy, singular } = options;
 
+  const { metadata: itemMetadata, ...itemValues } = values;
+
   const item = applyTransforms(transforms, options, actionCreatorOptions, {
     ...ITEM,
-    values,
+    values: itemValues,
     status: { type: SUCCESS, syncedAt: Date.now() },
 
     /**
      * metadata from a responseAdaptor (if applicable) to be merged in with the existing metadata
      */
-    metadata,
+    metadata: {
+      ...metadata,
+      ...itemMetadata,
+    },
   });
 
   const normalizedParams = wrapInObject(params, keyBy);
