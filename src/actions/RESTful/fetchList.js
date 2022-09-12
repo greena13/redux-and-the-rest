@@ -147,11 +147,16 @@ function receiveList(options, actionCreatorOptions, list, metadata) {
      */
     positions.push(itemKey);
 
+    const { metadata: itemsMetadata, ...itemValues } = values;
+
     memo[itemKey] = applyTransforms(transforms, options, actionCreatorOptions, {
       ...ITEM,
-      values,
+      values: itemValues,
       status: { type: SUCCESS, requestedAt, syncedAt },
-      metadata: actionCreatorOptions.itemsMetadata || options.metadata || {},
+      metadata: {
+        ...actionCreatorOptions.itemsMetadata || options.metadata || {},
+        ...itemsMetadata,
+      }
     });
 
     return memo;
